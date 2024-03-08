@@ -5,11 +5,16 @@
 /// `single` module holds functions that return a singular value for `basic_indicators`
 pub mod single {
     use std::cmp::Ordering;
+    use std::collections::HashMap;
     /// Calculates the mean (average) for a slice of prices and returns it as an `f64`
     ///
     /// # Arguments
     ///
     /// * `prices` - A `f64` slice of prices
+    ///
+    /// # Panics
+    ///
+    /// The fuction will panic if given an empty `slice`
     ///
     /// # Examples
     ///
@@ -34,6 +39,10 @@ pub mod single {
     /// # Argument
     ///
     /// * `prices` - A `f64` slice of prices
+    ///
+    /// # Panics
+    ///
+    /// The fuction will panic if given an empty `slice`
     ///
     /// # Examples
     ///
@@ -68,6 +77,44 @@ pub mod single {
         return ordered_prices[middle];
     }
 
+    /// Calculates the mode (most common price) for a slice of prices.
+    ///
+    /// `mode` will round the numbers to get most frequently occuring integer.
+    ///
+    /// If it finds multiple prices that occur an equal number of time it will the average of those
+    /// numbers.
+    ///
+    /// # Arguments
+    ///
+    /// * `prices` - A `f64` slice of prices
+    ///
+    /// # Panics
+    ///
+    /// The fuction will panic if given an empty `slice`
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let prices = vec![100.0, 102.0, 101.0, 101.0, 100.0];
+    /// let mode = rust_ti::basic_indicators::single::mode(&prices);
+    /// assert_eq!(100.5, mode);
+    ///
+    /// let prices = vec![100.0, 102.0, 103.0, 101.0, 100.0];
+    /// let mode = rust_ti::basic_indicators::single::mode(&prices);
+    /// assert_eq!(100.0, mode);
+    /// ```
+    pub fn mode(prices: &[f64]) -> f64 {
+        let length = prices.len();
+
+        if length == 0 {
+            panic!("Prices ({:?}) is empty", prices);
+        };
+
+        let rounded_prices = prices.iter().map(|x| x.round() as u64).collect();
+        return most_frequent(rounded_prices);
+        
+    }
+
     fn cmp_f64(a: &f64, b: &f64) -> Ordering {
         if a < b {
             return Ordering::Less;
@@ -75,6 +122,30 @@ pub mod single {
             return Ordering::Greater;
         }
         return Ordering::Equal;
+    }
+
+    // TODO: Surely this can be improved
+    fn most_frequent(vector: Vec<u64>) -> f64 {
+        let mut map: HashMap<u64, usize> = HashMap::new();
+        for x in vector {
+            *map.entry(x as u64).or_default() += 1;
+        }
+        let mut max_price = vec![0];
+        let mut max_count = usize::MIN;
+        for (key, value) in map {
+            if value > max_count {
+                max_count = value;
+                max_price = vec![key];
+            } else if value == max_count {
+                max_price.push(key);
+            } else {
+                continue;
+            }
+        }
+        if max_price.len() > 1 {
+            return max_price.iter().sum::<u64>() as f64 / max_price.len() as f64;
+        }
+        return max_price[0] as f64;
     }
 }
 
@@ -88,6 +159,10 @@ pub mod bulk {
     ///
     /// * `prices` - A `f64` slice of prices
     /// * `period` - A `usize` period over which to calculate the mean
+    ///
+    /// # Panics
+    ///
+    /// The fuction will panic if given an empty `slice`
     ///
     /// # Examples
     ///
@@ -126,6 +201,10 @@ pub mod bulk {
     ///
     /// * `prices` - A `f64` slice of prices
     /// * `period` - A `usize` period over which to calculate the mean
+    ///
+    /// # Panics
+    ///
+    /// The fuction will panic if given an empty `slice`
     ///
     /// # Examples
     ///
@@ -233,5 +312,10 @@ mod tests {
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
         let period: usize = 30;
         bulk::median(&prices, &period);
+    }
+
+    #[test]
+    fn single_mode() {
+        // TODO
     }
 }
