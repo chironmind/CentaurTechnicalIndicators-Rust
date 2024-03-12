@@ -81,7 +81,7 @@ pub mod single {
     ///
     /// `mode` will round the numbers to get most frequently occuring integer.
     ///
-    /// If it finds multiple prices that occur an equal number of time it will the average of those
+    /// If it finds multiple prices that occur an equal number of times it will the average of those
     /// numbers.
     ///
     /// # Arguments
@@ -112,7 +112,32 @@ pub mod single {
 
         let rounded_prices = prices.iter().map(|x| x.round() as u64).collect();
         return most_frequent(rounded_prices);
-        
+    }
+
+
+    /// Calculates the difference between the natural logarithm at t and t-1 
+    ///
+    /// # Arguments
+    ///
+    /// * `price_t` - `&f64` price at t
+    /// * `price_t_1` - `&f64` price at t-1
+    ///
+    /// # Panics
+    ///
+    /// If one of the prices less or equal to 0.0
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let prices = vec![100.0, 102.0, 103.0, 101.0];
+    /// let log_difference = rust_ti::basic_indicators::single::log_difference(&prices[3], &prices[2]);
+    /// assert_eq!(-0.01960847138837618, log_difference);
+    /// ```
+    pub fn log_difference(price_t: &f64, price_t_1: &f64) -> f64 {
+        if price_t <= &0.0 || price_t_1 <= &0.0 {
+            panic!("price_t ({}) and price_t_1 ({}) need to be greater than 0.0", price_t, price_t_1);
+        }
+        return price_t.ln() - price_t_1.ln();
     }
 
     fn cmp_f64(a: &f64, b: &f64) -> Ordering {
@@ -162,7 +187,7 @@ pub mod bulk {
     ///
     /// # Panics
     ///
-    /// The fuction will panic if given an empty `slice`
+    /// The fuction will panic if `period` is greater than length of `prices`
     ///
     /// # Examples
     ///
@@ -200,11 +225,11 @@ pub mod bulk {
     /// # Arguments
     ///
     /// * `prices` - A `f64` slice of prices
-    /// * `period` - A `usize` period over which to calculate the mean
+    /// * `period` - A `usize` period over which to calculate the median
     ///
     /// # Panics
     ///
-    /// The fuction will panic if given an empty `slice`
+    /// The fuction will panic if `period` is greater than length of `prices`
     ///
     /// # Examples
     ///
@@ -234,6 +259,85 @@ pub mod bulk {
         }
         return medians;
     }
+
+    /// Calculates the mode (most common price) for a slice of prices.
+    ///
+    /// `mode` will round the numbers to get most frequently occuring integer.
+    ///
+    /// If it finds multiple prices that occur an equal number of times it will the average of those
+    /// numbers.
+    ///
+    /// # Arguments
+    ///
+    /// * `prices` - A `f64` slice of prices
+    /// * `period` - A `usize` period over which to calculate the mode
+    ///
+    /// # Panics
+    ///
+    /// The fuction will panic if `period` is greater than length of `prices`
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let prices = vec![101.0, 102.0, 101.0, 102.0];
+    /// let period: usize = 3;
+    /// let mode = rust_ti::basic_indicators::bulk::mode(&prices, &period);
+    /// assert_eq!(vec![101.0, 102.0], mode);
+    /// ```
+    pub fn mode(prices: &[f64], period: &usize) -> Vec<f64> {
+        let length = prices.len();
+
+        if period > &length {
+            panic!(
+                "Period ({}) cannot be longer than the length of provided prices ({})",
+                period, length
+            );
+        };
+
+        let mut modes = Vec::new();
+        for (index, _value) in prices.iter().enumerate() {
+            let end_index = period + index;
+            if end_index > length {
+                break;
+            }
+            modes.push(single::mode(&prices[index..end_index]));
+        }
+        return modes;
+    }
+
+    /// Calculates the natural logrithm for slice of prices
+    ///
+    /// `log` is essentially just a wrapper for the `f64` `ln` method that iterates over a passed
+    /// in slice and returns the natural logarithm for those prices
+    ///
+    /// # Arguments
+    ///
+    /// * `prices` - A `f64` slice of prices
+    ///
+    /// # Panics
+    ///
+    /// The function will panic if passed in an empty slice
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let prices = vec![101.0, 102.0, 103.0, 101.0];
+    /// let log = rust_ti::basic_indicators::bulk::log(&prices);
+    /// assert_eq!(vec![4.61512051684126, 4.624972813284271, 4.634728988229636, 4.61512051684126], log);
+    /// ```
+    pub fn log(prices: &[f64]) -> Vec<f64> {
+        if prices.len() < 1 {
+            panic!("Prices ({:?}) is empty", prices);
+        }
+
+        let mut logs = Vec::new();
+        for price in prices {
+            logs.push(price.ln());
+        }
+        return logs;
+    }
+
+    // TODO: Finish log diff
 }
 
 #[cfg(test)]
@@ -296,7 +400,7 @@ mod tests {
     #[should_panic]
     fn single_median_panic() {
         let prices = Vec::new();
-        single::mean(&prices);
+        single::median(&prices);
     }
 
     #[test]
@@ -315,7 +419,72 @@ mod tests {
     }
 
     #[test]
-    fn single_mode() {
-        // TODO
+    fn single_mode_round_up() {
+        let prices = vec![100.2, 100.46, 100.53, 101.08, 101.19];
+        assert_eq!(101.0, single::mode(&prices));
+    }
+
+    #[test]
+    fn single_mode_round_down() {
+        let prices = vec![100.2, 100.46, 100.35, 101.08, 101.19];
+        assert_eq!(100.0, single::mode(&prices));
+    }
+
+    #[test]
+    fn single_mode_average() {
+        let prices = vec![100.46, 100.35, 101.08, 101.19];
+        assert_eq!(100.5, single::mode(&prices));
+    }
+
+    #[test]
+    #[should_panic]
+    fn single_mode_panic() {
+        let prices = Vec::new();
+        single::mode(&prices);
+    }
+
+    #[test]
+    fn bulk_mode() {
+        let prices = vec![100.2, 100.46, 100.53, 101.08, 101.19];
+        let period: usize = 3;
+        assert_eq!(vec![100.0, 101.0, 101.0], bulk::mode(&prices, &period));
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_mode_panic() {
+        let prices = vec![100.2, 100.46, 100.53, 101.08, 101.19];
+        let period: usize = 30;
+        bulk::mode(&prices, &period);
+    }
+
+    #[test]
+    fn bulk_log() {
+        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
+        assert_eq!(vec![4.607168188650764, 4.609759638321899, 4.610456190417329, 4.608962984226787, 4.607068383271171], bulk::log(&prices));
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_log_panic() {
+        let prices = Vec::new();
+        bulk::log(&prices);
+    }
+
+    #[test]
+    fn single_log_difference() {
+        assert_eq!(-0.0018946009556159993, single::log_difference(&100.19, &100.38));
+    }
+
+    #[test]
+    #[should_panic]
+    fn single_log_difference_panic() {
+        single::log_difference(&0.0, &100.38);
+    }
+
+    #[test]
+    #[should_panic]
+    fn single_log_difference_panic_2() {
+        single::log_difference(&100.19, &-100.38);
     }
 }
