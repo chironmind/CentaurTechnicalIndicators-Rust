@@ -24,12 +24,11 @@ pub mod single {
     /// assert_eq!(101.5, mean);
     /// ```
     pub fn mean(prices: &[f64]) -> f64 {
-        let length = prices.len() as f64;
-        if length == 0.0 {
+        if prices.is_empty() {
             panic!("Prices ({:?}) is empty", prices);
         };
         let sum: f64 = prices.iter().sum();
-        return sum / length;
+        return sum / prices.len() as f64;
     }
 
     /// Calculates the median (middle value) for a slice of prices and returns it as an `f64`.
@@ -58,9 +57,7 @@ pub mod single {
     /// assert_eq!(101.5, median);
     /// ```
     pub fn median(prices: &[f64]) -> f64 {
-        let length = prices.len();
-
-        if length == 0 {
+        if prices.is_empty() {
             panic!("Prices ({:?}) is empty", prices);
         };
 
@@ -69,8 +66,8 @@ pub mod single {
             .filter_map(|f| if f.is_nan() { None } else { Some(*f) })
             .collect::<Vec<f64>>();
         ordered_prices.sort_by(cmp_f64);
-        let middle: usize = length / 2;
-        if length % 2 == 0 {
+        let middle: usize = prices.len() / 2;
+        if prices.len() % 2 == 0 {
             return mean(&ordered_prices[middle - 1..middle + 1]);
         };
 
@@ -104,9 +101,7 @@ pub mod single {
     /// assert_eq!(100.0, mode);
     /// ```
     pub fn mode(prices: &[f64]) -> f64 {
-        let length = prices.len();
-
-        if length == 0 {
+        if prices.is_empty() {
             panic!("Prices ({:?}) is empty", prices);
         };
 
@@ -114,8 +109,7 @@ pub mod single {
         return most_frequent(rounded_prices);
     }
 
-
-    /// Calculates the difference between the natural logarithm at t and t-1 
+    /// Calculates the difference between the natural logarithm at t and t-1
     ///
     /// # Arguments
     ///
@@ -135,9 +129,70 @@ pub mod single {
     /// ```
     pub fn log_difference(price_t: &f64, price_t_1: &f64) -> f64 {
         if price_t <= &0.0 || price_t_1 <= &0.0 {
-            panic!("price_t ({}) and price_t_1 ({}) need to be greater than 0.0", price_t, price_t_1);
+            panic!(
+                "price_t ({}) and price_t_1 ({}) need to be greater than 0.0",
+                price_t, price_t_1
+            );
         }
         return price_t.ln() - price_t_1.ln();
+    }
+
+    /// Calculates the variance of slice of prices
+    ///
+    /// Assumes a normal distribution
+    ///
+    /// # Arguments
+    ///
+    /// * `prices` - `f64` slice of prices
+    ///
+    /// # Panics
+    ///
+    /// The function will panic if prices is empty
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let prices = vec![100.0, 102.0, 103.0, 101.0];
+    /// let variance = rust_ti::basic_indicators::single::variance(&prices);
+    /// assert_eq!(1.25, variance);
+    /// ```
+    // TODO: Allow for distributions other than normal distributions
+    pub fn variance(prices: &[f64]) -> f64 {
+        if prices.is_empty() {
+            panic!("Prices ({:?}) is empty", prices);
+        }
+        let prices_mean = mean(prices);
+        let mut mean_diff_sq = Vec::new();
+        for i in prices.iter() {
+            let x = i - prices_mean;
+            mean_diff_sq.push(x.powi(2));
+        }
+        return mean(&mean_diff_sq);
+    }
+
+    /// Calculates the standard deviation of slice of prices
+    ///
+    /// Assumes a normal distribution
+    ///
+    /// # Arguments
+    ///
+    /// * `prices` - `f64` slice of prices
+    ///
+    /// # Panics
+    ///
+    /// The function will panic if prices is empty
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let prices = vec![100.0, 102.0, 103.0, 101.0];
+    /// let standard_deviation = rust_ti::basic_indicators::single::standard_deviation(&prices);
+    /// assert_eq!(1.118033988749895, standard_deviation);
+    /// ```
+    // TODO: Allow for distributions other than normal distributions
+    pub fn standard_deviation(prices: &[f64]) -> f64 {
+        let variance = variance(prices);
+        return variance.sqrt();
     }
 
     fn cmp_f64(a: &f64, b: &f64) -> Ordering {
@@ -150,6 +205,8 @@ pub mod single {
     }
 
     // TODO: Surely this can be improved
+    //     sorting could eventually be done by f64 sort_floats method once it is no longer
+    //     experimental
     fn most_frequent(vector: Vec<u64>) -> f64 {
         let mut map: HashMap<u64, usize> = HashMap::new();
         for x in vector {
@@ -208,12 +265,12 @@ pub mod bulk {
         };
 
         let mut means = Vec::new();
-        for (index, _value) in prices.iter().enumerate() {
-            let end_index = period + index;
+        for i in 0..length {
+            let end_index = period + i;
             if end_index > length {
                 break;
             }
-            means.push(single::mean(&prices[index..end_index]));
+            means.push(single::mean(&prices[i..end_index]));
         }
         return means;
     }
@@ -250,12 +307,12 @@ pub mod bulk {
         };
 
         let mut medians = Vec::new();
-        for (index, _value) in prices.iter().enumerate() {
-            let end_index = period + index;
+        for i in 0..length {
+            let end_index = period + i;
             if end_index > length {
                 break;
             }
-            medians.push(single::median(&prices[index..end_index]));
+            medians.push(single::median(&prices[i..end_index]));
         }
         return medians;
     }
@@ -295,12 +352,12 @@ pub mod bulk {
         };
 
         let mut modes = Vec::new();
-        for (index, _value) in prices.iter().enumerate() {
-            let end_index = period + index;
+        for i in 0..length {
+            let end_index = period + i;
             if end_index > length {
                 break;
             }
-            modes.push(single::mode(&prices[index..end_index]));
+            modes.push(single::mode(&prices[i..end_index]));
         }
         return modes;
     }
@@ -337,7 +394,121 @@ pub mod bulk {
         return logs;
     }
 
-    // TODO: Finish log diff
+    /// Calculates the difference between the natural logarithm at t and t-1
+    ///
+    /// # Arguments
+    ///
+    /// * `prices` - A `f64` slice of prices
+    ///
+    /// # Panics
+    ///
+    /// The function will panic if passed an empty slice
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let prices = vec![100.0, 102.0, 103.0, 101.0];
+    /// let log_difference = rust_ti::basic_indicators::bulk::log_difference(&prices);
+    /// assert_eq!(vec![0.019802627296178876, 0.009756174945365181, -0.01960847138837618], log_difference);
+    /// ```
+    pub fn log_difference(prices: &[f64]) -> Vec<f64> {
+        let length = prices.len();
+        if length < 1 {
+            panic!("Prices ({:?}) is empty", prices);
+        }
+
+        let mut log_diffs = Vec::new();
+        for i in 0..length {
+            let end_index = i + 1;
+            if end_index >= length {
+                break;
+            }
+            log_diffs.push(single::log_difference(&prices[end_index], &prices[i]));
+        }
+        return log_diffs;
+    }
+
+    /// Calculates the variance of slice of prices
+    ///
+    /// Assumes a normal distribution
+    ///
+    /// # Arguments
+    ///
+    /// * `prices` - `f64` slice of prices
+    /// * `period` - `usize` period over which to calculate the variance
+    ///
+    /// # Panics
+    ///
+    /// The function will panic if the period is greater than the length of prices
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let prices = vec![100.0, 102.0, 103.0, 101.0];
+    /// let period: usize = 3;
+    /// let variance = rust_ti::basic_indicators::bulk::variance(&prices, &period);
+    /// assert_eq!(vec![1.5555555555555556, 0.6666666666666666], variance);
+    /// ```
+    // TODO: Allow for distributions other than normal distributions
+    pub fn variance(prices: &[f64], period: &usize) -> Vec<f64> {
+        let length = prices.len();
+        if period > &length {
+            panic!(
+                "Period ({}) cannot be longer than the length of provided prices ({})",
+                period, length
+            );
+        };
+        let mut variances = Vec::new();
+        for i in 0..length {
+            let end_index = period + i;
+            if end_index > length {
+                break;
+            }
+            variances.push(single::variance(&prices[i..end_index]));
+        }
+        return variances;
+    }
+
+    /// Calculates the standard deviation of a slice of prices
+    ///
+    /// Assumes a normal distribution
+    ///
+    /// # Arguments
+    ///
+    /// * `prices` - `f64` slice of prices
+    /// * `period` - `usize` period over which to calculate the standard deviation
+    ///
+    /// # Panics
+    ///
+    /// The function will panic if prices is empty
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let prices = vec![100.0, 102.0, 103.0, 101.0];
+    /// let period: usize = 3;
+    /// let standard_deviation = rust_ti::basic_indicators::bulk::standard_deviation(&prices, &period);
+    /// assert_eq!(vec![1.247219128924647, 0.816496580927726], standard_deviation);
+    /// ```
+    // TODO: Allow for distributions other than normal distributions
+    pub fn standard_deviation(prices: &[f64], period: &usize) -> Vec<f64> {
+        let length = prices.len();
+        if period > &length {
+            panic!(
+                "Period ({}) cannot be longer than the length of provided prices ({})",
+                period, length
+            );
+        };
+        let mut stddevs = Vec::new();
+        for i in 0..length {
+            let end_index = period + i;
+            if end_index > length {
+                break;
+            }
+            stddevs.push(single::standard_deviation(&prices[i..end_index]));
+        }
+        return stddevs;
+    }
 }
 
 #[cfg(test)]
@@ -461,7 +632,16 @@ mod tests {
     #[test]
     fn bulk_log() {
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
-        assert_eq!(vec![4.607168188650764, 4.609759638321899, 4.610456190417329, 4.608962984226787, 4.607068383271171], bulk::log(&prices));
+        assert_eq!(
+            vec![
+                4.607168188650764,
+                4.609759638321899,
+                4.610456190417329,
+                4.608962984226787,
+                4.607068383271171
+            ],
+            bulk::log(&prices)
+        );
     }
 
     #[test]
@@ -473,7 +653,10 @@ mod tests {
 
     #[test]
     fn single_log_difference() {
-        assert_eq!(-0.0018946009556159993, single::log_difference(&100.19, &100.38));
+        assert_eq!(
+            -0.0018946009556159993,
+            single::log_difference(&100.19, &100.38)
+        );
     }
 
     #[test]
@@ -486,5 +669,95 @@ mod tests {
     #[should_panic]
     fn single_log_difference_panic_2() {
         single::log_difference(&100.19, &-100.38);
+    }
+
+    #[test]
+    fn bulk_log_difference() {
+        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
+        assert_eq!(
+            vec![
+                0.0025914496711347823,
+                0.0006965520954302917,
+                -0.0014932061905419403,
+                -0.0018946009556159993
+            ],
+            bulk::log_difference(&prices)
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_log_difference_difference() {
+        bulk::log_difference(&Vec::new());
+    }
+
+    #[test]
+    fn single_variance() {
+        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
+        assert_eq!(0.018695999999999734, single::variance(&prices));
+    }
+
+    #[test]
+    #[should_panic]
+    fn single_variance_panic() {
+        let prices = Vec::new();
+        single::variance(&prices);
+    }
+
+    #[test]
+    fn bulk_variance() {
+        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
+        let period = 3;
+        assert_eq!(
+            vec![
+                0.02015555555555502,
+                0.0037555555555558295,
+                0.019355555555555907
+            ],
+            bulk::variance(&prices, &period)
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_variance_panic() {
+        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
+        let period = 30;
+        bulk::variance(&prices, &period);
+    }
+
+    #[test]
+    fn single_standard_deviation() {
+        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
+        assert_eq!(0.1367333170810967, single::standard_deviation(&prices));
+    }
+
+    #[test]
+    #[should_panic]
+    fn single_standard_deviation_panic() {
+        let prices = Vec::new();
+        single::standard_deviation(&prices);
+    }
+
+    #[test]
+    fn bulk_standard_deviation() {
+        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
+        let period = 3;
+        assert_eq!(
+            vec![
+                0.14197026292697715,
+                0.06128258770283635,
+                0.13912424503139598
+            ],
+            bulk::standard_deviation(&prices, &period)
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_standard_deviation_panic() {
+        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
+        let period = 30;
+        bulk::standard_deviation(&prices, &period);
     }
 }
