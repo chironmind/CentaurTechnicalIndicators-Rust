@@ -1,6 +1,6 @@
 //! # Basic Indicators
 //!
-//! `basic_indicators` is a collection of simple functions to perform simple calculations on prices, such as mean, median, log...
+//! `basic_indicators` is a module of simple functions to perform simple calculations on prices, such as mean, median, log...
 
 /// `single` module holds functions that return a singular value for `basic_indicators`
 pub mod single {
@@ -193,6 +193,47 @@ pub mod single {
     pub fn standard_deviation(prices: &[f64]) -> f64 {
         let variance = variance(prices);
         return variance.sqrt();
+    }
+
+    /// Calculates the absolute deviation from the mean, median, or mode.
+    ///
+    /// # Arguments
+    ///
+    /// * `prices` - A `f64` slice of prices
+    /// * `central_point` - A variant of the `CentralPoint enum`
+    ///
+    /// # Panics
+    ///
+    /// The function will panic if prices is empty
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let prices = vec![100.0, 102.0, 103.0, 101.0, 100.0];
+    /// let mean_absolute_deviation = rust_ti::basic_indicators::single::absolute_deviation(&prices, &rust_ti::CentralPoint::Mean);
+    /// // The answer is `1.04` but due to how Rust implements `f64` `1.0400000000000005` gets
+    /// // returned which should be negligible.
+    /// assert_eq!(1.0400000000000005, mean_absolute_deviation);
+    ///
+    /// let median_absolute_deviation = rust_ti::basic_indicators::single::absolute_deviation(&prices, &rust_ti::CentralPoint::Median);
+    /// assert_eq!(1.0, median_absolute_deviation);
+    ///
+    /// let mode_absolute_deviation = rust_ti::basic_indicators::single::absolute_deviation(&prices, &rust_ti::CentralPoint::Mode);
+    /// assert_eq!(1.2, mode_absolute_deviation);
+    /// ```
+    pub fn absolute_deviation(prices: &[f64], central_point: &crate::CentralPoint) -> f64 {
+        if prices.is_empty() {
+            panic!("Prices is empty")
+        };
+        let mid_point = match central_point {
+            crate::CentralPoint::Mean => mean(prices),
+            crate::CentralPoint::Median => median(prices),
+            crate::CentralPoint::Mode => mode(prices),
+            _ => panic!("Unsupported central_point provided"), // TODO: add debug to Central point
+                                                               // so the panic can provide it
+        };
+        let deviation: f64 = prices.iter().map(|x| (x - mid_point).abs()).sum();
+        return deviation / prices.len() as f64;
     }
 
     fn cmp_f64(a: &f64, b: &f64) -> Ordering {
@@ -509,6 +550,59 @@ pub mod bulk {
         }
         return stddevs;
     }
+
+    /// Calculates the absolute deviation from the mean, median, or mode over a provided period.
+    ///
+    /// # Arguments
+    ///
+    /// * `prices` - A `f64` slice of prices
+    /// * `period` - `usize` period over which to calculate the standard deviation
+    /// * `central_point` - A variant of the `CentralPoint enum`
+    ///
+    /// # Panics
+    ///
+    /// The function will panic if the period is longer than the length of prices
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let prices = vec![100.0, 102.0, 103.0, 101.0, 100.0];
+    /// let period: usize = 3;
+    ///
+    /// let mean_absolute_deviation = rust_ti::basic_indicators::bulk::absolute_deviation(&prices, &period, &rust_ti::CentralPoint::Mean);
+    /// assert_eq!(vec![1.1111111111111096, 0.6666666666666666, 1.1111111111111096], mean_absolute_deviation);
+    ///
+    /// let median_absolute_deviation = rust_ti::basic_indicators::bulk::absolute_deviation(&prices, &period, &rust_ti::CentralPoint::Median);
+    /// assert_eq!(vec![1.0, 0.6666666666666666, 1.0], median_absolute_deviation);
+    ///
+    /// let mode_absolute_deviation = rust_ti::basic_indicators::bulk::absolute_deviation(&prices, &period, &rust_ti::CentralPoint::Mode);
+    /// assert_eq!(vec![1.1111111111111096, 0.6666666666666666, 1.1111111111111096], mode_absolute_deviation);
+    /// ```
+    pub fn absolute_deviation(
+        prices: &[f64],
+        period: &usize,
+        central_point: &crate::CentralPoint,
+    ) -> Vec<f64> {
+        let length = prices.len();
+        if period > &length {
+            panic!(
+                "Period ({}) cannot be longer than the length of provided prices ({})",
+                period, length
+            );
+        };
+        let mut absolute_deviations = Vec::new();
+        for i in 0..length {
+            let end_index = period + i;
+            if end_index > length {
+                break;
+            }
+            absolute_deviations.push(single::absolute_deviation(
+                &prices[i..end_index],
+                central_point,
+            ));
+        }
+        return absolute_deviations;
+    }
 }
 
 #[cfg(test)]
@@ -759,5 +853,60 @@ mod tests {
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
         let period = 30;
         bulk::standard_deviation(&prices, &period);
+    }
+
+    #[test]
+    fn single_absolute_deviation() {
+        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
+        assert_eq!(
+            0.12559999999999719,
+            single::absolute_deviation(&prices, &crate::CentralPoint::Mean)
+        );
+        assert_eq!(
+            0.11999999999999886,
+            single::absolute_deviation(&prices, &crate::CentralPoint::Median)
+        );
+        assert_eq!(
+            0.3519999999999982,
+            single::absolute_deviation(&prices, &crate::CentralPoint::Mode)
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn singe_absolute_deviation_panic() {
+        let prices = Vec::new();
+        single::absolute_deviation(&prices, &crate::CentralPoint::Mean);
+    }
+
+    #[test]
+    fn bulk_absolute_deviation() {
+        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
+        let period: usize = 3;
+
+        assert_eq!(
+            vec![
+                0.1311111111111103,
+                0.051111111111111995,
+                0.11777777777777487
+            ],
+            bulk::absolute_deviation(&prices, &period, &crate::CentralPoint::Mean)
+        );
+        assert_eq!(
+            vec![0.10999999999999943, 0.0500000000000019, 0.11333333333333447],
+            bulk::absolute_deviation(&prices, &period, &crate::CentralPoint::Median)
+        );
+        assert_eq!(
+            vec![0.3966666666666659, 0.45666666666666345, 0.36666666666666475],
+            bulk::absolute_deviation(&prices, &period, &crate::CentralPoint::Mode)
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_absolute_deviation_panic() {
+        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
+        let period: usize = 30;
+        bulk::absolute_deviation(&prices, &period, &crate::CentralPoint::Mean);
     }
 }
