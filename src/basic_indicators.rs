@@ -162,11 +162,12 @@ pub mod single {
             panic!("Prices ({:?}) is empty", prices);
         }
         let prices_mean = mean(prices);
-        let mut mean_diff_sq = Vec::new();
-        for i in prices.iter() {
-            let x = i - prices_mean;
-            mean_diff_sq.push(x.powi(2));
-        }
+        let mean_diff_sq: Vec<f64> = prices.iter().map(|x| (x - prices_mean).powi(2)).collect();
+        //let mut mean_diff_sq = Vec::new();
+        //for i in prices.iter() {
+        //  let x = i - prices_mean;
+        // mean_diff_sq.push(x.powi(2));
+        //}
         return mean(&mean_diff_sq);
     }
 
