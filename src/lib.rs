@@ -14,6 +14,7 @@
 //! functions that allow this.
 
 pub mod basic_indicators;
+pub mod momentum_indicators;
 pub mod moving_average;
 
 /// The `CentralPoint enum` is used to determine what the central point around
@@ -33,9 +34,30 @@ pub enum CentralPoint {
 /// the alpha nominator, and the second float is the alpha denominator. The smoothed type
 /// uses an alpha nominator of 1, and denominator of 0. The exponential type uses an alpha nominator
 /// of 2, and denominator of 1. Probably shouldn't be used...
-pub enum MovingAverageType {
+pub enum MovingAverageType<'a> {
     Simple,
     Smoothed,
     Exponential,
-    Personalised(f64, f64),
+    Personalised(&'a f64, &'a f64),
+}
+
+/// The `ConstantModelType` is used by a number of functions to determine the centerpoint around
+/// which to do its calculations.
+///
+/// Most of the time it uses a flavor of the moving average, but more are provided here to give the
+/// caller the opportunity to diversify the functions a bit.
+///
+/// See note in `MovingAverageType` about using the `Personalised` variant.
+///
+/// The `McGinleyDynamic(f64)` variant takes the previous McGinley Dynamic as an argumet, if none
+/// if available use `0.0`. When using it check whether you are able to get the previous one by
+/// calculating seperately, it would make little sense to use it but always pass in `0.0`
+pub enum ConstantModelType<'a> {
+    SimpleMovingAverage,
+    SmoothedMovingAverage,
+    ExponentialMovingAverage,
+    PersonalisedMovingAverage(&'a f64, &'a f64),
+    McGinleyDynamic(&'a f64),
+    SimpleMovingMedian,
+    SimpleMovingMode,
 }

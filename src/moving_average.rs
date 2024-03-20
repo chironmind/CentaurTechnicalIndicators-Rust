@@ -85,7 +85,7 @@ pub mod single {
     }
 
     /// The `mcginley_dynamic` is an alternative to the moving average supposedely more resilient
-    /// to price shocks that the moving average
+    /// to price shocks than the moving average
     ///
     /// # Arguments
     ///
@@ -99,7 +99,7 @@ pub mod single {
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 100.0];
     /// let mcginley_dynamic = rust_ti::moving_average::single::mcginley_dynamic(&prices, &0.0_f64);
     /// assert_eq!(100.0, mcginley_dynamic);
-    /// 
+    ///
     /// let next_prices = vec![102.0, 103.0, 101.0, 100.0, 99.0];
     /// let next_mcginley_dynamic = rust_ti::moving_average::single::mcginley_dynamic(&next_prices, &mcginley_dynamic);
     /// assert_eq!(99.79179592886295, next_mcginley_dynamic);
@@ -114,8 +114,9 @@ pub mod single {
             return last_price;
         };
 
-        let base = &last_price / previous_mcginley_dynamic; 
-        return previous_mcginley_dynamic + ((&last_price - previous_mcginley_dynamic) / ( length as f64 * base.powi(4)));
+        let base = &last_price / previous_mcginley_dynamic;
+        return previous_mcginley_dynamic
+            + ((&last_price - previous_mcginley_dynamic) / (length as f64 * base.powi(4)));
     }
 }
 
@@ -179,6 +180,66 @@ pub mod bulk {
         }
         return moving_averages;
     }
+
+    /// The `mcginley_dynamic` is an alternative to the moving average supposedely more resilient
+    /// to price shocks than the moving average
+    ///
+    /// # Arguments
+    ///
+    /// * `prices` - An `f64` slice of prices
+    /// * `previous_mcginley_dynamic` - An `f64` value for the previous McGinley dynamic. If there
+    /// is no previous value pass in `0.0`
+    /// * `period` - A `usize` period over which to calculate the McGinley dynamic
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let prices = vec![100.0, 102.0, 103.0, 101.0, 100.0];
+    /// let period: usize = 3;
+    /// let mcginley_dynamic = rust_ti::moving_average::bulk::mcginley_dynamic(&prices, &0.0_f64, &period);
+    /// assert_eq!(vec![103.0, 102.2789387706985, 101.44764169058672], mcginley_dynamic);
+    ///
+    /// // Example passing in the previous McGinley dynamic from above on the subset of prices
+    /// let mcginley_dynamic = rust_ti::moving_average::bulk::mcginley_dynamic(&prices[1..], &103.0, &period);
+    /// assert_eq!(vec![102.2789387706985, 101.44764169058672], mcginley_dynamic);
+    /// ```
+    pub fn mcginley_dynamic(
+        prices: &[f64],
+        previous_mcginley_dynamic: &f64,
+        period: &usize,
+    ) -> Vec<f64> {
+        let length = prices.len();
+        if period > &length {
+            panic!(
+                "Period ({}) cannot be longer than the length of provided prices ({})",
+                period, length
+            );
+        };
+
+        let mut mcginley_dynamics = Vec::new();
+        for i in 0..length {
+            let end_index = period + i;
+            if end_index > length {
+                break;
+            };
+            if i == 0 {
+                if previous_mcginley_dynamic == &0.0_f64 {
+                    mcginley_dynamics.push(prices[period - 1]);
+                } else {
+                    mcginley_dynamics.push(single::mcginley_dynamic(
+                        &prices[i..end_index],
+                        previous_mcginley_dynamic,
+                    ));
+                }
+            } else {
+                mcginley_dynamics.push(single::mcginley_dynamic(
+                    &prices[i..end_index],
+                    mcginley_dynamics.last().unwrap(),
+                ));
+            }
+        }
+        return mcginley_dynamics;
+    }
 }
 
 #[cfg(test)]
@@ -200,7 +261,7 @@ mod tests {
         assert_eq!(100.34228938600666, smoothed_ma);
 
         let personalised_ma =
-            single::moving_average(&prices, &crate::MovingAverageType::Personalised(5.0, 3.0));
+            single::moving_average(&prices, &crate::MovingAverageType::Personalised(&5.0, &3.0));
         assert_eq!(100.27405995388162, personalised_ma)
     }
 
@@ -215,7 +276,7 @@ mod tests {
     #[should_panic]
     fn single_moving_average_personalised_ma_panic() {
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
-        single::moving_average(&prices, &crate::MovingAverageType::Personalised(5.0, -5.0));
+        single::moving_average(&prices, &crate::MovingAverageType::Personalised(&5.0, &-5.0));
     }
 
     #[test]
@@ -224,16 +285,34 @@ mod tests {
         let period: usize = 3;
 
         let simple_ma = bulk::moving_average(&prices, &crate::MovingAverageType::Simple, &period);
-        assert_eq!(vec![100.39666666666666, 100.456666666666666, 100.36666666666667], simple_ma);
+        assert_eq!(
+            vec![100.39666666666666, 100.456666666666666, 100.36666666666667],
+            simple_ma
+        );
 
-        let exponential_ma = bulk::moving_average(&prices, &crate::MovingAverageType::Exponential, &period);
-        assert_eq!(vec![100.46285714285715, 100.4342857142857, 100.29285714285713], exponential_ma);
+        let exponential_ma =
+            bulk::moving_average(&prices, &crate::MovingAverageType::Exponential, &period);
+        assert_eq!(
+            vec![100.46285714285715, 100.4342857142857, 100.29285714285713],
+            exponential_ma
+        );
 
-        let smoothed_ma = bulk::moving_average(&prices, &crate::MovingAverageType::Smoothed, &period);
-        assert_eq!(vec![100.43842105263158, 100.4442105263158, 100.32157894736842], smoothed_ma);
+        let smoothed_ma =
+            bulk::moving_average(&prices, &crate::MovingAverageType::Smoothed, &period);
+        assert_eq!(
+            vec![100.43842105263158, 100.4442105263158, 100.32157894736842],
+            smoothed_ma
+        );
 
-        let personalised_ma = bulk::moving_average(&prices, &crate::MovingAverageType::Personalised(5.0, 3.0), &period);
-        assert_eq!(vec![100.5125581395349, 100.40279069767443, 100.22441860465118], personalised_ma);
+        let personalised_ma = bulk::moving_average(
+            &prices,
+            &crate::MovingAverageType::Personalised(&5.0, &3.0),
+            &period,
+        );
+        assert_eq!(
+            vec![100.5125581395349, 100.40279069767443, 100.22441860465118],
+            personalised_ma
+        );
     }
 
     #[test]
@@ -259,5 +338,27 @@ mod tests {
     fn single_mcginley_dynamic_panic() {
         let prices = Vec::new();
         single::mcginley_dynamic(&prices, &0.0_f64);
+    }
+
+    #[test]
+    fn bulk_mcginley_dynamic() {
+        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
+        let period: usize = 3;
+        assert_eq!(
+            vec![100.53, 100.47970046511769, 100.38201189376744],
+            bulk::mcginley_dynamic(&prices, &0.0_f64, &period)
+        );
+        assert_eq!(
+            vec![100.47970046511769, 100.38201189376744],
+            bulk::mcginley_dynamic(&prices[1..], &100.53, &period)
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_mcginley_dynamic_panic() {
+        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
+        let period: usize = 30;
+        bulk::mcginley_dynamic(&prices, &0.0_f64, &period);
     }
 }
