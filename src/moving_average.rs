@@ -247,19 +247,30 @@ mod tests {
     use super::*;
 
     #[test]
-    fn single_moving_average() {
+    fn single_simple_moving_average() {
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
-
         let simple_ma = single::moving_average(&prices, &crate::MovingAverageType::Simple);
         assert_eq!(100.352, simple_ma);
-
+    }
+    
+    #[test]
+    fn single_exponential_moving_average() {
+        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
         let exponential_ma =
             single::moving_average(&prices, &crate::MovingAverageType::Exponential);
         assert_eq!(100.32810426540287, exponential_ma);
+    }
 
+    #[test]
+    fn single_smoothed_moving_average() {
+        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
         let smoothed_ma = single::moving_average(&prices, &crate::MovingAverageType::Smoothed);
         assert_eq!(100.34228938600666, smoothed_ma);
+    }
 
+    #[test]
+    fn single_personalised_moving_average() {
+        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
         let personalised_ma =
             single::moving_average(&prices, &crate::MovingAverageType::Personalised(&5.0, &3.0));
         assert_eq!(100.27405995388162, personalised_ma)
@@ -280,30 +291,44 @@ mod tests {
     }
 
     #[test]
-    fn bulk_moving_average() {
+    fn bulk_simlpe_moving_average() {
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
         let period: usize = 3;
-
         let simple_ma = bulk::moving_average(&prices, &crate::MovingAverageType::Simple, &period);
         assert_eq!(
             vec![100.39666666666666, 100.456666666666666, 100.36666666666667],
             simple_ma
         );
+    }
 
+    #[test]
+    fn bulk_exponential_moving_average() {
+        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
+        let period: usize = 3;
         let exponential_ma =
             bulk::moving_average(&prices, &crate::MovingAverageType::Exponential, &period);
         assert_eq!(
             vec![100.46285714285715, 100.4342857142857, 100.29285714285713],
             exponential_ma
         );
+    }
 
+    #[test]
+    fn bulk_smoothed_moving_average() {
+        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
+        let period: usize = 3;
         let smoothed_ma =
             bulk::moving_average(&prices, &crate::MovingAverageType::Smoothed, &period);
         assert_eq!(
             vec![100.43842105263158, 100.4442105263158, 100.32157894736842],
             smoothed_ma
         );
+    }
 
+    #[test]
+    fn bulk_personalised_moving_average() {
+        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
+        let period: usize = 3;
         let personalised_ma = bulk::moving_average(
             &prices,
             &crate::MovingAverageType::Personalised(&5.0, &3.0),
