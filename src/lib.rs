@@ -57,7 +57,6 @@ pub enum ConstantModelType<'a> {
     SmoothedMovingAverage,
     ExponentialMovingAverage,
     PersonalisedMovingAverage(&'a f64, &'a f64),
-    McGinleyDynamic(&'a f64),
     SimpleMovingMedian,
     SimpleMovingMode,
 }

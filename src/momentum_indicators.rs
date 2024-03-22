@@ -88,11 +88,6 @@ pub mod single {
                     &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
                 ),
             ),
-            ConstantModelType::McGinleyDynamic(previous_mcginley_dynamic) => (
-                // TODO: Panic here and tell it to use the other RSI just for McGinley
-                mcginley_dynamic(&previous_gains, previous_mcginley_dynamic),
-                mcginley_dynamic(&previous_loss, previous_mcginley_dynamic),
-            ),
             ConstantModelType::SimpleMovingMedian => (median(&previous_gains), median(&previous_loss)),
             ConstantModelType::SimpleMovingMode => (mode(&previous_gains), mode(&previous_loss)),
             _ => panic!("Unsupported ConstantModelType"),
@@ -138,7 +133,7 @@ pub mod bulk {
     /// let period: usize = 5;
     ///
     /// let personalised_rsi = rust_ti::momentum_indicators::bulk::relative_strength_index(&prices, &rust_ti::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0), &period); 
-    /// //TODO: assert_eq!(vec![
+    /// assert_eq!(vec![34.51776649746324, 12.837837837836929, 34.51776649746182, 61.26126126126377], personalised_rsi);
     /// ```
     pub fn relative_strength_index(prices: &[f64], constant_model_type: &crate::ConstantModelType, period: &usize) -> Vec<f64> {
         let length = prices.len();
@@ -163,73 +158,124 @@ mod tests {
     use super::*;
     
     #[test]
-    fn test_ma_rsi() {
+    fn test_single_ma_rsi() {
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
         assert_eq!(49.2537313432832, single::relative_strength_index(&prices, &crate::ConstantModelType::SimpleMovingAverage));
     }
 
     #[test]
-    fn test_short_median_rsi() {
+    fn test_single_short_median_rsi() {
         // Because there are too few values, ends up being the means
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
         assert_eq!(49.2537313432832, single::relative_strength_index(&prices, &crate::ConstantModelType::SimpleMovingMedian));
     }
 
     #[test]
-    fn test_long_median_rsi() {
+    fn test_single_long_median_rsi() {
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
         assert_eq!(37.5, single::relative_strength_index(&prices, &crate::ConstantModelType::SimpleMovingMedian));
     }
 
     #[test]
-    fn test_small_mode_rsi() {
+    fn test_single_small_mode_rsi() {
         // Mode rounds the values, the difference being so small all rounds down to 0.0
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
         assert_eq!(0.0, single::relative_strength_index(&prices, &crate::ConstantModelType::SimpleMovingMode));
     }
 
     #[test]
-    fn test_large_mode_rsi() {
+    fn test_single_large_mode_rsi() {
         let prices = vec![100.0, 103.0, 106.0, 107.0, 108.0, 105.0, 102.0];
         assert_eq!(39.99999999999999, single::relative_strength_index(&prices, &crate::ConstantModelType::SimpleMovingMode));
     }
 
     #[test]
-    fn test_smoothed_rsi() {
+    fn test_single_smoothed_rsi() {
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
         assert_eq!(43.01075268817234, single::relative_strength_index(&prices, &crate::ConstantModelType::SmoothedMovingAverage));
     }
 
     #[test]
-    fn test_exponential_rsi() {
+    fn test_single_exponential_rsi() {
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
         assert_eq!(39.495798319328436, single::relative_strength_index(&prices, &crate::ConstantModelType::ExponentialMovingAverage));
     }
 
     #[test]
-    fn test_personalised_rsi() {
+    fn test_single_personalised_rsi() {
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
         assert_eq!(35.6725146198842, single::relative_strength_index(&prices, &crate::ConstantModelType::PersonalisedMovingAverage(&4.0, &3.0)));
     }
 
     #[test]
-    fn test_only_price_rise_rsi() {
+    fn test_single_only_price_rise_rsi() {
         let prices = vec![100.0, 101.0, 102.0, 103.0];
         assert_eq!(100.0, single::relative_strength_index(&prices, &crate::ConstantModelType::SimpleMovingAverage) );
     }
 
     #[test]
-    fn test_only_price_fall_rsi() {
+    fn test_single_only_price_fall_rsi() {
         let prices = vec![103.0, 102.0, 101.0, 100.0];
         assert_eq!(0.0, single::relative_strength_index(&prices, &crate::ConstantModelType::SimpleMovingAverage));
     }
 
     #[test]
     #[should_panic]
-    fn test_rsi_panic() {
+    fn test_single_rsi_panic() {
         let prices = Vec::new();
         single::relative_strength_index(&prices, &crate::ConstantModelType::SimpleMovingAverage);
     }
+
+    #[test]
+    fn test_bulk_simple_ma_rsi() {
+        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
+        let period:usize = 5;
+        assert_eq!(vec![49.2537313432832, 20.930232558140005, 27.6595744680842, 36.111111111111335], bulk::relative_strength_index(&prices, &crate::ConstantModelType::SimpleMovingAverage, &period));
+    }
+
+    #[test]
+    fn test_bulk_smoothed_ma_rsi() {
+        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
+        let period:usize = 5;
+        assert_eq!(vec![43.01075268817234, 17.187499999999886, 31.168831168830664, 47.05882352941291], bulk::relative_strength_index(&prices, &crate::ConstantModelType::SmoothedMovingAverage, &period));
+    }
+
+    #[test]
+    fn test_bulk_exponential_ma_rsi() {
+        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
+        let period:usize = 5;
+        assert_eq!(vec![39.495798319328436, 15.2941176470584, 32.71028037383145, 53.03030303030472], bulk::relative_strength_index(&prices, &crate::ConstantModelType::ExponentialMovingAverage, &period));
+    }
+
+    #[test]
+    fn test_bulk_personalised_ma_rsi() {
+        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
+        let period:usize = 5;
+        assert_eq!(vec![35.6725146198842, 13.385826771652745 ,34.13173652694594, 59.375000000002316], bulk::relative_strength_index(&prices, &crate::ConstantModelType::PersonalisedMovingAverage(&4.0, &3.0), &period));
+    }
+
+    #[test]
+    fn test_bulk_simple_median_rsi() {
+        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
+        let period:usize = 5;
+        assert_eq!(vec![49.2537313432832, 20.930232558140005, 27.6595744680842, 36.111111111111335], bulk::relative_strength_index(&prices, &crate::ConstantModelType::SimpleMovingMedian, &period));
+    }
+
+    #[test]
+    fn test_bulk_simple_mode_rsi() {
+        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
+        let period:usize = 5;
+        assert_eq!(vec![0.0, 0.0, 0.0, 0.0], bulk::relative_strength_index(&prices, &crate::ConstantModelType::SimpleMovingMode, &period));
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_bulk_rsi_panic() {
+        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
+        let period:usize = 50;
+        bulk::relative_strength_index(&prices, &crate::ConstantModelType::SimpleMovingAverage, &period);
+    }
+    
     //#[test]
     // TODO: McGinley needs its own RSI flavor because it needs to return the previous RSIs...
     //fn test_mcginley_dynamic_rsi() {
