@@ -97,26 +97,29 @@ pub mod single {
     ///
     /// ```
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 100.0];
-    /// let mcginley_dynamic = rust_ti::moving_average::single::mcginley_dynamic(&prices, &0.0_f64);
+    /// let period:usize = 5;
+    /// let mcginley_dynamic = rust_ti::moving_average::single::mcginley_dynamic(&100.0, &0.0_f64, &period);
     /// assert_eq!(100.0, mcginley_dynamic);
     ///
     /// let next_prices = vec![102.0, 103.0, 101.0, 100.0, 99.0];
-    /// let next_mcginley_dynamic = rust_ti::moving_average::single::mcginley_dynamic(&next_prices, &mcginley_dynamic);
+    /// let next_mcginley_dynamic = rust_ti::moving_average::single::mcginley_dynamic(&99.0, &mcginley_dynamic, &period);
     /// assert_eq!(99.79179592886295, next_mcginley_dynamic);
     /// ```
-    pub fn mcginley_dynamic(prices: &[f64], previous_mcginley_dynamic: &f64) -> f64 {
-        if prices.is_empty() {
-            panic!("Prices is empty");
+    pub fn mcginley_dynamic(
+        last_price: &f64,
+        previous_mcginley_dynamic: &f64,
+        period: &usize,
+    ) -> f64 {
+        if period == &0_usize {
+            panic!("Cannot have a 0 period");
         };
-        let length = prices.len();
-        let last_price = prices[length - 1];
         if previous_mcginley_dynamic == &0.0_f64 {
-            return last_price;
+            return *last_price;
         };
 
-        let base = &last_price / previous_mcginley_dynamic;
+        let base = last_price / previous_mcginley_dynamic;
         return previous_mcginley_dynamic
-            + ((&last_price - previous_mcginley_dynamic) / (length as f64 * base.powi(4)));
+            + ((last_price - previous_mcginley_dynamic) / (*period as f64 * base.powi(4)));
     }
 }
 
@@ -216,27 +219,35 @@ pub mod bulk {
             );
         };
 
-        let mut mcginley_dynamics = Vec::new();
-        for i in 0..length {
-            let end_index = period + i;
-            if end_index > length {
-                break;
-            };
-            if i == 0 {
-                if previous_mcginley_dynamic == &0.0_f64 {
-                    mcginley_dynamics.push(prices[period - 1]);
-                } else {
-                    mcginley_dynamics.push(single::mcginley_dynamic(
-                        &prices[i..end_index],
-                        previous_mcginley_dynamic,
-                    ));
-                }
-            } else {
-                mcginley_dynamics.push(single::mcginley_dynamic(
-                    &prices[i..end_index],
-                    mcginley_dynamics.last().unwrap(),
-                ));
-            }
+        let mut mcginley_dynamics = vec![single::mcginley_dynamic(
+            &prices[period - 1],
+            previous_mcginley_dynamic,
+            period,
+        )];
+        for price in prices[*period..].iter() {
+            mcginley_dynamics.push(single::mcginley_dynamic(
+                price,
+                mcginley_dynamics.last().unwrap(),
+                period,
+            ));
+            //let end_index = period + i;
+            //if end_index > length {
+            //    break;
+            //};
+            //if i == 0 {
+            //    if previous_mcginley_dynamic == &0.0_f64 {
+            //        mcginley_dynamics.push(prices[period - 1]);
+            //    } else {
+            //        mcginley_dynamics.push(single::mcginley_dynamic(
+            //            &prices[i..end_index],
+            //            previous_mcginley_dynamic,
+            //        ));
+            //    }
+            //} else {
+            //    mcginley_dynamics.push(single::mcginley_dynamic(
+            //        &prices[i..end_index],
+            //        mcginley_dynamics.last().unwrap(),
+            //    ));
         }
         return mcginley_dynamics;
     }
@@ -252,7 +263,7 @@ mod tests {
         let simple_ma = single::moving_average(&prices, &crate::MovingAverageType::Simple);
         assert_eq!(100.352, simple_ma);
     }
-    
+
     #[test]
     fn single_exponential_moving_average() {
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
@@ -287,7 +298,10 @@ mod tests {
     #[should_panic]
     fn single_moving_average_personalised_ma_panic() {
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
-        single::moving_average(&prices, &crate::MovingAverageType::Personalised(&5.0, &-5.0));
+        single::moving_average(
+            &prices,
+            &crate::MovingAverageType::Personalised(&5.0, &-5.0),
+        );
     }
 
     #[test]
@@ -349,20 +363,21 @@ mod tests {
     }
 
     #[test]
-    fn single_mcginley_dynamic() {
-        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
-        let mcginley_dynamic = single::mcginley_dynamic(&prices, &0.0_f64);
+    fn single_mcginley_dynamic_no_previous() {
+        let mcginley_dynamic = single::mcginley_dynamic(&100.19, &0.0_f64, &5_usize);
         assert_eq!(100.19, mcginley_dynamic);
-        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
-        let mcginley_dynamic = single::mcginley_dynamic(&prices, &mcginley_dynamic);
+    }
+
+    #[test]
+    fn single_mcginley_dynamic_previous() {
+        let mcginley_dynamic = single::mcginley_dynamic(&100.21, &100.19, &5_usize);
         assert_eq!(100.19399680766176, mcginley_dynamic);
     }
 
     #[test]
     #[should_panic]
     fn single_mcginley_dynamic_panic() {
-        let prices = Vec::new();
-        single::mcginley_dynamic(&prices, &0.0_f64);
+        single::mcginley_dynamic(&100.0, &0.0_f64, &0_usize);
     }
 
     #[test]
