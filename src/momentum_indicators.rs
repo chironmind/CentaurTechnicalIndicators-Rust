@@ -193,34 +193,14 @@ pub mod single {
         return 100.0 * ((prices.last().unwrap() - min) / (max - min));
     }
 
-    fn previous_gains_loss(prices: &[f64]) -> (Vec<f64>, Vec<f64>) {
-        if prices.is_empty() {
-            panic!("Prices is empty");
-        };
-        let mut previous_gains = Vec::new();
-        let mut previous_loss = Vec::new();
-        for (i, value) in prices.iter().enumerate() {
-            // TODO: must be a better way to do this
-            if i == 0 {
-                continue;
-            };
-            if value > &prices[i - 1] {
-                previous_gains.push(value - prices[i - 1]);
-            } else if value < &prices[i - 1] {
-                previous_loss.push(prices[i - 1] - value);
-            };
-        }
-        return (previous_gains, previous_loss);
-    }
-
     /// The `slow_stochastic` is a momentum indicator that takes the moving average of passed in
     /// stochastic oscillators
     ///
-    /// The standard length of prices is 3, and the constant model is a simple moving average
+    /// The standard length of stochastic oscillators is 3, and the constant model is a simple moving average
     ///
     /// # Arguments
     ///
-    /// * `stochastics` - An `f64` slice of closing prices
+    /// * `stochastics` - An `f64` slice of stochastics
     /// * `constant_model_type` - A variant of `ConstantModelType`
     ///
     /// # Examples
@@ -268,6 +248,107 @@ pub mod single {
             _ => panic!("Unsupported ConstantModelType"),
         };
         return slow_stochastic;
+    }
+
+    /// The `slowest_stochastic` is a momentum indicator that takes the moving average of passed in
+    /// slow stochastic oscillators
+    ///
+    /// The standard length of slow stochastics is 3, and the constant model is a simple moving average
+    ///
+    /// # Arguments
+    ///
+    /// * `slow_stochastics` - An `f64` slice of slow stochastics
+    /// * `constant_model_type` - A variant of `ConstantModelType`
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let slow_stochstic = [30.0, 20.0, 10.0];
+    ///
+    /// let simple_ma_slowest_stochastic = rust_ti::momentum_indicators::single::slowest_stochastic(&slow_stochstic, &rust_ti::ConstantModelType::SimpleMovingAverage);
+    /// assert_eq!(20.0, simple_ma_slowest_stochastic);
+    ///
+    /// let sma_slowest_stochastic =
+    /// rust_ti::momentum_indicators::single::slowest_stochastic(&slow_stochstic,
+    /// &rust_ti::ConstantModelType::SmoothedMovingAverage);
+    /// assert_eq!(17.368421052631582, sma_slowest_stochastic);
+    ///
+    /// let median_slowest_stochastic = rust_ti::momentum_indicators::single::slowest_stochastic(&slow_stochstic, &rust_ti::ConstantModelType::SimpleMovingMedian);
+    /// assert_eq!(20.0, median_slowest_stochastic);
+    /// ```
+    pub fn slowest_stochastic(
+        slow_stochastics: &[f64],
+        constant_model_type: &crate::ConstantModelType,
+    ) -> f64 {
+        if slow_stochastics.is_empty() {
+            panic!("stochastics cannot be empty");
+        };
+
+        let slowest_stochastic = match constant_model_type {
+            ConstantModelType::SimpleMovingAverage => {
+                moving_average(&slow_stochastics, &MovingAverageType::Simple)
+            }
+            ConstantModelType::SmoothedMovingAverage => {
+                moving_average(&slow_stochastics, &MovingAverageType::Smoothed)
+            }
+            ConstantModelType::ExponentialMovingAverage => {
+                moving_average(&slow_stochastics, &MovingAverageType::Exponential)
+            }
+            ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => {
+                moving_average(
+                    &slow_stochastics,
+                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
+                )
+            }
+            ConstantModelType::SimpleMovingMedian => median(&slow_stochastics),
+            ConstantModelType::SimpleMovingMode => mode(&slow_stochastics),
+            _ => panic!("Unsupported ConstantModelType"),
+        };
+        return slowest_stochastic;
+    }
+
+    /// `williams_percent_r` determines momentum by 
+    ///
+    /// The standard period is 14 days, so the high would be the max of the past 14 days
+    ///
+    /// # Arguments
+    /// 
+    /// * `high` - High price for the observed period
+    /// * `low` - Low price for the observed period
+    /// * `close` - Close price for the observed period
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let high = 200.0;
+    /// let low = 175.0;
+    /// let close = 192.0;
+    /// let williams_percent_r = rust_ti::momentum_indicators::single::williams_percent_r(&high, &low,
+    /// &close);
+    /// assert_eq!(-32.0, williams_percent_r);
+    /// ```
+    pub fn williams_percent_r(high: &f64, low: &f64, close: &f64) -> f64 {
+        return -100.0_f64 * ((high - close) / (high - low))
+    }
+
+    fn previous_gains_loss(prices: &[f64]) -> (Vec<f64>, Vec<f64>) {
+        if prices.is_empty() {
+            panic!("Prices is empty");
+        };
+        let mut previous_gains = Vec::new();
+        let mut previous_loss = Vec::new();
+        for (i, value) in prices.iter().enumerate() {
+            // TODO: must be a better way to do this
+            if i == 0 {
+                continue;
+            };
+            if value > &prices[i - 1] {
+                previous_gains.push(value - prices[i - 1]);
+            } else if value < &prices[i - 1] {
+                previous_loss.push(prices[i - 1] - value);
+            };
+        }
+        return (previous_gains, previous_loss);
     }
 
     fn rsi(previous_average_gains: &f64, previous_average_loss: &f64) -> f64 {
@@ -362,6 +443,7 @@ pub mod bulk {
     /// * `previous_loss_mcginley_dynamic` - The previous McGinley dynamic used for the loss
     /// caclulation. Use 0.0 if it hasn't yet been calculated.
     /// * `period` - Period over which to calculate the McGinley dynamic RSI
+    ///
     /// # Examples
     ///
     /// ```
@@ -460,6 +542,7 @@ pub mod bulk {
     /// * `stochastics` - An `f64` slice of prices
     /// * `constant_model_type` - A variant of `ConstantModelType`
     /// * `period` - Period over which to calculate the stochastic oscillator
+    /// 
     /// # Examples
     ///
     /// ```
@@ -502,6 +585,63 @@ pub mod bulk {
         }
         return sso;
     }
+
+    /// The `slowest_stochastic` is a momentum indicator that takes the moving average of passed in
+    /// slow stochastics
+    ///
+    /// The standard length of prices is 3, and the constant model is a simple moving average
+    ///
+    /// # Arguments
+    ///
+    /// * `slow_stochastics` - An `f64` slice of prices
+    /// * `constant_model_type` - A variant of `ConstantModelType`
+    /// * `period` - Period over which to calculate the stochastic oscillator
+    /// 
+    /// # Examples
+    ///
+    /// ```
+    /// let slow_stochstics = [75.0, 60.0, 73.0, 58.0];
+    /// let period: usize = 3;
+    ///
+    /// let ma_slowest_stochastic = rust_ti::momentum_indicators::bulk::slowest_stochastic(&slow_stochstics, &rust_ti::ConstantModelType::SimpleMovingAverage, &period);
+    /// assert_eq!(vec![69.33333333333333, 63.666666666666664], ma_slowest_stochastic);
+    ///
+    /// let sma_slowest_stochastic =
+    /// rust_ti::momentum_indicators::bulk::slow_stochastic(&slow_stochstics,
+    /// &rust_ti::ConstantModelType::SmoothedMovingAverage, &period);
+    /// assert_eq!(vec![69.31578947368422, 63.15789473684211], sma_slowest_stochastic);
+    ///
+    /// let median_slowest_stochastic = rust_ti::momentum_indicators::bulk::slow_stochastic(&slow_stochstics, &rust_ti::ConstantModelType::SimpleMovingMedian, &period);
+    /// assert_eq!(vec![73.0, 60.0], median_slowest_stochastic);
+    /// ```
+    pub fn slowest_stochastic(
+        slow_stochastics: &[f64],
+        constant_model_type: &crate::ConstantModelType,
+        period: &usize,
+    ) -> Vec<f64> {
+        let length = slow_stochastics.len();
+        if period > &length {
+            panic!(
+                "Period ({}) cannot be greater than length ({}) of stochastics",
+                period, length
+            );
+        };
+        let mut sso = Vec::new();
+        for i in 0..length {
+            let end_index = period + i;
+            if end_index > length {
+                break;
+            };
+            sso.push(single::slowest_stochastic(
+                &slow_stochastics[i..end_index],
+                constant_model_type,
+            ));
+        }
+        return sso;
+    }
+
+    /// 
+    pub fn williams_percent_r(
 }
 
 #[cfg(test)]
@@ -1028,5 +1168,163 @@ mod tests {
         let stochastics = vec![0.0, 5.882352941175241, 38.23529411764534, 47.36842105263394];
         let period: usize = 30;
         bulk::slow_stochastic(&stochastics, &crate::ConstantModelType::SimpleMovingMode, &period);
+    }
+    
+    #[test]
+    fn test_single_ma_slowest_stochastic() {
+        let stochastics = vec![0.0, 5.882352941175241, 38.23529411764534, 47.36842105263394];
+        assert_eq!(
+            22.871517027863632,
+            single::slowest_stochastic(&stochastics, &crate::ConstantModelType::SimpleMovingAverage)
+        );
+    }
+
+    #[test]
+    fn test_single_sma_slowest_stochastic() {
+        let stochastics = vec![0.0, 5.882352941175241, 38.23529411764534, 47.36842105263394];
+        assert_eq!(
+            29.02078726227347,
+            single::slowest_stochastic(
+                &stochastics,
+                &crate::ConstantModelType::SmoothedMovingAverage
+            )
+        );
+    }
+
+    #[test]
+    fn test_single_ema_slowest_stochastic() {
+        let stochastics = vec![0.0, 5.882352941175241, 38.23529411764534, 47.36842105263394];
+        assert_eq!(
+            33.284579311601206,
+            single::slowest_stochastic(
+                &stochastics,
+                &crate::ConstantModelType::ExponentialMovingAverage
+            )
+        );
+    }
+
+    #[test]
+    fn test_single_pma_slowest_stochastic() {
+        let stochastics = vec![0.0, 5.882352941175241, 38.23529411764534, 47.36842105263394];
+        assert_eq!(
+            39.872151259403616,
+            single::slowest_stochastic(
+                &stochastics,
+                &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0)
+            )
+        );
+    }
+
+    #[test]
+    fn test_single_median_slowest_stochastic() {
+        let stochastics = vec![0.0, 5.882352941175241, 38.23529411764534, 47.36842105263394];
+        assert_eq!(
+            22.05882352941029,
+            single::slowest_stochastic(&stochastics, &crate::ConstantModelType::SimpleMovingMedian)
+        );
+    }
+
+    #[test]
+    fn test_single_mode_slowest_stochastic() {
+        let stochastics = vec![0.0, 5.882352941175241, 38.23529411764534, 47.36842105263394];
+        assert_eq!(
+            22.75,
+            single::slowest_stochastic(&stochastics, &crate::ConstantModelType::SimpleMovingMode)
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_single_slowest_stochastic_panic() {
+        let stochastics = Vec::new();
+        single::slowest_stochastic(&stochastics, &crate::ConstantModelType::SimpleMovingMode);
+    }
+
+    #[test]
+    fn test_bulk_ma_slowest_stochastic() {
+        let stochastics = vec![0.0, 5.882352941175241, 38.23529411764534, 47.36842105263394];
+        let period: usize = 3;
+        assert_eq!(
+            vec![14.705882352940193, 30.49535603715151],
+            bulk::slowest_stochastic(&stochastics, &crate::ConstantModelType::SimpleMovingAverage, &period)
+        );
+    }
+
+    #[test]
+    fn test_bulk_sma_slowest_stochastic() {
+        let stochastics = vec![0.0, 5.882352941175241, 38.23529411764534, 47.36842105263394];
+        let period: usize = 3;
+        assert_eq!(
+            vec![19.969040247676816, 35.75036662864623],
+            bulk::slowest_stochastic(
+                &stochastics,
+                &crate::ConstantModelType::SmoothedMovingAverage,
+                &period
+            )
+        );
+    }
+
+    #[test]
+    fn test_bulk_ema_slowest_stochastic() {
+        let stochastics = vec![0.0, 5.882352941175241, 38.23529411764534, 47.36842105263394];
+        let period: usize = 3;
+        assert_eq!(
+            vec![23.529411764704548, 38.832375055285944],
+            bulk::slowest_stochastic(
+                &stochastics,
+                &crate::ConstantModelType::ExponentialMovingAverage,
+                &period
+            )
+        );
+    }
+
+    #[test]
+    fn test_bulk_pma_slowest_stochastic() {
+        let stochastics = vec![0.0, 5.882352941175241, 38.23529411764534, 47.36842105263394];
+        let period: usize = 3;
+        assert_eq!(
+            vec![29.192273924493655, 42.98322628344476],
+            bulk::slowest_stochastic(
+                &stochastics,
+                &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0),
+                &period
+            )
+        );
+    }
+
+    #[test]
+    fn test_bulk_median_slowest_stochastic() {
+        let stochastics = vec![0.0, 5.882352941175241, 38.23529411764534, 47.36842105263394];
+        let period: usize = 3;
+        assert_eq!(
+            vec![5.882352941175241, 38.23529411764534],
+            bulk::slowest_stochastic(&stochastics, &crate::ConstantModelType::SimpleMovingMedian, &period)
+        );
+    }
+
+    #[test]
+    fn test_bulk_mode_slowest_stochastic() {
+        let stochastics = vec![0.0, 5.882352941175241, 38.23529411764534, 47.36842105263394];
+        let period: usize = 3;
+        assert_eq!(
+            vec![14.666666666666666, 30.3333333333333332],
+            bulk::slowest_stochastic(&stochastics, &crate::ConstantModelType::SimpleMovingMode, &period)
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_bulk_slowest_stochastic_panic() {
+        let stochastics = vec![0.0, 5.882352941175241, 38.23529411764534, 47.36842105263394];
+        let period: usize = 30;
+        bulk::slowest_stochastic(&stochastics, &crate::ConstantModelType::SimpleMovingMode, &period);
+    }
+
+    #[test]
+    fn test_single_williams_percent_r() {
+        let high = 100.93;
+        let low = 100.37;
+        let close = 100.49;
+        assert_eq!(-78.57142857143037, single::williams_percent_r(&high, &low, &close));
     }
 }
