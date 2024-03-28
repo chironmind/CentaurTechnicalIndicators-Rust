@@ -307,12 +307,12 @@ pub mod single {
         return slowest_stochastic;
     }
 
-    /// `williams_percent_r` determines momentum by 
+    /// `williams_percent_r` is a momentum that tracks overbought and oversold levels.
     ///
-    /// The standard period is 14 days, so the high would be the max of the past 14 days
+    /// The standard period used is 14 days. The high would be the maximum price over the past 14 days, and the low the minimum price over the past 14 days.
     ///
     /// # Arguments
-    /// 
+    ///
     /// * `high` - High price for the observed period
     /// * `low` - Low price for the observed period
     /// * `close` - Close price for the observed period
@@ -328,7 +328,92 @@ pub mod single {
     /// assert_eq!(-32.0, williams_percent_r);
     /// ```
     pub fn williams_percent_r(high: &f64, low: &f64, close: &f64) -> f64 {
-        return -100.0_f64 * ((high - close) / (high - low))
+        return -100.0_f64 * ((high - close) / (high - low));
+    }
+
+    /// The `money_flow_index` is a momentum indicator that shows the volume of money (a.k.a money
+    /// flow) going in and out of the asset.
+    ///
+    /// The standard money flow index uses the typical price (high+low+close/3) as the observed
+    /// price and a period of 14 days.
+    ///
+    /// # Arguments
+    ///
+    /// * `prices` - An `f64` slice of prices
+    /// * `volume` - Volume of transactions
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
+    /// let volume = vec![1000.0, 1500.0, 1200.0, 900.0, 1300.0];
+    /// let money_flow_index = rust_ti::momentum_indicators::single::money_flow_index(&prices,
+    /// &volume);
+    /// assert_eq!(56.771463119709786, money_flow_index);
+    /// ```
+    pub fn money_flow_index(prices: &[f64], volume: &[f64]) -> f64 {
+        let length = prices.len();
+        if length != volume.len() {
+            panic!(
+                "Length of prices ({}) needs to length of volume ({})",
+                length,
+                volume.len()
+            );
+        };
+
+        let mut raw_money_flow = Vec::new();
+        for i in 0..length {
+            raw_money_flow.push(prices[i] * volume[i]);
+        }
+
+        let mut positive_money_flow = 0.0;
+        let mut negative_money_flow = 0.0;
+        for (i, value) in raw_money_flow.iter().enumerate() {
+            if i == 0 {
+                continue;
+            };
+            if value > &raw_money_flow[i - 1] {
+                positive_money_flow = positive_money_flow + value;
+            } else if value < &raw_money_flow[i - 1] {
+                negative_money_flow = negative_money_flow + value;
+            };
+        }
+
+        if negative_money_flow == 0.0 {
+            return 100.0;
+        };
+        return 100.0 - (100.0 / (1.0 + (positive_money_flow / negative_money_flow)));
+    }
+
+    // TODO: Chaikin Oscillator once accumulation distribution is done, and MACD
+
+    /// The `rate_of_change` is a momentum indicator that shows how quickly the price of an asset
+    /// is changing.
+    ///
+    /// The standard is to use the closing price.
+    ///
+    /// # Arguments
+    ///
+    /// * `current_price` - Price at t
+    /// * `previous_price` - Price at t-n
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let current_price = 120.0;
+    /// let previous_price = 100.0;
+    /// let rate_of_change = rust_ti::momentum_indicators::single::rate_of_change(&current_price,
+    /// &previous_price);
+    /// assert_eq!(20.0, rate_of_change);
+    ///
+    /// let current_price = 100.0;
+    /// let previous_price = 120.0;
+    /// let rate_of_change = rust_ti::momentum_indicators::single::rate_of_change(&current_price,
+    /// &previous_price);
+    /// assert_eq!(-16.666666666666664, rate_of_change);
+    /// ```
+    pub fn rate_of_change(current_price: &f64, previous_price: &f64) -> f64 {
+        return ((current_price - previous_price) / previous_price) * 100.0;
     }
 
     fn previous_gains_loss(prices: &[f64]) -> (Vec<f64>, Vec<f64>) {
@@ -542,7 +627,7 @@ pub mod bulk {
     /// * `stochastics` - An `f64` slice of prices
     /// * `constant_model_type` - A variant of `ConstantModelType`
     /// * `period` - Period over which to calculate the stochastic oscillator
-    /// 
+    ///
     /// # Examples
     ///
     /// ```
@@ -596,7 +681,7 @@ pub mod bulk {
     /// * `slow_stochastics` - An `f64` slice of prices
     /// * `constant_model_type` - A variant of `ConstantModelType`
     /// * `period` - Period over which to calculate the stochastic oscillator
-    /// 
+    ///
     /// # Examples
     ///
     /// ```
@@ -640,8 +725,129 @@ pub mod bulk {
         return sso;
     }
 
-    /// 
-    pub fn williams_percent_r(
+    /// The `williams_percent_r` is a momentum that tracks overbought and oversold levels.
+    ///
+    /// The standard period used is 14 days. The high would be the maximum price over the past 14 days, and the low the minimum price over the past 14 days.
+    ///
+    /// The function doesn't have any logic to determine period highs and lows, it is up to the
+    /// caller to ensure that the highs, lows, close, are for the same period.
+    ///
+    /// # Arguments
+    ///
+    /// * `high` - High price for the observed period
+    /// * `low` - Low price for the observed period
+    /// * `close` - Close price for the observed period
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let high = vec![200.0, 210.0, 205.0, 190.0];
+    /// let low = vec![175.0, 192.0, 200.0, 174.0];
+    /// let close = vec![192.0, 200.0, 201.0, 187.0];
+    /// let williams_percent_r = rust_ti::momentum_indicators::bulk::williams_percent_r(&high, &low,
+    /// &close);
+    /// assert_eq!(vec![-32.0, -55.55555555555556, -80.0, -18.75], williams_percent_r);
+    /// ```
+    pub fn williams_percent_r(high: &[f64], low: &[f64], close: &[f64]) -> Vec<f64> {
+        let length = close.len();
+        if length != high.len() || length != low.len() {
+            panic!(
+                "Length of close ({}) needs to match length of high ({}), and length of close ({})",
+                length,
+                high.len(),
+                close.len()
+            );
+        };
+
+        let mut wprs = Vec::new();
+        for i in 0..length {
+            wprs.push(single::williams_percent_r(&high[i], &low[i], &close[i]));
+        }
+        return wprs;
+    }
+
+    /// The `money_flow_index` is a momentum indicator that shows the volume of money (a.k.a money
+    /// flow) going in and out of the asset.
+    ///
+    /// The standard money flow index uses the typical price (high+low+close/3) as the observed
+    /// price and a period of 14 days.
+    ///
+    /// # Arguments
+    ///
+    /// * `prices` - An `f64` slice of prices
+    /// * `volume` - Volume of transactions
+    /// * `period` - Period over which to calculate the money flow index
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
+    /// let volume = vec![1000.0, 1500.0, 1200.0, 900.0, 1300.0];
+    /// let period: usize = 3;
+    /// let money_flow_index = rust_ti::momentum_indicators::bulk::money_flow_index(&prices,
+    /// &volume, &period);
+    /// assert_eq!(vec![55.314533622559644, 0.0, 58.60655737704918], money_flow_index);
+    /// ```
+    pub fn money_flow_index(prices: &[f64], volume: &[f64], period: &usize) -> Vec<f64> {
+        let length = prices.len();
+        if period > &length {
+            panic!(
+                "Period ({}) cannot be longer than length of prices ({})",
+                period, length
+            );
+        };
+        if length != volume.len() {
+            panic!(
+                "Length of prices ({}) must match length of volume ({})",
+                length,
+                volume.len()
+            );
+        };
+
+        let mut mfis = Vec::new();
+        for i in 0..length {
+            let end_index = period + i;
+            if end_index > length {
+                break;
+            };
+            mfis.push(single::money_flow_index(
+                &prices[i..end_index],
+                &volume[i..end_index],
+            ));
+        }
+        return mfis;
+    }
+
+    /// The `rate_of_change` is a momentum indicator that shows how quickly the price of an asset
+    /// is changing.
+    ///
+    /// The standard is to use the closing price.
+    ///
+    /// The bulk function only takes in a price and will loop through the slice and assume the
+    /// prices\[0\] is the first previous price, and prices\[1\] is the first current price, and keep
+    /// incrementing from there.
+    ///
+    /// # Arguments
+    ///
+    /// * `prices` - An `f64` slice of prices
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let prices = vec![100.0, 120.0, 100.0];
+    /// let rate_of_change = rust_ti::momentum_indicators::bulk::rate_of_change(&prices);
+    /// assert_eq!(vec![20.0, -16.666666666666664], rate_of_change);
+    /// ```
+    pub fn rate_of_change(prices: &[f64]) -> Vec<f64> {
+        if prices.is_empty() {
+            panic!("Prices cannot be empty");
+        }
+        let mut rocs = Vec::new();
+        for i in 1..prices.len() {
+            rocs.push(single::rate_of_change(&prices[i], &prices[i - 1]));
+        }
+        return rocs;
+    }
 }
 
 #[cfg(test)]
@@ -1096,7 +1302,11 @@ mod tests {
         let period: usize = 3;
         assert_eq!(
             vec![14.705882352940193, 30.49535603715151],
-            bulk::slow_stochastic(&stochastics, &crate::ConstantModelType::SimpleMovingAverage, &period)
+            bulk::slow_stochastic(
+                &stochastics,
+                &crate::ConstantModelType::SimpleMovingAverage,
+                &period
+            )
         );
     }
 
@@ -1148,7 +1358,11 @@ mod tests {
         let period: usize = 3;
         assert_eq!(
             vec![5.882352941175241, 38.23529411764534],
-            bulk::slow_stochastic(&stochastics, &crate::ConstantModelType::SimpleMovingMedian, &period)
+            bulk::slow_stochastic(
+                &stochastics,
+                &crate::ConstantModelType::SimpleMovingMedian,
+                &period
+            )
         );
     }
 
@@ -1158,7 +1372,11 @@ mod tests {
         let period: usize = 3;
         assert_eq!(
             vec![14.666666666666666, 30.3333333333333332],
-            bulk::slow_stochastic(&stochastics, &crate::ConstantModelType::SimpleMovingMode, &period)
+            bulk::slow_stochastic(
+                &stochastics,
+                &crate::ConstantModelType::SimpleMovingMode,
+                &period
+            )
         );
     }
 
@@ -1167,15 +1385,22 @@ mod tests {
     fn test_bulk_slow_stochastic_panic() {
         let stochastics = vec![0.0, 5.882352941175241, 38.23529411764534, 47.36842105263394];
         let period: usize = 30;
-        bulk::slow_stochastic(&stochastics, &crate::ConstantModelType::SimpleMovingMode, &period);
+        bulk::slow_stochastic(
+            &stochastics,
+            &crate::ConstantModelType::SimpleMovingMode,
+            &period,
+        );
     }
-    
+
     #[test]
     fn test_single_ma_slowest_stochastic() {
         let stochastics = vec![0.0, 5.882352941175241, 38.23529411764534, 47.36842105263394];
         assert_eq!(
             22.871517027863632,
-            single::slowest_stochastic(&stochastics, &crate::ConstantModelType::SimpleMovingAverage)
+            single::slowest_stochastic(
+                &stochastics,
+                &crate::ConstantModelType::SimpleMovingAverage
+            )
         );
     }
 
@@ -1246,7 +1471,11 @@ mod tests {
         let period: usize = 3;
         assert_eq!(
             vec![14.705882352940193, 30.49535603715151],
-            bulk::slowest_stochastic(&stochastics, &crate::ConstantModelType::SimpleMovingAverage, &period)
+            bulk::slowest_stochastic(
+                &stochastics,
+                &crate::ConstantModelType::SimpleMovingAverage,
+                &period
+            )
         );
     }
 
@@ -1298,7 +1527,11 @@ mod tests {
         let period: usize = 3;
         assert_eq!(
             vec![5.882352941175241, 38.23529411764534],
-            bulk::slowest_stochastic(&stochastics, &crate::ConstantModelType::SimpleMovingMedian, &period)
+            bulk::slowest_stochastic(
+                &stochastics,
+                &crate::ConstantModelType::SimpleMovingMedian,
+                &period
+            )
         );
     }
 
@@ -1308,7 +1541,11 @@ mod tests {
         let period: usize = 3;
         assert_eq!(
             vec![14.666666666666666, 30.3333333333333332],
-            bulk::slowest_stochastic(&stochastics, &crate::ConstantModelType::SimpleMovingMode, &period)
+            bulk::slowest_stochastic(
+                &stochastics,
+                &crate::ConstantModelType::SimpleMovingMode,
+                &period
+            )
         );
     }
 
@@ -1317,7 +1554,11 @@ mod tests {
     fn test_bulk_slowest_stochastic_panic() {
         let stochastics = vec![0.0, 5.882352941175241, 38.23529411764534, 47.36842105263394];
         let period: usize = 30;
-        bulk::slowest_stochastic(&stochastics, &crate::ConstantModelType::SimpleMovingMode, &period);
+        bulk::slowest_stochastic(
+            &stochastics,
+            &crate::ConstantModelType::SimpleMovingMode,
+            &period,
+        );
     }
 
     #[test]
@@ -1325,6 +1566,161 @@ mod tests {
         let high = 100.93;
         let low = 100.37;
         let close = 100.49;
-        assert_eq!(-78.57142857143037, single::williams_percent_r(&high, &low, &close));
+        assert_eq!(
+            -78.57142857143037,
+            single::williams_percent_r(&high, &low, &close)
+        );
+    }
+
+    #[test]
+    fn test_bulk_williams_percent_r() {
+        let high = vec![100.93, 101.58, 101.25];
+        let low = vec![100.37, 100.57, 100.94];
+        let close = vec![100.49, 101.06, 101.13];
+        assert_eq!(
+            vec![-78.57142857143037, -51.485148514850835, -38.70967741935602],
+            bulk::williams_percent_r(&high, &low, &close)
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_bulk_williams_percent_r_high_panic() {
+        let high = vec![101.58, 101.25];
+        let low = vec![100.37, 100.57, 100.94];
+        let close = vec![100.49, 101.06, 101.13];
+        bulk::williams_percent_r(&high, &low, &close);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_bulk_williams_percent_r_low_panic() {
+        let high = vec![100.93, 101.58, 101.25];
+        let low = vec![100.37, 100.57, 100.94, 100.59];
+        let close = vec![100.49, 101.06, 101.13];
+        bulk::williams_percent_r(&high, &low, &close);
+    }
+
+    #[test]
+    fn test_single_money_flow_index() {
+        let prices = vec![
+            100.2, 100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28,
+        ];
+        let volume = vec![1200.0, 1400.0, 1450.0, 1100.0, 900.0, 875.0, 1025.0, 1100.0];
+        assert_eq!(
+            63.40886336843541,
+            single::money_flow_index(&prices, &volume)
+        );
+    }
+
+    #[test]
+    fn test_single_money_flow_index_only_negative() {
+        let prices = vec![100.38, 100.19, 100.12];
+        let volume = vec![1100.0, 900.0, 875.0];
+        assert_eq!(0.0, single::money_flow_index(&prices, &volume));
+    }
+
+    #[test]
+    fn test_single_money_flow_index_only_positive() {
+        let prices = vec![100.2, 100.46, 100.53];
+        let volume = vec![1200.0, 1400.0, 1450.0];
+        assert_eq!(100.0, single::money_flow_index(&prices, &volume));
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_single_money_flow_index_panic() {
+        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
+        let volume = vec![1200.0, 1400.0, 1450.0, 1100.0, 900.0, 875.0, 1025.0, 1100.0];
+        single::money_flow_index(&prices, &volume);
+    }
+
+    #[test]
+    fn test_bulk_money_flow_index() {
+        let prices = vec![
+            100.2, 100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28,
+        ];
+        let volume = vec![1200.0, 1400.0, 1450.0, 1100.0, 900.0, 875.0, 1025.0, 1100.0];
+        let period: usize = 5;
+        assert_eq!(
+            vec![
+                58.811420498704834,
+                33.5840199520207,
+                26.291946512503486,
+                54.5117755343317
+            ],
+            bulk::money_flow_index(&prices, &volume, &period)
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_bulk_money_flow_index_length_panic() {
+        let prices = vec![
+            100.2, 100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28,
+        ];
+        let volume = vec![1400.0, 1450.0, 1100.0, 900.0, 875.0, 1025.0, 1100.0];
+        let period: usize = 5;
+        bulk::money_flow_index(&prices, &volume, &period);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_bulk_money_flow_index_period_panic() {
+        let prices = vec![
+            100.2, 100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28,
+        ];
+        let volume = vec![1200.0, 1400.0, 1450.0, 1100.0, 900.0, 875.0, 1025.0, 1100.0];
+        let period: usize = 50;
+        bulk::money_flow_index(&prices, &volume, &period);
+    }
+
+    #[test]
+    fn test_single_rate_of_change_positive() {
+        let current_price = 100.46;
+        let previous_price = 100.2;
+        assert_eq!(
+            0.25948103792414257,
+            single::rate_of_change(&current_price, &previous_price)
+        );
+    }
+
+    #[test]
+    fn test_single_rate_of_change_negative() {
+        let current_price = 100.19;
+        let previous_price = 100.38;
+        assert_eq!(
+            -0.18928073321378536,
+            single::rate_of_change(&current_price, &previous_price)
+        );
+    }
+
+    #[test]
+    fn test_single_rate_of_change_equal() {
+        let current_price = 100.32;
+        let previous_price = 100.32;
+        assert_eq!(0.0, single::rate_of_change(&current_price, &previous_price));
+    }
+
+    #[test]
+    fn test_bulk_rate_of_change() {
+        let prices = vec![100.2, 100.46, 100.38, 100.19, 100.32, 100.32];
+        assert_eq!(
+            vec![
+                0.25948103792414257,
+                -0.07963368504877394,
+                -0.18928073321378536,
+                0.12975346841001642,
+                0.0
+            ],
+            bulk::rate_of_change(&prices)
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_bulk_rate_of_change_panic() {
+        let prices = Vec::new();
+        bulk::rate_of_change(&prices);
     }
 }
