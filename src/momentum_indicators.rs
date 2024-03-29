@@ -4,10 +4,11 @@
 
 /// `single` module holds functions that return a singular values
 pub mod single {
-    use crate::basic_indicators::single::{median, mode};
+    use crate::basic_indicators::single::{median, mode, absolute_deviation, standard_deviation};
     use crate::moving_average::single::{mcginley_dynamic, moving_average};
     use crate::ConstantModelType;
     use crate::MovingAverageType;
+    use crate::DeviationModel;
     use std::cmp::Ordering;
     /// The `relative_strenght_index` measures the speed and magnitude of price changes
     ///
@@ -146,13 +147,6 @@ pub mod single {
             &previous_loss.last().unwrap(),
             previous_loss_mcginley_dynamic,
             &previous_loss.len(),
-        );
-        println!(
-            "{:?}, {}, {}, {}",
-            previous_gains,
-            previous_gain_mcginley_dynamic,
-            previous_gains.len(),
-            previous_gain_dynamic
         );
         return (
             rsi(&previous_gain_dynamic, &previous_loss_dynamic),
@@ -352,6 +346,9 @@ pub mod single {
     /// assert_eq!(56.771463119709786, money_flow_index);
     /// ```
     pub fn money_flow_index(prices: &[f64], volume: &[f64]) -> f64 {
+        if prices.is_empty() {
+            panic!("Prices cannot be empty");
+        }
         let length = prices.len();
         if length != volume.len() {
             panic!(
@@ -414,6 +411,126 @@ pub mod single {
     /// ```
     pub fn rate_of_change(current_price: &f64, previous_price: &f64) -> f64 {
         return ((current_price - previous_price) / previous_price) * 100.0;
+    }
+
+    /// The `on_balance_volume` is a momentum indicator that uses volume 
+    ///
+    /// The standard price to use it the closing price. If there is no previous on balance volume
+    /// pass in 0.
+    ///
+    /// # Arguments
+    ///
+    /// * `current_price` - Price a t
+    /// * `previous_price` - Price at t-n
+    /// * `current_volume` - Volume at t
+    /// * `previous_on_balance_volume` - Previous on balance volume. Use 0 if no previous OBV.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let current_price = 120.0;
+    /// let previous_price = 100.0;
+    /// let current_volume = 1500;
+    /// let on_balance_volume =
+    /// rust_ti::momentum_indicators::single::on_balance_volume(&current_price, &previous_price,
+    /// &current_volume, &0);
+    /// assert_eq!(1500 ,on_balance_volume);
+    ///
+    /// let current_price = 100.0;
+    /// let previous_price = 120.0;
+    /// let current_volume = 1000;
+    /// let on_balance_volume =
+    /// rust_ti::momentum_indicators::single::on_balance_volume(&current_price, &previous_price,
+    /// &current_volume, &1500);
+    /// assert_eq!(500, on_balance_volume); 
+    /// ```
+    pub fn on_balance_volume(current_price: &f64, previous_price: &f64, current_volume: &i64, previous_on_balance_volume: &i64) -> i64 {
+        let mut volume = 0;
+        if current_price > previous_price {
+            volume = volume + current_volume;
+        } else if current_price < previous_price {
+            volume = volume - current_volume;
+        };
+        return previous_on_balance_volume + volume;
+    }
+
+    /// The `commodity_channel_index` is a momentum indicator flagging overbought and oversold
+    /// conditions.
+    ///
+    /// The standard commodity channel index uses the typical price, a simple moving average model,
+    /// and a mean absolute deviation model. The `constant_multiplier` is a scale factor used to
+    /// provide more readable numbers. It is recommended to use 0.015 as the default as changing it
+    /// will impact how the numbers are distributed and the standard -100/100 flags may no longer
+    /// apply.
+    ///
+    /// # Arguments
+    ///
+    /// `prices` - An `f64` slice of prices
+    /// `constant_model_type` - A variant of `ConstantModelType`
+    /// `deviation_model` - A variant of `DeviationModel`
+    /// `constant_multiplier` - Scale factor. Normally 0.015
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
+    /// let constant_multiplier = 0.015;
+    ///
+    /// let default_cci = rust_ti::momentum_indicators::single::commodity_channel_index(&prices, &rust_ti::ConstantModelType::SimpleMovingAverage, &rust_ti::DeviationModel::MeanAbsoluteDeviation, &constant_multiplier);
+    /// assert_eq!(-111.11111111111111, default_cci);
+    ///
+    /// let ema_sd_cci = rust_ti::momentum_indicators::single::commodity_channel_index(&prices,
+    /// &rust_ti::ConstantModelType::ExponentialMovingAverage,
+    /// &rust_ti::DeviationModel::StandardDeviation, &constant_multiplier);
+    /// assert_eq!(-75.96091804215764, ema_sd_cci);
+    ///
+    /// let median_mad_cci = rust_ti::momentum_indicators::single::commodity_channel_index(&prices,
+    /// &rust_ti::ConstantModelType::SimpleMovingMedian,
+    /// &rust_ti::DeviationModel::MedianAbsoluteDeviation, &constant_multiplier);  
+    /// assert_eq!(-111.11111111111111, median_mad_cci);
+    /// ```
+    pub fn commodity_channel_index(prices: &[f64], constant_model_type: &crate::ConstantModelType, deviation_model: &crate::DeviationModel, constant_multiplier: &f64) -> f64 {
+        if prices.is_empty() {
+            panic!("Prices cannot be empty");
+        };
+
+        let moving_constant = match constant_model_type {
+            ConstantModelType::SimpleMovingAverage => {
+                moving_average(&prices, &MovingAverageType::Simple)
+            }
+            ConstantModelType::SmoothedMovingAverage => {
+                moving_average(&prices, &MovingAverageType::Smoothed)
+            }
+            ConstantModelType::ExponentialMovingAverage => {
+                moving_average(&prices, &MovingAverageType::Exponential)
+            }
+            ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => {
+                moving_average(
+                    &prices,
+                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
+                )
+            }
+            ConstantModelType::SimpleMovingMedian => median(&prices),
+            ConstantModelType::SimpleMovingMode => mode(&prices),
+            _ => panic!("Unsupported ConstantModelType"),
+        };
+
+        let deviation = match deviation_model {
+            DeviationModel::StandardDeviation => {
+                standard_deviation(&prices)
+            }
+            DeviationModel::MeanAbsoluteDeviation => {
+                absolute_deviation(&prices, &crate::CentralPoint::Mean)
+            }
+            DeviationModel::MedianAbsoluteDeviation => {
+                absolute_deviation(&prices, &crate::CentralPoint::Median)
+            }
+            DeviationModel::ModeAbsoluteDeviation => {
+                absolute_deviation(&prices, &crate::CentralPoint::Mode)
+            }
+            _ => panic!("Unsupported DeviationModel")
+        };
+        return (prices.last().unwrap() - moving_constant) / (constant_multiplier * deviation);
     }
 
     fn previous_gains_loss(prices: &[f64]) -> (Vec<f64>, Vec<f64>) {
@@ -847,6 +964,101 @@ pub mod bulk {
             rocs.push(single::rate_of_change(&prices[i], &prices[i - 1]));
         }
         return rocs;
+    }
+
+    /// The `on_balance_volume` is a momentum indicator that uses volume 
+    ///
+    /// The standard price to use it the closing price. If there is no previous on balance volume
+    /// pass in 0.
+    ///
+    /// # Arguments
+    ///
+    /// * `prices` - An `f64` slice of prices
+    /// * `volume` - An `i64` slice of volumes
+    /// * `previous_on_balance_volume` - Previous on balance volume. Use 0 if no previous OBV.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0, 99.0];
+    /// let volume = vec![1000, 1500, 1200, 900, 1300, 1400];
+    /// let on_balance_volume =
+    /// rust_ti::momentum_indicators::bulk::on_balance_volume(&prices, &volume, &0);
+    /// assert_eq!(vec![1500, 2700, 1800, 500, 500], on_balance_volume);
+    /// ```
+    pub fn on_balance_volume(prices: &[f64], volume: &[i64], previous_on_balance_volume: &i64) -> Vec<i64> {
+        if prices.is_empty() {
+            panic!("Prices cannot be empty");
+        };
+        let length = prices.len();
+        if length != volume.len() {
+            panic!("Length of prices ({}) and volume ({}) must match", length, volume.len());
+        };
+
+        let mut obvs = vec![single::on_balance_volume(&prices[1], &prices[0], &volume[1], previous_on_balance_volume)];
+        for i in 2..length {
+            obvs.push(single::on_balance_volume(&prices[i], &prices[i-1], &volume[i], &obvs.last().unwrap()));
+        };
+        return obvs;
+    }
+
+    /// The `commodity_channel_index` is a momentum indicator flagging overbought and oversold
+    /// conditions.
+    ///
+    /// The standard commodity channel index uses the typical price, a simple moving average model,
+    /// and a mean absolute deviation model. The `constant_multiplier` is a scale factor used to
+    /// provide more readable numbers. It is recommended to use 0.015 as the default as changing it
+    /// will impact how the numbers are distributed and the standard -100/100 flags may no longer
+    /// apply.
+    ///
+    /// # Arguments
+    ///
+    /// `prices` - An `f64` slice of prices
+    /// `constant_model_type` - A variant of `ConstantModelType`
+    /// `deviation_model` - A variant of `DeviationModel`
+    /// `constant_multiplier` - Scale factor. Normally 0.015
+    /// `period` - Period over which to calculate the commodity channel index
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
+    /// let constant_multiplier = 0.015;
+    /// let period: usize = 3;
+    ///
+    /// let default_cci = rust_ti::momentum_indicators::bulk::commodity_channel_index(&prices, &rust_ti::ConstantModelType::SimpleMovingAverage, &rust_ti::DeviationModel::MeanAbsoluteDeviation, &constant_multiplier, &period);
+    /// assert_eq!(vec![79.99999999999983, -100.00000000000001, -100.00000000000001], default_cci);
+    ///
+    /// let ema_sd_cci = rust_ti::momentum_indicators::bulk::commodity_channel_index(&prices,
+    /// &rust_ti::ConstantModelType::ExponentialMovingAverage,
+    /// &rust_ti::DeviationModel::StandardDeviation, &constant_multiplier, &period);
+    /// assert_eq!(vec![38.1801774160603, -58.32118435197994, -46.65694748158418], ema_sd_cci);
+    ///
+    /// let median_mad_cci = rust_ti::momentum_indicators::bulk::commodity_channel_index(&prices,
+    /// &rust_ti::ConstantModelType::SimpleMovingMedian,
+    /// &rust_ti::DeviationModel::MedianAbsoluteDeviation, &constant_multiplier, &period);  
+    /// assert_eq!(vec![66.66666666666667, -100.00000000000001, -100.00000000000001], median_mad_cci);
+    /// ```
+    pub fn commodity_channel_index(prices: &[f64], constant_model_type: &crate::ConstantModelType, deviation_model: &crate::DeviationModel, constant_multiplier: &f64, period: &usize) -> Vec<f64> {
+        let length = prices.len();
+        if period > &length {
+            panic!("Period ({}) cannot be longer than lenght ({}) of prices", period, length);
+        };
+
+        let mut ccis = Vec::new();
+        for i in 0..length {
+            let end_index = period + i;
+            if end_index > length {
+                break;
+            };
+            ccis.push(single::commodity_channel_index(
+                &prices[i..end_index],
+                constant_model_type,
+                deviation_model,
+                constant_multiplier
+            ));
+        }
+        return ccis;
     }
 }
 
@@ -1636,6 +1848,22 @@ mod tests {
     }
 
     #[test]
+    #[should_panic]
+    fn test_single_money_flow_index_empty_price_panic() {
+        let prices = Vec::new();
+        let volume = vec![1200.0, 1400.0, 1450.0, 1100.0, 900.0, 875.0, 1025.0, 1100.0];
+        single::money_flow_index(&prices, &volume);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_single_money_flow_index_empty_volume_panic() {
+        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
+        let volume = Vec::new();
+        single::money_flow_index(&prices, &volume);
+    }
+    
+    #[test]
     fn test_bulk_money_flow_index() {
         let prices = vec![
             100.2, 100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28,
@@ -1722,5 +1950,163 @@ mod tests {
     fn test_bulk_rate_of_change_panic() {
         let prices = Vec::new();
         bulk::rate_of_change(&prices);
+    }
+
+    #[test]
+    fn test_single_on_balance_volume_positive_no_previous() {
+        let current_price = 100.46;
+        let previous_price = 100.2;
+        let volume = 1500;
+        let previous_obv = 0;
+        assert_eq!(1500, single::on_balance_volume(&current_price, &previous_price, &volume, &previous_obv));
+    }
+
+    #[test]
+    fn test_single_on_balance_volume_positive_previous() {
+        let current_price = 100.46;
+        let previous_price = 100.2;
+        let volume = 1500;
+        let previous_obv = 500;
+        assert_eq!(2000, single::on_balance_volume(&current_price, &previous_price, &volume, &previous_obv));
+    }
+
+    #[test]
+    fn test_single_on_balance_volume_negative_no_previous() {
+        let current_price = 100.19;
+        let previous_price = 100.32;
+        let volume = 1500;
+        let previous_obv = 0;
+        assert_eq!(-1500, single::on_balance_volume(&current_price, &previous_price, &volume, &previous_obv));
+    }
+
+    #[test]
+    fn test_single_on_balance_volume_negative_previous() {
+        let current_price = 100.19;
+        let previous_price = 100.38;
+        let volume = 1500;
+        let previous_obv = 500;
+        assert_eq!(-1000, single::on_balance_volume(&current_price, &previous_price, &volume, &previous_obv));
+    }
+    
+    #[test]
+    fn test_single_on_balance_volume_equal_no_previous() {
+        let current_price = 100.32;
+        let previous_price = 100.32;
+        let volume = 1500;
+        let previous_obv = 0;
+        assert_eq!(0, single::on_balance_volume(&current_price, &previous_price, &volume, &previous_obv));
+    }
+    
+    #[test]
+    fn test_single_on_balance_volume_equal_previous() {
+        let current_price = 100.32;
+        let previous_price = 100.32;
+        let volume = 1500;
+        let previous_obv = 500;
+        assert_eq!(500, single::on_balance_volume(&current_price, &previous_price, &volume, &previous_obv));
+    }
+
+    #[test]
+    fn test_bulk_on_balance_volume_no_previous() {
+        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
+        let volume = vec![1400, 1450, 1100, 900, 875];
+        assert_eq!(vec![1450, 350, -550, 325], bulk::on_balance_volume(&prices, &volume, &0));
+    }
+
+    #[test]
+    fn test_bulk_on_balance_volume_previous() {
+        let prices = vec![100.53, 100.38, 100.19, 100.21];
+        let volume = vec![1450, 1100, 900, 875];
+        assert_eq!(vec![350, -550, 325], bulk::on_balance_volume(&prices, &volume, &1450));
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_bulk_on_balance_volume_no_price_panic() {
+        let prices = Vec::new();
+        let volume = vec![1400, 1450, 1100, 900, 875];
+        bulk::on_balance_volume(&prices, &volume, &0);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_bulk_on_balance_volume_no_volume_panic() {
+        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
+        let volume = Vec::new();
+        bulk::on_balance_volume(&prices, &volume, &0);
+    }   
+
+    #[test]
+    #[should_panic]
+    fn test_single_commodity_channel_index_panic() {
+        let prices = Vec::new();
+        single::commodity_channel_index(&prices, &crate::ConstantModelType::SimpleMovingAverage, &crate::DeviationModel::MeanAbsoluteDeviation, &0.015);
+    }
+
+    #[test]
+    fn test_single_ma_mean_ad_commodity_channel_index() {
+        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
+        assert_eq!(-77.92207792208092, single::commodity_channel_index(&prices, &crate::ConstantModelType::SimpleMovingAverage, &crate::DeviationModel::MeanAbsoluteDeviation, &0.015));
+    }
+
+    #[test]
+    fn test_single_ma_median_ad_commodity_channel_index() {
+        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
+        assert_eq!(-81.35593220339244, single::commodity_channel_index(&prices, &crate::ConstantModelType::SimpleMovingAverage, &crate::DeviationModel::MedianAbsoluteDeviation, &0.015));
+    }
+
+    #[test]
+    fn test_single_ma_mode_ad_commodity_channel_index() {
+        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
+        assert_eq!(-27.11864406779792, single::commodity_channel_index(&prices, &crate::ConstantModelType::SimpleMovingAverage, &crate::DeviationModel::ModeAbsoluteDeviation, &0.015));
+    }
+
+    #[test]
+    fn test_single_ma_std_dev_commodity_channel_index() {
+        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
+        assert_eq!(-71.3483546791537, single::commodity_channel_index(&prices, &crate::ConstantModelType::SimpleMovingAverage, &crate::DeviationModel::StandardDeviation, &0.015));
+    }
+
+    #[test]
+    fn test_single_sma_mean_ad_commodity_channel_index() {
+        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
+        assert_eq!(-57.79560753382917, single::commodity_channel_index(&prices, &crate::ConstantModelType::SmoothedMovingAverage, &crate::DeviationModel::MeanAbsoluteDeviation, &0.015));
+    }
+
+    #[test]
+    fn test_single_ema_mean_ad_commodity_channel_index() {
+        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
+        assert_eq!(-42.87971112616663, single::commodity_channel_index(&prices, &crate::ConstantModelType::ExponentialMovingAverage, &crate::DeviationModel::MeanAbsoluteDeviation, &0.015));
+    }
+
+    #[test]
+    fn test_single_pma_mean_ad_commodity_channel_index() {
+        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
+        assert_eq!(-19.132669714320674, single::commodity_channel_index(&prices, &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0), &crate::DeviationModel::MeanAbsoluteDeviation, &0.015));
+    }
+
+    #[test]
+    fn test_single_median_mean_ad_commodity_channel_index() {
+        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
+        assert_eq!(-91.99134199134296, single::commodity_channel_index(&prices, &crate::ConstantModelType::SimpleMovingMedian, &crate::DeviationModel::MeanAbsoluteDeviation, &0.015));
+    }
+
+    #[test]
+    fn test_single_mode_mean_ad_commodity_channel_index() {
+        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
+        assert_eq!(113.63636363636031, single::commodity_channel_index(&prices, &crate::ConstantModelType::SimpleMovingMode, &crate::DeviationModel::MeanAbsoluteDeviation, &0.015));
+    }
+
+    #[test]
+    fn test_bulk_commodity_channel_index() {
+        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
+        assert_eq!(vec![-100.0, -100.00000000000804, -41.66666666666519], bulk::commodity_channel_index(&prices, &crate::ConstantModelType::SimpleMovingAverage, &crate::DeviationModel::MeanAbsoluteDeviation, &0.015, &3_usize));
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_bulk_commodity_channel_index_panic() {
+        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
+        assert_eq!(vec![-100.0, -100.00000000000804, -41.66666666666519], bulk::commodity_channel_index(&prices, &crate::ConstantModelType::SimpleMovingAverage, &crate::DeviationModel::MeanAbsoluteDeviation, &0.015, &30_usize));
     }
 }

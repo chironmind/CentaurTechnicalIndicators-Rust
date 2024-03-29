@@ -60,3 +60,16 @@ pub enum ConstantModelType<'a> {
     SimpleMovingMedian,
     SimpleMovingMode,
 }
+
+
+/// The `DeviationModel` is used by a number of functions to determine the deviation from a central
+/// point. 
+///
+/// A lot of functions use the standard deviation but some also use mean and median absolute
+/// deviations.
+pub enum DeviationModel {
+    StandardDeviation,
+    MeanAbsoluteDeviation,
+    MedianAbsoluteDeviation, 
+    ModeAbsoluteDeviation
+}
