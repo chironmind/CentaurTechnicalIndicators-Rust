@@ -382,7 +382,7 @@ pub mod single {
         return 100.0 - (100.0 / (1.0 + (positive_money_flow / negative_money_flow)));
     }
 
-    // TODO: Chaikin Oscillator once accumulation distribution is done, and MACD
+    // TODO: Chaikin Oscillator once accumulation distribution is done, CCI McGinley
 
     /// The `rate_of_change` is a momentum indicator that shows how quickly the price of an asset
     /// is changing.
@@ -531,6 +531,87 @@ pub mod single {
             _ => panic!("Unsupported DeviationModel")
         };
         return (prices.last().unwrap() - moving_constant) / (constant_multiplier * deviation);
+    }
+
+    /// The `macd_line` is a momentum indicator that also shows price
+    /// strength, direction, and general trend.
+    ///
+    /// The indicator was developer back when there was a 6 day trading week so the standard short
+    /// term to use is 12, and 26 for the long term. However the caller can determine the period.
+    /// Both tyically use an exponential moving average model, but this is also determined by the
+    /// caller.
+    ///
+    /// The long period is determined by the length of the `prices` slice.
+    ///
+    /// # Arguments
+    ///
+    /// * `prices` - An `f64` slice of prices
+    /// * `short_period` - The length of the short period
+    /// * `short_period_model` - A variant of `ConstantModelType`
+    /// * `long_period_model` - A variant of `ConstantModelType`
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
+    ///
+    /// let macd = rust_ti::momentum_indicators::single::macd_line(&prices, &3_usize,
+    /// &rust_ti::ConstantModelType::ExponentialMovingAverage, 
+    /// &rust_ti::ConstantModelType::ExponentialMovingAverage);
+    /// assert_eq!(-0.46851726472581845, macd);
+    ///
+    /// let macd = rust_ti::momentum_indicators::single::macd_line(&prices, &3_usize,
+    /// &rust_ti::ConstantModelType::SimpleMovingAverage, 
+    /// &rust_ti::ConstantModelType::SimpleMovingMedian);
+    /// assert_eq!(0.0, macd);
+    /// ```
+    pub fn macd_line(prices: &[f64], short_period: &usize, short_period_model: &crate::ConstantModelType, long_period_model: &crate::ConstantModelType) -> f64 {
+        if prices.is_empty() {
+            panic!("Prices cannot be empty");
+        };
+        let length = prices.len();
+        if short_period >= &length {
+            panic!("Short period ({}) cannot be greater or equal to long period ({})", short_period, length);
+        };
+
+        let short_period_index = short_period - 1;
+        let short_period_average = match short_period_model {
+            ConstantModelType::SimpleMovingAverage => {
+                moving_average(&prices[short_period_index..], &MovingAverageType::Simple)
+            }
+            ConstantModelType::SmoothedMovingAverage => {
+                moving_average(&prices[short_period_index..], &MovingAverageType::Smoothed)
+            }
+            ConstantModelType::ExponentialMovingAverage => {
+                moving_average(&prices[short_period_index..], &MovingAverageType::Exponential)
+            }
+            ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => {
+                moving_average(&prices[short_period_index..], &MovingAverageType::Personalised(alpha_nominator, alpha_denominator))
+            }
+            ConstantModelType::SimpleMovingMedian => median(&prices[short_period_index..]),
+            ConstantModelType::SimpleMovingMode => mode(&prices[short_period_index..]),
+            _ => panic!("Unsupported ConstantModelType")
+        };
+
+        let long_period_average = match long_period_model {
+            ConstantModelType::SimpleMovingAverage => {
+                moving_average(&prices, &MovingAverageType::Simple)
+            }
+            ConstantModelType::SmoothedMovingAverage => {
+                moving_average(&prices, &MovingAverageType::Smoothed)
+            }
+            ConstantModelType::ExponentialMovingAverage => {
+                moving_average(&prices, &MovingAverageType::Exponential)
+            }
+            ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => {
+                moving_average(&prices, &MovingAverageType::Personalised(alpha_nominator, alpha_denominator))
+            }
+            ConstantModelType::SimpleMovingMedian => median(&prices),
+            ConstantModelType::SimpleMovingMode => mode(&prices),
+            _ => panic!("Unsupported ConstantModelType")
+        };
+        println!("{} {}",short_period_average, long_period_average);
+        return short_period_average - long_period_average;
     }
 
     fn previous_gains_loss(prices: &[f64]) -> (Vec<f64>, Vec<f64>) {
@@ -2109,4 +2190,6 @@ mod tests {
         let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
         assert_eq!(vec![-100.0, -100.00000000000804, -41.66666666666519], bulk::commodity_channel_index(&prices, &crate::ConstantModelType::SimpleMovingAverage, &crate::DeviationModel::MeanAbsoluteDeviation, &0.015, &30_usize));
     }
+
+    // TODO: Single MACD
 }
