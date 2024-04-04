@@ -4,11 +4,11 @@
 
 /// `single` module holds functions that return a singular values
 pub mod single {
-    use crate::basic_indicators::single::{median, mode, absolute_deviation, standard_deviation};
+    use crate::basic_indicators::single::{absolute_deviation, median, mode, standard_deviation};
     use crate::moving_average::single::{mcginley_dynamic, moving_average};
     use crate::ConstantModelType;
-    use crate::MovingAverageType;
     use crate::DeviationModel;
+    use crate::MovingAverageType;
     use std::cmp::Ordering;
     /// The `relative_strenght_index` measures the speed and magnitude of price changes
     ///
@@ -413,7 +413,7 @@ pub mod single {
         return ((current_price - previous_price) / previous_price) * 100.0;
     }
 
-    /// The `on_balance_volume` is a momentum indicator that uses volume 
+    /// The `on_balance_volume` is a momentum indicator that uses volume
     ///
     /// The standard price to use it the closing price. If there is no previous on balance volume
     /// pass in 0.
@@ -442,9 +442,14 @@ pub mod single {
     /// let on_balance_volume =
     /// rust_ti::momentum_indicators::single::on_balance_volume(&current_price, &previous_price,
     /// &current_volume, &1500);
-    /// assert_eq!(500, on_balance_volume); 
+    /// assert_eq!(500, on_balance_volume);
     /// ```
-    pub fn on_balance_volume(current_price: &f64, previous_price: &f64, current_volume: &i64, previous_on_balance_volume: &i64) -> i64 {
+    pub fn on_balance_volume(
+        current_price: &f64,
+        previous_price: &f64,
+        current_volume: &i64,
+        previous_on_balance_volume: &i64,
+    ) -> i64 {
         let mut volume = 0;
         if current_price > previous_price {
             volume = volume + current_volume;
@@ -489,7 +494,12 @@ pub mod single {
     /// &rust_ti::DeviationModel::MedianAbsoluteDeviation, &constant_multiplier);  
     /// assert_eq!(-111.11111111111111, median_mad_cci);
     /// ```
-    pub fn commodity_channel_index(prices: &[f64], constant_model_type: &crate::ConstantModelType, deviation_model: &crate::DeviationModel, constant_multiplier: &f64) -> f64 {
+    pub fn commodity_channel_index(
+        prices: &[f64],
+        constant_model_type: &crate::ConstantModelType,
+        deviation_model: &crate::DeviationModel,
+        constant_multiplier: &f64,
+    ) -> f64 {
         if prices.is_empty() {
             panic!("Prices cannot be empty");
         };
@@ -516,9 +526,7 @@ pub mod single {
         };
 
         let deviation = match deviation_model {
-            DeviationModel::StandardDeviation => {
-                standard_deviation(&prices)
-            }
+            DeviationModel::StandardDeviation => standard_deviation(&prices),
             DeviationModel::MeanAbsoluteDeviation => {
                 absolute_deviation(&prices, &crate::CentralPoint::Mean)
             }
@@ -528,7 +536,7 @@ pub mod single {
             DeviationModel::ModeAbsoluteDeviation => {
                 absolute_deviation(&prices, &crate::CentralPoint::Mode)
             }
-            _ => panic!("Unsupported DeviationModel")
+            _ => panic!("Unsupported DeviationModel"),
         };
         return (prices.last().unwrap() - moving_constant) / (constant_multiplier * deviation);
     }
@@ -543,6 +551,9 @@ pub mod single {
     ///
     /// The long period is determined by the length of the `prices` slice.
     ///
+    /// This function *only* calculates the MACD line not the signal line, `signal_line` should be
+    /// called for the signal line.
+    ///
     /// # Arguments
     ///
     /// * `prices` - An `f64` slice of prices
@@ -556,22 +567,30 @@ pub mod single {
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
     ///
     /// let macd = rust_ti::momentum_indicators::single::macd_line(&prices, &3_usize,
-    /// &rust_ti::ConstantModelType::ExponentialMovingAverage, 
+    /// &rust_ti::ConstantModelType::ExponentialMovingAverage,
     /// &rust_ti::ConstantModelType::ExponentialMovingAverage);
     /// assert_eq!(-0.46851726472581845, macd);
     ///
     /// let macd = rust_ti::momentum_indicators::single::macd_line(&prices, &3_usize,
-    /// &rust_ti::ConstantModelType::SimpleMovingAverage, 
+    /// &rust_ti::ConstantModelType::SimpleMovingAverage,
     /// &rust_ti::ConstantModelType::SimpleMovingMedian);
     /// assert_eq!(0.0, macd);
     /// ```
-    pub fn macd_line(prices: &[f64], short_period: &usize, short_period_model: &crate::ConstantModelType, long_period_model: &crate::ConstantModelType) -> f64 {
+    pub fn macd_line(
+        prices: &[f64],
+        short_period: &usize,
+        short_period_model: &crate::ConstantModelType,
+        long_period_model: &crate::ConstantModelType,
+    ) -> f64 {
         if prices.is_empty() {
             panic!("Prices cannot be empty");
         };
         let length = prices.len();
         if short_period >= &length {
-            panic!("Short period ({}) cannot be greater or equal to long period ({})", short_period, length);
+            panic!(
+                "Short period ({}) cannot be greater or equal to long period ({})",
+                short_period, length
+            );
         };
 
         let short_period_index = short_period - 1;
@@ -582,15 +601,19 @@ pub mod single {
             ConstantModelType::SmoothedMovingAverage => {
                 moving_average(&prices[short_period_index..], &MovingAverageType::Smoothed)
             }
-            ConstantModelType::ExponentialMovingAverage => {
-                moving_average(&prices[short_period_index..], &MovingAverageType::Exponential)
-            }
+            ConstantModelType::ExponentialMovingAverage => moving_average(
+                &prices[short_period_index..],
+                &MovingAverageType::Exponential,
+            ),
             ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => {
-                moving_average(&prices[short_period_index..], &MovingAverageType::Personalised(alpha_nominator, alpha_denominator))
+                moving_average(
+                    &prices[short_period_index..],
+                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
+                )
             }
             ConstantModelType::SimpleMovingMedian => median(&prices[short_period_index..]),
             ConstantModelType::SimpleMovingMode => mode(&prices[short_period_index..]),
-            _ => panic!("Unsupported ConstantModelType")
+            _ => panic!("Unsupported ConstantModelType"),
         };
 
         let long_period_average = match long_period_model {
@@ -604,16 +627,68 @@ pub mod single {
                 moving_average(&prices, &MovingAverageType::Exponential)
             }
             ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => {
-                moving_average(&prices, &MovingAverageType::Personalised(alpha_nominator, alpha_denominator))
+                moving_average(
+                    &prices,
+                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
+                )
             }
             ConstantModelType::SimpleMovingMedian => median(&prices),
             ConstantModelType::SimpleMovingMode => mode(&prices),
-            _ => panic!("Unsupported ConstantModelType")
+            _ => panic!("Unsupported ConstantModelType"),
         };
-        println!("{} {}",short_period_average, long_period_average);
         return short_period_average - long_period_average;
     }
 
+    /// The `signal_line` is used with the `macd_line` to produce the moving average convergence
+    /// divergence.
+    ///
+    /// The standard period for the signal line is 9, and it normally uses an exponential moving
+    /// average model.
+    ///
+    /// # Arguments
+    ///
+    /// * `macds` - An `f64` slice of MACDs
+    /// * constant_model_type` - A variant of `ConstantModelType`
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let macds = vec![-0.0606702775897219, -0.0224170616113781, 0.0057887610020515];
+    ///
+    /// let ema_signal_line = rust_ti::momentum_indicators::single::signal_line(&macds,
+    /// &rust_ti::ConstantModelType::ExponentialMovingAverage);
+    /// assert_eq!(-0.011764193829181728, ema_signal_line);
+    ///
+    /// let median_signal_line = rust_ti::momentum_indicators::single::signal_line(&macds,
+    /// &rust_ti::ConstantModelType::SimpleMovingMedian);
+    /// assert_eq!(-0.0224170616113781, median_signal_line);
+    /// ```
+    pub fn signal_line(macds: &[f64], constant_model_type: &crate::ConstantModelType) -> f64 {
+        if macds.is_empty() {
+            panic!("macds cannot be empty");
+        };
+
+        match constant_model_type {
+            ConstantModelType::SimpleMovingAverage => {
+                return moving_average(&macds, &MovingAverageType::Simple)
+            }
+            ConstantModelType::SmoothedMovingAverage => {
+                return moving_average(&macds, &MovingAverageType::Smoothed)
+            }
+            ConstantModelType::ExponentialMovingAverage => {
+                return moving_average(&macds, &MovingAverageType::Exponential)
+            }
+            ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => {
+                return moving_average(
+                    &macds,
+                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
+                )
+            }
+            ConstantModelType::SimpleMovingMedian => return median(&macds),
+            ConstantModelType::SimpleMovingMode => return mode(&macds),
+            _ => panic!("Unsupported ConstantModelType"),
+        }
+    }
     fn previous_gains_loss(prices: &[f64]) -> (Vec<f64>, Vec<f64>) {
         if prices.is_empty() {
             panic!("Prices is empty");
@@ -1047,7 +1122,7 @@ pub mod bulk {
         return rocs;
     }
 
-    /// The `on_balance_volume` is a momentum indicator that uses volume 
+    /// The `on_balance_volume` is a momentum indicator that uses volume
     ///
     /// The standard price to use it the closing price. If there is no previous on balance volume
     /// pass in 0.
@@ -1067,19 +1142,37 @@ pub mod bulk {
     /// rust_ti::momentum_indicators::bulk::on_balance_volume(&prices, &volume, &0);
     /// assert_eq!(vec![1500, 2700, 1800, 500, 500], on_balance_volume);
     /// ```
-    pub fn on_balance_volume(prices: &[f64], volume: &[i64], previous_on_balance_volume: &i64) -> Vec<i64> {
+    pub fn on_balance_volume(
+        prices: &[f64],
+        volume: &[i64],
+        previous_on_balance_volume: &i64,
+    ) -> Vec<i64> {
         if prices.is_empty() {
             panic!("Prices cannot be empty");
         };
         let length = prices.len();
         if length != volume.len() {
-            panic!("Length of prices ({}) and volume ({}) must match", length, volume.len());
+            panic!(
+                "Length of prices ({}) and volume ({}) must match",
+                length,
+                volume.len()
+            );
         };
 
-        let mut obvs = vec![single::on_balance_volume(&prices[1], &prices[0], &volume[1], previous_on_balance_volume)];
+        let mut obvs = vec![single::on_balance_volume(
+            &prices[1],
+            &prices[0],
+            &volume[1],
+            previous_on_balance_volume,
+        )];
         for i in 2..length {
-            obvs.push(single::on_balance_volume(&prices[i], &prices[i-1], &volume[i], &obvs.last().unwrap()));
-        };
+            obvs.push(single::on_balance_volume(
+                &prices[i],
+                &prices[i - 1],
+                &volume[i],
+                &obvs.last().unwrap(),
+            ));
+        }
         return obvs;
     }
 
@@ -1120,10 +1213,19 @@ pub mod bulk {
     /// &rust_ti::DeviationModel::MedianAbsoluteDeviation, &constant_multiplier, &period);  
     /// assert_eq!(vec![66.66666666666667, -100.00000000000001, -100.00000000000001], median_mad_cci);
     /// ```
-    pub fn commodity_channel_index(prices: &[f64], constant_model_type: &crate::ConstantModelType, deviation_model: &crate::DeviationModel, constant_multiplier: &f64, period: &usize) -> Vec<f64> {
+    pub fn commodity_channel_index(
+        prices: &[f64],
+        constant_model_type: &crate::ConstantModelType,
+        deviation_model: &crate::DeviationModel,
+        constant_multiplier: &f64,
+        period: &usize,
+    ) -> Vec<f64> {
         let length = prices.len();
         if period > &length {
-            panic!("Period ({}) cannot be longer than lenght ({}) of prices", period, length);
+            panic!(
+                "Period ({}) cannot be longer than lenght ({}) of prices",
+                period, length
+            );
         };
 
         let mut ccis = Vec::new();
@@ -1136,10 +1238,86 @@ pub mod bulk {
                 &prices[i..end_index],
                 constant_model_type,
                 deviation_model,
-                constant_multiplier
+                constant_multiplier,
             ));
         }
         return ccis;
+    }
+
+    /// The `macd_line` is a momentum indicator that also shows price
+    /// strength, direction, and general trend.
+    ///
+    /// The indicator was developer back when there was a 6 day trading week so the standard short
+    /// term to use is 12, and 26 for the long term. However the caller can determine the period.
+    /// Both tyically use an exponential moving average model, but this is also determined by the
+    /// caller.
+    ///
+    /// The long period is determined by the length of the `prices` slice.
+    ///
+    /// This function *only* calculates the MACD line not the signal line, `signal_line` should be
+    /// called for the signal line.
+    ///
+    /// # Arguments
+    ///
+    /// * `prices` - An `f64` slice of prices
+    /// * `short_period` - The length of the short period
+    /// * `short_period_model` - A variant of `ConstantModelType`
+    /// * `long_period` - The length of the long period
+    /// * `long_period_model` - A variant of `ConstantModelType`
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0, 99.0, 102.0];
+    /// let short_period: usize = 3;
+    /// let long_period: usize = 5;
+    ///
+    /// let macd = rust_ti::momentum_indicators::bulk::macd_line(&prices, &short_period,
+    /// &rust_ti::ConstantModelType::ExponentialMovingAverage, &long_period,
+    /// &rust_ti::ConstantModelType::ExponentialMovingAverage);
+    /// assert_eq!(vec![-0.46851726472581845, -0.7379823967501835, 0.031821259309410266], macd);
+    ///
+    /// let macd = rust_ti::momentum_indicators::bulk::macd_line(&prices, &short_period,
+    /// &rust_ti::ConstantModelType::SimpleMovingAverage, &long_period,
+    /// &rust_ti::ConstantModelType::SimpleMovingMedian);
+    /// assert_eq!(vec![0.0, -1.3333333333333286, -1.0], macd);
+    /// ```
+    pub fn macd_line(
+        prices: &[f64],
+        short_period: &usize,
+        short_period_model: &crate::ConstantModelType,
+        long_period: &usize,
+        long_period_model: &crate::ConstantModelType,
+    ) -> Vec<f64> {
+        if short_period > long_period {
+            panic!(
+                "Short period ({}) cannot be longer than long period ({})",
+                short_period, long_period
+            )
+        };
+
+        let length = prices.len();
+        if long_period > &length {
+            panic!(
+                "Long period ({}) cannot be shorter than length of prices ({})",
+                long_period, length
+            );
+        };
+
+        let mut macds = Vec::new();
+        for i in 0..length {
+            let end_index = long_period + i;
+            if end_index > length {
+                break;
+            };
+            macds.push(single::macd_line(
+                &prices[i..end_index],
+                short_period,
+                short_period_model,
+                long_period_model,
+            ));
+        }
+        return macds;
     }
 }
 
@@ -1943,7 +2121,7 @@ mod tests {
         let volume = Vec::new();
         single::money_flow_index(&prices, &volume);
     }
-    
+
     #[test]
     fn test_bulk_money_flow_index() {
         let prices = vec![
@@ -2039,7 +2217,10 @@ mod tests {
         let previous_price = 100.2;
         let volume = 1500;
         let previous_obv = 0;
-        assert_eq!(1500, single::on_balance_volume(&current_price, &previous_price, &volume, &previous_obv));
+        assert_eq!(
+            1500,
+            single::on_balance_volume(&current_price, &previous_price, &volume, &previous_obv)
+        );
     }
 
     #[test]
@@ -2048,7 +2229,10 @@ mod tests {
         let previous_price = 100.2;
         let volume = 1500;
         let previous_obv = 500;
-        assert_eq!(2000, single::on_balance_volume(&current_price, &previous_price, &volume, &previous_obv));
+        assert_eq!(
+            2000,
+            single::on_balance_volume(&current_price, &previous_price, &volume, &previous_obv)
+        );
     }
 
     #[test]
@@ -2057,7 +2241,10 @@ mod tests {
         let previous_price = 100.32;
         let volume = 1500;
         let previous_obv = 0;
-        assert_eq!(-1500, single::on_balance_volume(&current_price, &previous_price, &volume, &previous_obv));
+        assert_eq!(
+            -1500,
+            single::on_balance_volume(&current_price, &previous_price, &volume, &previous_obv)
+        );
     }
 
     #[test]
@@ -2066,39 +2253,54 @@ mod tests {
         let previous_price = 100.38;
         let volume = 1500;
         let previous_obv = 500;
-        assert_eq!(-1000, single::on_balance_volume(&current_price, &previous_price, &volume, &previous_obv));
+        assert_eq!(
+            -1000,
+            single::on_balance_volume(&current_price, &previous_price, &volume, &previous_obv)
+        );
     }
-    
+
     #[test]
     fn test_single_on_balance_volume_equal_no_previous() {
         let current_price = 100.32;
         let previous_price = 100.32;
         let volume = 1500;
         let previous_obv = 0;
-        assert_eq!(0, single::on_balance_volume(&current_price, &previous_price, &volume, &previous_obv));
+        assert_eq!(
+            0,
+            single::on_balance_volume(&current_price, &previous_price, &volume, &previous_obv)
+        );
     }
-    
+
     #[test]
     fn test_single_on_balance_volume_equal_previous() {
         let current_price = 100.32;
         let previous_price = 100.32;
         let volume = 1500;
         let previous_obv = 500;
-        assert_eq!(500, single::on_balance_volume(&current_price, &previous_price, &volume, &previous_obv));
+        assert_eq!(
+            500,
+            single::on_balance_volume(&current_price, &previous_price, &volume, &previous_obv)
+        );
     }
 
     #[test]
     fn test_bulk_on_balance_volume_no_previous() {
         let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
         let volume = vec![1400, 1450, 1100, 900, 875];
-        assert_eq!(vec![1450, 350, -550, 325], bulk::on_balance_volume(&prices, &volume, &0));
+        assert_eq!(
+            vec![1450, 350, -550, 325],
+            bulk::on_balance_volume(&prices, &volume, &0)
+        );
     }
 
     #[test]
     fn test_bulk_on_balance_volume_previous() {
         let prices = vec![100.53, 100.38, 100.19, 100.21];
         let volume = vec![1450, 1100, 900, 875];
-        assert_eq!(vec![350, -550, 325], bulk::on_balance_volume(&prices, &volume, &1450));
+        assert_eq!(
+            vec![350, -550, 325],
+            bulk::on_balance_volume(&prices, &volume, &1450)
+        );
     }
 
     #[test]
@@ -2115,81 +2317,415 @@ mod tests {
         let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
         let volume = Vec::new();
         bulk::on_balance_volume(&prices, &volume, &0);
-    }   
+    }
 
     #[test]
     #[should_panic]
     fn test_single_commodity_channel_index_panic() {
         let prices = Vec::new();
-        single::commodity_channel_index(&prices, &crate::ConstantModelType::SimpleMovingAverage, &crate::DeviationModel::MeanAbsoluteDeviation, &0.015);
+        single::commodity_channel_index(
+            &prices,
+            &crate::ConstantModelType::SimpleMovingAverage,
+            &crate::DeviationModel::MeanAbsoluteDeviation,
+            &0.015,
+        );
     }
 
     #[test]
     fn test_single_ma_mean_ad_commodity_channel_index() {
         let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
-        assert_eq!(-77.92207792208092, single::commodity_channel_index(&prices, &crate::ConstantModelType::SimpleMovingAverage, &crate::DeviationModel::MeanAbsoluteDeviation, &0.015));
+        assert_eq!(
+            -77.92207792208092,
+            single::commodity_channel_index(
+                &prices,
+                &crate::ConstantModelType::SimpleMovingAverage,
+                &crate::DeviationModel::MeanAbsoluteDeviation,
+                &0.015
+            )
+        );
     }
 
     #[test]
     fn test_single_ma_median_ad_commodity_channel_index() {
         let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
-        assert_eq!(-81.35593220339244, single::commodity_channel_index(&prices, &crate::ConstantModelType::SimpleMovingAverage, &crate::DeviationModel::MedianAbsoluteDeviation, &0.015));
+        assert_eq!(
+            -81.35593220339244,
+            single::commodity_channel_index(
+                &prices,
+                &crate::ConstantModelType::SimpleMovingAverage,
+                &crate::DeviationModel::MedianAbsoluteDeviation,
+                &0.015
+            )
+        );
     }
 
     #[test]
     fn test_single_ma_mode_ad_commodity_channel_index() {
         let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
-        assert_eq!(-27.11864406779792, single::commodity_channel_index(&prices, &crate::ConstantModelType::SimpleMovingAverage, &crate::DeviationModel::ModeAbsoluteDeviation, &0.015));
+        assert_eq!(
+            -27.11864406779792,
+            single::commodity_channel_index(
+                &prices,
+                &crate::ConstantModelType::SimpleMovingAverage,
+                &crate::DeviationModel::ModeAbsoluteDeviation,
+                &0.015
+            )
+        );
     }
 
     #[test]
     fn test_single_ma_std_dev_commodity_channel_index() {
         let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
-        assert_eq!(-71.3483546791537, single::commodity_channel_index(&prices, &crate::ConstantModelType::SimpleMovingAverage, &crate::DeviationModel::StandardDeviation, &0.015));
+        assert_eq!(
+            -71.3483546791537,
+            single::commodity_channel_index(
+                &prices,
+                &crate::ConstantModelType::SimpleMovingAverage,
+                &crate::DeviationModel::StandardDeviation,
+                &0.015
+            )
+        );
     }
 
     #[test]
     fn test_single_sma_mean_ad_commodity_channel_index() {
         let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
-        assert_eq!(-57.79560753382917, single::commodity_channel_index(&prices, &crate::ConstantModelType::SmoothedMovingAverage, &crate::DeviationModel::MeanAbsoluteDeviation, &0.015));
+        assert_eq!(
+            -57.79560753382917,
+            single::commodity_channel_index(
+                &prices,
+                &crate::ConstantModelType::SmoothedMovingAverage,
+                &crate::DeviationModel::MeanAbsoluteDeviation,
+                &0.015
+            )
+        );
     }
 
     #[test]
     fn test_single_ema_mean_ad_commodity_channel_index() {
         let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
-        assert_eq!(-42.87971112616663, single::commodity_channel_index(&prices, &crate::ConstantModelType::ExponentialMovingAverage, &crate::DeviationModel::MeanAbsoluteDeviation, &0.015));
+        assert_eq!(
+            -42.87971112616663,
+            single::commodity_channel_index(
+                &prices,
+                &crate::ConstantModelType::ExponentialMovingAverage,
+                &crate::DeviationModel::MeanAbsoluteDeviation,
+                &0.015
+            )
+        );
     }
 
     #[test]
     fn test_single_pma_mean_ad_commodity_channel_index() {
         let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
-        assert_eq!(-19.132669714320674, single::commodity_channel_index(&prices, &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0), &crate::DeviationModel::MeanAbsoluteDeviation, &0.015));
+        assert_eq!(
+            -19.132669714320674,
+            single::commodity_channel_index(
+                &prices,
+                &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0),
+                &crate::DeviationModel::MeanAbsoluteDeviation,
+                &0.015
+            )
+        );
     }
 
     #[test]
     fn test_single_median_mean_ad_commodity_channel_index() {
         let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
-        assert_eq!(-91.99134199134296, single::commodity_channel_index(&prices, &crate::ConstantModelType::SimpleMovingMedian, &crate::DeviationModel::MeanAbsoluteDeviation, &0.015));
+        assert_eq!(
+            -91.99134199134296,
+            single::commodity_channel_index(
+                &prices,
+                &crate::ConstantModelType::SimpleMovingMedian,
+                &crate::DeviationModel::MeanAbsoluteDeviation,
+                &0.015
+            )
+        );
     }
 
     #[test]
     fn test_single_mode_mean_ad_commodity_channel_index() {
         let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
-        assert_eq!(113.63636363636031, single::commodity_channel_index(&prices, &crate::ConstantModelType::SimpleMovingMode, &crate::DeviationModel::MeanAbsoluteDeviation, &0.015));
+        assert_eq!(
+            113.63636363636031,
+            single::commodity_channel_index(
+                &prices,
+                &crate::ConstantModelType::SimpleMovingMode,
+                &crate::DeviationModel::MeanAbsoluteDeviation,
+                &0.015
+            )
+        );
     }
 
     #[test]
     fn test_bulk_commodity_channel_index() {
         let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
-        assert_eq!(vec![-100.0, -100.00000000000804, -41.66666666666519], bulk::commodity_channel_index(&prices, &crate::ConstantModelType::SimpleMovingAverage, &crate::DeviationModel::MeanAbsoluteDeviation, &0.015, &3_usize));
+        assert_eq!(
+            vec![-100.0, -100.00000000000804, -41.66666666666519],
+            bulk::commodity_channel_index(
+                &prices,
+                &crate::ConstantModelType::SimpleMovingAverage,
+                &crate::DeviationModel::MeanAbsoluteDeviation,
+                &0.015,
+                &3_usize
+            )
+        );
     }
 
     #[test]
     #[should_panic]
     fn test_bulk_commodity_channel_index_panic() {
         let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
-        assert_eq!(vec![-100.0, -100.00000000000804, -41.66666666666519], bulk::commodity_channel_index(&prices, &crate::ConstantModelType::SimpleMovingAverage, &crate::DeviationModel::MeanAbsoluteDeviation, &0.015, &30_usize));
+        assert_eq!(
+            vec![-100.0, -100.00000000000804, -41.66666666666519],
+            bulk::commodity_channel_index(
+                &prices,
+                &crate::ConstantModelType::SimpleMovingAverage,
+                &crate::DeviationModel::MeanAbsoluteDeviation,
+                &0.015,
+                &30_usize
+            )
+        );
     }
 
-    // TODO: Single MACD
+    #[test]
+    fn test_single_ema_macd() {
+        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
+        assert_eq!(
+            -0.06067027758972188,
+            single::macd_line(
+                &prices,
+                &3_usize,
+                &crate::ConstantModelType::ExponentialMovingAverage,
+                &crate::ConstantModelType::ExponentialMovingAverage
+            )
+        );
+    }
+
+    #[test]
+    fn test_single_sma_macd() {
+        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
+        assert_eq!(
+            -0.07733259851198682,
+            single::macd_line(
+                &prices,
+                &3_usize,
+                &crate::ConstantModelType::SmoothedMovingAverage,
+                &crate::ConstantModelType::SmoothedMovingAverage
+            )
+        );
+    }
+
+    #[test]
+    fn test_single_pma_macd() {
+        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
+        assert_eq!(
+            -0.02938702437832319,
+            single::macd_line(
+                &prices,
+                &3_usize,
+                &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0),
+                &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0)
+            )
+        );
+    }
+
+    #[test]
+    fn test_single_ma_macd() {
+        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
+        assert_eq!(
+            -0.0940000000000083,
+            single::macd_line(
+                &prices,
+                &3_usize,
+                &crate::ConstantModelType::SimpleMovingAverage,
+                &crate::ConstantModelType::SimpleMovingAverage
+            )
+        );
+    }
+
+    #[test]
+    fn test_single_median_macd() {
+        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
+        assert_eq!(
+            -0.1700000000000017,
+            single::macd_line(
+                &prices,
+                &3_usize,
+                &crate::ConstantModelType::SimpleMovingMedian,
+                &crate::ConstantModelType::SimpleMovingMedian
+            )
+        );
+    }
+
+    #[test]
+    fn test_single_mode_macd() {
+        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
+        assert_eq!(
+            0.0,
+            single::macd_line(
+                &prices,
+                &3_usize,
+                &crate::ConstantModelType::SimpleMovingMode,
+                &crate::ConstantModelType::SimpleMovingMode
+            )
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_single_macd_panic() {
+        let prices = Vec::new();
+        single::macd_line(
+            &prices,
+            &3_usize,
+            &crate::ConstantModelType::ExponentialMovingAverage,
+            &crate::ConstantModelType::ExponentialMovingAverage,
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_single_macd_panic_period() {
+        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
+        single::macd_line(
+            &prices,
+            &30_usize,
+            &crate::ConstantModelType::ExponentialMovingAverage,
+            &crate::ConstantModelType::ExponentialMovingAverage,
+        );
+    }
+
+    #[test]
+    fn test_bulk_macd() {
+        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
+        assert_eq!(
+            vec![
+                -0.06067027758972188,
+                -0.022417061611406552,
+                0.005788761002008869
+            ],
+            bulk::macd_line(
+                &prices,
+                &3_usize,
+                &crate::ConstantModelType::ExponentialMovingAverage,
+                &5_usize,
+                &crate::ConstantModelType::ExponentialMovingAverage
+            )
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_bulk_macd_short_period_panic() {
+        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
+        bulk::macd_line(
+            &prices,
+            &30_usize,
+            &crate::ConstantModelType::ExponentialMovingAverage,
+            &5_usize,
+            &crate::ConstantModelType::ExponentialMovingAverage,
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_bulk_macd_long_period_panic() {
+        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
+        bulk::macd_line(
+            &prices,
+            &3_usize,
+            &crate::ConstantModelType::ExponentialMovingAverage,
+            &50_usize,
+            &crate::ConstantModelType::ExponentialMovingAverage,
+        );
+    }
+
+    #[test]
+    fn test_single_ema_signal() {
+        let macds = vec![
+            -0.06067027758972188,
+            -0.022417061611406552,
+            0.005788761002008869,
+        ];
+        assert_eq!(
+            -0.011764193829214216,
+            single::signal_line(&macds, &crate::ConstantModelType::ExponentialMovingAverage)
+        );
+    }
+
+    #[test]
+    fn test_single_sma_signal() {
+        let macds = vec![
+            -0.06067027758972188,
+            -0.022417061611406552,
+            0.005788761002008869,
+        ];
+        assert_eq!(
+            -0.01710971742153932,
+            single::signal_line(&macds, &crate::ConstantModelType::SmoothedMovingAverage)
+        );
+    }
+
+    #[test]
+    fn test_single_pma_signal() {
+        let macds = vec![
+            -0.06067027758972188,
+            -0.022417061611406552,
+            0.005788761002008869,
+        ];
+        assert_eq!(
+            -0.004072696773434995,
+            single::signal_line(
+                &macds,
+                &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0)
+            )
+        );
+    }
+
+    #[test]
+    fn test_single_ma_signal() {
+        let macds = vec![
+            -0.06067027758972188,
+            -0.022417061611406552,
+            0.005788761002008869,
+        ];
+        assert_eq!(
+            -0.025766192733039855,
+            single::signal_line(&macds, &crate::ConstantModelType::SimpleMovingAverage)
+        );
+    }
+
+    #[test]
+    fn test_single_median_signal() {
+        let macds = vec![
+            -0.06067027758972188,
+            -0.022417061611406552,
+            0.005788761002008869,
+        ];
+        assert_eq!(
+            -0.022417061611406552,
+            single::signal_line(&macds, &crate::ConstantModelType::SimpleMovingMedian)
+        );
+    }
+
+    #[test]
+    fn test_single_mode_signal() {
+        let macds = vec![
+            -0.06067027758972188,
+            -0.022417061611406552,
+            0.005788761002008869,
+        ];
+        assert_eq!(
+            0.0,
+            single::signal_line(&macds, &crate::ConstantModelType::SimpleMovingMode)
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_single_signal_panic() {
+        let macds = Vec::new();
+        single::signal_line(&macds, &crate::ConstantModelType::ExponentialMovingAverage);
+    }
 }
