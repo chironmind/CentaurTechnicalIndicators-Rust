@@ -382,7 +382,7 @@ pub mod single {
         return 100.0 - (100.0 / (1.0 + (positive_money_flow / negative_money_flow)));
     }
 
-    // TODO: Chaikin Oscillator once accumulation distribution is done, CCI McGinley
+    // TODO: Chaikin Oscillator once accumulation distribution is done
 
     /// The `rate_of_change` is a momentum indicator that shows how quickly the price of an asset
     /// is changing.
@@ -541,6 +541,69 @@ pub mod single {
         return (prices.last().unwrap() - moving_constant) / (constant_multiplier * deviation);
     }
 
+    /// The `mcginley_dynamic_commodity_channel_index` is a momentum indicator flagging overbought and oversold
+    /// conditions.
+    ///
+    /// The McGinley dynamic commodity channel index uses the McGinley dynamic rather than a moving average model, and returns the CCI as well as the McGinley dynamic.
+    /// The caller still needs to determine the absolute deviation model.
+    ///
+    /// # Arguments
+    ///
+    /// `prices` - An `f64` slice of prices
+    /// `previous_mcginley_dynamic` - The previous value of the McGinley dynamic. 0.0 if no
+    /// previous.
+    /// `deviation_model` - A variant of `DeviationModel`
+    /// `constant_multiplier` - Scale factor. Normally 0.015
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
+    /// let constant_multiplier = 0.015;
+    ///
+    /// let mcginley_cci = rust_ti::momentum_indicators::single::mcginley_dynamic_commodity_channel_index(
+    /// &prices, &0.0, &rust_ti::DeviationModel::MeanAbsoluteDeviation, &constant_multiplier);
+    /// assert_eq!((0.0, 99.0), mcginley_cci);
+    ///
+    /// let prices = vec![102.0, 103.0, 101.0, 99.0, 102.0];
+    /// let mcginley_cci = rust_ti::momentum_indicators::single::mcginley_dynamic_commodity_channel_index(
+    /// &prices, &mcginley_cci.1, &rust_ti::DeviationModel::MeanAbsoluteDeviation, &constant_multiplier);
+    /// assert_eq!((146.8770632107927, 99.53246533805869), mcginley_cci);
+    /// ```
+    pub fn mcginley_dynamic_commodity_channel_index(
+        prices: &[f64],
+        previous_mcginley_dynamic: &f64,
+        deviation_model: &crate::DeviationModel,
+        constant_multiplier: &f64,
+    ) -> (f64, f64) {
+        if prices.is_empty() {
+            panic!("Prices cannot be empty");
+        };
+
+        let last_price = prices.last().unwrap();
+
+        let mcginley_dynamic =
+            mcginley_dynamic(&last_price, previous_mcginley_dynamic, &prices.len());
+
+        let deviation = match deviation_model {
+            DeviationModel::StandardDeviation => standard_deviation(&prices),
+            DeviationModel::MeanAbsoluteDeviation => {
+                absolute_deviation(&prices, &crate::CentralPoint::Mean)
+            }
+            DeviationModel::MedianAbsoluteDeviation => {
+                absolute_deviation(&prices, &crate::CentralPoint::Median)
+            }
+            DeviationModel::ModeAbsoluteDeviation => {
+                absolute_deviation(&prices, &crate::CentralPoint::Mode)
+            }
+            _ => panic!("Unsupported DeviationModel"),
+        };
+        return (
+            (last_price - mcginley_dynamic) / (constant_multiplier * deviation),
+            mcginley_dynamic,
+        );
+    }
+
     /// The `macd_line` is a momentum indicator that also shows price
     /// strength, direction, and general trend.
     ///
@@ -689,6 +752,69 @@ pub mod single {
             _ => panic!("Unsupported ConstantModelType"),
         }
     }
+
+    /// The `mcginley_dynamic_macd_line` is an alternative to `macd_line` that uses and returns the
+    /// McGinley Dynamic as well as the MACD.
+    ///
+    /// The function returns a tuple with the MACD value first, short period McGinley dynamic second, and the long period third.
+    ///
+    /// The is no McGinley dynamic just for the signal line as the singal line merely take a moving
+    /// average of the MACDs, for a McGinley dynamic version just call
+    /// `mcginley_dynamic` from `moving_averages.rs`
+    ///
+    /// # Arguments
+    ///
+    /// * `prices` - An `f64` slice of prices
+    /// * `short_period` - The length of the short period
+    /// * `previous_short_mcginley` - Previous McGinley dynamic for the short model. If no
+    /// previous use 0.0.
+    /// * `previous_long_mcginley` - Previous McGinley dynamic for the long model. If no
+    /// previous use 0.0.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
+    /// let short_period: usize = 3;
+    ///
+    /// let mcginley_dynamic_macd = rust_ti::momentum_indicators::single::mcginley_dynamic_macd_line(&prices, &short_period,
+    /// &0.0, &0.0);
+    /// assert_eq!((0.0, 99.0, 99.0), mcginley_dynamic_macd);
+    ///
+    /// let prices = vec![102.0, 103.0, 101.0, 99.0, 102.0];
+    /// let mcginley_dynamic_macd = rust_ti::momentum_indicators::single::mcginley_dynamic_macd_line(&prices, &short_period,
+    /// &mcginley_dynamic_macd.1, &mcginley_dynamic_macd.2);
+    /// assert_eq!((0.35497689203913296, 99.88744223009782, 99.53246533805869), mcginley_dynamic_macd);
+    /// ```
+    pub fn mcginley_dynamic_macd_line(
+        prices: &[f64],
+        short_period: &usize,
+        previous_short_mcginley: &f64,
+        previous_long_mcginley: &f64,
+    ) -> (f64, f64, f64) {
+        if prices.is_empty() {
+            panic!("Prices cannot be empty");
+        };
+
+        if short_period >= &prices.len() {
+            panic!(
+                "Short period ({}) cannot be longer or equal to length of prices ({})",
+                short_period,
+                prices.len()
+            );
+        };
+
+        let latest_price = prices.last().unwrap();
+        if previous_short_mcginley == &0.0 && previous_long_mcginley == &0.0 {
+            return (0.0, *latest_price, *latest_price);
+        };
+
+        let long_mcginley = mcginley_dynamic(&latest_price, previous_long_mcginley, &prices.len());
+        let short_mcginley = mcginley_dynamic(&latest_price, previous_short_mcginley, short_period);
+        let macd = short_mcginley - long_mcginley;
+        return (macd, short_mcginley, long_mcginley);
+    }
+
     fn previous_gains_loss(prices: &[f64]) -> (Vec<f64>, Vec<f64>) {
         if prices.is_empty() {
             panic!("Prices is empty");
@@ -777,13 +903,10 @@ pub mod bulk {
         };
 
         let mut rsis = Vec::new();
-        for i in 0..length {
-            let end_index = period + i;
-            if end_index > length {
-                break;
-            };
+        let loop_max = length - period + 1;
+        for i in 0..loop_max {
             rsis.push(single::relative_strength_index(
-                &prices[i..end_index],
+                &prices[i..i + period],
                 constant_model_type,
             ));
         }
@@ -827,25 +950,19 @@ pub mod bulk {
                 period, length
             );
         };
-        let mut rsis = Vec::new();
-        for i in 0..length {
-            let end_index = period + i;
-            if end_index > length {
-                break;
-            };
-            if i == 0 {
-                rsis.push(single::mcginley_dynamic_rsi(
-                    &prices[i..end_index],
-                    previous_gain_mcginley_dynamic,
-                    previous_loss_mcginley_dynamic,
-                ));
-            } else {
-                rsis.push(single::mcginley_dynamic_rsi(
-                    &prices[i..end_index],
-                    &rsis[i - 1].1,
-                    &rsis[i - 1].2,
-                ));
-            };
+        let mut rsis = vec![single::mcginley_dynamic_rsi(
+            &prices[..*period],
+            previous_gain_mcginley_dynamic,
+            previous_loss_mcginley_dynamic,
+        )];
+        let loop_max = length - period + 1;
+        for i in 1..loop_max {
+            let previous_rsi = rsis[i - 1];
+            rsis.push(single::mcginley_dynamic_rsi(
+                &prices[i..i + period],
+                &previous_rsi.1,
+                &previous_rsi.2,
+            ));
         }
         return rsis;
     }
@@ -880,12 +997,9 @@ pub mod bulk {
         };
 
         let mut so = Vec::new();
-        for i in 0..length {
-            let end_index = period + i;
-            if end_index > length {
-                break;
-            };
-            so.push(single::stochastic_oscillator(&prices[i..end_index]));
+        let loop_max = length - period + 1;
+        for i in 0..loop_max {
+            so.push(single::stochastic_oscillator(&prices[i..i + period]));
         }
         return so;
     }
@@ -931,13 +1045,10 @@ pub mod bulk {
             );
         };
         let mut sso = Vec::new();
-        for i in 0..length {
-            let end_index = period + i;
-            if end_index > length {
-                break;
-            };
+        let loop_max = length - period + 1;
+        for i in 0..loop_max {
             sso.push(single::slow_stochastic(
-                &stochastics[i..end_index],
+                &stochastics[i..i + period],
                 constant_model_type,
             ));
         }
@@ -985,13 +1096,10 @@ pub mod bulk {
             );
         };
         let mut sso = Vec::new();
-        for i in 0..length {
-            let end_index = period + i;
-            if end_index > length {
-                break;
-            };
+        let loop_max = length - period + 1;
+        for i in 0..loop_max {
             sso.push(single::slowest_stochastic(
-                &slow_stochastics[i..end_index],
+                &slow_stochastics[i..i + period],
                 constant_model_type,
             ));
         }
@@ -1078,14 +1186,11 @@ pub mod bulk {
         };
 
         let mut mfis = Vec::new();
-        for i in 0..length {
-            let end_index = period + i;
-            if end_index > length {
-                break;
-            };
+        let loop_max = length - period + 1;
+        for i in 0..loop_max {
             mfis.push(single::money_flow_index(
-                &prices[i..end_index],
-                &volume[i..end_index],
+                &prices[i..i + period],
+                &volume[i..i + period],
             ));
         }
         return mfis;
@@ -1229,14 +1334,71 @@ pub mod bulk {
         };
 
         let mut ccis = Vec::new();
-        for i in 0..length {
-            let end_index = period + i;
-            if end_index > length {
-                break;
-            };
+        let loop_max = length - period + 1;
+        for i in 0..loop_max {
             ccis.push(single::commodity_channel_index(
-                &prices[i..end_index],
+                &prices[i..i + period],
                 constant_model_type,
+                deviation_model,
+                constant_multiplier,
+            ));
+        }
+        return ccis;
+    }
+
+    /// The `mcginley_dynamic_commodity_channel_index` is a momentum indicator flagging overbought and oversold
+    /// conditions.
+    ///
+    /// The McGinley dynamic commodity channel index uses the McGinley dynamic rather than a moving average model, and returns the CCI as well as the McGinley dynamic.
+    /// The caller still needs to determine the absolute deviation model.
+    ///
+    /// # Arguments
+    ///
+    /// * `prices` - An `f64` slice of prices
+    /// * `previous_mcginley_dynamic` - The previous value of the McGinley dynamic. 0.0 if no
+    /// previous.
+    /// * `deviation_model` - A variant of `DeviationModel`
+    /// * `constant_multiplier` - Scale factor. Normally 0.015
+    /// * `period` - The period over which to calculate the commodity channel index
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0, 102.0];
+    /// let constant_multiplier = 0.015;
+    ///
+    /// let mcginley_cci = rust_ti::momentum_indicators::bulk::mcginley_dynamic_commodity_channel_index(
+    /// &prices, &0.0, &rust_ti::DeviationModel::MeanAbsoluteDeviation, &constant_multiplier,
+    /// &5_usize);
+    /// assert_eq!(vec![(0.0, 99.0), (146.8770632107927, 99.53246533805869)], mcginley_cci);
+    /// ```
+    pub fn mcginley_dynamic_commodity_channel_index(
+        prices: &[f64],
+        previous_mcginley_dynamic: &f64,
+        deviation_model: &crate::DeviationModel,
+        constant_multiplier: &f64,
+        period: &usize,
+    ) -> Vec<(f64, f64)> {
+        let length = prices.len();
+        if period > &length {
+            panic!(
+                "Period ({}) cannot be longer the length of prices ({})",
+                period, length
+            );
+        };
+
+        let mut ccis = vec![single::mcginley_dynamic_commodity_channel_index(
+            &prices[..*period],
+            previous_mcginley_dynamic,
+            deviation_model,
+            constant_multiplier,
+        )];
+        let loop_max = length - period + 1;
+        for i in 1..loop_max {
+            let previous_dynamic = ccis[i - 1].1;
+            ccis.push(single::mcginley_dynamic_commodity_channel_index(
+                &prices[i..i + period],
+                &previous_dynamic,
                 deviation_model,
                 constant_multiplier,
             ));
@@ -1305,16 +1467,132 @@ pub mod bulk {
         };
 
         let mut macds = Vec::new();
-        for i in 0..length {
-            let end_index = long_period + i;
-            if end_index > length {
-                break;
-            };
+        let loop_max = length - long_period + 1;
+        for i in 0..loop_max {
             macds.push(single::macd_line(
-                &prices[i..end_index],
+                &prices[i..i + long_period],
                 short_period,
                 short_period_model,
                 long_period_model,
+            ));
+        }
+        return macds;
+    }
+
+    /// The `signal_line` is used with the `macd_line` to produce the moving average convergence
+    /// divergence.
+    ///
+    /// The standard period for the signal line is 9, and it normally uses an exponential moving
+    /// average model.
+    ///
+    /// # Arguments
+    ///
+    /// * `macds` - An `f64` slice of MACDs
+    /// * constant_model_type` - A variant of `ConstantModelType`
+    /// * `period` - Period over which to calculate the signal line
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let macds = vec![-0.0606702775897219, -0.0224170616113781, 0.0057887610020515,
+    /// 0.0318212593094103, -0.737982396750169];
+    /// let period: usize = 3;
+    ///
+    /// let ema_signal_line = rust_ti::momentum_indicators::bulk::signal_line(&macds,
+    /// &rust_ti::ConstantModelType::ExponentialMovingAverage, &period);
+    /// assert_eq!(vec![-0.011764193829181728, 0.0166350710900523, -0.4117854724828291], ema_signal_line);
+    ///
+    /// let median_signal_line = rust_ti::momentum_indicators::bulk::signal_line(&macds,
+    /// &rust_ti::ConstantModelType::SimpleMovingMedian, &period);
+    /// assert_eq!(vec![-0.0224170616113781, 0.0057887610020515, 0.0057887610020515], median_signal_line);
+    /// ```
+    pub fn signal_line(
+        macds: &[f64],
+        constant_model_type: &crate::ConstantModelType,
+        period: &usize,
+    ) -> Vec<f64> {
+        let length = macds.len();
+        if period > &length {
+            panic!(
+                "Period ({}) cannot be longer than length ({}) of prices",
+                period, length
+            )
+        };
+
+        let mut signals = Vec::new();
+        let loop_max = length - period + 1;
+        for i in 0..loop_max {
+            signals.push(single::signal_line(
+                &macds[i..i + period],
+                constant_model_type,
+            ));
+        }
+        return signals;
+    }
+
+    /// The `mcginley_dynamic_macd_line` is an alternative to `macd_line` that uses and returns the
+    /// McGinley Dynamic as well as the MACD line.
+    ///
+    /// The function returns a tuple with the MACD value first, short period McGinley dynamic second, and the long period third.
+    ///
+    /// The is no McGinley dynamic just for the signal line as the singal line merely takes a moving
+    /// average of the MACDs, for a McGinley dynamic version just call
+    /// `mcginley_dynamic` from `moving_averages.rs`
+    ///
+    /// # Arguments
+    ///
+    /// * `prices` - An `f64` slice of prices
+    /// * `short_period` - The length of the short period
+    /// * `previous_short_mcginley` - Previous McGinley dynamic for the short model. If no
+    /// previous use 0.0.
+    /// * `long_period` - The length of the long period
+    /// * `previous_long_mcginley` - Previous McGinley dynamic for the long model. If no
+    /// previous use 0.0.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0, 99.0, 102.0];
+    /// let short_period: usize = 3;
+    /// let long_period: usize = 5;
+    /// let mcginley_dynamic_macd = rust_ti::momentum_indicators::bulk::mcginley_dynamic_macd_line(
+    /// &prices, &short_period, &0.0, &long_period, &0.0);
+    /// assert_eq!(vec![(0.0, 99.0, 99.0), (0.0, 99.0, 99.0), (0.35497689203913296,
+    /// 99.88744223009782, 99.53246533805869)], mcginley_dynamic_macd);
+    /// ```
+    pub fn mcginley_dynamic_macd_line(
+        prices: &[f64],
+        short_period: &usize,
+        previous_short_mcginley: &f64,
+        long_period: &usize,
+        previous_long_mcginley: &f64,
+    ) -> Vec<(f64, f64, f64)> {
+        if prices.is_empty() {
+            panic!("Prices cannot be empty");
+        };
+
+        let length = prices.len();
+        if long_period > &length {
+            panic!(
+                "Long period ({}) cannot be longer than length ({}) of prices",
+                long_period, length
+            );
+        };
+
+        let mut macds = vec![single::mcginley_dynamic_macd_line(
+            &prices[..*long_period],
+            short_period,
+            previous_short_mcginley,
+            previous_long_mcginley,
+        )];
+        let loop_max = length - long_period + 1;
+        for i in 1..loop_max {
+            let previous_macd = macds[i - 1];
+            macds.push(single::mcginley_dynamic_macd_line(
+                &prices[i..i + long_period],
+                short_period,
+                &previous_macd.1,
+                &previous_macd.2,
             ));
         }
         return macds;
@@ -2489,6 +2767,138 @@ mod tests {
     }
 
     #[test]
+    fn test_single_mcginley_cci_no_previous() {
+        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
+        assert_eq!(
+            (0.0, 100.21),
+            single::mcginley_dynamic_commodity_channel_index(
+                &prices,
+                &0.0,
+                &crate::DeviationModel::MeanAbsoluteDeviation,
+                &0.015
+            )
+        );
+    }
+
+    #[test]
+    fn test_single_mcginley_cci_previous_mean_absolute_deviation() {
+        let prices = vec![100.53, 100.38, 100.19, 100.21, 100.32];
+        assert_eq!(
+            (56.90977560811997, 100.23190366735862),
+            single::mcginley_dynamic_commodity_channel_index(
+                &prices,
+                &100.21,
+                &crate::DeviationModel::MeanAbsoluteDeviation,
+                &0.015
+            )
+        );
+    }
+
+    #[test]
+    fn test_single_mcginley_cci_previous_median_absolute_deviation() {
+        let prices = vec![100.53, 100.38, 100.19, 100.21, 100.32];
+        assert_eq!(
+            (57.57930237998023, 100.23190366735862),
+            single::mcginley_dynamic_commodity_channel_index(
+                &prices,
+                &100.21,
+                &crate::DeviationModel::MedianAbsoluteDeviation,
+                &0.015
+            )
+        );
+    }
+
+    #[test]
+    fn test_single_mcginley_cci_previous_mode_absolute_deviation() {
+        let prices = vec![100.53, 100.38, 100.19, 100.21, 100.32];
+        assert_eq!(
+            (18.015609947110768, 100.23190366735862),
+            single::mcginley_dynamic_commodity_channel_index(
+                &prices,
+                &100.21,
+                &crate::DeviationModel::ModeAbsoluteDeviation,
+                &0.015
+            )
+        );
+    }
+
+    #[test]
+    fn test_single_mcginley_cci_previous_standard_deviation() {
+        let prices = vec![100.53, 100.38, 100.19, 100.21, 100.32];
+        assert_eq!(
+            (47.47490364820863, 100.23190366735862),
+            single::mcginley_dynamic_commodity_channel_index(
+                &prices,
+                &100.21,
+                &crate::DeviationModel::StandardDeviation,
+                &0.015
+            )
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_single_mcginley_cci_panic() {
+        let prices = Vec::new();
+        single::mcginley_dynamic_commodity_channel_index(
+            &prices,
+            &100.21,
+            &crate::DeviationModel::MedianAbsoluteDeviation,
+            &0.015,
+        );
+    }
+
+    #[test]
+    fn test_bulk_mcginley_cci_no_previous() {
+        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
+        assert_eq!(
+            vec![
+                (0.0, 100.21),
+                (56.90977560811997, 100.23190366735862),
+                (42.20998599356397, 100.24150449277387)
+            ],
+            bulk::mcginley_dynamic_commodity_channel_index(
+                &prices,
+                &0.0,
+                &crate::DeviationModel::MeanAbsoluteDeviation,
+                &0.015,
+                &5_usize
+            )
+        );
+    }
+
+    #[test]
+    fn test_bulk_mcginley_cci_previous() {
+        let prices = vec![100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
+        assert_eq!(
+            vec![
+                (56.90977560811997, 100.23190366735862),
+                (42.20998599356397, 100.24150449277387)
+            ],
+            bulk::mcginley_dynamic_commodity_channel_index(
+                &prices,
+                &100.21,
+                &crate::DeviationModel::MeanAbsoluteDeviation,
+                &0.015,
+                &5_usize
+            )
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_bulk_mcginley_cci_panic() {
+        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
+        bulk::mcginley_dynamic_commodity_channel_index(
+            &prices,
+            &0.0,
+            &crate::DeviationModel::MeanAbsoluteDeviation,
+            &0.015,
+            &50_usize,
+        );
+    }
+
+    #[test]
     fn test_single_ema_macd() {
         let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
         assert_eq!(
@@ -2727,5 +3137,91 @@ mod tests {
     fn test_single_signal_panic() {
         let macds = Vec::new();
         single::signal_line(&macds, &crate::ConstantModelType::ExponentialMovingAverage);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_bulk_signal_panic() {
+        let macds = vec![
+            -0.06067027758972188,
+            -0.022417061611406552,
+            0.005788761002008869,
+        ];
+        bulk::signal_line(
+            &macds,
+            &crate::ConstantModelType::ExponentialMovingAverage,
+            &30_usize,
+        );
+    }
+
+    #[test]
+    fn test_single_mcginley_macd_no_previous() {
+        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
+        assert_eq!(
+            (0.0, 100.21, 100.21),
+            single::mcginley_dynamic_macd_line(&prices, &3_usize, &0.0, &0.0)
+        );
+    }
+
+    #[test]
+    fn test_single_mcginley_macd_previous() {
+        let prices = vec![100.53, 100.38, 100.19, 100.21, 100.32];
+        assert_eq!(
+            (0.014602444905747802, 100.24650611226437, 100.23190366735862),
+            single::mcginley_dynamic_macd_line(&prices, &3_usize, &100.21, &100.21)
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_single_mcginley_macd_panic_short_period() {
+        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
+        single::mcginley_dynamic_macd_line(&prices, &30_usize, &0.0, &0.0);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_single_mcginley_macd_panic_no_prices() {
+        let prices = Vec::new();
+        single::mcginley_dynamic_macd_line(&prices, &3_usize, &0.0, &0.0);
+    }
+
+    #[test]
+    fn test_bulk_mcginley_macd_no_previous() {
+        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
+        assert_eq!(
+            vec![
+                (0.0, 100.21, 100.21),
+                (0.014602444905747802, 100.24650611226437, 100.23190366735862),
+                (0.01615134009865926, 100.25765583287253, 100.24150449277387)
+            ],
+            bulk::mcginley_dynamic_macd_line(&prices, &3_usize, &0.0, &5_usize, &0.0)
+        );
+    }
+
+    #[test]
+    fn test_bulk_mcginley_macd_previous() {
+        let prices = vec![100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
+        assert_eq!(
+            vec![
+                (0.014602444905747802, 100.24650611226437, 100.23190366735862),
+                (0.01615134009865926, 100.25765583287253, 100.24150449277387)
+            ],
+            bulk::mcginley_dynamic_macd_line(&prices, &3_usize, &100.21, &5_usize, &100.21)
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_bulk_mcginley_macd_panic_long_period() {
+        let prices = vec![100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
+        bulk::mcginley_dynamic_macd_line(&prices, &3_usize, &100.21, &50_usize, &100.21);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_bulk_mcginley_macd_panic_no_prices() {
+        let prices = Vec::new();
+        bulk::mcginley_dynamic_macd_line(&prices, &3_usize, &100.21, &5_usize, &100.21);
     }
 }

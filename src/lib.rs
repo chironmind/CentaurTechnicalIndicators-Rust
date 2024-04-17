@@ -2,6 +2,23 @@
 //!
 //! A Technical Indicators library for Rust
 //!
+//! What differentiates RustTI from other Technical Indicator packages is that everything can be determined by the caller.
+//! Many models were created decades ago when the work weeks were different (such as RSI, SO,
+//! Ichimoku cloud...) and the observations were made daily. However if one decides to study common
+//! stocks the work week is 5 days, but if one studies cryptocurrencies the work week is 7 days.
+//! RustTI allows the caller to determine their own period based on the market being studied.
+//! The caller isn't just limited to the period, moving average models, deviation models... are
+//! also determined by the caller.
+//!
+//! While there are a lot of articles online recommending to stick with the defaults because that
+//! is what most traders use, I would recommend the opposite. While it is true that most day
+//! traders tend to stick to the defaults, large financial institutions such as
+//! investment banks and hedge funds have their own quantitative teams who build them custom
+//! models. This is what this package allows you to do.
+//!
+//! If you decide that defaults is the way to go, `standard_indicators` has functions that use the
+//! common defaults.
+//!
 //! Each module is split into two submodules.
 //!
 //! A `single` submodule that is used to calculate the indicator once, using the entire price slice that is passed in.
@@ -14,6 +31,7 @@
 //! functions that allow this.
 
 pub mod basic_indicators;
+pub mod candle_indicators;
 pub mod momentum_indicators;
 pub mod moving_average;
 

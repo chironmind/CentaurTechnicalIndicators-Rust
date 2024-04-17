@@ -89,10 +89,10 @@ pub mod single {
     ///
     /// # Arguments
     ///
-    /// * `prices` - An `f64` slice of prices
+    /// * `latest_price` - An `f64` slice of prices
     /// * `previous_mcginley_dynamic` - An `f64` value for the previous McGinley dynamic. If there
     /// is no previous value pass in `0.0`
-    ///
+    /// * `period` - Length of the observed period
     /// # Examples
     ///
     /// ```
@@ -106,7 +106,7 @@ pub mod single {
     /// assert_eq!(99.79179592886295, next_mcginley_dynamic);
     /// ```
     pub fn mcginley_dynamic(
-        last_price: &f64,
+        latest_price: &f64,
         previous_mcginley_dynamic: &f64,
         period: &usize,
     ) -> f64 {
@@ -114,12 +114,12 @@ pub mod single {
             panic!("Cannot have a 0 period");
         };
         if previous_mcginley_dynamic == &0.0_f64 {
-            return *last_price;
+            return *latest_price;
         };
 
-        let base = last_price / previous_mcginley_dynamic;
+        let base = latest_price / previous_mcginley_dynamic;
         return previous_mcginley_dynamic
-            + ((last_price - previous_mcginley_dynamic) / (*period as f64 * base.powi(4)));
+            + ((latest_price - previous_mcginley_dynamic) / (*period as f64 * base.powi(4)));
     }
 }
 
@@ -171,13 +171,10 @@ pub mod bulk {
         };
 
         let mut moving_averages = Vec::new();
-        for i in 0..length {
-            let end_index = period + i;
-            if end_index > length {
-                break;
-            };
+        let loop_max = length - period + 1;
+        for i in 0..loop_max {
             moving_averages.push(single::moving_average(
-                &prices[i..end_index],
+                &prices[i..i + period],
                 moving_average_type,
             ));
         }
@@ -230,24 +227,6 @@ pub mod bulk {
                 mcginley_dynamics.last().unwrap(),
                 period,
             ));
-            //let end_index = period + i;
-            //if end_index > length {
-            //    break;
-            //};
-            //if i == 0 {
-            //    if previous_mcginley_dynamic == &0.0_f64 {
-            //        mcginley_dynamics.push(prices[period - 1]);
-            //    } else {
-            //        mcginley_dynamics.push(single::mcginley_dynamic(
-            //            &prices[i..end_index],
-            //            previous_mcginley_dynamic,
-            //        ));
-            //    }
-            //} else {
-            //    mcginley_dynamics.push(single::mcginley_dynamic(
-            //        &prices[i..end_index],
-            //        mcginley_dynamics.last().unwrap(),
-            //    ));
         }
         return mcginley_dynamics;
     }
