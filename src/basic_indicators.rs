@@ -163,11 +163,6 @@ pub mod single {
         }
         let prices_mean = mean(prices);
         let mean_diff_sq: Vec<f64> = prices.iter().map(|x| (x - prices_mean).powi(2)).collect();
-        //let mut mean_diff_sq = Vec::new();
-        //for i in prices.iter() {
-        //  let x = i - prices_mean;
-        // mean_diff_sq.push(x.powi(2));
-        //}
         return mean(&mean_diff_sq);
     }
 
@@ -235,6 +230,60 @@ pub mod single {
         };
         let deviation: f64 = prices.iter().map(|x| (x - mid_point).abs()).sum();
         return deviation / prices.len() as f64;
+    }
+
+    /// Calculates the maximum for a slice of prices
+    ///
+    /// Max doesn't currently exist in Rust for `f64`
+    ///
+    /// # Arguments
+    ///
+    /// * `prices` - slice of prices
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let prices = vec![100.0, 102.0, 103.0, 101.0, 100.0];
+    /// let max = rust_ti::basic_indicators::single::max(&prices);
+    /// assert_eq!(103.0, max);
+    /// ```
+    pub fn max(prices: &[f64]) -> f64 {
+        if prices.is_empty() {
+            panic!("Prices is empty")
+        };
+        let mut ordered_prices = prices
+            .iter()
+            .filter_map(|f| if f.is_nan() { None } else { Some(*f) })
+            .collect::<Vec<f64>>();
+        ordered_prices.sort_by(cmp_f64);
+        return ordered_prices[ordered_prices.len()-1];
+    }
+
+    /// Calculates the minimum for a slice of prices
+    ///
+    /// Min doesn't currently exist in Rust for `f64`
+    ///
+    /// # Arguments
+    ///
+    /// * `prices` - slice of prices
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let prices = vec![100.0, 102.0, 103.0, 101.0, 100.0];
+    /// let min = rust_ti::basic_indicators::single::min(&prices);
+    /// assert_eq!(100.0, min);
+    /// ```
+    pub fn min(prices: &[f64]) -> f64 {
+        if prices.is_empty() {
+            panic!("Prices is empty")
+        };
+        let mut ordered_prices = prices
+            .iter()
+            .filter_map(|f| if f.is_nan() { None } else { Some(*f) })
+            .collect::<Vec<f64>>();
+        ordered_prices.sort_by(cmp_f64);
+        return ordered_prices[0];
     }
 
     fn cmp_f64(a: &f64, b: &f64) -> Ordering {
@@ -909,5 +958,31 @@ mod tests {
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
         let period: usize = 30;
         bulk::absolute_deviation(&prices, &period, &crate::CentralPoint::Mean);
+    }
+
+    #[test]
+    fn test_single_max() {
+        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
+        assert_eq!(100.53, single::max(&prices));
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_single_max_panic() {
+        let prices = Vec::new();
+        single::max(&prices);
+    }
+
+    #[test]
+    fn test_single_min() {
+        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
+        assert_eq!(100.19, single::min(&prices));
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_single_min_panic() {
+        let prices = Vec::new();
+        single::min(&prices);
     }
 }

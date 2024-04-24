@@ -4,7 +4,7 @@
 
 /// `single` module holds functions that return a singular values
 pub mod single {
-    use crate::basic_indicators::single::{median, mode, absolute_deviation, standard_deviation};
+    use crate::basic_indicators::single::{median, mode, absolute_deviation, standard_deviation, max, min};
     use crate::moving_average::single::{moving_average, mcginley_dynamic};
     use crate::{ConstantModelType, MovingAverageType, DeviationModel};
     /// The `moving_constant_envelopes` function calculates upper and lower bands from the
@@ -256,6 +256,73 @@ pub mod single {
         let lower_band = &mcginley_dynamic - &deviation_multiplied;
         return (lower_band, mcginley_dynamic, upper_band);
     }
+
+    /// The `ichimoku_cloud` attempts to calculates support and resistance levels from past prices.
+    ///
+    /// The caller determines the conversion, base, and span B period, the standard for these are
+    /// 9, 26, and 52 respectively, however these were determined when the work day used to be 6
+    /// days.
+    ///
+    /// The function returns the leading span A, leading span B, base line, conversion line, and lagged price
+    /// from the beginning of the base period. The simpler Ichimoku clouds focus primarily on
+    /// charting span A and B against the candle, however more advanced setups add base, conversion
+    /// line, and lagged price to show resistance and support levels in more depth.
+    ///
+    /// # Arguments
+    ///
+    /// * `highs` - An `f64` slice of price highs
+    /// * `lows` - An `f64` slice of price lows
+    /// * `close` - An `f64` slice of closing prices
+    /// * `conversion_period` - Period used to calculate the conversion line
+    /// * `base_period` - Period used to calculate the base line
+    /// * `span_b_period` - Period used to calculate the Span B line
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let high_prices = vec![105.0, 103.0, 107.0, 101.0, 103.0, 100.0, 109.0, 105.0, 110.0, 112.0,
+    /// 111.0, 105.0, 106.0, 100.0, 103.0];
+    /// let low_prices = vec![97.0, 99.0, 98.0, 100.0, 95.0, 98.0, 99.0, 100.0, 102.0, 106.0,
+    /// 99.0, 101.0, 98.0, 93.0, 98.0];
+    /// let closing_prices = vec![100.0, 102.0, 103.0, 101.0, 99.0, 99.0, 102.0, 103.0, 106.0, 107.0,
+    /// 105.0, 104.0, 101.0, 97.0, 100.0];
+    /// let conversion_period: usize = 5;
+    /// let base_period: usize = 10;
+    /// let span_b_period: usize = 15;
+    /// let ichimoku_cloud = rust_ti::candle_indicators::single::ichimoku_cloud(&high_prices,
+    /// &low_prices, &closing_prices, &conversion_period, &base_period, &span_b_period);
+    /// assert_eq!((102.25, 102.5, 102.5, 102.0, 99.0), ichimoku_cloud);
+    /// ```
+    pub fn ichimoku_cloud(
+        highs: &[f64],
+        lows: &[f64],
+        close: &[f64],
+        conversion_period: &usize,
+        base_period: &usize,
+        span_b_period: &usize
+    ) -> (f64, f64, f64, f64, f64) {
+        let length = highs.len();
+        if length != lows.len() || length != close.len() {
+            panic!("Length of highs ({}) must equal length of lows ({}) and length of close ({})",
+                length,
+                lows.len(), 
+                close.len()
+            )
+        };
+
+        let max_period = conversion_period.max(base_period.max(span_b_period));
+        if &length < max_period {
+            panic!("Length of prices ({}) cannot be smaller than the size of periods ({})",
+                length,
+                max_period,
+            );
+        };
+        let conversion_line = (max(&highs[length-conversion_period..]) + min(&lows[length-conversion_period..])) / 2.0;
+        let base_line = (max(&highs[length-base_period..]) + min(&lows[length-base_period..])) / 2.0;
+        let leading_span_a = (&conversion_line + &base_line) / 2.0;
+        let leading_span_b = (max(&highs[length-span_b_period..]) + min(&lows[length-span_b_period..])) / 2.0;
+        return (leading_span_a, leading_span_b, base_line, conversion_line, close[length-base_period])
+    }
 }
 
 /// `bulk` module holds functions that return multiple valus for `momentum_indicators`
@@ -488,6 +555,81 @@ pub mod bulk {
         };
         return mcginley_bands;
     }
+
+    /// The `ichimoku_cloud` attempts to calculates support and resistance levels from past prices.
+    ///
+    /// The caller determines the conversion, base, and span B period, the standard for these are
+    /// 9, 26, and 52 respectively, however these were determined when the work day used to be 6
+    /// days.
+    ///
+    /// The function returns the leading span A, leading span B, base, conversion line, and price
+    /// from the beginning of the base period. The simpler Ichimoku clouds focus primarily on
+    /// charting span A and B against the candle, however more advanced setups add base, conversion
+    /// line, and lagged price to show resistance and support levels in more depth.
+    ///
+    /// # Arguments
+    ///
+    /// * `highs` - An `f64` slice of price highs
+    /// * `lows` - An `f64` slice of price lows
+    /// * `close` - An `f64` slice of closing prices
+    /// * `conversion_period` - Period used to calculate the conversion line
+    /// * `base_period` - Period used to calculate the base line
+    /// * `span_b_period` - Period used to calculate the Span B line
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let high_prices = vec![105.0, 103.0, 107.0, 101.0, 103.0, 100.0, 109.0, 105.0, 110.0, 112.0,
+    /// 111.0, 105.0, 106.0, 100.0, 103.0, 102.0, 98.0];
+    /// let low_prices = vec![97.0, 99.0, 98.0, 100.0, 95.0, 98.0, 99.0, 100.0, 102.0, 106.0,
+    /// 99.0, 101.0, 98.0, 93.0, 98.0, 91.0, 89.0];
+    /// let closing_prices = vec![100.0, 102.0, 103.0, 101.0, 99.0, 99.0, 102.0, 103.0, 106.0, 107.0,
+    /// 105.0, 104.0, 101.0, 97.0, 100.0, 96.0, 93.0];
+    /// let conversion_period: usize = 5;
+    /// let base_period: usize = 10;
+    /// let span_b_period: usize = 15;
+    /// let ichimoku_cloud = rust_ti::candle_indicators::bulk::ichimoku_cloud(&high_prices,
+    /// &low_prices, &closing_prices, &conversion_period, &base_period, &span_b_period);
+    /// assert_eq!(vec![(102.25, 102.5, 102.5, 102.0, 99.0), (100.0, 101.5, 101.5, 98.5, 102.0), (99.0, 100.5, 100.5, 97.5, 103.0)], ichimoku_cloud);
+    /// ```
+    pub fn ichimoku_cloud(
+        highs: &[f64],
+        lows: &[f64],
+        close: &[f64],
+        conversion_period: &usize,
+        base_period: &usize,
+        span_b_period: &usize
+    ) -> Vec<(f64, f64, f64, f64, f64)> {
+        let length = highs.len();
+        if length != lows.len() || length != close.len() {
+            panic!("Length of highs ({}) must equal length of lows ({}) and length of close ({})",
+                length,
+                lows.len(), 
+                close.len()
+            )
+        };
+
+        let max_period = conversion_period.max(base_period.max(span_b_period));
+        if &length < max_period {
+            panic!("Length of prices ({}) cannot be smaller than the size of periods ({})",
+                length,
+                max_period,
+            );
+        };       
+        let mut ichimoku_clouds = Vec::new();
+        let loop_max = length - max_period + 1;
+        for i in 0..loop_max {
+            ichimoku_clouds.push(single::ichimoku_cloud(
+                    &highs[i..i + max_period],
+                    &lows[i..i + max_period],
+                    &close[i..i + max_period],
+                    conversion_period,
+                    base_period,
+                    span_b_period,
+            ));
+        };
+        return ichimoku_clouds;
+    }
 }
 
 #[cfg(test)]
@@ -716,5 +858,129 @@ mod tests {
     fn test_bulk_mcginley_bands_panic() {
         let prices = vec![100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
         bulk::mcginley_dynamic_bands(&prices, &crate::DeviationModel::StandardDeviation, &2.0, &100.21, &50_usize);
+    }
+
+    #[test]
+    fn test_single_ichimoku_cloud() {
+        let highs = vec![101.26, 102.57, 102.32, 100.69, 100.83, 101.73, 102.01];
+        let lows = vec![100.08, 98.75, 100.14, 98.98, 99.07, 100.1, 99.96];
+        let close = vec![100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
+        assert_eq!((100.595, 100.66, 100.65,  100.53999999999999, 100.38), single::ichimoku_cloud(&highs, &lows, &close, &3_usize, &5_usize, &7_usize));
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_single_ichimoku_high_size_panic() {
+        let highs = vec![101.26, 102.57, 102.32, 100.69, 100.83, 101.73];
+        let lows = vec![100.08, 98.75, 100.14, 98.98, 99.07, 100.1, 99.96];
+        let close = vec![100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
+        single::ichimoku_cloud(&highs, &lows, &close, &3_usize, &5_usize, &7_usize);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_single_ichimoku_low_size_panic() {
+        let highs = vec![101.26, 102.57, 102.32, 100.69, 100.83, 101.73, 102.01];
+        let lows = vec![100.08, 98.75, 100.14, 98.98, 99.07, 100.1];
+        let close = vec![100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
+        single::ichimoku_cloud(&highs, &lows, &close, &3_usize, &5_usize, &7_usize);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_single_ichimoku_close_size_panic() {
+        let highs = vec![101.26, 102.57, 102.32, 100.69, 100.83, 101.73, 102.01];
+        let lows = vec![100.08, 98.75, 100.14, 98.98, 99.07, 100.1, 99.96];
+        let close = vec![100.46, 100.53, 100.38, 100.19, 100.21, 100.32];
+        single::ichimoku_cloud(&highs, &lows, &close, &3_usize, &5_usize, &7_usize);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_single_ichimoku_conversion_panic() {
+        let highs = vec![101.26, 102.57, 102.32, 100.69, 100.83, 101.73, 102.01];
+        let lows = vec![100.08, 98.75, 100.14, 98.98, 99.07, 100.1, 99.96];
+        let close = vec![100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
+        single::ichimoku_cloud(&highs, &lows, &close, &30_usize, &5_usize, &7_usize);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_single_ichimoku_base_panic() {
+        let highs = vec![101.26, 102.57, 102.32, 100.69, 100.83, 101.73, 102.01];
+        let lows = vec![100.08, 98.75, 100.14, 98.98, 99.07, 100.1, 99.96];
+        let close = vec![100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
+        single::ichimoku_cloud(&highs, &lows, &close, &3_usize, &50_usize, &7_usize);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_single_ichimoku_span_b_panic() {
+        let highs = vec![101.26, 102.57, 102.32, 100.69, 100.83, 101.73, 102.01];
+        let lows = vec![100.08, 98.75, 100.14, 98.98, 99.07, 100.1, 99.96];
+        let close = vec![100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
+        single::ichimoku_cloud(&highs, &lows, &close, &3_usize, &5_usize, &70_usize);
+    }
+
+    #[test]
+    fn test_bulk_ichimoku_clud() {
+        let highs = vec![101.26, 102.57, 102.32, 100.69, 100.83, 101.73, 102.01, 101.11, 100.75];
+        let lows = vec![100.08, 98.75, 100.14, 98.98, 99.07, 100.1, 99.96, 100.21, 100.48];
+        let close = vec![100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28, 100.49, 100.52];
+        assert_eq!(vec![(100.595, 100.66, 100.65, 100.53999999999999, 100.38), (100.74000000000001, 100.66, 100.495, 100.985, 100.19), (100.76249999999999, 100.65, 100.53999999999999, 100.985, 100.21)], bulk::ichimoku_cloud(&highs, &lows, &close, &3_usize, &5_usize, &7_usize));
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_bulk_ichimoku_high_size_panic() {
+        let highs = vec![101.26, 102.57, 102.32, 100.69, 100.83, 101.73];
+        let lows = vec![100.08, 98.75, 100.14, 98.98, 99.07, 100.1, 99.96];
+        let close = vec![100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
+        bulk::ichimoku_cloud(&highs, &lows, &close, &3_usize, &5_usize, &7_usize);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_bulk_ichimoku_low_size_panic() {
+        let highs = vec![101.26, 102.57, 102.32, 100.69, 100.83, 101.73, 102.01];
+        let lows = vec![100.08, 98.75, 100.14, 98.98, 99.07, 100.1];
+        let close = vec![100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
+        bulk::ichimoku_cloud(&highs, &lows, &close, &3_usize, &5_usize, &7_usize);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_bulk_ichimoku_close_size_panic() {
+        let highs = vec![101.26, 102.57, 102.32, 100.69, 100.83, 101.73, 102.01];
+        let lows = vec![100.08, 98.75, 100.14, 98.98, 99.07, 100.1, 99.96];
+        let close = vec![100.46, 100.53, 100.38, 100.19, 100.21, 100.32];
+        bulk::ichimoku_cloud(&highs, &lows, &close, &3_usize, &5_usize, &7_usize);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_bulk_ichimoku_conversion_panic() {
+        let highs = vec![101.26, 102.57, 102.32, 100.69, 100.83, 101.73, 102.01];
+        let lows = vec![100.08, 98.75, 100.14, 98.98, 99.07, 100.1, 99.96];
+        let close = vec![100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
+        bulk::ichimoku_cloud(&highs, &lows, &close, &30_usize, &5_usize, &7_usize);
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_single_ichimoku_base_panic() {
+        let highs = vec![101.26, 102.57, 102.32, 100.69, 100.83, 101.73, 102.01];
+        let lows = vec![100.08, 98.75, 100.14, 98.98, 99.07, 100.1, 99.96];
+        let close = vec![100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
+        bulk::ichimoku_cloud(&highs, &lows, &close, &3_usize, &50_usize, &7_usize);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_bulk_ichimoku_span_b_panic() {
+        let highs = vec![101.26, 102.57, 102.32, 100.69, 100.83, 101.73, 102.01];
+        let lows = vec![100.08, 98.75, 100.14, 98.98, 99.07, 100.1, 99.96];
+        let close = vec![100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
+        bulk::ichimoku_cloud(&highs, &lows, &close, &3_usize, &5_usize, &70_usize);
     }
 }
