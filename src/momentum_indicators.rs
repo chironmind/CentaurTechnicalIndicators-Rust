@@ -9,6 +9,7 @@ pub mod single {
     use crate::ConstantModelType;
     use crate::DeviationModel;
     use crate::MovingAverageType;
+    use crate::volatility_indicators::single::ulcer_index;
     use std::cmp::Ordering;
     /// The `relative_strenght_index` measures the speed and magnitude of price changes
     ///
@@ -536,6 +537,9 @@ pub mod single {
             DeviationModel::ModeAbsoluteDeviation => {
                 absolute_deviation(&prices, &crate::CentralPoint::Mode)
             }
+            DeviationModel::UlcerIndex => {
+                ulcer_index(&prices)
+            }
             _ => panic!("Unsupported DeviationModel"),
         };
         return (prices.last().unwrap() - moving_constant) / (constant_multiplier * deviation);
@@ -595,6 +599,9 @@ pub mod single {
             }
             DeviationModel::ModeAbsoluteDeviation => {
                 absolute_deviation(&prices, &crate::CentralPoint::Mode)
+            }
+            DeviationModel::UlcerIndex => {
+                ulcer_index(&prices)
             }
             _ => panic!("Unsupported DeviationModel"),
         };
@@ -2666,6 +2673,19 @@ mod tests {
     }
 
     #[test]
+    fn test_single_ma_ulcer_index_commodity_channel_index() {
+        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
+        assert_eq!(
+            -44.00422507932252,
+            single::commodity_channel_index(
+                &prices,
+                &crate::ConstantModelType::SimpleMovingAverage,
+                &crate::DeviationModel::UlcerIndex,
+                &0.015
+            )
+        );
+    }
+    #[test]
     fn test_single_sma_mean_ad_commodity_channel_index() {
         let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
         assert_eq!(
@@ -2831,6 +2851,20 @@ mod tests {
                 &prices,
                 &100.21,
                 &crate::DeviationModel::StandardDeviation,
+                &0.015
+            )
+        );
+    }
+
+    #[test]
+    fn test_single_mcginley_cci_previous_ulcer_index() {
+        let prices = vec![100.53, 100.38, 100.19, 100.21, 100.32];
+        assert_eq!(
+            (24.747413068246022, 100.23190366735862),
+            single::mcginley_dynamic_commodity_channel_index(
+                &prices,
+                &100.21,
+                &crate::DeviationModel::UlcerIndex,
                 &0.015
             )
         );

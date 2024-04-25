@@ -34,6 +34,7 @@ pub mod basic_indicators;
 pub mod candle_indicators;
 pub mod momentum_indicators;
 pub mod moving_average;
+pub mod volatility_indicators;
 
 /// The `CentralPoint enum` is used to determine what the central point around
 /// which to calculate the absolute deviation around.
@@ -89,4 +90,5 @@ pub enum DeviationModel {
     MeanAbsoluteDeviation,
     MedianAbsoluteDeviation,
     ModeAbsoluteDeviation,
+    UlcerIndex
 }

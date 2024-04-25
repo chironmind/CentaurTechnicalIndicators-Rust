@@ -256,7 +256,7 @@ pub mod single {
             .filter_map(|f| if f.is_nan() { None } else { Some(*f) })
             .collect::<Vec<f64>>();
         ordered_prices.sort_by(cmp_f64);
-        return ordered_prices[ordered_prices.len()-1];
+        return ordered_prices[ordered_prices.len() - 1];
     }
 
     /// Calculates the minimum for a slice of prices
