@@ -8,8 +8,8 @@ pub mod single {
         absolute_deviation, max, median, min, mode, standard_deviation,
     };
     use crate::moving_average::single::{mcginley_dynamic, moving_average};
-    use crate::{ConstantModelType, DeviationModel, MovingAverageType};
     use crate::volatility_indicators::single::ulcer_index;
+    use crate::{ConstantModelType, DeviationModel, MovingAverageType};
     /// The `moving_constant_envelopes` function calculates upper and lower bands from the
     /// moving constant of the price. The function returns a tuple with the lower band,
     /// moving constant, upper band (in that order).
@@ -194,9 +194,7 @@ pub mod single {
             DeviationModel::ModeAbsoluteDeviation => {
                 absolute_deviation(&prices, &crate::CentralPoint::Mode)
             }
-            DeviationModel::UlcerIndex => {
-                ulcer_index(&prices)
-            }
+            DeviationModel::UlcerIndex => ulcer_index(&prices),
             _ => panic!("Unsupported DeviationModel"),
         };
         let deviation_multiplied = deviation * deviation_multiplier;
@@ -257,9 +255,7 @@ pub mod single {
             DeviationModel::ModeAbsoluteDeviation => {
                 absolute_deviation(&prices, &crate::CentralPoint::Mode)
             }
-            DeviationModel::UlcerIndex => {
-                ulcer_index(&prices)
-            }
+            DeviationModel::UlcerIndex => ulcer_index(&prices),
             _ => panic!("Unsupported DeviationModel"),
         };
         let deviation_multiplied = deviation * deviation_multiplier;
@@ -347,7 +343,7 @@ pub mod single {
     }
 }
 
-/// `bulk` module holds functions that return multiple valus for `momentum_indicators`
+/// `bulk` module holds functions that return multiple values for `candle_indicators`
 pub mod bulk {
     use crate::candle_indicators::single;
     /// The `moving_constant_envelopes` function calculates upper and lower bands from the
@@ -1085,12 +1081,7 @@ mod tests {
         let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
         assert_eq!(
             (99.77367826122627, 100.21, 100.64632173877372),
-            single::mcginley_dynamic_bands(
-                &prices,
-                &crate::DeviationModel::UlcerIndex,
-                &2.0,
-                &0.0
-            )
+            single::mcginley_dynamic_bands(&prices, &crate::DeviationModel::UlcerIndex, &2.0, &0.0)
         );
     }
 

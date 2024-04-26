@@ -6,10 +6,10 @@
 pub mod single {
     use crate::basic_indicators::single::{absolute_deviation, median, mode, standard_deviation};
     use crate::moving_average::single::{mcginley_dynamic, moving_average};
+    use crate::volatility_indicators::single::ulcer_index;
     use crate::ConstantModelType;
     use crate::DeviationModel;
     use crate::MovingAverageType;
-    use crate::volatility_indicators::single::ulcer_index;
     use std::cmp::Ordering;
     /// The `relative_strenght_index` measures the speed and magnitude of price changes
     ///
@@ -537,9 +537,7 @@ pub mod single {
             DeviationModel::ModeAbsoluteDeviation => {
                 absolute_deviation(&prices, &crate::CentralPoint::Mode)
             }
-            DeviationModel::UlcerIndex => {
-                ulcer_index(&prices)
-            }
+            DeviationModel::UlcerIndex => ulcer_index(&prices),
             _ => panic!("Unsupported DeviationModel"),
         };
         return (prices.last().unwrap() - moving_constant) / (constant_multiplier * deviation);
@@ -600,9 +598,7 @@ pub mod single {
             DeviationModel::ModeAbsoluteDeviation => {
                 absolute_deviation(&prices, &crate::CentralPoint::Mode)
             }
-            DeviationModel::UlcerIndex => {
-                ulcer_index(&prices)
-            }
+            DeviationModel::UlcerIndex => ulcer_index(&prices),
             _ => panic!("Unsupported DeviationModel"),
         };
         return (

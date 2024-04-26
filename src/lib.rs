@@ -32,6 +32,7 @@
 
 pub mod basic_indicators;
 pub mod candle_indicators;
+pub mod correlation_indicators;
 pub mod momentum_indicators;
 pub mod moving_average;
 pub mod volatility_indicators;
@@ -90,5 +91,5 @@ pub enum DeviationModel {
     MeanAbsoluteDeviation,
     MedianAbsoluteDeviation,
     ModeAbsoluteDeviation,
-    UlcerIndex
+    UlcerIndex,
 }
