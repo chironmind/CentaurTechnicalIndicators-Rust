@@ -7,6 +7,7 @@ pub mod single {
     use crate::basic_indicators::single::{absolute_deviation, median, mode, standard_deviation};
     use crate::moving_average::single::{mcginley_dynamic, moving_average};
     use crate::volatility_indicators::single::ulcer_index;
+    use crate::strength_indicators::single::accumulation_distribution;
     use crate::ConstantModelType;
     use crate::DeviationModel;
     use crate::MovingAverageType;
@@ -383,8 +384,6 @@ pub mod single {
         return 100.0 - (100.0 / (1.0 + (positive_money_flow / negative_money_flow)));
     }
 
-    // TODO: Chaikin Oscillator once accumulation distribution is done
-
     /// The `rate_of_change` is a momentum indicator that shows how quickly the price of an asset
     /// is changing.
     ///
@@ -714,7 +713,7 @@ pub mod single {
     /// # Arguments
     ///
     /// * `macds` - An `f64` slice of MACDs
-    /// * constant_model_type` - A variant of `ConstantModelType`
+    /// * `constant_model_type` - A variant of `ConstantModelType`
     ///
     /// # Examples
     ///
@@ -817,6 +816,125 @@ pub mod single {
         let macd = short_mcginley - long_mcginley;
         return (macd, short_mcginley, long_mcginley);
     }
+
+    /// The `chaikin_oscillator` measures momentum by taking the difference a short period and long
+    /// period Accumulation Distribution line.
+    ///
+    /// the standard is to use the same short and long periods used in the MACD to track the
+    /// accumulation distribution of the MACD, but as for the MACD the periods are determined by
+    /// the caller. The standard moving average model is an Exponential Moving Average.
+    ///
+    /// Returns a tuple with the Chaikin Oscillator and the first Accumulation Distribution, so
+    /// that it can be used in future calculations . 
+    ///
+    /// # Arguments
+    ///
+    /// * `highs` - Slice of price highs
+    /// * `lows` - Slice of price lows
+    /// * `close` - Slice of closing prices
+    /// * `volume` - Slice of transction volumes
+    /// * `short_period` - Short period over which to calculate the Accumulation Distribution
+    /// * `previous_accumulation_distribution` - Previous accumulation distribution value. If none
+    /// use 0.0
+    /// * `short_period_model` - A variant of `ConstantModelType`
+    /// * `long_period_model` - A variant of `ConstantModelType`  
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let high = vec![103.0, 102.0, 105.0, 109.0, 106.0];
+    /// let low = vec![99.0, 99.0, 100.0, 103.0, 98.0];
+    /// let close = vec![102.0, 100.0, 103.0, 106.0, 100.0];
+    /// let volume = vec![1000.0, 1500.0, 1200.0, 1500.0, 2000.0];
+    /// let short_period: usize = 3;
+    /// let previous = 0.0;
+    /// 
+    /// let chaikin_oscillator = rust_ti::momentum_indicators::single::chaikin_oscillator(
+    ///     &high,
+    ///     &low,
+    ///     &close,
+    ///     &volume,
+    ///     &short_period,
+    ///     &previous,
+    ///     &rust_ti::ConstantModelType::ExponentialMovingAverage,
+    ///     &rust_ti::ConstantModelType::ExponentialMovingAverage
+    ///     );
+    /// assert_eq!((-179.95937711577525, 500.0), chaikin_oscillator);
+    ///
+    /// let previous = 500.0;
+    /// let chaikin_oscillator = rust_ti::momentum_indicators::single::chaikin_oscillator(
+    ///     &high,
+    ///     &low,
+    ///     &close,
+    ///     &volume,
+    ///     &short_period,
+    ///     &previous,
+    ///     &rust_ti::ConstantModelType::SimpleMovingAverage,
+    ///     &rust_ti::ConstantModelType::SimpleMovingMedian
+    ///     );
+    /// assert_eq!((-333.3333333333333, 1000.0), chaikin_oscillator); 
+    /// ```
+    pub fn chaikin_oscillator(highs: &[f64], lows: &[f64], close: &[f64], volume: &[f64], short_period: &usize, previous_accumulation_distribution: &f64, short_period_model: &crate::ConstantModelType, long_period_model: &crate::ConstantModelType) -> (f64, f64) {
+        let long_period = highs.len();
+        if long_period != lows.len() || long_period != close.len() || long_period != volume.len() {
+            panic!("Length of highs ({}), lows ({}), close ({}), and volume ({}) must match", long_period, lows.len(), close.len(), volume.len())
+        };
+
+        if &long_period <= short_period {
+            panic!("Long period ({}) cannot be smaller or equal to short period ({})", long_period, short_period)
+        };
+
+        let mut ad = vec![accumulation_distribution(&highs[0], &lows[0], &close[0], &volume[0], &previous_accumulation_distribution)];
+        for i in 1..long_period {
+            ad.push(accumulation_distribution(&highs[i], &lows[i], &close[i], &volume[i], &ad[i-1]));
+        }
+        let short_period_index: usize = &long_period - short_period;
+        let short_period_average = match short_period_model {
+            ConstantModelType::SimpleMovingAverage => {
+                moving_average(&ad[short_period_index..], &MovingAverageType::Simple)
+            }
+            ConstantModelType::SmoothedMovingAverage => {
+                moving_average(&ad[short_period_index..], &MovingAverageType::Smoothed)
+            }
+            ConstantModelType::ExponentialMovingAverage => moving_average(
+                &ad[short_period_index..],
+                &MovingAverageType::Exponential,
+            ),
+            ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => {
+                moving_average(
+                    &ad[short_period_index..],
+                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
+                )
+            }
+            ConstantModelType::SimpleMovingMedian => median(&ad[short_period_index..]),
+            ConstantModelType::SimpleMovingMode => mode(&ad[short_period_index..]),
+            _ => panic!("Unsupported ConstantModelType"),
+        };
+
+        let long_period_average = match long_period_model {
+            ConstantModelType::SimpleMovingAverage => {
+                moving_average(&ad, &MovingAverageType::Simple)
+            }
+            ConstantModelType::SmoothedMovingAverage => {
+                moving_average(&ad, &MovingAverageType::Smoothed)
+            }
+            ConstantModelType::ExponentialMovingAverage => {
+                moving_average(&ad, &MovingAverageType::Exponential)
+            }
+            ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => {
+                moving_average(
+                    &ad,
+                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
+                )
+            }
+            ConstantModelType::SimpleMovingMedian => median(&ad),
+            ConstantModelType::SimpleMovingMode => mode(&ad),
+            _ => panic!("Unsupported ConstantModelType"),
+        };
+        
+        return (short_period_average - long_period_average, ad[0]);
+    }
+
 
     fn previous_gains_loss(prices: &[f64]) -> (Vec<f64>, Vec<f64>) {
         if prices.is_empty() {
@@ -1599,6 +1717,93 @@ pub mod bulk {
             ));
         }
         return macds;
+    }
+
+    /// The `chaikin_oscillator` measures momentum by taking the difference a short period and long
+    /// period Accumulation Distribution line.
+    ///
+    /// the standard is to use the same short and long periods used in the MACD to track the
+    /// accumulation distribution of the MACD, but as for the MACD the periods are determined by
+    /// the caller. The standard moving average model is an Exponential Moving Average.
+    ///
+    /// Returns a vector of tuples with the Chaikin Oscillator and the first Accumulation Distribution so that it can be used in further calculations. 
+    ///
+    /// # Arguments
+    ///
+    /// * `highs` - Slice of price highs
+    /// * `lows` - Slice of price lows
+    /// * `close` - Slice of closing prices
+    /// * `volume` - Slice of transction volumes
+    /// * `short_period` - Short period over which to calculate the Accumulation Distribution
+    /// * `long_period` - Long period over which to calculate the Accumulation Distribution
+    /// * `previous_accumulation_distribution` - Previous accumulation distribution value. If none
+    /// use 0.0
+    /// * `short_period_model` - A variant of `ConstantModelType`
+    /// * `long_period_model` - A variant of `ConstantModelType`  
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let high = vec![103.0, 102.0, 105.0, 109.0, 106.0, 102.0, 107.0];
+    /// let low = vec![99.0, 99.0, 100.0, 103.0, 98.0, 94.0, 96.0];
+    /// let close = vec![102.0, 100.0, 103.0, 106.0, 100.0, 97.0, 105.0];
+    /// let volume = vec![1000.0, 1500.0, 1200.0, 1500.0, 2000.0, 3000.0, 1250.0];
+    /// let short_period: usize = 3;
+    /// let long_period: usize = 5;
+    /// let previous = 0.0;
+    /// 
+    /// let chaikin_oscillator = rust_ti::momentum_indicators::bulk::chaikin_oscillator(
+    ///     &high,
+    ///     &low,
+    ///     &close,
+    ///     &volume,
+    ///     &short_period,
+    ///     &long_period,
+    ///     &previous,
+    ///     &rust_ti::ConstantModelType::ExponentialMovingAverage,
+    ///     &rust_ti::ConstantModelType::ExponentialMovingAverage
+    ///     );
+    /// assert_eq!(vec![(-179.95937711577525, 500.0), (-339.790115098172, 0.0), (-203.39139533452317, 240.0)], chaikin_oscillator);
+    ///
+    /// let previous = 500.0;
+    /// let chaikin_oscillator = rust_ti::momentum_indicators::bulk::chaikin_oscillator(
+    ///     &high,
+    ///     &low,
+    ///     &close,
+    ///     &volume,
+    ///     &short_period,
+    ///     &long_period,
+    ///     &previous,
+    ///     &rust_ti::ConstantModelType::SimpleMovingAverage,
+    ///     &rust_ti::ConstantModelType::SimpleMovingMedian
+    ///     );
+    /// assert_eq!(vec![(-333.3333333333333, 1000.0), (-676.6666666666666, 500.0),
+    /// (-280.3030303030303, 740.0)], chaikin_oscillator); 
+    /// ```
+    pub fn chaikin_oscillator(highs: &[f64], lows: &[f64], close: &[f64], volume: &[f64], short_period: &usize, long_period: &usize, previous_accumulation_distribution: &f64, short_period_model: &crate::ConstantModelType, long_period_model: &crate::ConstantModelType) -> Vec<(f64, f64)> {
+        let length = highs.len();
+        if length != lows.len() || length != close.len() || length != volume.len() {
+            panic!("Lengths of highs ({}), lows ({}), close ({}), and volume ({}) must match", length, lows.len(), close.len(), volume.len())
+        };
+        if &length < long_period {
+            panic!("Length of prices ({}) must me greater or equal to long period ({})", length, long_period)
+        };
+    
+        let mut cos = vec![single::chaikin_oscillator(&highs[..*long_period], &lows[..*long_period], &close[..*long_period], &volume[..*long_period], short_period, previous_accumulation_distribution, short_period_model, long_period_model)];
+        let loop_max = length - long_period + 1;
+        for i in 1..loop_max {
+            cos.push(single::chaikin_oscillator(
+                    &highs[i..i+long_period],
+                    &lows[i..i+long_period],
+                    &close[i..i+long_period],
+                    &volume[i..i+long_period],
+                    short_period,
+                    &cos[i-1].1,
+                    short_period_model,
+                    long_period_model
+            ));
+        };
+        return cos;
     }
 }
 
@@ -3253,5 +3458,390 @@ mod tests {
     fn test_bulk_mcginley_macd_panic_no_prices() {
         let prices = Vec::new();
         bulk::mcginley_dynamic_macd_line(&prices, &3_usize, &100.21, &5_usize, &100.21);
+    }
+
+    #[test]
+    fn single_chaikin_oscillator_ma() {
+        let highs = vec![100.53, 100.68, 100.73, 100.79, 100.88];
+        let lows = vec![99.62, 99.97, 100.28, 100.12, 100.07];
+        let close = vec![100.01, 100.44, 100.39, 100.63, 100.71];
+        let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0];
+        assert_eq!(
+            (29.535626025665053, -38.28571428571309), 
+            single::chaikin_oscillator(
+                &highs,
+                &lows,
+                &close,
+                &volume,
+                &3_usize,
+                &0.0,
+                &crate::ConstantModelType::SimpleMovingAverage,
+                &crate::ConstantModelType::SimpleMovingAverage
+            )
+        );
+    }
+
+    #[test]
+    fn single_chaikin_oscillator_sma() {
+        let highs = vec![100.53, 100.68, 100.73, 100.79, 100.88];
+        let lows = vec![99.62, 99.97, 100.28, 100.12, 100.07];
+        let close = vec![100.01, 100.44, 100.39, 100.63, 100.71];
+        let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0];
+        assert_eq!(
+            (52.583143395495696, -38.28571428571309), 
+            single::chaikin_oscillator(
+                &highs,
+                &lows,
+                &close,
+                &volume,
+                &3_usize,
+                &0.0,
+                &crate::ConstantModelType::SmoothedMovingAverage,
+                &crate::ConstantModelType::SmoothedMovingAverage
+            )
+        );
+    }
+
+    #[test]
+    fn single_chaikin_oscillator_ema() {
+        let highs = vec![100.53, 100.68, 100.73, 100.79, 100.88];
+        let lows = vec![99.62, 99.97, 100.28, 100.12, 100.07];
+        let close = vec![100.01, 100.44, 100.39, 100.63, 100.71];
+        let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0];
+        assert_eq!(
+            (58.83861961460434, -38.28571428571309), 
+            single::chaikin_oscillator(
+                &highs,
+                &lows,
+                &close,
+                &volume,
+                &3_usize,
+                &0.0,
+                &crate::ConstantModelType::ExponentialMovingAverage,
+                &crate::ConstantModelType::ExponentialMovingAverage
+            )
+        );
+    }
+
+    #[test]
+    fn single_chaikin_oscillator_pma() {
+        let highs = vec![100.53, 100.68, 100.73, 100.79, 100.88];
+        let lows = vec![99.62, 99.97, 100.28, 100.12, 100.07];
+        let close = vec![100.01, 100.44, 100.39, 100.63, 100.71];
+        let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0];
+        assert_eq!(
+            (51.277072031524625, -38.28571428571309), 
+            single::chaikin_oscillator(
+                &highs,
+                &lows,
+                &close,
+                &volume,
+                &3_usize,
+                &0.0,
+                &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0),
+                &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0)
+            )
+        );
+    }
+
+    #[test]
+    fn single_chaikin_oscillator_median() {
+        let highs = vec![100.53, 100.68, 100.73, 100.79, 100.88];
+        let lows = vec![99.62, 99.97, 100.28, 100.12, 100.07];
+        let close = vec![100.01, 100.44, 100.39, 100.63, 100.71];
+        let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0];
+        assert_eq!(
+            (21.535323383069596, -38.28571428571309), 
+            single::chaikin_oscillator(
+                &highs,
+                &lows,
+                &close,
+                &volume,
+                &3_usize,
+                &0.0,
+                &crate::ConstantModelType::SimpleMovingMedian,
+                &crate::ConstantModelType::SimpleMovingMedian
+            )
+        );
+    }
+
+    #[test]
+    fn single_chaikin_oscillator_mode() {
+        let highs = vec![100.53, 100.68, 100.73, 100.79, 100.88];
+        let lows = vec![99.62, 99.97, 100.28, 100.12, 100.07];
+        let close = vec![100.01, 100.44, 100.39, 100.63, 100.71];
+        let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0];
+        assert_eq!(
+            (29.53333333333333, -38.28571428571309), 
+            single::chaikin_oscillator(
+                &highs,
+                &lows,
+                &close,
+                &volume,
+                &3_usize,
+                &0.0,
+                &crate::ConstantModelType::SimpleMovingMode,
+                &crate::ConstantModelType::SimpleMovingMode
+            )
+        );
+    }
+
+    #[test]
+    fn single_chaikin_oscillator_ma_previous() {
+        let highs = vec![100.53, 100.68, 100.73, 100.79, 100.88];
+        let lows = vec![99.62, 99.97, 100.28, 100.12, 100.07];
+        let close = vec![100.01, 100.44, 100.39, 100.63, 100.71];
+        let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0];
+        assert_eq!(
+            (29.53562602566504, 55.474285714286914), 
+            single::chaikin_oscillator(
+                &highs,
+                &lows,
+                &close,
+                &volume,
+                &3_usize,
+                &93.76,
+                &crate::ConstantModelType::SimpleMovingAverage,
+                &crate::ConstantModelType::SimpleMovingAverage
+            )
+        );
+    }
+
+    #[test]
+    fn single_chaikin_oscillator_different_models() {
+        let highs = vec![100.53, 100.68, 100.73, 100.79, 100.88];
+        let lows = vec![99.62, 99.97, 100.28, 100.12, 100.07];
+        let close = vec![100.01, 100.44, 100.39, 100.63, 100.71];
+        let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0];
+        assert_eq!(
+            (22.17005097965847, -38.28571428571309),
+            single::chaikin_oscillator(
+                &highs,
+                &lows,
+                &close,
+                &volume,
+                &3_usize,
+                &0.0,
+                &crate::ConstantModelType::SimpleMovingAverage,
+                &crate::ConstantModelType::SimpleMovingMedian
+            )
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn single_chaikin_oscillator_short_period_panic() {
+        let highs = vec![100.53, 100.68, 100.73, 100.79, 100.88];
+        let lows = vec![99.62, 99.97, 100.28, 100.12, 100.07];
+        let close = vec![100.01, 100.44, 100.39, 100.63, 100.71];
+        let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0];
+        single::chaikin_oscillator(
+                &highs,
+                &lows,
+                &close,
+                &volume,
+                &30_usize,
+                &0.0,
+                &crate::ConstantModelType::SimpleMovingAverage,
+                &crate::ConstantModelType::SimpleMovingMedian
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn single_chaikin_oscillator_highs_panic() {
+        let highs = vec![100.53, 100.68, 100.79, 100.88];
+        let lows = vec![99.62, 99.97, 100.28, 100.12, 100.07];
+        let close = vec![100.01, 100.44, 100.39, 100.63, 100.71];
+        let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0];
+        single::chaikin_oscillator(
+                &highs,
+                &lows,
+                &close,
+                &volume,
+                &3_usize,
+                &0.0,
+                &crate::ConstantModelType::SimpleMovingAverage,
+                &crate::ConstantModelType::SimpleMovingMedian
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn single_chaikin_oscillator_lows_panic() {
+        let highs = vec![100.53, 100.68, 100.73, 100.79, 100.88];
+        let lows = vec![99.97, 100.28, 100.12, 100.07];
+        let close = vec![100.01, 100.44, 100.39, 100.63, 100.71];
+        let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0];
+        single::chaikin_oscillator(
+                &highs,
+                &lows,
+                &close,
+                &volume,
+                &3_usize,
+                &0.0,
+                &crate::ConstantModelType::SimpleMovingAverage,
+                &crate::ConstantModelType::SimpleMovingMedian
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn single_chaikin_oscillator_close_panic() {
+        let highs = vec![100.53, 100.68, 100.73, 100.79, 100.88];
+        let lows = vec![99.62, 99.97, 100.28, 100.12, 100.07];
+        let close = vec![100.01, 100.44, 100.39, 100.71];
+        let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0];
+        single::chaikin_oscillator(
+                &highs,
+                &lows,
+                &close,
+                &volume,
+                &3_usize,
+                &0.0,
+                &crate::ConstantModelType::SimpleMovingAverage,
+                &crate::ConstantModelType::SimpleMovingMedian
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn single_chaikin_oscillator_volume_panic() {
+        let highs = vec![100.53, 100.68, 100.73, 100.79, 100.88];
+        let lows = vec![99.62, 99.97, 100.28, 100.12, 100.07];
+        let close = vec![100.01, 100.44, 100.39, 100.63, 100.71];
+        let volume = vec![268.0, 319.0, 381.0, 414.0];
+        single::chaikin_oscillator(
+                &highs,
+                &lows,
+                &close,
+                &volume,
+                &3_usize,
+                &0.0,
+                &crate::ConstantModelType::SimpleMovingAverage,
+                &crate::ConstantModelType::SimpleMovingMedian
+        );
+    }
+
+    #[test]
+    fn bulk_chaikin_oscillator() {
+        let highs = vec![100.53, 100.68, 100.73, 100.79, 100.88, 100.51, 100.17];
+        let lows = vec![99.62, 99.97, 100.28, 100.12, 100.07, 99.86, 99.60];
+        let close = vec![100.01, 100.44, 100.39, 100.63, 100.71, 100.35, 100.12];
+        let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0, 396.0, 362.0];
+        assert_eq!(
+            vec![(22.17005097965847, -38.28571428571309), (212.46394428616193, 65.05231388329526), (233.52784525415484, -129.68101945004022)],
+            bulk::chaikin_oscillator(
+                &highs,
+                &lows,
+                &close,
+                &volume,
+                &3_usize,
+                &5_usize,
+                &0.0,
+                &crate::ConstantModelType::SimpleMovingAverage,
+                &crate::ConstantModelType::SimpleMovingMedian
+            )
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_chaikin_oscillator_period_panic() {
+        let highs = vec![100.53, 100.68, 100.73, 100.79, 100.88, 100.51, 100.17];
+        let lows = vec![99.62, 99.97, 100.28, 100.12, 100.07, 99.86, 99.60];
+        let close = vec![100.01, 100.44, 100.39, 100.63, 100.71, 100.35, 100.12];
+        let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0, 396.0, 362.0];
+        bulk::chaikin_oscillator(
+                &highs,
+                &lows,
+                &close,
+                &volume,
+                &3_usize,
+                &50_usize,
+                &0.0,
+                &crate::ConstantModelType::SimpleMovingAverage,
+                &crate::ConstantModelType::SimpleMovingMedian
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_chaikin_oscillator_high_panic() {
+        let highs = vec![100.53, 100.68, 100.79, 100.88, 100.51, 100.17];
+        let lows = vec![99.62, 99.97, 100.28, 100.12, 100.07, 99.86, 99.60];
+        let close = vec![100.01, 100.44, 100.39, 100.63, 100.71, 100.35, 100.12];
+        let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0, 396.0, 362.0];
+        bulk::chaikin_oscillator(
+                &highs,
+                &lows,
+                &close,
+                &volume,
+                &3_usize,
+                &5_usize,
+                &0.0,
+                &crate::ConstantModelType::SimpleMovingAverage,
+                &crate::ConstantModelType::SimpleMovingMedian
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_chaikin_oscillator_low_panic() {
+        let highs = vec![100.53, 100.68, 100.73, 100.79, 100.88, 100.51, 100.17];
+        let lows = vec![99.62, 99.97, 100.12, 100.07, 99.86, 99.60];
+        let close = vec![100.01, 100.44, 100.39, 100.63, 100.71, 100.35, 100.12];
+        let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0, 396.0, 362.0];
+        bulk::chaikin_oscillator(
+                &highs,
+                &lows,
+                &close,
+                &volume,
+                &3_usize,
+                &5_usize,
+                &0.0,
+                &crate::ConstantModelType::SimpleMovingAverage,
+                &crate::ConstantModelType::SimpleMovingMedian
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_chaikin_oscillator_close_panic() {
+        let highs = vec![100.53, 100.68, 100.73, 100.79, 100.88, 100.51, 100.17];
+        let lows = vec![99.62, 99.97, 100.28, 100.12, 100.07, 99.86, 99.60];
+        let close = vec![100.01, 100.44, 100.63, 100.71, 100.35, 100.12];
+        let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0, 396.0, 362.0];
+        bulk::chaikin_oscillator(
+                &highs,
+                &lows,
+                &close,
+                &volume,
+                &3_usize,
+                &5_usize,
+                &0.0,
+                &crate::ConstantModelType::SimpleMovingAverage,
+                &crate::ConstantModelType::SimpleMovingMedian
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_chaikin_oscillator_volume_panic() {
+        let highs = vec![100.53, 100.68, 100.73, 100.79, 100.88, 100.51, 100.17];
+        let lows = vec![99.62, 99.97, 100.28, 100.12, 100.07, 99.86, 99.60];
+        let close = vec![100.01, 100.44, 100.39, 100.63, 100.71, 100.35, 100.12];
+        let volume = vec![268.0, 319.0, 381.0, 376.0, 396.0, 362.0];
+        bulk::chaikin_oscillator(
+                &highs,
+                &lows,
+                &close,
+                &volume,
+                &3_usize,
+                &5_usize,
+                &0.0,
+                &crate::ConstantModelType::SimpleMovingAverage,
+                &crate::ConstantModelType::SimpleMovingMedian
+        );
     }
 }

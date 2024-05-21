@@ -35,6 +35,9 @@ pub mod candle_indicators;
 pub mod correlation_indicators;
 pub mod momentum_indicators;
 pub mod moving_average;
+pub mod other_indicators;
+pub mod strength_indicators;
+pub mod trend_indicators;
 pub mod volatility_indicators;
 
 /// The `CentralPoint enum` is used to determine what the central point around

@@ -105,7 +105,7 @@ pub mod single {
             panic!("Prices ({:?}) is empty", prices);
         };
 
-        let rounded_prices = prices.iter().map(|x| x.round() as u64).collect();
+        let rounded_prices = prices.iter().map(|x| x.round() as i64).collect();
         return most_frequent(rounded_prices);
     }
 
@@ -298,10 +298,10 @@ pub mod single {
     // TODO: Surely this can be improved
     //     sorting could eventually be done by f64 sort_floats method once it is no longer
     //     experimental
-    fn most_frequent(vector: Vec<u64>) -> f64 {
-        let mut map: HashMap<u64, usize> = HashMap::new();
+    fn most_frequent(vector: Vec<i64>) -> f64 {
+        let mut map: HashMap<i64, usize> = HashMap::new();
         for x in vector {
-            *map.entry(x as u64).or_default() += 1;
+            *map.entry(x as i64).or_default() += 1;
         }
         let mut max_price = vec![0];
         let mut max_count = usize::MIN;
@@ -316,7 +316,7 @@ pub mod single {
             }
         }
         if max_price.len() > 1 {
-            return max_price.iter().sum::<u64>() as f64 / max_price.len() as f64;
+            return max_price.iter().sum::<i64>() as f64 / max_price.len() as f64;
         }
         return max_price[0] as f64;
     }

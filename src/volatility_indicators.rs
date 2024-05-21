@@ -5,7 +5,7 @@
 /// `single` module holds functions that return a singular values
 pub mod single {
     use crate::basic_indicators::single::max;
-    /// The `ulcer_index` how quickly the price at t is able to get back to its former high
+    /// The `ulcer_index` calculates how quickly the price at t is able to get back to its former high
     ///
     /// It can be used to instead of the standard deviation so is an option in the `DeviationModel`
     /// enum.
@@ -38,7 +38,7 @@ pub mod single {
     }
 }
 
-/// `bulk` module holds functions that return multiple valus for `momentum_indicators`
+/// `bulk` module holds functions that return multiple values
 pub mod bulk {
     use crate::volatility_indicators::single;
     /// The `ulcer_index` how quickly the price at t is able to get back to its former high
