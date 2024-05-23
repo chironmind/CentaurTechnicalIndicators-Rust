@@ -122,6 +122,60 @@ pub mod single {
         let aroon_oscillaor = aroon_oscillator(&aroon_up, &aroon_down);
         return (aroon_up, aroon_down, aroon_oscillaor);
     }
+
+    // TODO: Probably need a long and short function otherwise need to pass a string in the if
+    // which is meh
+    /// The `long_parabolic_time_price_system` sets Stop and Reverse (SaR) points based on a significant point
+    /// (period low) or previous SaR, time, and price. The function is to be used when considering
+    /// a long position.
+    ///
+    /// Welles uses the significant point as the SaR when no SaR points have been calculated
+    /// then uses the previous SaR. He also uses an acceleration factor that increases by 0.02 every
+    /// day a new high is hit and never goes over 0.2, but in this function the value is determined 
+    /// by the function caller.
+    /// 
+    /// Welles has a rule that the SaR at t+1 cannot be above the low for t and t-1.
+    /// The single function doesn't take this into account and makes the assumption that the caller 
+    /// will pass in the correct value for `previous_sar`.
+    ///
+    /// # Arguments
+    ///
+    /// * `previous_sar` - Previous Stop and Reverse, if none use the significant point, which is
+    /// the period low if going long, or the period high if going short.
+    /// * `extreme_point` - Highest high or lowest low of the period being observed
+    /// * `acceleration_factor` - Factor used to multiply the difference between extreme point and
+    /// previous SaR.
+    /// * `low` - Lowest low for t or t-1
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let previous_sar = 50.09306;
+    /// let extreme_point = 52.35;
+    /// let acceleration_factor = 0.02;
+    /// let low = 50.6;
+    /// let parabolic_time_price_system =
+    /// rust_ti::trend_indicators::single::long_parabolic_time_price_system(&previous_sar,
+    /// &extreme_point, &acceleration_factor, &low);
+    /// assert_eq!(50.1381988, parabolic_time_price_system);
+    ///
+    /// let previous_sar = 51.96;
+    /// let extreme_point = 54.2;
+    /// let acceleration_factor = 0.12;
+    /// let low = 52.1;
+    /// let parabolic_time_price_system = 
+    /// rust_ti::trend_indicators::single::long_parabolic_time_price_system(&previous_sar,
+    /// &extreme_point, &acceleration_factor, &low);
+    /// assert_eq!(52.1, parabolic_time_price_system);
+    /// ```
+    pub fn long_parabolic_time_price_system(previous_sar: &f64, extreme_point: &f64, acceleration_factor: &f64, low: &f64) -> f64 {
+        let sar = previous_sar + acceleration_factor * (extreme_point - previous_sar);
+        if &sar > low {
+            return *low
+        };
+        return sar;
+    }
+    
 }
 
 /// `bulk` module holds functions that return multiple vaues
