@@ -902,8 +902,6 @@ pub mod single {
             )
         };
 
-    
-
         let mut ad = vec![accumulation_distribution(
             &highs[0],
             &lows[0],
@@ -966,7 +964,7 @@ pub mod single {
         return (short_period_average - long_period_average, ad[0]);
     }
 
-    /// The `mcginley_dynamic_chaikin_oscillator` measures momentum by taking the difference a short period and 
+    /// The `mcginley_dynamic_chaikin_oscillator` measures momentum by taking the difference a short period and
     /// long period Accumulation Distribution line, but uses the McGinley dynamic rather than a
     /// moving constant model.
     ///
@@ -1072,13 +1070,19 @@ pub mod single {
             ));
         }
         let latest_ad = ad.last().unwrap();
-        let short_period_mcginley = mcginley_dynamic(latest_ad, &previous_short_mcginley_dynamic, &short_period);
+        let short_period_mcginley =
+            mcginley_dynamic(latest_ad, &previous_short_mcginley_dynamic, &short_period);
 
-        let long_period_mcginley = mcginley_dynamic(latest_ad, &previous_long_mcginley_dynamic, &long_period);
+        let long_period_mcginley =
+            mcginley_dynamic(latest_ad, &previous_long_mcginley_dynamic, &long_period);
 
-        return (short_period_mcginley - long_period_mcginley, ad[0], short_period_mcginley, long_period_mcginley);
+        return (
+            short_period_mcginley - long_period_mcginley,
+            ad[0],
+            short_period_mcginley,
+            long_period_mcginley,
+        );
     }
-
 
     fn previous_gains_loss(prices: &[f64]) -> (Vec<f64>, Vec<f64>) {
         if prices.is_empty() {
@@ -1978,7 +1982,7 @@ pub mod bulk {
         return cos;
     }
 
-    /// The `mcginley_dynamic_chaikin_oscillator` measures momentum by taking the difference a short period and 
+    /// The `mcginley_dynamic_chaikin_oscillator` measures momentum by taking the difference a short period and
     /// long period Accumulation Distribution line, but uses the McGinley dynamic rather than a
     /// moving constant model.
     ///
@@ -2079,7 +2083,6 @@ pub mod bulk {
         }
         return cos;
     }
-
 }
 
 #[cfg(test)]
@@ -4157,20 +4160,18 @@ mod tests {
         let close = vec![100.01, 100.44, 100.39, 100.63, 100.71];
         let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0];
         assert_eq!(
-            (0.0, -38.28571428571309, 304.76047677253655, 304.76047677253655),
+            (
+                0.0,
+                -38.28571428571309,
+                304.76047677253655,
+                304.76047677253655
+            ),
             single::mcginley_dynamic_chaikin_oscillator(
-                &highs,
-                &lows,
-                &close,
-                &volume,
-                &3_usize,
-                &0.0,
-                &0.0,
-                &0.0,
+                &highs, &lows, &close, &volume, &3_usize, &0.0, &0.0, &0.0,
             )
         );
     }
-    
+
     #[test]
     fn single_mcginley_dynamic_chainkin_oscillator_previous() {
         let highs = vec![100.68, 100.73, 100.79, 100.88, 100.51];
@@ -4178,7 +4179,12 @@ mod tests {
         let close = vec![100.44, 100.39, 100.63, 100.71, 100.35];
         let volume = vec![319.0, 381.0, 414.0, 376.0, 396.0];
         assert_eq!(
-            (3.5328972785125643, 65.05231388329526, 313.592719968818, 310.05982269030545),
+            (
+                3.5328972785125643,
+                65.05231388329526,
+                313.592719968818,
+                310.05982269030545
+            ),
             single::mcginley_dynamic_chaikin_oscillator(
                 &highs,
                 &lows,
@@ -4200,14 +4206,7 @@ mod tests {
         let close = vec![100.01, 100.44, 100.39, 100.63, 100.71];
         let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0];
         single::mcginley_dynamic_chaikin_oscillator(
-            &highs,
-            &lows,
-            &close,
-            &volume,
-            &30_usize,
-            &0.0,
-            &0.0,
-            &0.0,
+            &highs, &lows, &close, &volume, &30_usize, &0.0, &0.0, &0.0,
         );
     }
 
@@ -4219,14 +4218,7 @@ mod tests {
         let close = vec![100.01, 100.44, 100.39, 100.63, 100.71];
         let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0];
         single::mcginley_dynamic_chaikin_oscillator(
-            &highs,
-            &lows,
-            &close,
-            &volume,
-            &3_usize,
-            &0.0,
-            &0.0,
-            &0.0,
+            &highs, &lows, &close, &volume, &3_usize, &0.0, &0.0, &0.0,
         );
     }
 
@@ -4238,14 +4230,7 @@ mod tests {
         let close = vec![100.01, 100.44, 100.39, 100.63, 100.71];
         let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0];
         single::mcginley_dynamic_chaikin_oscillator(
-            &highs,
-            &lows,
-            &close,
-            &volume,
-            &3_usize,
-            &0.0,
-            &0.0,
-            &0.0,
+            &highs, &lows, &close, &volume, &3_usize, &0.0, &0.0, &0.0,
         );
     }
 
@@ -4257,14 +4242,7 @@ mod tests {
         let close = vec![100.01, 100.44, 100.39, 100.71];
         let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0];
         single::mcginley_dynamic_chaikin_oscillator(
-            &highs,
-            &lows,
-            &close,
-            &volume,
-            &3_usize,
-            &0.0,
-            &0.0,
-            &0.0,
+            &highs, &lows, &close, &volume, &3_usize, &0.0, &0.0, &0.0,
         );
     }
 
@@ -4276,14 +4254,7 @@ mod tests {
         let close = vec![100.01, 100.44, 100.39, 100.63, 100.71];
         let volume = vec![268.0, 319.0, 381.0, 414.0];
         single::mcginley_dynamic_chaikin_oscillator(
-            &highs,
-            &lows,
-            &close,
-            &volume,
-            &3_usize,
-            &0.0,
-            &0.0,
-            &0.0,
+            &highs, &lows, &close, &volume, &3_usize, &0.0, &0.0, &0.0,
         );
     }
 
@@ -4295,21 +4266,27 @@ mod tests {
         let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0, 396.0, 362.0];
         assert_eq!(
             vec![
-                (0.0, -38.28571428571309, 304.76047677253655, 304.76047677253655),
-                (3.5328972785125643, 65.05231388329526, 313.592719968818, 310.05982269030545),
-                (5.129795785341628, -129.68101945004022, 317.3727529530195, 312.2429571676779)
+                (
+                    0.0,
+                    -38.28571428571309,
+                    304.76047677253655,
+                    304.76047677253655
+                ),
+                (
+                    3.5328972785125643,
+                    65.05231388329526,
+                    313.592719968818,
+                    310.05982269030545
+                ),
+                (
+                    5.129795785341628,
+                    -129.68101945004022,
+                    317.3727529530195,
+                    312.2429571676779
+                )
             ],
-
             bulk::mcginley_dynamic_chaikin_oscillator(
-                &highs,
-                &lows,
-                &close,
-                &volume,
-                &3_usize,
-                &5_usize,
-                &0.0,
-                &0.0,
-                &0.0,
+                &highs, &lows, &close, &volume, &3_usize, &5_usize, &0.0, &0.0, &0.0,
             )
         );
     }
@@ -4322,21 +4299,27 @@ mod tests {
         let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0, 396.0, 362.0];
         assert_eq!(
             vec![
-                (6.94018243658914, 61.71428571428691, 209.381384426173, 202.44120198958387),
-                (7.819833984160823, 165.05231388329526, 211.2670133370585, 203.44717935289768),
-                (8.148929230616375, -29.681019450040225, 211.95520922146426, 203.80627999084788)
+                (
+                    6.94018243658914,
+                    61.71428571428691,
+                    209.381384426173,
+                    202.44120198958387
+                ),
+                (
+                    7.819833984160823,
+                    165.05231388329526,
+                    211.2670133370585,
+                    203.44717935289768
+                ),
+                (
+                    8.148929230616375,
+                    -29.681019450040225,
+                    211.95520922146426,
+                    203.80627999084788
+                )
             ],
-
             bulk::mcginley_dynamic_chaikin_oscillator(
-                &highs,
-                &lows,
-                &close,
-                &volume,
-                &3_usize,
-                &5_usize,
-                &100.0,
-                &205.0,
-                &200.0,
+                &highs, &lows, &close, &volume, &3_usize, &5_usize, &100.0, &205.0, &200.0,
             )
         );
     }
@@ -4348,15 +4331,7 @@ mod tests {
         let close = vec![100.01, 100.44, 100.39, 100.63, 100.71, 100.35, 100.12];
         let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0, 396.0, 362.0];
         bulk::mcginley_dynamic_chaikin_oscillator(
-            &highs,
-            &lows,
-            &close,
-            &volume,
-            &3_usize,
-            &50_usize,
-            &0.0,
-            &0.0,
-            &0.0,
+            &highs, &lows, &close, &volume, &3_usize, &50_usize, &0.0, &0.0, &0.0,
         );
     }
 
@@ -4368,15 +4343,7 @@ mod tests {
         let close = vec![100.01, 100.44, 100.39, 100.63, 100.71, 100.35, 100.12];
         let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0, 396.0, 362.0];
         bulk::mcginley_dynamic_chaikin_oscillator(
-            &highs,
-            &lows,
-            &close,
-            &volume,
-            &3_usize,
-            &5_usize,
-            &0.0,
-            &0.0,
-            &0.0,
+            &highs, &lows, &close, &volume, &3_usize, &5_usize, &0.0, &0.0, &0.0,
         );
     }
 
@@ -4388,15 +4355,7 @@ mod tests {
         let close = vec![100.01, 100.44, 100.39, 100.63, 100.71, 100.35, 100.12];
         let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0, 396.0, 362.0];
         bulk::mcginley_dynamic_chaikin_oscillator(
-            &highs,
-            &lows,
-            &close,
-            &volume,
-            &3_usize,
-            &5_usize,
-            &0.0,
-            &0.0,
-            &0.0,
+            &highs, &lows, &close, &volume, &3_usize, &5_usize, &0.0, &0.0, &0.0,
         );
     }
 
@@ -4408,15 +4367,7 @@ mod tests {
         let close = vec![100.01, 100.44, 100.63, 100.71, 100.35, 100.12];
         let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0, 396.0, 362.0];
         bulk::mcginley_dynamic_chaikin_oscillator(
-            &highs,
-            &lows,
-            &close,
-            &volume,
-            &3_usize,
-            &5_usize,
-            &0.0,
-            &0.0,
-            &0.0,
+            &highs, &lows, &close, &volume, &3_usize, &5_usize, &0.0, &0.0, &0.0,
         );
     }
 
@@ -4428,15 +4379,7 @@ mod tests {
         let close = vec![100.01, 100.44, 100.39, 100.63, 100.71, 100.35, 100.12];
         let volume = vec![268.0, 319.0, 381.0, 376.0, 396.0, 362.0];
         bulk::mcginley_dynamic_chaikin_oscillator(
-            &highs,
-            &lows,
-            &close,
-            &volume,
-            &3_usize,
-            &5_usize,
-            &0.0,
-            &0.0,
-            &0.0,
+            &highs, &lows, &close, &volume, &3_usize, &5_usize, &0.0, &0.0, &0.0,
         );
     }
 }
