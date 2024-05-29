@@ -4,7 +4,10 @@
 //!
 //! The points returned from the various functions should be plotted on an OHLC chart.
 
-use crate::basic_indicators::single::{max, min};
+use crate::basic_indicators::single::{absolute_deviation, max, min, standard_deviation};
+use crate::volatility_indicators::single::ulcer_index;
+use crate::DeviationModel;
+
 /// The `get_peaks` function returns all peaks over a period, and returns a vector of tuples where the
 /// first item is the peak value, and the second it the peak index.
 ///
@@ -96,6 +99,8 @@ pub fn get_peaks(prices: &[f64], period: &usize) -> Vec<(f64, usize)> {
 ///
 /// ```
 /// let lows = vec![98.0, 101.0, 95.0, 100.0, 97.0];
+/// let period: usize = 3;
+/// let valleys = rust_ti::chart_trends::get_valleys(&lows, &period);
 /// let period: usize = 3;
 /// let valleys = rust_ti::chart_trends::get_valleys(&lows, &period);
 /// assert_eq!(vec![(95.0, 2)], valleys);
@@ -202,8 +207,6 @@ pub fn get_peak_trend(prices: &[f64], period: &usize) -> (f64, f64) {
 /// ```
 /// let lows = vec![98.0, 101.0, 95.0, 100.0, 97.0, 93.0];
 /// let period: usize = 3;
-/// let valley_trend = rust_ti::chart_trends::get_valley_trend(&lows, &period);
-/// assert_eq!((-0.6666666666666666, 96.333333333333333), valley_trend);
 /// ```
 pub fn get_valley_trend(prices: &[f64], period: &usize) -> (f64, f64) {
     let valleys = get_valleys(prices, period);
@@ -231,7 +234,7 @@ pub fn get_overall_trend(prices: &[f64]) -> (f64, f64) {
     let mut indexed_prices = Vec::new();
     for i in 0..prices.len() {
         indexed_prices.push((prices[i], i));
-    };
+    }
     return get_trend_line(indexed_prices);
 }
 
@@ -272,9 +275,77 @@ pub fn get_overall_trend(prices: &[f64]) -> (f64, f64) {
 /// let standard_deviation_multiplier = 2.0;
 /// let sensitivity_multiplier = 2.0;
 /// let trend_break_down = rust_ti::chart_trends::break_down_trends(&prices,
-/// &standard_deviation_multiplier, &sensitivity_multiplier);
-/// assert_eq!(vec!
+/// &standard_deviation_multiplier, &sensitivity_multiplier,
+/// &rust_ti::DeviationModel::StandardDeviation);
+/// assert_eq!(vec![
+///         (0, 2, 1.5, 100.16666666666667),
+///         (3, 5, -1.0, 103.66666666666667),
+///         (6, 7, 1.0, 96.0),
+///         (8, 9, 1.0, 98.0),
+///         (10, 11, -1.0, 115.0),
+///         (12, 13, -4.0, 149.0)],
+///         trend_break_down);
+///
+/// // TODO: example with ulcer index, should it be length of trend or trend -1
 /// ```
+pub fn break_down_trends(
+    prices: &[f64],
+    standard_deviation_multiplier: &f64,
+    sensitivity_multiplier: &f64,
+    deviation_model: &crate::DeviationModel,
+) -> Vec<(usize, usize, f64, f64)> {
+    if prices.is_empty() {
+        panic!("Prices cannot be empty");
+    }
+    let mut trends: Vec<(usize, usize, f64, f64)> = Vec::new();
+    let mut current_slope = 0.0;
+    let mut current_intercept = 0.0;
+    let mut start_index: usize = 0;
+    let mut end_index: usize = 1;
+    for (index, price) in prices.iter().enumerate() {
+        if &index > &end_index {
+            let trend_line: Vec<f64> = (start_index..index+1)
+                .map(|x| &current_intercept + (&current_slope * x as f64))
+                .collect();
+            let trend_length = trend_line.len() as i32;
+            let adjusted_multiplier =
+                standard_deviation_multiplier + ((1.0 / sensitivity_multiplier).powi(trend_length));
+            let trend_deviation = match deviation_model {
+                DeviationModel::StandardDeviation => standard_deviation(&trend_line),
+                DeviationModel::MeanAbsoluteDeviation => {
+                    absolute_deviation(&trend_line, &crate::CentralPoint::Mean)
+                }
+                DeviationModel::MedianAbsoluteDeviation => {
+                    absolute_deviation(&trend_line, &crate::CentralPoint::Median)
+                }
+                DeviationModel::ModeAbsoluteDeviation => {
+                    absolute_deviation(&trend_line, &crate::CentralPoint::Mode)
+                }
+                DeviationModel::UlcerIndex => ulcer_index(&trend_line),
+                _ => panic!("Unsupported DeviationModel"),
+            };
+            let deviation_multiplied = trend_deviation * adjusted_multiplier;
+            let upper_band = trend_line.last().unwrap() + deviation_multiplied;
+            let lower_band = trend_line.last().unwrap() - deviation_multiplied;
+            if price > &upper_band || price < &lower_band {
+                trends.push((start_index, end_index, current_slope, current_intercept));
+                start_index = index;
+                end_index = index + 1;
+                current_slope = 0.0;
+                current_intercept = 0.0;
+                continue;
+            }
+        }
+        let indexed_points = (start_index..index+1)
+            .map(|x| (prices[x], x))
+            .collect();
+        let current_trend = get_trend_line(indexed_points);
+        current_slope = current_trend.0;
+        current_intercept = current_trend.1;
+        end_index = index;
+    }
+    return trends;
+}
 
 #[cfg(test)]
 mod tests {
@@ -354,6 +425,9 @@ mod tests {
     #[test]
     fn overall_trend() {
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
-        assert_eq!((-0.01000000000001819, 100.37200000000004), get_overall_trend(&prices));
+        assert_eq!(
+            (-0.01000000000001819, 100.37200000000004),
+            get_overall_trend(&prices)
+        );
     }
 }
