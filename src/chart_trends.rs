@@ -266,6 +266,7 @@ pub fn get_overall_trend(prices: &[f64]) -> (f64, f64) {
 /// determines a new trend. Use 2.0 as a default.
 /// * `sensitivity_multiplier` - A time based adjustment for the standard deviation, to stop the
 /// function from constantly creating new trends. Use 2.0 as a default.
+/// * `deviation_model` - A variant of the DeviationModel enum
 ///
 /// # Examples
 ///
@@ -279,14 +280,23 @@ pub fn get_overall_trend(prices: &[f64]) -> (f64, f64) {
 /// &rust_ti::DeviationModel::StandardDeviation);
 /// assert_eq!(vec![
 ///         (0, 2, 1.5, 100.16666666666667),
-///         (3, 5, -1.0, 103.66666666666667),
-///         (6, 7, 1.0, 96.0),
-///         (8, 9, 1.0, 98.0),
-///         (10, 11, -1.0, 115.0),
-///         (12, 13, -4.0, 149.0)],
+///         (2, 5, -1.4, 105.4),
+///         (5, 11, 0.8928571428571429, 96.57142857142857),
+///         (11, 14, -1.6, 120.5)],
 ///         trend_break_down);
 ///
-/// // TODO: example with ulcer index, should it be length of trend or trend -1
+/// let ulcer_index_trend_break_down = rust_ti::chart_trends::break_down_trends(&prices,
+/// &standard_deviation_multiplier, &sensitivity_multiplier,
+/// &rust_ti::DeviationModel::UlcerIndex);
+/// assert_eq!(vec![
+///         (0, 1, 2.0, 100.0),
+///         (1, 2, 1.0, 101.0),
+///         (2, 6, -0.4, 102.4),
+///         (6, 7, 1.0, 96.0),
+///         (7, 8, 3.0, 82.0),
+///         (8, 9, 1.0, 98.0),
+///         (9, 14, -1.7714285714285714, 122.7047619047619)],
+///         ulcer_index_trend_break_down);
 /// ```
 pub fn break_down_trends(
     prices: &[f64],
@@ -303,8 +313,11 @@ pub fn break_down_trends(
     let mut start_index: usize = 0;
     let mut end_index: usize = 1;
     for (index, price) in prices.iter().enumerate() {
+        if index == 0 {
+            continue;
+        };
         if &index > &end_index {
-            let trend_line: Vec<f64> = (start_index..index+1)
+            let trend_line: Vec<f64> = (start_index..index + 1)
                 .map(|x| &current_intercept + (&current_slope * x as f64))
                 .collect();
             let trend_length = trend_line.len() as i32;
@@ -329,21 +342,17 @@ pub fn break_down_trends(
             let lower_band = trend_line.last().unwrap() - deviation_multiplied;
             if price > &upper_band || price < &lower_band {
                 trends.push((start_index, end_index, current_slope, current_intercept));
-                start_index = index;
-                end_index = index + 1;
-                current_slope = 0.0;
-                current_intercept = 0.0;
-                continue;
+                start_index = index - 1;
+                end_index = index;
             }
         }
-        let indexed_points = (start_index..index+1)
-            .map(|x| (prices[x], x))
-            .collect();
+        let indexed_points = (start_index..index + 1).map(|x| (prices[x], x)).collect();
         let current_trend = get_trend_line(indexed_points);
         current_slope = current_trend.0;
         current_intercept = current_trend.1;
         end_index = index;
     }
+    trends.push((start_index, end_index, current_slope, current_intercept));
     return trends;
 }
 
@@ -429,5 +438,90 @@ mod tests {
             (-0.01000000000001819, 100.37200000000004),
             get_overall_trend(&prices)
         );
+    }
+
+    #[test]
+    fn break_down_trends_std_dev() {
+        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
+        assert_eq!(
+            vec![
+                (0, 3, 0.06099999999998999, 100.30100000000002),
+                (3, 4, -0.19000000000005457, 100.95000000000019)
+            ],
+            break_down_trends(
+                &prices,
+                &2.0,
+                &1.0,
+                &crate::DeviationModel::StandardDeviation
+            )
+        );
+    }
+
+    #[test]
+    fn break_down_trends_mean_abs_dev() {
+        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
+        assert_eq!(
+            vec![
+                (0, 3, 0.06099999999998999, 100.30100000000002),
+                (3, 4, -0.19000000000005457, 100.95000000000019)
+            ],
+            break_down_trends(
+                &prices,
+                &2.0,
+                &1.0,
+                &crate::DeviationModel::MeanAbsoluteDeviation
+            )
+        );
+    }
+
+    #[test]
+    fn break_down_trends_median_abs_dev() {
+        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
+        assert_eq!(
+            vec![
+                (0, 3, 0.06099999999998999, 100.30100000000002),
+                (3, 4, -0.19000000000005457, 100.95000000000019)
+            ],
+            break_down_trends(
+                &prices,
+                &2.0,
+                &1.0,
+                &crate::DeviationModel::MedianAbsoluteDeviation
+            )
+        );
+    }
+
+    #[test]
+    fn break_down_trends_mode_abs_dev() {
+        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
+        assert_eq!(
+            vec![(0, 4, -0.01000000000001819, 100.37200000000004)],
+            break_down_trends(
+                &prices,
+                &2.0,
+                &1.0,
+                &crate::DeviationModel::ModeAbsoluteDeviation
+            )
+        );
+    }
+
+    #[test]
+    fn break_down_trends_ulcer_index() {
+        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
+        assert_eq!(
+            vec![
+                (0, 1, 0.2599999999999909, 100.2),
+                (1, 2, 0.06999999999993634, 100.3900000000001),
+                (2, 4, -0.16999999999999696, 100.87666666666667)
+            ],
+            break_down_trends(&prices, &2.0, &1.0, &crate::DeviationModel::UlcerIndex)
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn break_down_trends_panic() {
+        let prices = Vec::new();
+        break_down_trends(&prices, &2.0, &1.0, &crate::DeviationModel::UlcerIndex);
     }
 }
