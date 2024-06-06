@@ -65,7 +65,7 @@ pub enum MovingAverageType<'a> {
     Personalised(&'a f64, &'a f64),
 }
 
-/// The `ConstantModelType` is used by a number of functions to determine the centerpoint around
+/// The `ConstantModelType` enum is used by a number of functions to determine the centerpoint around
 /// which to do its calculations.
 ///
 /// Most of the time it uses a flavor of the moving average, but more are provided here to give the
@@ -85,7 +85,7 @@ pub enum ConstantModelType<'a> {
     SimpleMovingMode,
 }
 
-/// The `DeviationModel` is used by a number of functions to determine the deviation from a central
+/// The `DeviationModel` enum is used by a number of functions to determine the deviation from a central
 /// point.
 ///
 /// A lot of functions use the standard deviation but some also use mean and median absolute
@@ -96,4 +96,12 @@ pub enum DeviationModel {
     MedianAbsoluteDeviation,
     ModeAbsoluteDeviation,
     UlcerIndex,
+}
+
+
+/// The `Position` enum is used for indicators that need to know the position of the trade (short,
+/// long) to perform their calculations.
+pub enum Position {
+    Short, 
+    Long
 }

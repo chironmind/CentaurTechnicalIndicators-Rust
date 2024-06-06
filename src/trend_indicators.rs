@@ -236,6 +236,7 @@ pub mod single {
 pub mod bulk {
     use crate::basic_indicators::single::{max, min};
     use crate::trend_indicators::single;
+    use crate::Position;
     /// The `aroon_up` indicator tracks the uptrends in the `aroon_indicator` and is used to
     /// calculate the `aroon_oscillator`.
     ///
@@ -410,20 +411,35 @@ pub mod bulk {
     /// 0.2.
     /// * `acceleration_factor_step` - The step by which to increase the acceleration factor every
     /// time it hits a new high/low. Standard is 0.02.
+    /// * `start_position` - A variant of the Position enum, whether the parabolic time system
+    /// should start long or short. If unsure start with short and 0.0 for `previous_sar`.
+    /// * `previous_sar`- Value for the previous SaR. If none use 0.0
     ///
     /// # Examples
     ///
     /// ```
     /// let highs = vec![52.35, 52.1, 51.8, 52.1, 52.5, 52.8, 52.5, 53.5, 53.5, 53.8, 54.2, 53.4, 53.5, 54.4, 55.2, 55.7, 57.0, 57.5, 58.0, 57.7, 58.0, 57.5, 57.0, 56.7, 57.5, 56.7, 56.0, 56.2, 54.8, 55.5, 54.7, 54.0, 52.5, 51.0, 51.5, 51.7, 53.0];
-    /// let lows = vec![51.5, 51.0, 50.5, 51.25, 51.7, 51.85, 51.5, 52.5, 52.5, 53.0, 52.5, 52.5, 52.1, 53.0, 54.0, 55.0, 56.0, 56.5, 57.0, 56.5, 57.3, 56.7, 56.3, 56.2, 56.0, 55.5, 55.0, 54.9, 54.0, 54.5, 53.8, 53.0, 51.5, 50.0, 50.5, 50.2, 51.5]; 
+    /// let lows = vec![51.5, 51.0, 50.5, 51.25, 51.7, 51.85, 51.5, 52.5, 52.5, 53.0, 52.5, 52.5, 52.1, 53.0, 54.0, 55.0, 56.0, 56.5, 57.0, 56.5, 57.3, 56.7, 56.3, 56.2, 56.0, 55.5, 55.0, 54.9, 54.0, 54.5, 53.8, 53.0, 51.5, 50.0, 50.5, 50.2, 51.5];
     /// let acceleration_factor_start = 0.02;
     /// let acceleration_factor_max = 0.2;
     /// let acceleration_factor_step = 0.02;
-    /// let parabolic_time_price_system = rust_ti::trend_indicators::bulk::parabolic_time_price_system(&highs, &lows,
-    /// &acceleration_factor_start, &acceleration_factor_max, &acceleration_factor_step);
+    /// let parabolic_time_price_system = rust_ti::trend_indicators::bulk::parabolic_time_price_system(&highs, 
+    /// &lows, &acceleration_factor_start, &acceleration_factor_max, &acceleration_factor_step,
+    /// &rust_ti::Position::Long, &50.0);
     /// assert_eq!(
     ///     vec![50.047, 50.093059999999994, 50.1381988, 50.182434824, 50.27513743104, 50.4266291851776, 50.56903143406695, 50.803508919341596, 51.01922820579427, 51.29730538521484, 51.64562873898906, 51.95215329031037, 52.1, 52.1, 52.596000000000004, 53.154720000000005, 53.923776000000004, 54.639020800000004, 55.311216640000005, 55.848973312000005, 56.279178649600006, 56.623342919680006, 57.966, 57.895360000000004, 57.781638400000006, 57.599107328, 57.3391965952, 57.046493003776, 56.61998398324736, 56.25318622559273, 55.86067642949789, 55.34575467218827, 54.57660373775062, 53.66128299020049, 52.929026392160395, 52.34322111372832, 50.06],
     ///     parabolic_time_price_system);
+    ///
+    /// let highs = vec![52.3, 52.0, 52.35, 52.1, 51.8, 52.1, 52.5, 52.8, 52.5, 53.5, 53.5, 53.8, 54.2, 53.4, 53.5, 54.4, 55.2, 55.7, 57.0, 57.5, 58.0, 57.7, 58.0, 57.5, 57.0, 56.7, 57.5, 56.7, 56.0, 56.2, 54.8, 55.5, 54.7, 54.0, 52.5, 51.0, 51.5, 51.7, 53.0];
+    /// let lows = vec![51.0, 50.0, 51.5, 51.0, 50.5, 51.25, 51.7, 51.85, 51.5, 52.5, 52.5, 53.0, 52.5, 52.5, 52.1, 53.0, 54.0, 55.0, 56.0, 56.5, 57.0, 56.5, 57.3, 56.7, 56.3, 56.2, 56.0, 55.5, 55.0, 54.9, 54.0, 54.5, 53.8, 53.0, 51.5, 50.0, 50.5, 50.2, 51.5];
+    /// 
+    /// let parabolic_time_price_system = rust_ti::trend_indicators::bulk::parabolic_time_price_system(&highs, 
+    /// &lows, &acceleration_factor_start, &acceleration_factor_max, &acceleration_factor_step,
+    /// &rust_ti::Position::Short, &0.0);
+    /// assert_eq!(
+    ///     vec![50.047, 50.093059999999994, 50.1381988, 50.182434824, 50.27513743104, 50.4266291851776, 50.56903143406695, 50.803508919341596, 51.01922820579427, 51.29730538521484, 51.64562873898906, 51.95215329031037, 52.1, 52.1, 52.596000000000004, 53.154720000000005, 53.923776000000004, 54.639020800000004, 55.311216640000005, 55.848973312000005, 56.279178649600006, 56.623342919680006, 57.966, 57.895360000000004, 57.781638400000006, 57.599107328, 57.3391965952, 57.046493003776, 56.61998398324736, 56.25318622559273, 55.86067642949789, 55.34575467218827, 54.57660373775062, 53.66128299020049, 52.929026392160395, 52.34322111372832, 50.06],
+    ///     parabolic_time_price_system);
+
     /// ```
     pub fn parabolic_time_price_system(
         highs: &[f64],
@@ -431,14 +447,15 @@ pub mod bulk {
         acceleration_factor_start: &f64,
         acceleration_factor_max: &f64,
         acceleration_factor_step: &f64,
+        start_position: &crate::Position,
+        previous_sar: &f64,
     ) -> Vec<f64> {
-        // TODO: 
-        //  * Reverse code that was put for long instead of short
-        //  * take in arguments to let caller decide long or short, otherwise default to short?
-        //  * allow previous SaR point to be passed in
+        // TODO:
         //  * have an example where it starts short then pivots to long, add values in front of
         //  what is there, turn current example into having long passed in and previous SaR being
         //  50.0
+        //  * support where SaR is 0
+        //  * reverse prints
         if highs.is_empty() || lows.is_empty() {
             panic!("Highs or lows cannot be empty")
         };
@@ -458,39 +475,98 @@ pub mod bulk {
         // this is to substract 0.0000001 from the max, this shouldn't impact the
         // calculation but will resolve this issue.
         let acceleration_factor_max = acceleration_factor_max - 0.0000001;
-        println!("arguments: {} {} {}", acceleration_factor_start, acceleration_factor_max, acceleration_factor_step);
         let mut acceleration_factor = *acceleration_factor_start;
-        // TODO: Reverse this
-        //let mut sars = vec![single::short_parabolic_time_price_system(
-        let mut sars = vec![single::long_parabolic_time_price_system(
-            &50.0,
-            &highs[0],
-            //&lows[0],
-            &acceleration_factor,
-            &lows[0],
-            )
-        ];
-        sars.push(single::long_parabolic_time_price_system(
-                &sars[0], 
-                &max(&highs[..2]), 
-                &acceleration_factor, 
-                &min(&lows[..2])
-                )
-            );
-        let mut position = 'l';
+        let mut sars = Vec::new();
+
+        let mut position = match start_position {
+            Position::Short => 's',
+            Position::Long => 'l',
+            _ => panic!("Unsupported position")
+        };
         let mut position_start = 0;
-        for i in 2..length {
+        let mut previous_sar = *previous_sar;
+
+        if previous_sar == 0.0 {
+            println!("no previous sar");
+            if position == 's' {
+                println!("short");
+                let mut sar = single::short_parabolic_time_price_system(
+                    &highs[0],
+                    &lows[0],
+                    &acceleration_factor,
+                    &highs[0]
+                );
+                for i in 1..length {
+                    println!("sar {}, high {}, position {}", sar, highs[i], i);
+                    if sar < highs[i] {
+                        println!("price break");
+                        position = 'l';
+                        position_start = i;
+                        previous_sar = sar;
+                        break;
+                    }
+                    let mut period_min = min(&lows[position_start..i]);
+                    if period_min > lows[i] {
+                        period_min = lows[i];
+                        if acceleration_factor <= acceleration_factor_max {
+                            acceleration_factor = acceleration_factor + acceleration_factor_step;
+                        };
+                    };
+                    let previous_max = max(&highs[i - 1..i + 1]);
+                    println!(
+                        "min: ({}), acc fac: ({}), prev min ({})",
+                        period_min, acceleration_factor, previous_max
+                    );
+
+                    sar = single::short_parabolic_time_price_system(
+                        &sar,
+                        &period_min,
+                        &acceleration_factor,
+                        &previous_max
+                    );
+                };
+                
+            } else if position == 'l' {
+                println!("Not yet implemented");
+            } else {
+                panic!("Position ({}) not a valid position", position);
+            };
+            acceleration_factor = *acceleration_factor_start;
+        };
+        
+        if position == 'l' {
+            sars.push(single::long_parabolic_time_price_system(
+                &previous_sar,
+                &max(&highs[..position_start+1]),
+                &acceleration_factor,
+                &lows[position_start],
+            ));
+        } else if position == 's' {
+            sars.push(single::short_parabolic_time_price_system(
+                &previous_sar,
+                &min(&lows[..position_start+1]),
+                &acceleration_factor,
+                &highs[position_start],
+            ));
+        };
+        // TODO: loop starts in two different place if there it had to find a sar or not
+        for i in 1..length {
             let previous_sar = sars[i - 1];
-            println!("SAR ({}), highs ({}), lows ({}), i ({}), position ({})", previous_sar, highs[i], lows[i], i, position);
+            println!(
+                "SAR ({}), highs ({}), lows ({}), i ({}), position ({})",
+                previous_sar, highs[i], lows[i], i, position
+            );
             if position == 's' && highs[i] > previous_sar {
                 position = 'l';
-                println!("position change ({})", position);
                 let period_max = highs[i];
-                let previous_min = min(&lows[i-1..i+1]);
+                let previous_min = min(&lows[i - 1..i + 1]);
                 acceleration_factor = *acceleration_factor_start;
                 let pivoted_sar = min(&lows[position_start..i]);
                 position_start = i;
-                println!("min: ({}), acc fac: ({}), prev min ({}), pivoted sar ({}), period start ({})", period_max, acceleration_factor,     previous_min, pivoted_sar, position_start);
+                println!(
+                    "min: ({}), acc fac: ({}), prev min ({}), pivoted sar ({}), period start ({})",
+                    period_max, acceleration_factor, previous_min, pivoted_sar, position_start
+                );
                 sars.push(single::long_parabolic_time_price_system(
                     &pivoted_sar,
                     &period_max,
@@ -502,11 +578,14 @@ pub mod bulk {
                 if period_min > lows[i] {
                     period_min = lows[i];
                     if acceleration_factor <= acceleration_factor_max {
-                    acceleration_factor = acceleration_factor + acceleration_factor_step;
+                        acceleration_factor = acceleration_factor + acceleration_factor_step;
                     };
                 };
-                let previous_max = max(&highs[i-1..i+1]);
-                println!("min: ({}), acc fac: ({}), prev min ({})", period_min, acceleration_factor, previous_max);
+                let previous_max = max(&highs[i - 1..i + 1]);
+                println!(
+                    "min: ({}), acc fac: ({}), prev min ({})",
+                    period_min, acceleration_factor, previous_max
+                );
                 sars.push(single::short_parabolic_time_price_system(
                     &previous_sar,
                     &period_min,
@@ -515,13 +594,15 @@ pub mod bulk {
                 ));
             } else if position == 'l' && lows[i] < previous_sar {
                 position = 's';
-                println!("position change ({})", position);
                 let period_min = lows[i];
                 acceleration_factor = *acceleration_factor_start;
-                let previous_max = max(&highs[i-1..i+1]);
+                let previous_max = max(&highs[i - 1..i + 1]);
                 let pivoted_sar = max(&highs[position_start..i]);
                 position_start = i;
-                println!("min: ({}), acc fac: ({}), prev min ({}), pivoted sar ({}), period start ({}", period_min, acceleration_factor, previous_max, pivoted_sar, position_start);
+                println!(
+                    "min: ({}), acc fac: ({}), prev min ({}), pivoted sar ({}), period start ({}",
+                    period_min, acceleration_factor, previous_max, pivoted_sar, position_start
+                );
                 sars.push(single::short_parabolic_time_price_system(
                     &pivoted_sar,
                     &period_min,
@@ -536,20 +617,22 @@ pub mod bulk {
                         acceleration_factor += acceleration_factor_step;
                     };
                 };
-                let previous_min = min(&lows[i-1..i+1]);
-                println!("max: ({}), acc fac: ({}), prev max ({})", period_max, acceleration_factor, previous_min);
+                let previous_min = min(&lows[i - 1..i + 1]);
+                println!(
+                    "max: ({}), acc fac: ({}), prev max ({})",
+                    period_max, acceleration_factor, previous_min
+                );
                 sars.push(single::long_parabolic_time_price_system(
                     &previous_sar,
                     &period_max,
                     &acceleration_factor,
                     &previous_min,
                 ));
-            } else {
-                panic!("Position ({}) is not a supported position!", position)
-            }
+            } 
         }
         return sars;
     }
+
 }
 
 #[cfg(test)]
