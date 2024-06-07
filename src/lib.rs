@@ -98,10 +98,9 @@ pub enum DeviationModel {
     UlcerIndex,
 }
 
-
 /// The `Position` enum is used for indicators that need to know the position of the trade (short,
 /// long) to perform their calculations.
 pub enum Position {
-    Short, 
-    Long
+    Short,
+    Long,
 }

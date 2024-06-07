@@ -423,7 +423,7 @@ pub mod bulk {
     /// let acceleration_factor_start = 0.02;
     /// let acceleration_factor_max = 0.2;
     /// let acceleration_factor_step = 0.02;
-    /// let parabolic_time_price_system = rust_ti::trend_indicators::bulk::parabolic_time_price_system(&highs, 
+    /// let parabolic_time_price_system = rust_ti::trend_indicators::bulk::parabolic_time_price_system(&highs,
     /// &lows, &acceleration_factor_start, &acceleration_factor_max, &acceleration_factor_step,
     /// &rust_ti::Position::Long, &50.0);
     /// assert_eq!(
@@ -431,15 +431,14 @@ pub mod bulk {
     ///     parabolic_time_price_system);
     ///
     /// let highs = vec![52.3, 52.0, 52.35, 52.1, 51.8, 52.1, 52.5, 52.8, 52.5, 53.5, 53.5, 53.8, 54.2, 53.4, 53.5, 54.4, 55.2, 55.7, 57.0, 57.5, 58.0, 57.7, 58.0, 57.5, 57.0, 56.7, 57.5, 56.7, 56.0, 56.2, 54.8, 55.5, 54.7, 54.0, 52.5, 51.0, 51.5, 51.7, 53.0];
-    /// let lows = vec![51.0, 50.0, 51.5, 51.0, 50.5, 51.25, 51.7, 51.85, 51.5, 52.5, 52.5, 53.0, 52.5, 52.5, 52.1, 53.0, 54.0, 55.0, 56.0, 56.5, 57.0, 56.5, 57.3, 56.7, 56.3, 56.2, 56.0, 55.5, 55.0, 54.9, 54.0, 54.5, 53.8, 53.0, 51.5, 50.0, 50.5, 50.2, 51.5];
-    /// 
-    /// let parabolic_time_price_system = rust_ti::trend_indicators::bulk::parabolic_time_price_system(&highs, 
+    /// let lows = vec![50.0, 51.0, 51.5, 51.0, 50.5, 51.25, 51.7, 51.85, 51.5, 52.5, 52.5, 53.0, 52.5, 52.5, 52.1, 53.0, 54.0, 55.0, 56.0, 56.5, 57.0, 56.5, 57.3, 56.7, 56.3, 56.2, 56.0, 55.5, 55.0, 54.9, 54.0, 54.5, 53.8, 53.0, 51.5, 50.0, 50.5, 50.2, 51.5];
+    ///
+    /// let parabolic_time_price_system = rust_ti::trend_indicators::bulk::parabolic_time_price_system(&highs,
     /// &lows, &acceleration_factor_start, &acceleration_factor_max, &acceleration_factor_step,
     /// &rust_ti::Position::Short, &0.0);
     /// assert_eq!(
-    ///     vec![50.047, 50.093059999999994, 50.1381988, 50.182434824, 50.27513743104, 50.4266291851776, 50.56903143406695, 50.803508919341596, 51.01922820579427, 51.29730538521484, 51.64562873898906, 51.95215329031037, 52.1, 52.1, 52.596000000000004, 53.154720000000005, 53.923776000000004, 54.639020800000004, 55.311216640000005, 55.848973312000005, 56.279178649600006, 56.623342919680006, 57.966, 57.895360000000004, 57.781638400000006, 57.599107328, 57.3391965952, 57.046493003776, 56.61998398324736, 56.25318622559273, 55.86067642949789, 55.34575467218827, 54.57660373775062, 53.66128299020049, 52.929026392160395, 52.34322111372832, 50.06],
+    ///     vec![52.3, 52.3, 50.047, 50.093059999999994, 50.1381988, 50.182434824, 50.27513743104, 50.4266291851776, 50.56903143406695, 50.803508919341596, 51.01922820579427, 51.29730538521484, 51.64562873898906, 51.95215329031037, 52.1, 52.1, 52.596000000000004, 53.154720000000005, 53.923776000000004, 54.639020800000004, 55.311216640000005, 55.848973312000005, 56.279178649600006, 56.623342919680006, 57.966, 57.895360000000004, 57.781638400000006, 57.599107328, 57.3391965952, 57.046493003776, 56.61998398324736, 56.25318622559273, 55.86067642949789, 55.34575467218827, 54.57660373775062, 53.66128299020049, 52.929026392160395, 52.34322111372832, 50.06],
     ///     parabolic_time_price_system);
-
     /// ```
     pub fn parabolic_time_price_system(
         highs: &[f64],
@@ -481,75 +480,42 @@ pub mod bulk {
         let mut position = match start_position {
             Position::Short => 's',
             Position::Long => 'l',
-            _ => panic!("Unsupported position")
+            _ => panic!("Unsupported position"),
         };
         let mut position_start = 0;
-        let mut previous_sar = *previous_sar;
-
-        if previous_sar == 0.0 {
-            println!("no previous sar");
-            if position == 's' {
-                println!("short");
-                let mut sar = single::short_parabolic_time_price_system(
+        if position == 'l' {
+            if previous_sar == &0.0 {
+                sars.push(single::long_parabolic_time_price_system(
+                    &lows[0],
+                    &highs[0],
+                    &acceleration_factor,
+                    &lows[0],
+                ));
+            } else {
+                sars.push(single::long_parabolic_time_price_system(
+                    &previous_sar,
+                    &highs[0],
+                    &acceleration_factor,
+                    &lows[0],
+                ));
+            }
+        } else if position == 's' {
+            if previous_sar == &0.0 {
+                sars.push(single::short_parabolic_time_price_system(
                     &highs[0],
                     &lows[0],
                     &acceleration_factor,
-                    &highs[0]
-                );
-                for i in 1..length {
-                    println!("sar {}, high {}, position {}", sar, highs[i], i);
-                    if sar < highs[i] {
-                        println!("price break");
-                        position = 'l';
-                        position_start = i;
-                        previous_sar = sar;
-                        break;
-                    }
-                    let mut period_min = min(&lows[position_start..i]);
-                    if period_min > lows[i] {
-                        period_min = lows[i];
-                        if acceleration_factor <= acceleration_factor_max {
-                            acceleration_factor = acceleration_factor + acceleration_factor_step;
-                        };
-                    };
-                    let previous_max = max(&highs[i - 1..i + 1]);
-                    println!(
-                        "min: ({}), acc fac: ({}), prev min ({})",
-                        period_min, acceleration_factor, previous_max
-                    );
-
-                    sar = single::short_parabolic_time_price_system(
-                        &sar,
-                        &period_min,
-                        &acceleration_factor,
-                        &previous_max
-                    );
-                };
-                
-            } else if position == 'l' {
-                println!("Not yet implemented");
+                    &highs[0],
+                ));
             } else {
-                panic!("Position ({}) not a valid position", position);
-            };
-            acceleration_factor = *acceleration_factor_start;
+                sars.push(single::short_parabolic_time_price_system(
+                    previous_sar,
+                    &lows[0],
+                    &acceleration_factor,
+                    &highs[0],
+                ));
+            }
         };
-        
-        if position == 'l' {
-            sars.push(single::long_parabolic_time_price_system(
-                &previous_sar,
-                &max(&highs[..position_start+1]),
-                &acceleration_factor,
-                &lows[position_start],
-            ));
-        } else if position == 's' {
-            sars.push(single::short_parabolic_time_price_system(
-                &previous_sar,
-                &min(&lows[..position_start+1]),
-                &acceleration_factor,
-                &highs[position_start],
-            ));
-        };
-        // TODO: loop starts in two different place if there it had to find a sar or not
         for i in 1..length {
             let previous_sar = sars[i - 1];
             println!(
@@ -628,11 +594,10 @@ pub mod bulk {
                     &acceleration_factor,
                     &previous_min,
                 ));
-            } 
+            }
         }
         return sars;
     }
-
 }
 
 #[cfg(test)]
@@ -795,4 +760,33 @@ mod tests {
         let lows = vec![100.08, 98.75, 100.14, 98.98, 99.07, 100.1, 99.96];
         bulk::aroon_indicator(&highs, &lows, &40);
     }
+
+    #[test]
+    fn single_long_parabolic_price_time_system() {
+        assert_eq!(100.6, single::long_parabolic_time_price_system(&100.0, &110.0, &0.06, &105.0));
+    }
+
+    #[test]
+    fn single_long_parabolic_price_time_system_min() {
+        assert_eq!(90.0, single::long_parabolic_time_price_system(&100.0, &110.0, &0.06, &90.0));
+    }
+
+    #[test]
+    fn single_short_parabolic_price_time_system() {
+        assert_eq!(99.6, single::short_parabolic_time_price_system(&100.0, &90.0, &0.04, &95.0));
+    }
+
+    #[test]
+    fn single_short_parabolic_price_time_system_max() {
+        assert_eq!(105.0, single::short_parabolic_time_price_system(&100.0, &90.0, &0.04, &105.0));
+    }
+
+    // TODO:
+    //  * do a long passed in with previous, with switch to short
+    //  * do a short passed in with previous, with swtich to long
+    //  * do a long with no previous passed in
+    //  * do a short with no previous passed in
+    //  * do no switches for long and short
+    //  * panics
+
 }
