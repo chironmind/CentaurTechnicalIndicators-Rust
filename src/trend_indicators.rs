@@ -763,30 +763,75 @@ mod tests {
 
     #[test]
     fn single_long_parabolic_price_time_system() {
-        assert_eq!(100.6, single::long_parabolic_time_price_system(&100.0, &110.0, &0.06, &105.0));
+        assert_eq!(
+            100.6,
+            single::long_parabolic_time_price_system(&100.0, &110.0, &0.06, &105.0)
+        );
     }
 
     #[test]
     fn single_long_parabolic_price_time_system_min() {
-        assert_eq!(90.0, single::long_parabolic_time_price_system(&100.0, &110.0, &0.06, &90.0));
+        assert_eq!(
+            90.0,
+            single::long_parabolic_time_price_system(&100.0, &110.0, &0.06, &90.0)
+        );
     }
 
     #[test]
     fn single_short_parabolic_price_time_system() {
-        assert_eq!(99.6, single::short_parabolic_time_price_system(&100.0, &90.0, &0.04, &95.0));
+        assert_eq!(
+            99.6,
+            single::short_parabolic_time_price_system(&100.0, &90.0, &0.04, &95.0)
+        );
     }
 
     #[test]
     fn single_short_parabolic_price_time_system_max() {
-        assert_eq!(105.0, single::short_parabolic_time_price_system(&100.0, &90.0, &0.04, &105.0));
+        assert_eq!(
+            105.0,
+            single::short_parabolic_time_price_system(&100.0, &90.0, &0.04, &105.0)
+        );
     }
 
     // TODO:
-    //  * do a long passed in with previous, with switch to short
     //  * do a short passed in with previous, with swtich to long
-    //  * do a long with no previous passed in
     //  * do a short with no previous passed in
     //  * do no switches for long and short
     //  * panics
 
+    #[test]
+    fn bulk_parabolic_time_price_system_long_switch_previous() {
+        let highs = vec![100.64, 102.39, 101.51, 99.48, 96.93];
+        let lows = vec![95.92, 96.77, 95.84, 91.22, 89.12];
+        assert_eq!(
+            vec![90.7812, 91.245552, 91.69132992, 102.1666, 101.64473600000001],
+            bulk::parabolic_time_price_system(
+                &highs,
+                &lows,
+                &0.02,
+                &0.2,
+                &0.02,
+                &crate::Position::Long,
+                &90.58
+            )
+        );
+    }
+
+    #[test]
+    fn bulk_parabolic_time_price_system_long_switch_no_previous() {
+        let highs = vec![100.64, 102.39, 101.51, 99.48, 96.93];
+        let lows = vec![95.92, 96.77, 95.84, 91.22, 89.12];
+        assert_eq!(
+            vec![95.92, 95.92, 102.39, 101.9432, 101.17380800000001],
+            bulk::parabolic_time_price_system(
+                &highs,
+                &lows,
+                &0.02,
+                &0.2,
+                &0.02,
+                &crate::Position::Long,
+                &0.0
+            )
+        );
+    }
 }
