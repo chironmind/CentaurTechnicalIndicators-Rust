@@ -449,12 +449,6 @@ pub mod bulk {
         start_position: &crate::Position,
         previous_sar: &f64,
     ) -> Vec<f64> {
-        // TODO:
-        //  * have an example where it starts short then pivots to long, add values in front of
-        //  what is there, turn current example into having long passed in and previous SaR being
-        //  50.0
-        //  * support where SaR is 0
-        //  * reverse prints
         if highs.is_empty() || lows.is_empty() {
             panic!("Highs or lows cannot be empty")
         };
@@ -518,10 +512,6 @@ pub mod bulk {
         };
         for i in 1..length {
             let previous_sar = sars[i - 1];
-            println!(
-                "SAR ({}), highs ({}), lows ({}), i ({}), position ({})",
-                previous_sar, highs[i], lows[i], i, position
-            );
             if position == 's' && highs[i] > previous_sar {
                 position = 'l';
                 let period_max = highs[i];
@@ -529,10 +519,6 @@ pub mod bulk {
                 acceleration_factor = *acceleration_factor_start;
                 let pivoted_sar = min(&lows[position_start..i]);
                 position_start = i;
-                println!(
-                    "min: ({}), acc fac: ({}), prev min ({}), pivoted sar ({}), period start ({})",
-                    period_max, acceleration_factor, previous_min, pivoted_sar, position_start
-                );
                 sars.push(single::long_parabolic_time_price_system(
                     &pivoted_sar,
                     &period_max,
@@ -548,10 +534,6 @@ pub mod bulk {
                     };
                 };
                 let previous_max = max(&highs[i - 1..i + 1]);
-                println!(
-                    "min: ({}), acc fac: ({}), prev min ({})",
-                    period_min, acceleration_factor, previous_max
-                );
                 sars.push(single::short_parabolic_time_price_system(
                     &previous_sar,
                     &period_min,
@@ -565,10 +547,6 @@ pub mod bulk {
                 let previous_max = max(&highs[i - 1..i + 1]);
                 let pivoted_sar = max(&highs[position_start..i]);
                 position_start = i;
-                println!(
-                    "min: ({}), acc fac: ({}), prev min ({}), pivoted sar ({}), period start ({}",
-                    period_min, acceleration_factor, previous_max, pivoted_sar, position_start
-                );
                 sars.push(single::short_parabolic_time_price_system(
                     &pivoted_sar,
                     &period_min,
@@ -584,10 +562,6 @@ pub mod bulk {
                     };
                 };
                 let previous_min = min(&lows[i - 1..i + 1]);
-                println!(
-                    "max: ({}), acc fac: ({}), prev max ({})",
-                    period_max, acceleration_factor, previous_min
-                );
                 sars.push(single::long_parabolic_time_price_system(
                     &previous_sar,
                     &period_max,
@@ -793,12 +767,6 @@ mod tests {
         );
     }
 
-    // TODO:
-    //  * do a short passed in with previous, with swtich to long
-    //  * do a short with no previous passed in
-    //  * do no switches for long and short
-    //  * panics
-
     #[test]
     fn bulk_parabolic_time_price_system_long_switch_previous() {
         let highs = vec![100.64, 102.39, 101.51, 99.48, 96.93];
@@ -831,6 +799,154 @@ mod tests {
                 &0.02,
                 &crate::Position::Long,
                 &0.0
+            )
+        );
+    }
+
+    #[test]
+    fn bulk_parabolic_time_price_system_short_switch_previous() {
+        let highs = vec![99.48, 96.93, 94.66, 102.79,  105.81];
+        let lows = vec![91.22, 89.12, 87.35, 88.57, 90.64];
+        assert_eq!(
+            vec![102.1666, 101.64473600000001, 100.78705184, 87.35, 88.0884],
+            bulk::parabolic_time_price_system(
+                &highs,
+                &lows,
+                &0.02,
+                &0.2,
+                &0.02,
+                &crate::Position::Short,
+                &102.39
+            )
+        );
+    }
+
+    #[test]
+    fn bulk_parabolic_time_price_system_short_switch_no_previous() {
+        let highs = vec![99.48, 96.93, 94.66, 102.79,  105.81];
+        let lows = vec![91.22, 89.12, 87.35, 88.57, 90.64];
+        assert_eq!(
+            vec![99.48, 99.48, 98.7522, 87.35, 88.0884],
+            bulk::parabolic_time_price_system(
+                &highs,
+                &lows,
+                &0.02,
+                &0.2,
+                &0.02,
+                &crate::Position::Short,
+                &0.0
+            )
+        );
+    }
+
+    #[test]
+    fn bulk_parabolic_time_price_system_long_no_switch() {
+        let highs = vec![100.64, 102.39, 101.51];
+        let lows = vec![95.92, 96.77, 95.84];
+        assert_eq!(
+            vec![90.7812, 91.245552, 91.69132992],
+            bulk::parabolic_time_price_system(
+                &highs,
+                &lows,
+                &0.02,
+                &0.2,
+                &0.02,
+                &crate::Position::Long,
+                &90.58
+            )
+        );
+    }
+
+    #[test]
+    fn bulk_parabolic_time_price_system_short_no_switch() {
+        let highs = vec![99.48, 96.93, 94.66];
+        let lows = vec![91.22, 89.12, 87.35];
+        assert_eq!(
+            vec![102.1666, 101.64473600000001, 100.78705184],
+            bulk::parabolic_time_price_system(
+                &highs,
+                &lows,
+                &0.02,
+                &0.2,
+                &0.02,
+                &crate::Position::Short,
+                &102.39
+            )
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_parabolic_time_price_system_panic_high_empty() {
+        let highs = Vec::new();
+        let lows = vec![95.92, 96.77, 95.84, 91.22, 89.12];
+        assert_eq!(
+            vec![90.7812, 91.245552, 91.69132992, 102.1666, 101.64473600000001],
+            bulk::parabolic_time_price_system(
+                &highs,
+                &lows,
+                &0.02,
+                &0.2,
+                &0.02,
+                &crate::Position::Long,
+                &90.58
+            )
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_parabolic_time_price_system_panic_low_empty() {
+        let highs = vec![99.48, 96.93, 94.66, 102.79,  105.81];
+        let lows = Vec::new();
+        assert_eq!(
+            vec![90.7812, 91.245552, 91.69132992, 102.1666, 101.64473600000001],
+            bulk::parabolic_time_price_system(
+                &highs,
+                &lows,
+                &0.02,
+                &0.2,
+                &0.02,
+                &crate::Position::Long,
+                &90.58
+            )
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_parabolic_time_price_system_panic_high_length() {
+        let highs = vec![99.48, 96.93, 94.66, 102.79];
+        let lows = vec![95.92, 96.77, 95.84, 91.22, 89.12];
+        assert_eq!(
+            vec![90.7812, 91.245552, 91.69132992, 102.1666, 101.64473600000001],
+            bulk::parabolic_time_price_system(
+                &highs,
+                &lows,
+                &0.02,
+                &0.2,
+                &0.02,
+                &crate::Position::Long,
+                &90.58
+            )
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_parabolic_time_price_system_panic_low_length() {
+        let highs = vec![99.48, 96.93, 94.66, 102.79,  105.81];
+        let lows = vec![95.92, 96.77, 95.84, 91.22];
+        assert_eq!(
+            vec![90.7812, 91.245552, 91.69132992, 102.1666, 101.64473600000001],
+            bulk::parabolic_time_price_system(
+                &highs,
+                &lows,
+                &0.02,
+                &0.2,
+                &0.02,
+                &crate::Position::Long,
+                &90.58
             )
         );
     }

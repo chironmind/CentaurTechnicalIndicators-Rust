@@ -43,6 +43,7 @@ pub mod volatility_indicators;
 
 /// The `CentralPoint enum` is used to determine what the central point around
 /// which to calculate the absolute deviation around.
+#[derive(Debug)]
 pub enum CentralPoint {
     Mean,
     Median,
@@ -58,6 +59,7 @@ pub enum CentralPoint {
 /// the alpha nominator, and the second float is the alpha denominator. The smoothed type
 /// uses an alpha nominator of 1, and denominator of 0. The exponential type uses an alpha nominator
 /// of 2, and denominator of 1. Probably shouldn't be used...
+#[derive(Debug)]
 pub enum MovingAverageType<'a> {
     Simple,
     Smoothed,
@@ -76,6 +78,7 @@ pub enum MovingAverageType<'a> {
 /// The `McGinleyDynamic(f64)` variant takes the previous McGinley Dynamic as an argumet, if none
 /// if available use `0.0`. When using it check whether you are able to get the previous one by
 /// calculating seperately, it would make little sense to use it but always pass in `0.0`
+#[derive(Debug)]
 pub enum ConstantModelType<'a> {
     SimpleMovingAverage,
     SmoothedMovingAverage,
@@ -90,6 +93,7 @@ pub enum ConstantModelType<'a> {
 ///
 /// A lot of functions use the standard deviation but some also use mean and median absolute
 /// deviations.
+#[derive(Debug)]
 pub enum DeviationModel {
     StandardDeviation,
     MeanAbsoluteDeviation,
@@ -100,6 +104,7 @@ pub enum DeviationModel {
 
 /// The `Position` enum is used for indicators that need to know the position of the trade (short,
 /// long) to perform their calculations.
+#[derive(Debug)]
 pub enum Position {
     Short,
     Long,

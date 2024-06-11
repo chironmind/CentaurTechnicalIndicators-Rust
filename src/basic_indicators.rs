@@ -196,7 +196,7 @@ pub mod single {
     /// # Arguments
     ///
     /// * `prices` - A `f64` slice of prices
-    /// * `central_point` - A variant of the `CentralPoint enum`
+    /// * `central_point` - A variant of the [`CentralPoint`](crate::CentralPoint) enum
     ///
     /// # Panics
     ///
