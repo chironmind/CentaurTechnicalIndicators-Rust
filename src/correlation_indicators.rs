@@ -1,6 +1,14 @@
 //! # Correlation indicators
 //!
 //! Correlation indicators show how closely the prices of two different assets move together.
+//! 
+//! ## Bulk
+//!
+//! * [`correlate_asset_prices`](bulk::correlate_asset_prices) - Calculates the correlation between two assets
+//!
+//! ## Single
+//!
+//! * [`correlate_asset_prices`](single::correlate_asset_prices) - Calculates the correlation between two assets
 
 /// `single` module holds functions that return a singular values
 pub mod single {
@@ -23,14 +31,21 @@ pub mod single {
     ///
     /// * `prices_asset_a` - An `f64` slice of prices
     /// * `prices_asset_b` - An `f64` slice of prices
-    /// * `constant_model_type` - A variant of the `ConstantModelType` enum.
-    /// * `deviation_model` - A variant of the `DeviationModel` enum.
+    /// * `constant_model_type` - A variant of the [`ConstantModelType`] enum.
+    /// * `deviation_model` - A variant of the [`DeviationModel`] enum.
+    ///
+    /// # Panics
+    ///
+    /// `correlate_asset_prices` will panic if:
+    /// * `prices_asset_a` or `prices_asset_b` is empty
+    /// * `prices_asset_a` and `prices_asset_b` aren't of the same length
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices_a = vec![100.0, 102.0, 103.0, 101.0, 99.0];
     /// let prices_b = vec![200.0, 204.0, 206.0, 202.0, 198.0];
+    ///
     /// let correlation =
     /// rust_ti::correlation_indicators::single::correlate_asset_prices(&prices_a, &prices_b,
     /// &rust_ti::ConstantModelType::SimpleMovingAverage,
@@ -148,7 +163,7 @@ pub mod single {
     }
 }
 
-/// `bulk` module holds functions that return multiple valus for `correlation_indicators`
+/// `bulk` module holds functions that return multiple values
 pub mod bulk {
     use crate::correlation_indicators::single;
     /// The `correlate_asset_prices` function calculates correlation between the prices of two
@@ -166,15 +181,22 @@ pub mod bulk {
     ///
     /// * `prices_asset_a` - An `f64` slice of prices
     /// * `prices_asset_b` - An `f64` slice of prices
-    /// * `constant_model_type` - A variant of the `ConstantModelType` enum.
-    /// * `deviation_model` - A variant of the `DeviationModel` enum.
+    /// * `constant_model_type` - A variant of the [`ConstantModelType`](crate::ConstantModelType) enum.
+    /// * `deviation_model` - A variant of the [`DeviationModel`](crate::DeviationModel) enum.
+    ///
+    /// # Panics
+    ///
+    /// `correlate_asset_prices` will panic if:
+    /// * `prices_asset_a` or `prices_asset_b` is empty
+    /// * `prices_asset_a` and `prices_asset_b` aren't of the same length
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices_a = vec![100.0, 102.0, 103.0, 101.0, 99.0, 99.0, 102.0];
     /// let prices_b = vec![200.0, 204.0, 206.0, 202.0, 198.0, 193.0, 189.0];
     /// let period: usize = 5;
+    ///
     /// let correlation =
     /// rust_ti::correlation_indicators::bulk::correlate_asset_prices(&prices_a, &prices_b,
     /// &rust_ti::ConstantModelType::SimpleMovingAverage,

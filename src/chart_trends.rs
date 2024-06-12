@@ -8,7 +8,7 @@ use crate::basic_indicators::single::{absolute_deviation, max, min, standard_dev
 use crate::volatility_indicators::single::ulcer_index;
 use crate::DeviationModel;
 
-/// The `get_peaks` function returns all peaks over a period, and returns a vector of tuples where the
+/// The `peaks` function returns all peaks over a period, and returns a vector of tuples where the
 /// first item is the peak value, and the second it the peak index.
 ///
 /// The caller provides a period with the slice of prices that is used to find the peak for
@@ -25,35 +25,39 @@ use crate::DeviationModel;
 /// * `prices` - Slice of prices
 /// * `period` - Period over which to find the peak
 ///
+/// # Panics
+///
+/// `peaks` will panic if `period` is greater than length of `prices`
+///
 /// # Examples
 ///
-/// ```
+/// ```rust
 /// let highs = vec![103.0, 102.0, 107.0, 104.0, 100.0];
 /// let period: usize = 3;
-/// let peaks = rust_ti::chart_trends::get_peaks(&highs, &period);
+/// let peaks = rust_ti::chart_trends::peaks(&highs, &period);
 /// assert_eq!(vec![(107.0, 2)], peaks);
 ///
 /// let highs = vec![103.0, 102.0, 107.0, 104.0, 100.0, 109.0];
 /// let period: usize = 3;
-/// let peaks = rust_ti::chart_trends::get_peaks(&highs, &period);
+/// let peaks = rust_ti::chart_trends::peaks(&highs, &period);
 /// assert_eq!(vec![(107.0, 2), (109.0, 5)], peaks);
 ///
 /// let highs = vec![103.0, 102.0, 107.0, 104.0, 100.0, 109.0];
 /// let period: usize = 6;
-/// let peaks = rust_ti::chart_trends::get_peaks(&highs, &period);
+/// let peaks = rust_ti::chart_trends::peaks(&highs, &period);
 /// assert_eq!(vec![(109.0, 5)], peaks);
 ///
 /// let highs = vec![103.0, 102.0, 107.0, 104.0, 100.0, 107.0];
 /// let period: usize = 3;
-/// let peaks = rust_ti::chart_trends::get_peaks(&highs, &period);
+/// let peaks = rust_ti::chart_trends::peaks(&highs, &period);
 /// assert_eq!(vec![(107.0, 2), (107.0, 5)], peaks);
 ///
 /// let highs = vec![103.0, 102.0, 107.0, 104.0, 100.0, 107.0];
 /// let period: usize = 6;
-/// let peaks = rust_ti::chart_trends::get_peaks(&highs, &period);
+/// let peaks = rust_ti::chart_trends::peaks(&highs, &period);
 /// assert_eq!(vec![(107.0, 5)], peaks);
 /// ```
-pub fn get_peaks(prices: &[f64], period: &usize) -> Vec<(f64, usize)> {
+pub fn peaks(prices: &[f64], period: &usize) -> Vec<(f64, usize)> {
     let length = prices.len();
     if period > &length {
         panic!(
@@ -78,7 +82,7 @@ pub fn get_peaks(prices: &[f64], period: &usize) -> Vec<(f64, usize)> {
     return peaks;
 }
 
-/// The `get_valleys` function returns all valleys over a period, and returns a vector of tuples where the
+/// The `valleys` function returns all valleys over a period, and returns a vector of tuples where the
 /// first item is the valley value, and the second it the valley index.
 ///
 /// The caller provides a period with the slice of prices that is used to find the valley for
@@ -95,37 +99,41 @@ pub fn get_peaks(prices: &[f64], period: &usize) -> Vec<(f64, usize)> {
 /// * `prices` - Slice of prices
 /// * `period` - Period over which to find the valley
 ///
+/// # Panics
+///
+/// `valleys` will panic if `period` is greater than length of `prices`
+///
 /// # Examples
 ///
-/// ```
+/// ```rust
 /// let lows = vec![98.0, 101.0, 95.0, 100.0, 97.0];
 /// let period: usize = 3;
-/// let valleys = rust_ti::chart_trends::get_valleys(&lows, &period);
+/// let valleys = rust_ti::chart_trends::valleys(&lows, &period);
 /// let period: usize = 3;
-/// let valleys = rust_ti::chart_trends::get_valleys(&lows, &period);
+/// let valleys = rust_ti::chart_trends::valleys(&lows, &period);
 /// assert_eq!(vec![(95.0, 2)], valleys);
 ///
 /// let lows = vec![98.0, 101.0, 95.0, 100.0, 97.0, 93.0];
 /// let period: usize = 3;
-/// let valleys = rust_ti::chart_trends::get_valleys(&lows, &period);
+/// let valleys = rust_ti::chart_trends::valleys(&lows, &period);
 /// assert_eq!(vec![(95.0, 2), (93.0, 5)], valleys);
 ///
 /// let lows = vec![98.0, 101.0, 95.0, 100.0, 97.0, 93.0];
 /// let period: usize = 6;
-/// let valleys = rust_ti::chart_trends::get_valleys(&lows, &period);
+/// let valleys = rust_ti::chart_trends::valleys(&lows, &period);
 /// assert_eq!(vec![(93.0, 5)], valleys);
 ///
 /// let lows = vec![98.0, 101.0, 95.0, 100.0, 97.0, 95.0];
 /// let period: usize = 3;
-/// let valleys = rust_ti::chart_trends::get_valleys(&lows, &period);
+/// let valleys = rust_ti::chart_trends::valleys(&lows, &period);
 /// assert_eq!(vec![(95.0, 2), (95.0, 5)], valleys);
 ///
 /// let lows = vec![98.0, 101.0, 95.0, 100.0, 97.0, 95.0];
 /// let period: usize = 6;
-/// let valleys = rust_ti::chart_trends::get_valleys(&lows, &period);
+/// let valleys = rust_ti::chart_trends::valleys(&lows, &period);
 /// assert_eq!(vec![(95.0, 5)], valleys);
 /// ```
-pub fn get_valleys(prices: &[f64], period: &usize) -> Vec<(f64, usize)> {
+pub fn valleys(prices: &[f64], period: &usize) -> Vec<(f64, usize)> {
     let length = prices.len();
     if period > &length {
         panic!(
@@ -167,7 +175,7 @@ fn get_trend_line(p: Vec<(f64, usize)>) -> (f64, f64) {
     return (slope, intercept);
 }
 
-/// The `get_peak_trend` function gets the peaks for a slice of prices and calculates the the slope and intercept
+/// The `peak_trend` function gets the peaks for a slice of prices and calculates the the slope and intercept
 /// and returns them as a tuple.
 ///
 /// The caller provides a period with the slice of prices that is used to find the peak for
@@ -183,15 +191,15 @@ fn get_trend_line(p: Vec<(f64, usize)>) -> (f64, f64) {
 /// ```
 /// let highs = vec![103.0, 102.0, 107.0, 104.0, 100.0, 109.0];
 /// let period: usize = 3;
-/// let peak_trend = rust_ti::chart_trends::get_peak_trend(&highs, &period);
+/// let peak_trend = rust_ti::chart_trends::peak_trend(&highs, &period);
 /// assert_eq!((0.6666666666666666, 105.66666666666667), peak_trend);
 /// ```
-pub fn get_peak_trend(prices: &[f64], period: &usize) -> (f64, f64) {
-    let peaks = get_peaks(prices, period);
+pub fn peak_trend(prices: &[f64], period: &usize) -> (f64, f64) {
+    let peaks = peaks(prices, period);
     return get_trend_line(peaks);
 }
 
-/// The `get_valley_trend` function gets the valleys for a slice of prices and calculates the slope and intercept
+/// The `valley_trend` function gets the valleys for a slice of prices and calculates the slope and intercept
 /// and returns them as a tuple.
 ///
 /// The caller provides a period with the slice of prices that is used to find the valley for
@@ -207,13 +215,15 @@ pub fn get_peak_trend(prices: &[f64], period: &usize) -> (f64, f64) {
 /// ```
 /// let lows = vec![98.0, 101.0, 95.0, 100.0, 97.0, 93.0];
 /// let period: usize = 3;
+/// let valley_trend = rust_ti::chart_trends::valley_trend(&lows, &period);
+/// assert_eq!((-0.6666666666666666, 96.33333333333333), valley_trend);
 /// ```
-pub fn get_valley_trend(prices: &[f64], period: &usize) -> (f64, f64) {
-    let valleys = get_valleys(prices, period);
+pub fn valley_trend(prices: &[f64], period: &usize) -> (f64, f64) {
+    let valleys = valleys(prices, period);
     return get_trend_line(valleys);
 }
 
-/// The `get_overall_trend` function calculates the slope and intercept from a slice of prices and
+/// The `overall_trend` function calculates the slope and intercept from a slice of prices and
 /// returns them as a tuple.
 ///
 /// The caller provides a period with the slice of prices that is used to find the valley for
@@ -227,10 +237,10 @@ pub fn get_valley_trend(prices: &[f64], period: &usize) -> (f64, f64) {
 ///
 /// ```
 /// let prices = vec![100.0, 102.0, 103.0, 101.0, 100.0];
-/// let overall_trend = rust_ti::chart_trends::get_overall_trend(&prices);
+/// let overall_trend = rust_ti::chart_trends::overall_trend(&prices);
 /// assert_eq!((-0.1, 101.4), overall_trend);
 /// ```
-pub fn get_overall_trend(prices: &[f64]) -> (f64, f64) {
+pub fn overall_trend(prices: &[f64]) -> (f64, f64) {
     let mut indexed_prices = Vec::new();
     for i in 0..prices.len() {
         indexed_prices.push((prices[i], i));
@@ -266,7 +276,12 @@ pub fn get_overall_trend(prices: &[f64]) -> (f64, f64) {
 /// determines a new trend. Use 2.0 as a default.
 /// * `sensitivity_multiplier` - A time based adjustment for the standard deviation, to stop the
 /// function from constantly creating new trends. Use 2.0 as a default.
-/// * `deviation_model` - A variant of the DeviationModel enum
+/// * `deviation_model` - A variant of the [`DeviationModel`] enum
+///
+/// # Panics
+///
+/// `break_down_trends` will panic if `prices` is empty
+///
 ///
 /// # Examples
 ///
@@ -363,7 +378,7 @@ mod tests {
     #[test]
     fn peaks_single_peak() {
         let highs = vec![101.26, 102.57, 102.32, 100.69];
-        assert_eq!(vec![(102.57, 1)], get_peaks(&highs, &4_usize));
+        assert_eq!(vec![(102.57, 1)], peaks(&highs, &4_usize));
     }
 
     #[test]
@@ -371,72 +386,72 @@ mod tests {
         let highs = vec![101.26, 102.57, 102.32, 100.69, 100.83, 101.73, 102.01];
         assert_eq!(
             vec![(102.57, 1), (102.32, 2), (102.01, 6)],
-            get_peaks(&highs, &4_usize)
+            peaks(&highs, &4_usize)
         );
     }
 
     #[test]
     fn peaks_multiple_peaks_same_period() {
         let highs = vec![101.26, 102.57, 102.57, 100.69, 100.83, 101.73, 102.01];
-        assert_eq!(vec![(102.57, 2), (102.01, 6)], get_peaks(&highs, &4_usize));
+        assert_eq!(vec![(102.57, 2), (102.01, 6)], peaks(&highs, &4_usize));
     }
 
     #[test]
     #[should_panic]
     fn peaks_panic() {
         let highs = vec![101.26, 102.57, 102.57, 100.69, 100.83, 101.73, 102.01];
-        get_peaks(&highs, &40_usize);
+        peaks(&highs, &40_usize);
     }
 
     #[test]
     fn valleys_single_valley() {
         let lows = vec![100.08, 98.75, 100.14, 98.98, 99.07, 100.1, 99.96];
-        assert_eq!(vec![(98.75, 1)], get_valleys(&lows, &7_usize));
+        assert_eq!(vec![(98.75, 1)], valleys(&lows, &7_usize));
     }
 
     #[test]
     fn valleys_multiple_valleys() {
         let lows = vec![100.08, 98.75, 100.14, 98.98, 99.07, 100.1, 99.96];
-        assert_eq!(vec![(98.75, 1), (98.98, 3)], get_valleys(&lows, &4_usize));
+        assert_eq!(vec![(98.75, 1), (98.98, 3)], valleys(&lows, &4_usize));
     }
 
     #[test]
     fn valleys_multiple_valleys_same_period() {
         let lows = vec![98.75, 98.75, 100.14, 98.98, 99.07, 100.1, 99.96];
-        assert_eq!(vec![(98.75, 1), (98.98, 3)], get_valleys(&lows, &4_usize));
+        assert_eq!(vec![(98.75, 1), (98.98, 3)], valleys(&lows, &4_usize));
     }
 
     #[test]
     #[should_panic]
     fn valleys_panic() {
         let lows = vec![98.75, 98.75, 100.14, 98.98, 99.07, 100.1, 99.96];
-        get_valleys(&lows, &40_usize);
+        valleys(&lows, &40_usize);
     }
 
     #[test]
-    fn peak_trend() {
+    fn peaks_trend() {
         let highs = vec![101.26, 102.57, 102.32, 100.69, 100.83, 101.73, 102.01];
         assert_eq!(
             (-0.10214285714285627, 102.60642857142857),
-            get_peak_trend(&highs, &4_usize)
+            peak_trend(&highs, &4_usize)
         );
     }
 
     #[test]
-    fn valley_trend() {
+    fn valleys_trend() {
         let lows = vec![100.08, 98.75, 100.14, 98.98, 99.07, 100.1, 99.96];
         assert_eq!(
             (0.11499999999998067, 98.63500000000005),
-            get_valley_trend(&lows, &4_usize)
+            valley_trend(&lows, &4_usize)
         );
     }
 
     #[test]
-    fn overall_trend() {
+    fn overall_trends() {
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
         assert_eq!(
             (-0.01000000000001819, 100.37200000000004),
-            get_overall_trend(&prices)
+            overall_trend(&prices)
         );
     }
 

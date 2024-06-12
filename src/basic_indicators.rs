@@ -1,24 +1,52 @@
 //! # Basic Indicators
 //!
-//! `basic_indicators` is a module of simple functions to perform simple calculations on prices, such as mean, median, log...
+//! `basic_indicators` are simple functions that perform simple calculations on prices.
+//! 
+//! The primary purpose of these functions is to be reused by other functions.
+//!
+//! ## Bulk
+//!
+//! * [`absolute_deviation`](bulk::absolute_deviation) - Calculates the absolute deviation
+//! * [`log`](bulk::log) - Calculates the natural logrithm of slice of prices
+//! * [`log_difference`](bulk::log_difference) - Calculates the difference between the natural logarithm
+//! at t and t-1
+//! * [`mean`](bulk::mean) - Calculates the mean (average) of a slice of prices
+//! * [`median`](bulk::median) - Calculates the median (middle value) of a slice of prices
+//! * [`mode`](bulk::mode) - Calculates the mode (most common price) of a slice of prices
+//! * [`standard_deviation`](bulk::standard_deviation) - Calculates the standard deviation of a slice of prices
+//! * [`variance`](bulk::variance) - Calculates the variance of slice of prices
+//! 
+//! ## Single
+//!
+//! * [`absolute_deviation`](single::absolute_deviation) - Calculates the absolute deviation
+//! * [`log_difference`](single::log_difference) - Calculates the difference between the natural logarithm
+//! at t and t-1
+//! * [`max`](single::max) - Calculates the maximum of a slice of prices
+//! * [`mean`](single::mean) - Calculates the mean (average) of a slice of prices
+//! * [`median`](single::median) - Calculates the median (middle value) of a slice of prices
+//! * [`min`](single::min) - Calculates the minimum of a slice of prices
+//! * [`mode`](single::mode) - Calculates the mode (most common price) of a slice of prices
+//! * [`standard_deviation`](single::standard_deviation) - Calculates the standard deviation of a slice of prices
+//! * [`variance`](single::variance) - Calculates the variance of slice of prices
+//! 
 
-/// `single` module holds functions that return a singular value for `basic_indicators`
+/// `single` module holds functions that return a singular value
 pub mod single {
     use std::cmp::Ordering;
     use std::collections::HashMap;
-    /// Calculates the mean (average) for a slice of prices and returns it as an `f64`
+    /// Calculates the mean (average) of a slice of prices and returns it as an `f64`
     ///
     /// # Arguments
     ///
-    /// * `prices` - A `f64` slice of prices
+    /// * `prices` - Slice of prices
     ///
     /// # Panics
     ///
-    /// The fuction will panic if given an empty `slice`
+    /// The fuction will panic if given an empty `prices` slice
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0];
     /// let mean = rust_ti::basic_indicators::single::mean(&prices);
     /// assert_eq!(101.5, mean);
@@ -31,21 +59,22 @@ pub mod single {
         return sum / prices.len() as f64;
     }
 
-    /// Calculates the median (middle value) for a slice of prices and returns it as an `f64`.
+    /// Calculates the median (middle value) of a slice of prices and returns it as an `f64`.
     ///
-    /// `median` orders the numbers and takes the middle value. If the number of prices is even it will take the average of the two middle values.
+    /// `median` orders the numbers and takes the middle value. If the number of prices is even it 
+    /// will take the average of the two middle values.
     ///
     /// # Argument
     ///
-    /// * `prices` - A `f64` slice of prices
+    /// * `prices` - Slice of prices
     ///
     /// # Panics
     ///
-    /// The fuction will panic if given an empty `slice`
+    /// The fuction will panic if given an empty `prices` slice
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// // Odd number of prices
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 100.0];
     /// let median = rust_ti::basic_indicators::single::median(&prices);
@@ -74,24 +103,24 @@ pub mod single {
         return ordered_prices[middle];
     }
 
-    /// Calculates the mode (most common price) for a slice of prices.
+    /// Calculates the mode (most common price) of a slice of prices.
     ///
     /// `mode` will round the numbers to get most frequently occuring integer.
     ///
-    /// If it finds multiple prices that occur an equal number of times it will the average of those
+    /// If it finds multiple prices that occur an equal number of times it will return the average of those
     /// numbers.
     ///
     /// # Arguments
     ///
-    /// * `prices` - A `f64` slice of prices
+    /// * `prices` - Slice of prices
     ///
     /// # Panics
     ///
-    /// The fuction will panic if given an empty `slice`
-    ///
+    /// The fuction will panic if given an empty `prices` slice
+    /// 
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 101.0, 101.0, 100.0];
     /// let mode = rust_ti::basic_indicators::single::mode(&prices);
     /// assert_eq!(100.5, mode);
@@ -118,11 +147,11 @@ pub mod single {
     ///
     /// # Panics
     ///
-    /// If one of the prices less or equal to 0.0
+    /// If `price_t` or `price_t_1` is less or equal to 0.0
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0];
     /// let log_difference = rust_ti::basic_indicators::single::log_difference(&prices[3], &prices[2]);
     /// assert_eq!(-0.01960847138837618, log_difference);
@@ -143,15 +172,15 @@ pub mod single {
     ///
     /// # Arguments
     ///
-    /// * `prices` - `f64` slice of prices
+    /// * `prices` - Slice of prices
     ///
     /// # Panics
     ///
-    /// The function will panic if prices is empty
+    /// The function will panic if `prices` is empty
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0];
     /// let variance = rust_ti::basic_indicators::single::variance(&prices);
     /// assert_eq!(1.25, variance);
@@ -172,11 +201,11 @@ pub mod single {
     ///
     /// # Arguments
     ///
-    /// * `prices` - `f64` slice of prices
+    /// * `prices` - Slice of prices
     ///
     /// # Panics
     ///
-    /// The function will panic if prices is empty
+    /// The function will panic if `prices` is empty
     ///
     /// # Examples
     ///
@@ -200,11 +229,11 @@ pub mod single {
     ///
     /// # Panics
     ///
-    /// The function will panic if prices is empty
+    /// The function will panic if `prices` is empty
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 100.0];
     /// let mean_absolute_deviation = rust_ti::basic_indicators::single::absolute_deviation(&prices, &rust_ti::CentralPoint::Mean);
     /// // The answer is `1.04` but due to how Rust implements `f64` `1.0400000000000005` gets
@@ -232,13 +261,13 @@ pub mod single {
         return deviation / prices.len() as f64;
     }
 
-    /// Calculates the maximum for a slice of prices
+    /// Calculates the maximum of a slice of prices
     ///
     /// Max doesn't currently exist in Rust for `f64`
     ///
     /// # Arguments
     ///
-    /// * `prices` - slice of prices
+    /// * `prices` - Slice of prices
     ///
     /// # Examples
     ///
@@ -259,17 +288,17 @@ pub mod single {
         return ordered_prices[ordered_prices.len() - 1];
     }
 
-    /// Calculates the minimum for a slice of prices
+    /// Calculates the minimum of a slice of prices
     ///
     /// Min doesn't currently exist in Rust for `f64`
     ///
     /// # Arguments
     ///
-    /// * `prices` - slice of prices
+    /// * `prices` - Slice of prices
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 100.0];
     /// let min = rust_ti::basic_indicators::single::min(&prices);
     /// assert_eq!(100.0, min);
@@ -322,16 +351,16 @@ pub mod single {
     }
 }
 
-/// `bulk` module holds functions that return multiple values for `basic_indicators`
+/// `bulk` module holds functions that return multiple values
 pub mod bulk {
     use crate::basic_indicators::single;
-    /// Calculates the mean (averages) for a slice of prices for a provided period and returns
+    /// Calculates the mean (averages) of a slice of prices for a provided period and returns
     /// them as a `vector` of `f64`
     ///
     /// # Arguments
     ///
-    /// * `prices` - A `f64` slice of prices
-    /// * `period` - A `usize` period over which to calculate the mean
+    /// * `prices` - Slice of prices
+    /// * `period` - Period over which to calculate the mean
     ///
     /// # Panics
     ///
@@ -339,7 +368,7 @@ pub mod bulk {
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![101.0, 102.0, 103.0, 101.0];
     /// let period: usize = 3;
     /// let mean = rust_ti::basic_indicators::bulk::mean(&prices, &period);
@@ -366,14 +395,14 @@ pub mod bulk {
         return means;
     }
 
-    /// Calculates the median (middle value) for a slice of prices and returns it as an f64.
+    /// Calculates the median (middle value) of a slice of prices and returns it as an f64.
     ///
     /// `median` orders the numbers and takes the middle value. If the number of prices is even it will take the average of the two middle values.
     ///
     /// # Arguments
     ///
-    /// * `prices` - A `f64` slice of prices
-    /// * `period` - A `usize` period over which to calculate the median
+    /// * `prices` - Slice of prices
+    /// * `period` - Period over which to calculate the median
     ///
     /// # Panics
     ///
@@ -381,7 +410,7 @@ pub mod bulk {
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![101.0, 102.0, 103.0, 101.0];
     /// let period: usize = 3;
     /// let median = rust_ti::basic_indicators::bulk::median(&prices, &period);
@@ -408,7 +437,7 @@ pub mod bulk {
         return medians;
     }
 
-    /// Calculates the mode (most common price) for a slice of prices.
+    /// Calculates the mode (most common price) of a slice of prices.
     ///
     /// `mode` will round the numbers to get most frequently occuring integer.
     ///
@@ -417,8 +446,8 @@ pub mod bulk {
     ///
     /// # Arguments
     ///
-    /// * `prices` - A `f64` slice of prices
-    /// * `period` - A `usize` period over which to calculate the mode
+    /// * `prices` - Slice of prices
+    /// * `period` - Period over which to calculate the mode
     ///
     /// # Panics
     ///
@@ -426,7 +455,7 @@ pub mod bulk {
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![101.0, 102.0, 101.0, 102.0];
     /// let period: usize = 3;
     /// let mode = rust_ti::basic_indicators::bulk::mode(&prices, &period);
@@ -453,22 +482,19 @@ pub mod bulk {
         return modes;
     }
 
-    /// Calculates the natural logrithm for slice of prices
-    ///
-    /// `log` is essentially just a wrapper for the `f64` `ln` method that iterates over a passed
-    /// in slice and returns the natural logarithm for those prices
+    /// Calculates the natural logrithm of slice of prices
     ///
     /// # Arguments
     ///
-    /// * `prices` - A `f64` slice of prices
+    /// * `prices` - Slice of prices
     ///
     /// # Panics
     ///
-    /// The function will panic if passed in an empty slice
+    /// The function will panic if passed in an empty `prices` slice
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![101.0, 102.0, 103.0, 101.0];
     /// let log = rust_ti::basic_indicators::bulk::log(&prices);
     /// assert_eq!(vec![4.61512051684126, 4.624972813284271, 4.634728988229636, 4.61512051684126], log);
@@ -489,7 +515,7 @@ pub mod bulk {
     ///
     /// # Arguments
     ///
-    /// * `prices` - A `f64` slice of prices
+    /// * `prices` - Slice of prices
     ///
     /// # Panics
     ///
@@ -497,7 +523,7 @@ pub mod bulk {
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0];
     /// let log_difference = rust_ti::basic_indicators::bulk::log_difference(&prices);
     /// assert_eq!(vec![0.019802627296178876, 0.009756174945365181, -0.01960847138837618], log_difference);
@@ -525,16 +551,16 @@ pub mod bulk {
     ///
     /// # Arguments
     ///
-    /// * `prices` - `f64` slice of prices
-    /// * `period` - `usize` period over which to calculate the variance
+    /// * `prices` - Slice of prices
+    /// * `period` - Period over which to calculate the variance
     ///
     /// # Panics
     ///
-    /// The function will panic if the period is greater than the length of prices
+    /// The function will panic if `period` is greater than the length of `prices`
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0];
     /// let period: usize = 3;
     /// let variance = rust_ti::basic_indicators::bulk::variance(&prices, &period);
@@ -566,16 +592,16 @@ pub mod bulk {
     ///
     /// # Arguments
     ///
-    /// * `prices` - `f64` slice of prices
-    /// * `period` - `usize` period over which to calculate the standard deviation
+    /// * `prices` - Slice of prices
+    /// * `period` - Period over which to calculate the standard deviation
     ///
     /// # Panics
     ///
-    /// The function will panic if prices is empty
+    /// The function will panic if `period` is greater than the length of `prices`
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0];
     /// let period: usize = 3;
     /// let standard_deviation = rust_ti::basic_indicators::bulk::standard_deviation(&prices, &period);
@@ -605,17 +631,17 @@ pub mod bulk {
     ///
     /// # Arguments
     ///
-    /// * `prices` - A `f64` slice of prices
-    /// * `period` - `usize` period over which to calculate the standard deviation
-    /// * `central_point` - A variant of the `CentralPoint enum`
+    /// * `prices` - Slice of prices
+    /// * `period` - Period over which to calculate the standard deviation
+    /// * `central_point` - A variant of the [`CentralPoint`](crate::CentralPoint) enum
     ///
     /// # Panics
     ///
-    /// The function will panic if the period is longer than the length of prices
+    /// The function will panic if `period` is longer than the length of `prices`
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 100.0];
     /// let period: usize = 3;
     ///

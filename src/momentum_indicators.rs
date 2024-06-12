@@ -1,6 +1,10 @@
 //! # Momentum Indicators
 //!
 //! Momentum indicators show how much the price is rising or falling
+//!
+//! ## Bulk
+//!
+//!
 
 /// `single` module holds functions that return a singular values
 pub mod single {
@@ -8,9 +12,7 @@ pub mod single {
     use crate::moving_average::single::{mcginley_dynamic, moving_average};
     use crate::strength_indicators::single::accumulation_distribution;
     use crate::volatility_indicators::single::ulcer_index;
-    use crate::ConstantModelType;
-    use crate::DeviationModel;
-    use crate::MovingAverageType;
+    use crate::{ConstantModelType, DeviationModel, MovingAverageType};
     use std::cmp::Ordering;
     /// The `relative_strenght_index` measures the speed and magnitude of price changes
     ///
@@ -20,14 +22,17 @@ pub mod single {
     ///
     /// # Arguments
     ///
-    /// * `prices` - An `f64` slice of prices
-    /// * `constant_model_type` - A variant of the `ConstantModelType` enum. The default model for
-    /// the RSI as per Welles is the `ConstantModelType::SmoothedMovingAverage`
+    /// * `prices` - Slice of prices
+    /// * `constant_model_type` - Variant of the [`ConstantModelType`] enum. The default model for
+    /// the RSI is the `ConstantModelType::SmoothedMovingAverage`
+    ///
+    /// # Panics
+    ///
+    /// `relative_strenght_index` will panic if `prices` is empty
     ///
     /// # Examples
     ///
-    /// ```
-    /// // Short example
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
     ///
     /// let defaut_rsi = rust_ti::momentum_indicators::single::relative_strength_index(&prices, &rust_ti::ConstantModelType::SmoothedMovingAverage);
@@ -83,21 +88,27 @@ pub mod single {
         return rsi(&previous_average_gains, &previous_average_loss);
     }
 
-    /// The `mcginley_dynamic_rsi` is a variation of the `relative_strength_index` that accepts
-    /// previous dynamics for the gains and loss calculations, but also returns the new ones so
-    /// that they can be used going forward
+    /// The `mcginley_dynamic_rsi` is a variation of the `relative_strength_index` that uses the
+    /// McGinley dynamic.
+    ///
+    /// Returns the McGinley dynamic RSI, previous gain McGinley dynamic, and previous loss
+    /// McGinley dynamic.
     ///
     /// # Arguments
     ///  
-    /// * `prices` - An `f64` slice of prices
+    /// * `prices` - Slice of prices
     /// * `previous_gain_mcginley_dynamic` - The previous McGinley dynamic used for the gains
     /// calculation. Use 0.0 if it hasn't yet been calculated.
     /// * `previous_loss_mcginley_dynamic` - The previous McGinley dynamic used for the loss
     /// caclulation. Use 0.0 if it hasn't yet been calculated.
     ///
+    /// # Panics
+    ///
+    /// `mcginley_dynamic_rsi` will panic if `prices` is empty
+    ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
     /// let previous_gain_dynamic = 0.0;
     /// let previous_loss_dynamic = 0.0;
@@ -157,7 +168,7 @@ pub mod single {
         );
     }
 
-    /// The `stochastic_oscillator` is a momentum indicator that is calculated by using support and
+    /// The `stochastic_oscillator` is a momentum indicator calculated using support and
     /// resistance levels
     ///
     /// When developed by George Lane the stochastic oscillator looked at a period of 14 days as
@@ -166,11 +177,15 @@ pub mod single {
     ///
     /// # Arguments
     ///
-    /// * `prices` - An `f64` slice of prices
+    /// * `prices` - Slice of prices
+    ///
+    /// # Panics
+    ///
+    /// `stochastic_oscillator` will panic if `prices` is empty
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
     /// let stochastic_oscillator = rust_ti::momentum_indicators::single::stochastic_oscillator(&prices);
     /// assert_eq!(0.0, stochastic_oscillator);
@@ -196,12 +211,16 @@ pub mod single {
     ///
     /// # Arguments
     ///
-    /// * `stochastics` - An `f64` slice of stochastics
-    /// * `constant_model_type` - A variant of `ConstantModelType`
+    /// * `stochastics` - Slice of stochastics
+    /// * `constant_model_type` - Variant of [`ConstantModelType`]
+    ///
+    /// # Panics
+    ///
+    /// `slow_stochastic` will panic if `stochastics` is empty
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let stochstic_oscillators = [0.0, 50.0, 100.0];
     ///
     /// let simple_ma_slow_stochastic = rust_ti::momentum_indicators::single::slow_stochastic(&stochstic_oscillators, &rust_ti::ConstantModelType::SimpleMovingAverage);
@@ -249,16 +268,20 @@ pub mod single {
     /// The `slowest_stochastic` is a momentum indicator that takes the moving average of passed in
     /// slow stochastic oscillators
     ///
-    /// The standard length of slow stochastics is 3, and the constant model is a simple moving average
+    /// The standard length of slowest stochastics is 3, and the constant model is a simple moving average
     ///
     /// # Arguments
     ///
-    /// * `slow_stochastics` - An `f64` slice of slow stochastics
-    /// * `constant_model_type` - A variant of `ConstantModelType`
+    /// * `slow_stochastics` - Slice of slow stochastics
+    /// * `constant_model_type` - Variant of [`ConstantModelType`]
+    ///
+    /// # Panics
+    ///
+    /// `slowest_stochastic` will panic if `slow_stochastics` is empty
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let slow_stochstic = [30.0, 20.0, 10.0];
     ///
     /// let simple_ma_slowest_stochastic = rust_ti::momentum_indicators::single::slowest_stochastic(&slow_stochstic, &rust_ti::ConstantModelType::SimpleMovingAverage);
@@ -315,7 +338,7 @@ pub mod single {
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let high = 200.0;
     /// let low = 175.0;
     /// let close = 192.0;
@@ -338,9 +361,15 @@ pub mod single {
     /// * `prices` - An `f64` slice of prices
     /// * `volume` - Volume of transactions
     ///
+    /// # Panics
+    ///
+    /// `money_flow_index` will panic if:
+    /// * `prices` is empty
+    /// * length of `prices` and `volume` don't match
+    ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
     /// let volume = vec![1000.0, 1500.0, 1200.0, 900.0, 1300.0];
     /// let money_flow_index = rust_ti::momentum_indicators::single::money_flow_index(&prices,
@@ -396,7 +425,7 @@ pub mod single {
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let current_price = 120.0;
     /// let previous_price = 100.0;
     /// let rate_of_change = rust_ti::momentum_indicators::single::rate_of_change(&current_price,
@@ -423,11 +452,11 @@ pub mod single {
     /// * `current_price` - Price a t
     /// * `previous_price` - Price at t-n
     /// * `current_volume` - Volume at t
-    /// * `previous_on_balance_volume` - Previous on balance volume. Use 0 if no previous OBV.
+    /// * `previous_on_balance_volume` - Previous on balance volume. Use 0.0 if no previous OBV.
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let current_price = 120.0;
     /// let previous_price = 100.0;
     /// let current_volume = 1500;
@@ -470,14 +499,18 @@ pub mod single {
     ///
     /// # Arguments
     ///
-    /// `prices` - An `f64` slice of prices
-    /// `constant_model_type` - A variant of `ConstantModelType`
-    /// `deviation_model` - A variant of `DeviationModel`
-    /// `constant_multiplier` - Scale factor. Normally 0.015
+    /// * `prices` - Slice of prices
+    /// * `constant_model_type` - Variant of [`ConstantModelType`]
+    /// * `deviation_model` - Variant of [`DeviationModel`]
+    /// * `constant_multiplier` - Scale factor. Standard is 0.015
+    ///
+    /// # Panics
+    ///
+    /// `commodity_channel_index` will panic if `prices` is empty
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
     /// let constant_multiplier = 0.015;
     ///
@@ -550,15 +583,19 @@ pub mod single {
     ///
     /// # Arguments
     ///
-    /// `prices` - An `f64` slice of prices
-    /// `previous_mcginley_dynamic` - The previous value of the McGinley dynamic. 0.0 if no
+    /// * `prices` - An `f64` slice of prices
+    /// * `previous_mcginley_dynamic` - The previous value of the McGinley dynamic. 0.0 if no
     /// previous.
-    /// `deviation_model` - A variant of `DeviationModel`
-    /// `constant_multiplier` - Scale factor. Normally 0.015
+    /// * `deviation_model` - A variant of [`DeviationModel`]
+    /// * `constant_multiplier` - Scale factor. Normally 0.015
+    ///
+    /// # Panics
+    ///
+    /// `mcginley_dynamic_commodity_channel_index` will panic if `prices` is empty
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
     /// let constant_multiplier = 0.015;
     ///
@@ -621,14 +658,20 @@ pub mod single {
     ///
     /// # Arguments
     ///
-    /// * `prices` - An `f64` slice of prices
-    /// * `short_period` - The length of the short period
-    /// * `short_period_model` - A variant of `ConstantModelType`
-    /// * `long_period_model` - A variant of `ConstantModelType`
+    /// * `prices` - Slice of prices
+    /// * `short_period` - Length of the short period
+    /// * `short_period_model` - Variant of [`ConstantModelType`]
+    /// * `long_period_model` - Variant of [`ConstantModelType`]
+    ///
+    /// # Panics
+    ///
+    /// `macd_line` will panic if:
+    /// * `prices` is empty
+    /// * `short_period` is greater than length of `prices`
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
     ///
     /// let macd = rust_ti::momentum_indicators::single::macd_line(&prices, &3_usize,
@@ -713,11 +756,15 @@ pub mod single {
     /// # Arguments
     ///
     /// * `macds` - An `f64` slice of MACDs
-    /// * `constant_model_type` - A variant of `ConstantModelType`
+    /// * `constant_model_type` - A variant of [`ConstantModelType`]
+    ///
+    /// # Panics
+    ///
+    /// `signal_line` will panic if `macds` is empty
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let macds = vec![-0.0606702775897219, -0.0224170616113781, 0.0057887610020515];
     ///
     /// let ema_signal_line = rust_ti::momentum_indicators::single::signal_line(&macds,
@@ -766,16 +813,22 @@ pub mod single {
     ///
     /// # Arguments
     ///
-    /// * `prices` - An `f64` slice of prices
+    /// * `prices` - Slice of prices
     /// * `short_period` - The length of the short period
     /// * `previous_short_mcginley` - Previous McGinley dynamic for the short model. If no
     /// previous use 0.0.
     /// * `previous_long_mcginley` - Previous McGinley dynamic for the long model. If no
     /// previous use 0.0.
     ///
+    /// # Panics
+    ///
+    /// `mcginley_dynamic_macd_line` will panic if:
+    /// * `prices` is empty
+    /// * `short_period` is greater than length of `prices`
+    ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
     /// let short_period: usize = 3;
     ///
@@ -836,12 +889,18 @@ pub mod single {
     /// * `short_period` - Short period over which to calculate the Accumulation Distribution
     /// * `previous_accumulation_distribution` - Previous accumulation distribution value. If none
     /// use 0.0
-    /// * `short_period_model` - A variant of `ConstantModelType`
-    /// * `long_period_model` - A variant of `ConstantModelType`  
+    /// * `short_period_model` - A variant of [`ConstantModelType`]
+    /// * `long_period_model` - A variant of [`ConstantModelType`]  
+    ///
+    /// # Panics
+    ///
+    /// `chaikin_oscillator` will panic if:
+    /// * Length of `highs`, `lows`, `close`, and `volume` don't match
+    /// * If the lengths are less than the `short_period`
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let high = vec![103.0, 102.0, 105.0, 109.0, 106.0];
     /// let low = vec![99.0, 99.0, 100.0, 103.0, 98.0];
     /// let close = vec![102.0, 100.0, 103.0, 106.0, 100.0];
@@ -987,9 +1046,15 @@ pub mod single {
     /// * `previous_short_mcginley_dynamic` - Previous McGinley dynamic for the short period. If none use 0.0
     /// * `previous_long_mcginley_dynamic` - Previous McGinley dynamic for the long period. If none use 0.0
     ///
+    /// # Panics
+    ///
+    /// `mcginley_dynamic_chaikin_oscillator` will panic if:
+    /// * Lengths of `highs`, `lows`, `close`, and `volume` are different
+    /// * Lengths are less than the `short_period`
+    ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let high = vec![103.0, 102.0, 105.0, 109.0, 106.0];
     /// let low = vec![99.0, 99.0, 100.0, 103.0, 98.0];
     /// let close = vec![102.0, 100.0, 103.0, 106.0, 100.0];
@@ -1132,10 +1197,14 @@ pub mod bulk {
     ///
     /// # Arguments
     ///
-    /// * `prices` - An `f64` slice of prices
-    /// * `constant_model_type` - A variant of the `ConstantModelType` enum. The default model for
-    /// the RSI as per Welles is the `ConstantModelType::SmoothedMovingAverage`
-    /// * `period` - A `usize` period over which to calculate the RSI
+    /// * `prices` - Slice of prices
+    /// * `constant_model_type` - Variant of the [`ConstantModelType`](crate::ConstantModelType) enum.
+    /// The default model for the RSI is the `ConstantModelType::SmoothedMovingAverage`
+    /// * `period` - Period over which to calculate the RSI
+    ///
+    /// # Panics
+    ///
+    /// `relative_strenght_index` will panic if period is greater than the length of `prices`
     ///
     /// # Examples
     ///
@@ -1187,7 +1256,7 @@ pub mod bulk {
     ///
     /// # Arguments
     ///  
-    /// * `prices` - An `f64` slice of prices
+    /// * `prices` - Slice of prices
     /// * `previous_gain_mcginley_dynamic` - The previous McGinley dynamic used for the gains
     /// calculation. Use 0.0 if it hasn't yet been calculated.
     /// * `previous_loss_mcginley_dynamic` - The previous McGinley dynamic used for the loss
@@ -1196,7 +1265,7 @@ pub mod bulk {
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 100.0, 97.0, 102.0, 103.0];
     /// let period: usize = 5;
     /// let previous_gain_dynamic = 0.0;
@@ -1245,12 +1314,16 @@ pub mod bulk {
     ///
     /// # Arguments
     ///
-    /// * `prices` - An `f64` slice of prices
+    /// * `prices` - Slice of prices
     /// * `period` - Period over which to calculate the stochastic oscillator
+    ///
+    /// # Panics
+    ///
+    /// `stochastic_oscillator` will panic if the `period` is greater than the length of `prices`
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
     /// let period: usize = 3;
     /// let stochastic_oscillator = rust_ti::momentum_indicators::bulk::stochastic_oscillator(&prices, &period);
@@ -1280,13 +1353,17 @@ pub mod bulk {
     ///
     /// # Arguments
     ///
-    /// * `stochastics` - An `f64` slice of prices
-    /// * `constant_model_type` - A variant of `ConstantModelType`
+    /// * `stochastics` - Slice of prices
+    /// * `constant_model_type` - Variant of [`ConstantModelType`](crate::ConstantModelType)
     /// * `period` - Period over which to calculate the stochastic oscillator
+    ///
+    /// # Panics
+    ///
+    /// `slow_stochastic` will panic `period` is greater than length of `stochastics`
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let stochstic_oscillators = [0.0, 25.0, 50.0, 33.0, 73.0];
     /// let period: usize = 3;
     ///
@@ -1331,13 +1408,17 @@ pub mod bulk {
     ///
     /// # Arguments
     ///
-    /// * `slow_stochastics` - An `f64` slice of prices
-    /// * `constant_model_type` - A variant of `ConstantModelType`
+    /// * `slow_stochastics` - Slice of prices
+    /// * `constant_model_type` - Variant of [`ConstantModelType`](crate::ConstantModelType)
     /// * `period` - Period over which to calculate the stochastic oscillator
+    ///
+    /// # Panics
+    ///
+    /// `slowest_stochastic` panics if `period` is greater than the length of `slow_stochastics`
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let slow_stochstics = [75.0, 60.0, 73.0, 58.0];
     /// let period: usize = 3;
     ///
@@ -1388,9 +1469,13 @@ pub mod bulk {
     /// * `low` - Low price for the observed period
     /// * `close` - Close price for the observed period
     ///
+    /// # Panics
+    ///
+    /// `williams_percent_r` will panic if lengths of `high`, `low`, and `close` aren't equal
+    /// 
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let high = vec![200.0, 210.0, 205.0, 190.0];
     /// let low = vec![175.0, 192.0, 200.0, 174.0];
     /// let close = vec![192.0, 200.0, 201.0, 187.0];
@@ -1424,13 +1509,19 @@ pub mod bulk {
     ///
     /// # Arguments
     ///
-    /// * `prices` - An `f64` slice of prices
-    /// * `volume` - Volume of transactions
+    /// * `prices` - Slice of prices
+    /// * `volume` - Slice of Volume of transactions
     /// * `period` - Period over which to calculate the money flow index
+    ///
+    /// # Panics
+    ///
+    /// `money_flow_index` will panic if:
+    /// * `period` is greater than length of `prices`
+    /// * length of `prices` and `volume` aren't equal
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
     /// let volume = vec![1000.0, 1500.0, 1200.0, 900.0, 1300.0];
     /// let period: usize = 3;
@@ -1476,11 +1567,15 @@ pub mod bulk {
     ///
     /// # Arguments
     ///
-    /// * `prices` - An `f64` slice of prices
+    /// * `prices` - Slice of prices
+    ///
+    /// # Panics
+    ///
+    /// `rate_of_change` will panic if `prices` is empty
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 120.0, 100.0];
     /// let rate_of_change = rust_ti::momentum_indicators::bulk::rate_of_change(&prices);
     /// assert_eq!(vec![20.0, -16.666666666666664], rate_of_change);
@@ -1507,9 +1602,15 @@ pub mod bulk {
     /// * `volume` - An `i64` slice of volumes
     /// * `previous_on_balance_volume` - Previous on balance volume. Use 0 if no previous OBV.
     ///
+    /// # Panics
+    ///
+    /// `on_balance_volume` will panic if:
+    /// * `prices` is empty
+    /// * length of `prices` and `volume` aren't equal
+    ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0, 99.0];
     /// let volume = vec![1000, 1500, 1200, 900, 1300, 1400];
     /// let on_balance_volume =
@@ -1561,15 +1662,19 @@ pub mod bulk {
     ///
     /// # Arguments
     ///
-    /// `prices` - An `f64` slice of prices
-    /// `constant_model_type` - A variant of `ConstantModelType`
-    /// `deviation_model` - A variant of `DeviationModel`
-    /// `constant_multiplier` - Scale factor. Normally 0.015
-    /// `period` - Period over which to calculate the commodity channel index
+    /// * `prices` - Slice of prices
+    /// * `constant_model_type` - Variant of [`ConstantModelType`](crate::ConstantModelType)
+    /// * `deviation_model` - Variant of [`DeviationModel`](crate::DeviationModel)
+    /// * `constant_multiplier` - Scale factor. Normally 0.015
+    /// * `period` - Period over which to calculate the commodity channel index
+    ///
+    /// # Panics
+    ///
+    /// `commodity_channel_index` will panic if `period` is greater than length `prices`
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
     /// let constant_multiplier = 0.015;
     /// let period: usize = 3;
@@ -1623,16 +1728,21 @@ pub mod bulk {
     ///
     /// # Arguments
     ///
-    /// * `prices` - An `f64` slice of prices
+    /// * `prices` - Slice of prices
     /// * `previous_mcginley_dynamic` - The previous value of the McGinley dynamic. 0.0 if no
     /// previous.
-    /// * `deviation_model` - A variant of `DeviationModel`
+    /// * `deviation_model` - Variant of [`DeviationModel`](crate::DeviationModel)
     /// * `constant_multiplier` - Scale factor. Normally 0.015
     /// * `period` - The period over which to calculate the commodity channel index
     ///
+    /// # Panics
+    ///
+    /// `mcginley_dynamic_commodity_channel_index` will panic if `period` is greater than length of
+    /// `prices`
+    ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0, 102.0];
     /// let constant_multiplier = 0.015;
     ///
@@ -1690,15 +1800,21 @@ pub mod bulk {
     ///
     /// # Arguments
     ///
-    /// * `prices` - An `f64` slice of prices
+    /// * `prices` - Slice of prices
     /// * `short_period` - The length of the short period
-    /// * `short_period_model` - A variant of `ConstantModelType`
+    /// * `short_period_model` - Variant of [`ConstantModelType`](crate::ConstantModelType)
     /// * `long_period` - The length of the long period
-    /// * `long_period_model` - A variant of `ConstantModelType`
+    /// * `long_period_model` - Variant of [`ConstantModelType`](crate::ConstantModelType)
+    ///
+    /// # Panics
+    ///
+    /// `macd_line` will panic if:
+    /// * `short_period` is greater than `long_period`
+    /// * `long_period` is greater than length of `prices`
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0, 99.0, 102.0];
     /// let short_period: usize = 3;
     /// let long_period: usize = 5;
@@ -1756,13 +1872,17 @@ pub mod bulk {
     ///
     /// # Arguments
     ///
-    /// * `macds` - An `f64` slice of MACDs
-    /// * constant_model_type` - A variant of `ConstantModelType`
+    /// * `macds` - Slice of MACDs
+    /// * `constant_model_type` - Variant of [`ConstantModelType`](crate::ConstantModelType)
     /// * `period` - Period over which to calculate the signal line
+    ///
+    /// # Panics
+    ///
+    /// `signal_line` will panic if `period` is greater than length of `prices`
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let macds = vec![-0.0606702775897219, -0.0224170616113781, 0.0057887610020515,
     /// 0.0318212593094103, -0.737982396750169];
     /// let period: usize = 3;
@@ -1810,7 +1930,7 @@ pub mod bulk {
     ///
     /// # Arguments
     ///
-    /// * `prices` - An `f64` slice of prices
+    /// * `prices` - Slice of prices
     /// * `short_period` - The length of the short period
     /// * `previous_short_mcginley` - Previous McGinley dynamic for the short model. If no
     /// previous use 0.0.
@@ -1818,9 +1938,16 @@ pub mod bulk {
     /// * `previous_long_mcginley` - Previous McGinley dynamic for the long model. If no
     /// previous use 0.0.
     ///
+    /// # Panics
+    ///
+    /// `mcginley_dynamic_macd_line` will panic if:
+    /// * `prices` is empty
+    /// * `long_period` is greater than length of `prices`
+    /// * `short_period` is greater or equal to `long_period`
+    ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0, 99.0, 102.0];
     /// let short_period: usize = 3;
     /// let long_period: usize = 5;
@@ -1845,6 +1972,13 @@ pub mod bulk {
             panic!(
                 "Long period ({}) cannot be longer than length ({}) of prices",
                 long_period, length
+            );
+        };
+
+        if short_period >= long_period {
+            panic!(
+                "Short period ({}) cannot be greater or equal to long period ({})",
+                short_period, long_period
             );
         };
 
@@ -1886,12 +2020,19 @@ pub mod bulk {
     /// * `long_period` - Long period over which to calculate the Accumulation Distribution
     /// * `previous_accumulation_distribution` - Previous accumulation distribution value. If none
     /// use 0.0
-    /// * `short_period_model` - A variant of `ConstantModelType`
-    /// * `long_period_model` - A variant of `ConstantModelType`  
+    /// * `short_period_model` - A variant of [`ConstantModelType`](crate::ConstantModelType)
+    /// * `long_period_model` - A variant of [`ConstantModelType`](crate::ConstantModelType)
+    ///
+    /// # Panics
+    ///
+    /// `chaikin_oscillator` will panic if:
+    /// * Length of `highs`, `lows`, `close`, and `volume` aren't equal 
+    /// * `long_period` is greater than the length of prices
+    /// * `short_period` is greater or equal to `long_period`
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let high = vec![103.0, 102.0, 105.0, 109.0, 106.0, 102.0, 107.0];
     /// let low = vec![99.0, 99.0, 100.0, 103.0, 98.0, 94.0, 96.0];
     /// let close = vec![102.0, 100.0, 103.0, 106.0, 100.0, 97.0, 105.0];
@@ -1949,11 +2090,19 @@ pub mod bulk {
                 volume.len()
             )
         };
+
         if &length < long_period {
             panic!(
                 "Length of prices ({}) must me greater or equal to long period ({})",
                 length, long_period
             )
+        };
+
+        if short_period >= long_period {
+            panic!(
+                "Short period ({}) cannot be greater or equal to long period ({})",
+                short_period, long_period
+            );
         };
 
         let mut cos = vec![single::chaikin_oscillator(
@@ -2006,9 +2155,16 @@ pub mod bulk {
     /// * `previous_short_mcginley_dynamic` - Previous McGinley dynamic for the short period. If none use 0.0
     /// * `previous_long_mcginley_dynamic` - Previous McGinley dynamic for the long period. If none use 0.0
     ///
+    /// # Panics
+    ///
+    /// `mcginley_dynamic_chaikin_oscillator` will panic if:
+    /// * Length of `highs`, `lows`, `close`, and `volume` aren't equal 
+    /// * `long_period` is greater than the length of prices
+    /// * `short_period` is greater or equal to `long_period`
+    ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let high = vec![103.0, 102.0, 105.0, 109.0, 106.0, 102.0, 107.0];
     /// let low = vec![99.0, 99.0, 100.0, 103.0, 98.0, 94.0, 96.0];
     /// let close = vec![102.0, 100.0, 103.0, 106.0, 100.0, 97.0, 105.0];
@@ -2051,6 +2207,12 @@ pub mod bulk {
             )
         };
 
+        if &length < long_period {
+            panic!(
+                "Length of prices ({}) must me greater or equal to long period ({})",
+                length, long_period
+            )
+        };
         if long_period <= short_period {
             panic!(
                 "Long period ({}) cannot be smaller or equal to short period ({})",
@@ -3733,6 +3895,13 @@ mod tests {
 
     #[test]
     #[should_panic]
+    fn test_bulk_mcginley_macd_panic_short_period() {
+        let prices = vec![100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
+        bulk::mcginley_dynamic_macd_line(&prices, &30_usize, &100.21, &5_usize, &100.21);
+    }
+
+    #[test]
+    #[should_panic]
     fn test_bulk_mcginley_macd_panic_no_prices() {
         let prices = Vec::new();
         bulk::mcginley_dynamic_macd_line(&prices, &3_usize, &100.21, &5_usize, &100.21);
@@ -4055,7 +4224,7 @@ mod tests {
 
     #[test]
     #[should_panic]
-    fn bulk_chaikin_oscillator_period_panic() {
+    fn bulk_chaikin_oscillator_long_period_panic() {
         let highs = vec![100.53, 100.68, 100.73, 100.79, 100.88, 100.51, 100.17];
         let lows = vec![99.62, 99.97, 100.28, 100.12, 100.07, 99.86, 99.60];
         let close = vec![100.01, 100.44, 100.39, 100.63, 100.71, 100.35, 100.12];
@@ -4073,6 +4242,25 @@ mod tests {
         );
     }
 
+    #[test]
+    #[should_panic]
+    fn bulk_chaikin_oscillator_period_panic() {
+        let highs = vec![100.53, 100.68, 100.73, 100.79, 100.88, 100.51, 100.17];
+        let lows = vec![99.62, 99.97, 100.28, 100.12, 100.07, 99.86, 99.60];
+        let close = vec![100.01, 100.44, 100.39, 100.63, 100.71, 100.35, 100.12];
+        let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0, 396.0, 362.0];
+        bulk::chaikin_oscillator(
+            &highs,
+            &lows,
+            &close,
+            &volume,
+            &30_usize,
+            &5_usize,
+            &0.0,
+            &crate::ConstantModelType::SimpleMovingAverage,
+            &crate::ConstantModelType::SimpleMovingMedian,
+        );
+    }
     #[test]
     #[should_panic]
     fn bulk_chaikin_oscillator_high_panic() {
@@ -4380,6 +4568,18 @@ mod tests {
         let volume = vec![268.0, 319.0, 381.0, 376.0, 396.0, 362.0];
         bulk::mcginley_dynamic_chaikin_oscillator(
             &highs, &lows, &close, &volume, &3_usize, &5_usize, &0.0, &0.0, &0.0,
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_mcginley_dynamic_chaikin_oscillator_short_period_panic() {
+        let highs = vec![100.53, 100.68, 100.73, 100.79, 100.88, 100.51, 100.17];
+        let lows = vec![99.62, 99.97, 100.28, 100.12, 100.07, 99.86, 99.60];
+        let close = vec![100.01, 100.44, 100.39, 100.63, 100.71, 100.35, 100.12];
+        let volume = vec![268.0, 319.0, 381.0, 376.0, 396.0, 362.0];
+        bulk::mcginley_dynamic_chaikin_oscillator(
+            &highs, &lows, &close, &volume, &30_usize, &5_usize, &0.0, &0.0, &0.0,
         );
     }
 }

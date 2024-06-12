@@ -1,6 +1,28 @@
 //! # Candle indicators
 //!
 //! Candle indicators are indicators that are used with candle charts.
+//!
+//! ## Bulk
+//!
+//! * [`ichimoku_cloud`](bulk::ichimoku_cloud) - Calculates the Ichimoku Cloud
+//! * [`mcginley_dynamic_bands`](bulk::mcginley_dynamic_bands) - The McGinley Dynamic
+//! version of the [`moving_constant_bands`](bulk::moving_constant_bands)
+//! * [`mcginley_dynamic_envelopes`](bulk::mcginley_dynamic_envelopes) - The McGinley Dynamic version of the
+//! [`moving_constant_envelopes`](bulk::moving_constant_envelopes)
+//! * [`moving_constant_bands`](bulk::moving_constant_bands) - Calculates the moving constant bands
+//! * [`moving_constant_envelopes`](bulk::moving_constant_envelopes) - Calculates the moving
+//! constant envelopes
+//!
+//! ## Single
+//!
+//! * [`ichimoku_cloud`](single::ichimoku_cloud) - Calculates the Ichimoku Cloud
+//! * [`mcginley_dynamic_bands`](single::mcginley_dynamic_bands) - The McGinley Dynamic
+//! version of the [`moving_constant_bands`](single::moving_constant_bands)
+//! * [`mcginley_dynamic_envelopes`](single::mcginley_dynamic_envelopes) - The McGinley Dynamic version of the
+//! [`moving_constant_envelopes`](single::moving_constant_envelopes)
+//! * [`moving_constant_bands`](single::moving_constant_bands) - Calculates the moving constant bands
+//! * [`moving_constant_envelopes`](single::moving_constant_envelopes) - Calculates the moving
+//! constant envelopes
 
 /// `single` module holds functions that return a singular values
 pub mod single {
@@ -24,14 +46,18 @@ pub mod single {
     ///
     /// # Arguments
     ///
-    /// * `prices` - An `f64` slice of prices
-    /// * `constant_model_type` - A variant of the `ConstantModelType` enum.
+    /// * `prices` - Slice of prices
+    /// * `constant_model_type` - Variant of the [`ConstantModelType`] enum.
     /// * `difference` - The percent difference or distance that the bands will be from the moving
     /// constant
     ///
+    /// # Panics
+    ///
+    /// `moving_constant_envelopes` will panic if passed in an empty `prices` slice
+    ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
     /// let difference = 3.0;
     ///
@@ -86,11 +112,15 @@ pub mod single {
     ///
     /// # Arguments
     ///
-    /// * `prices` - An `f64` slice of prices
+    /// * `prices` - Slice of prices
     /// * `difference` - The percent difference or distance that the bands will be from the moving
     /// constant
-    /// * `previous_mcginley_dynamic` - Previous value for the McGinley dynamic. 0.0 is no
+    /// * `previous_mcginley_dynamic` - Previous value for the McGinley dynamic. 0.0 if no
     /// previous.
+    ///
+    /// # Panics
+    ///
+    /// The `mcginley_dynamic_envelopes` will panic if `prices` is empty
     ///
     /// # Examples
     ///
@@ -135,16 +165,21 @@ pub mod single {
     ///
     /// # Arguments
     ///
-    /// * `prices` - An `f64` slice of prices
-    /// * `constant_model_type` - A variant of the `ConstantModelType` enum.
-    /// * `deviation_model` - A variant of the `DeviationModel` enum.
+    /// * `prices` - Slice of prices
+    /// * `constant_model_type` - Variant of the [`ConstantModelType`] enum.
+    /// * `deviation_model` - A variant of the [`DeviationModel`] enum.
     /// * `deviation_multiplier` - Multiplier for the deviation of prices.
+    ///
+    /// # Panics
+    ///
+    /// `moving_constant_bands` will panic if `prices` is empty
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
     /// let multiplier = 2.0;
+    ///
     /// let bollinger_bands = rust_ti::candle_indicators::single::moving_constant_bands(&prices,
     /// &rust_ti::ConstantModelType::SimpleMovingAverage, &rust_ti::DeviationModel::StandardDeviation, &multiplier);
     /// assert_eq!((98.17157287525382, 101.0, 103.82842712474618), bollinger_bands);
@@ -210,17 +245,22 @@ pub mod single {
     ///
     /// # Arguments
     ///
-    /// * `prices` - An `f64` slice of prices
-    /// * `deviation_model` - A variant of the `DeviationModel` enum.
+    /// * `prices` - Slice of prices
+    /// * `deviation_model` - Variant of the [`DeviationModel`] enum.
     /// * `deviation_multiplier` - Multiplier for the deviation of prices.
     /// * `previous_mcginley_dynamic` - Previous value for the McGinley dynamic. 0.0 if no
     /// previous.
     ///
+    /// # Panics
+    ///
+    /// `mcginley_dynamic_bands` panics if `prices` is empty
+    ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
     /// let multiplier = 2.0;
+    /// 
     /// let mcginley_bands = rust_ti::candle_indicators::single::mcginley_dynamic_bands(&prices,
     /// &rust_ti::DeviationModel::StandardDeviation, &multiplier, &0.0);
     /// assert_eq!((96.17157287525382, 99.0, 101.82842712474618), mcginley_bands);
@@ -264,38 +304,47 @@ pub mod single {
         return (lower_band, mcginley_dynamic, upper_band);
     }
 
-    /// The `ichimoku_cloud` attempts to calculates support and resistance levels from past prices.
+    /// The `ichimoku_cloud` calculates support and resistance levels from past prices.
     ///
     /// The caller determines the conversion, base, and span B period, the standard for these are
-    /// 9, 26, and 52 respectively, however these were determined when the work day used to be 6
+    /// 9, 26, and 52 respectively. These were determined when the work day used to be 6
     /// days.
     ///
     /// The function returns the leading span A, leading span B, base line, conversion line, and lagged price
     /// from the beginning of the base period. The simpler Ichimoku clouds focus primarily on
-    /// charting span A and B against the candle, however more advanced setups add base, conversion
+    /// charting span A and B against the candle. More advanced setups add base, conversion
     /// line, and lagged price to show resistance and support levels in more depth.
     ///
     /// # Arguments
     ///
-    /// * `highs` - An `f64` slice of price highs
-    /// * `lows` - An `f64` slice of price lows
-    /// * `close` - An `f64` slice of closing prices
+    /// * `highs` - Slice of price highs
+    /// * `lows` - Slice of price lows
+    /// * `close` - Slice of closing prices
     /// * `conversion_period` - Period used to calculate the conversion line
     /// * `base_period` - Period used to calculate the base line
     /// * `span_b_period` - Period used to calculate the Span B line
     ///
+    /// # Panics
+    /// 
+    /// `ichimoku_cloud` will panic if:
+    /// * the length of `highs`, `lows`, and `close` don't match
+    /// * `conversion_period`, `base_period`, or `span_b_period` are greater than the
+    /// length of `highs`, `lows`, and `close`
+    ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let high_prices = vec![105.0, 103.0, 107.0, 101.0, 103.0, 100.0, 109.0, 105.0, 110.0, 112.0,
     /// 111.0, 105.0, 106.0, 100.0, 103.0];
     /// let low_prices = vec![97.0, 99.0, 98.0, 100.0, 95.0, 98.0, 99.0, 100.0, 102.0, 106.0,
     /// 99.0, 101.0, 98.0, 93.0, 98.0];
     /// let closing_prices = vec![100.0, 102.0, 103.0, 101.0, 99.0, 99.0, 102.0, 103.0, 106.0, 107.0,
     /// 105.0, 104.0, 101.0, 97.0, 100.0];
+    /// 
     /// let conversion_period: usize = 5;
     /// let base_period: usize = 10;
     /// let span_b_period: usize = 15;
+    /// 
     /// let ichimoku_cloud = rust_ti::candle_indicators::single::ichimoku_cloud(&high_prices,
     /// &low_prices, &closing_prices, &conversion_period, &base_period, &span_b_period);
     /// assert_eq!((102.25, 102.5, 102.5, 102.0, 99.0), ichimoku_cloud);
@@ -343,7 +392,7 @@ pub mod single {
     }
 }
 
-/// `bulk` module holds functions that return multiple values for `candle_indicators`
+/// `bulk` holds functions that return multiple values
 pub mod bulk {
     use crate::candle_indicators::single;
     /// The `moving_constant_envelopes` function calculates upper and lower bands from the
@@ -360,15 +409,19 @@ pub mod bulk {
     ///
     /// # Arguments
     ///
-    /// * `prices` - An `f64` slice of prices
-    /// * `constant_model_type` - A variant of the `ConstantModelType` enum.
+    /// * `prices` - Slice of prices
+    /// * `constant_model_type` - Variant of the [`ConstantModelType`](crate::ConstantModelType) enum.
     /// * `difference` - The percent difference or distance that the bands will be from the moving
     /// constant
     /// * `period` - Period over which to calculate the moving constant envelopes
     ///
+    /// # Panics
+    ///
+    /// `moving_constant_envelopes` will panic if `period` is larger than length of `prices`
+    ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0, 99.0, 102.0];
     /// let difference = 3.0;
     /// let period: usize = 5;
@@ -415,15 +468,20 @@ pub mod bulk {
     ///
     /// # Arguments
     ///
-    /// * `prices` - An `f64` slice of prices
+    /// * `prices` - Slice of prices
     /// * `difference` - The percent difference or distance that the bands will be from the moving
     /// constant
     /// * `previous_mcginley_dynamic` - Previous value for the McGinley dynamic. 0.0 is no
     /// previous.
     /// * `period` - Period over which to calculate the McGinley dynamic envelopes.
+    /// 
+    /// # Panics
+    ///
+    /// `mcginley_dynamic_envelopes` will panic if `period` is larger than length of `prices`
+    ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0, 99.0, 102.0];
     /// let difference = 3.0;
     ///
@@ -473,18 +531,23 @@ pub mod bulk {
     ///
     /// # Arguments
     ///
-    /// * `prices` - An `f64` slice of prices
-    /// * `constant_model_type` - A variant of the `ConstantModelType` enum.
-    /// * `deviation_model` - A variant of the `DeviationModel` enum.
+    /// * `prices` - Slice of prices
+    /// * `constant_model_type` - Variant of the [`ConstantModelType`](crate::ConstantModelType) enum.
+    /// * `deviation_model` - Variant of the [`DeviationModel`](crate::DeviationModel) enum.
     /// * `deviation_multiplier` - Multiplier for the deviation of prices.
     /// * `period` - Period over which to calculate the moving constant bands.
     ///
+    /// # Panics
+    ///
+    /// `moving_constant_bands` panics if `period` is greater than length of `prices`
+    ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0, 99.0, 102.0];
     /// let multiplier = 2.0;
     /// let period: usize = 5;
+    ///
     /// let bollinger_bands = rust_ti::candle_indicators::bulk::moving_constant_bands(&prices,
     /// &rust_ti::ConstantModelType::SimpleMovingAverage, &rust_ti::DeviationModel::StandardDeviation, &multiplier, &period);
     /// assert_eq!(vec![(98.17157287525382, 101.0, 103.82842712474618), (97.6, 100.8, 104.0), (97.6, 100.8, 104.0)], bollinger_bands);
@@ -527,19 +590,24 @@ pub mod bulk {
     ///
     /// # Arguments
     ///
-    /// * `prices` - An `f64` slice of prices
-    /// * `deviation_model` - A variant of the `DeviationModel` enum.
+    /// * `prices` - Slice of prices
+    /// * `deviation_model` - Variant of the [`DeviationModel`](crate::DeviationModel) enum.
     /// * `deviation_multiplier` - Multiplier for the deviation of prices.
     /// * `previous_mcginley_dynamic` - Previous value for the McGinley dynamic. 0.0 if no
     /// previous.
     /// * `period` - Period over which to calculate the McGinley dynamic bands.
     ///
+    /// # Panics
+    /// 
+    /// `mcginley_dynamic_bands` panics if `period` is greater than length of `prices`
+    ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0, 99.0, 102.0];
     /// let multiplier = 2.0;
     /// let period: usize = 5;
+    ///
     /// let mcginley_bands = rust_ti::candle_indicators::bulk::mcginley_dynamic_bands(&prices,
     /// &rust_ti::DeviationModel::StandardDeviation, &multiplier, &0.0, &period);
     /// assert_eq!(vec![(96.17157287525382, 99.0, 101.82842712474618), (95.8, 99.0, 102.2),
@@ -587,30 +655,40 @@ pub mod bulk {
     ///
     /// The function returns the leading span A, leading span B, base, conversion line, and price
     /// from the beginning of the base period. The simpler Ichimoku clouds focus primarily on
-    /// charting span A and B against the candle, however more advanced setups add base, conversion
+    /// charting span A and B against the candle. More advanced setups add base, conversion
     /// line, and lagged price to show resistance and support levels in more depth.
     ///
     /// # Arguments
     ///
-    /// * `highs` - An `f64` slice of price highs
-    /// * `lows` - An `f64` slice of price lows
-    /// * `close` - An `f64` slice of closing prices
+    /// * `highs` - Slice of price highs
+    /// * `lows` - Slice of price lows
+    /// * `close` - Slice of closing prices
     /// * `conversion_period` - Period used to calculate the conversion line
     /// * `base_period` - Period used to calculate the base line
     /// * `span_b_period` - Period used to calculate the Span B line
     ///
+    /// # Panics
+    /// 
+    /// `ichimoku_cloud` will panic if:
+    /// * the length of `highs`, `lows`, and `close` don't match
+    /// * `conversion_period`, `base_period`, or `span_b_period` are greater than the
+    /// length of `highs`, `lows`, and `close`
+
+    ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let high_prices = vec![105.0, 103.0, 107.0, 101.0, 103.0, 100.0, 109.0, 105.0, 110.0, 112.0,
     /// 111.0, 105.0, 106.0, 100.0, 103.0, 102.0, 98.0];
     /// let low_prices = vec![97.0, 99.0, 98.0, 100.0, 95.0, 98.0, 99.0, 100.0, 102.0, 106.0,
     /// 99.0, 101.0, 98.0, 93.0, 98.0, 91.0, 89.0];
     /// let closing_prices = vec![100.0, 102.0, 103.0, 101.0, 99.0, 99.0, 102.0, 103.0, 106.0, 107.0,
     /// 105.0, 104.0, 101.0, 97.0, 100.0, 96.0, 93.0];
+    ///
     /// let conversion_period: usize = 5;
     /// let base_period: usize = 10;
     /// let span_b_period: usize = 15;
+    /// 
     /// let ichimoku_cloud = rust_ti::candle_indicators::bulk::ichimoku_cloud(&high_prices,
     /// &low_prices, &closing_prices, &conversion_period, &base_period, &span_b_period);
     /// assert_eq!(vec![(102.25, 102.5, 102.5, 102.0, 99.0), (100.0, 101.5, 101.5, 98.5, 102.0), (99.0, 100.5, 100.5, 97.5, 103.0)], ichimoku_cloud);
