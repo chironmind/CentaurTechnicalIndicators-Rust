@@ -1,6 +1,16 @@
 //! # Strength Indicators
 //!
 //! Strength indicators show the strength of a trend
+//!
+//! ## Bulk
+//!
+//! * [`accumulation_distribution`](bulk::accumulation_distribution) - Calculates the Accumulation
+//! Distribution
+//!
+//! ## Single
+//!
+//! * [`accumulation_distribution`](single::accumulation_distribution) - Calculates the Accumulation
+//! Distribution
 
 /// `single` module holds functions that return a singular values
 pub mod single {
@@ -18,7 +28,7 @@ pub mod single {
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let high = 103.0;
     /// let low = 99.0;
     /// let close = 102.0;
@@ -65,9 +75,14 @@ pub mod bulk {
     /// * `previous_accumulation_distribution` - Previous value of accumulation distribution. If no
     /// previous use 0.0
     ///
+    /// # Panics
+    ///
+    /// `accumulation_distribution` will panic if lengths of `high`, `low`, `close`, and `volumes`
+    /// aren't equal
+    ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let high = vec![103.0, 102.0, 105.0];
     /// let low = vec![99.0, 99.0, 100.0];
     /// let close = vec![102.0, 100.0, 103.0];

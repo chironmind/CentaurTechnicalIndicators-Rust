@@ -1,6 +1,14 @@
 //! # Volatility Indicators
 //!
 //! Volatility indicators show how volatile an asset are.
+//!
+//! ## Bulk
+//!
+//! * [`ulcer_index`](bulk::ulcer_index) - Calculates the Ulcer Index
+//!
+//! ## Single
+//!
+//! * [`ulcer_index`](single::ulcer_index) - Calculates the Ulcer Index
 
 /// `single` module holds functions that return a singular values
 pub mod single {
@@ -14,9 +22,13 @@ pub mod single {
     ///
     /// * `prices` - An `f64` slice of prices
     ///
+    /// # Panics
+    ///
+    /// `ulcer_index` will panic if `prices` is empty
+    ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
     /// let ulcer_index = rust_ti::volatility_indicators::single::ulcer_index(&prices);
     /// assert_eq!(1.9417475728155338, ulcer_index);
@@ -51,9 +63,13 @@ pub mod bulk {
     /// * `prices` - An `f64` slice of prices
     /// * `period` - Period over which to calculate the Ulcer index
     ///
+    /// # Panics
+    ///
+    /// `ulcer_index` will panic if `period` is greater than length of `prices`
+    ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0, 99.0, 102.0];
     /// let period: usize = 5;
     /// let ulcer_index = rust_ti::volatility_indicators::bulk::ulcer_index(&prices, &period);

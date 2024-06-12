@@ -4,7 +4,57 @@
 //!
 //! ## Bulk
 //!
+//! * [`chaikin_oscillator`](bulk::chaikin_oscillator) - Calculates the Chaikin Oscillator
+//! * [`commodity_channel_index`](bulk::commodity_channel_index) - Calculate the Commodity Channel
+//! Index
+//! * [`macd_line`](bulk::macd_line) - Calculates the Moving Average Convergence Divergence line
+//! * [`mcginley_dynamic_chaikin_oscillator`](bulk::mcginley_dynamic_chaikin_oscillator) - Calculate
+//! the McGinley dynanic version of the Chaikin Oscillator
+//! * [`mcginley_dynamic_commodity_channel_index`](bulk::mcginley_dynamic_commodity_channel_index) -
+//!  Calculates the McGinley dynamic version of the Commodity Channel Index
+//! * [`mcginley_dynamic_macd_line`](bulk::mcginley_dynamic_macd_line) - Calculates the McGinley
+//! dynamic version of the Moving Average Convergence Divergence line
+//! * [`mcginley_dynamic_rsi`](bulk::mcginley_dynamic_rsi) - Calculates the McGinley dynamic
+//! version of the Relative Strength Index
+//! * [`money_flow_index`](bulk::money_flow_index) - Calculates the Money Flow Index
+//! * [`on_balance_volume`](bulk::on_balance_volume) - Calculates the On-balance Volume
+//! * [`rate_of_change`](bulk::rate_of_change) - Calculates the Rate of Change
+//! * [`relative_strength_index`](bulk::relative_strength_index) - Calculates the Relative Strength
+//! Index
+//! * [`signal_line`](bulk::signal_line) - Calculates the Signal line to be used with the MACD line
+//! * [`slow_stochastic`](bulk::slow_stochastic) - Calculates the slow stochastic to be used with
+//! the stochastic oscillator
+//! * [`slowest_stochastic`](bulk::slowest_stochastic) - Calculates the slowest stochastic to be
+//! used with the stochastic oscillator
+//! * [`stochastic_oscillator`](bulk::stochastic_oscillator) - Calculates the Stochastic Oscillator
+//! * [`williams_percent_r`](bulk::williams_percent_r) - Calcualtes the Williams %R
 //!
+//! ## Single
+//!
+//! * [`chaikin_oscillator`](single::chaikin_oscillator) - Calculates the Chaikin Oscillator
+//! * [`commodity_channel_index`](single::commodity_channel_index) - Calculate the Commodity Channel
+//! Index
+//! * [`macd_line`](single::macd_line) - Calculates the Moving Average Convergence Divergence line
+//! * [`mcginley_dynamic_chaikin_oscillator`](single::mcginley_dynamic_chaikin_oscillator) - Calculate
+//! the McGinley dynanic version of the Chaikin Oscillator
+//! * [`mcginley_dynamic_commodity_channel_index`](single::mcginley_dynamic_commodity_channel_index) -
+//!  Calculates the McGinley dynamic version of the Commodity Channel Index
+//! * [`mcginley_dynamic_macd_line`](single::mcginley_dynamic_macd_line) - Calculates the McGinley
+//! dynamic version of the Moving Average Convergence Divergence line
+//! * [`mcginley_dynamic_rsi`](single::mcginley_dynamic_rsi) - Calculates the McGinley dynamic
+//! version of the Relative Strength Index
+//! * [`money_flow_index`](single::money_flow_index) - Calculates the Money Flow Index
+//! * [`on_balance_volume`](single::on_balance_volume) - Calculates the On-balance Volume
+//! * [`rate_of_change`](single::rate_of_change) - Calculates the Rate of Change
+//! * [`relative_strength_index`](single::relative_strength_index) - Calculates the Relative Strength
+//! Index
+//! * [`signal_line`](single::signal_line) - Calculates the Signal line to be used with the MACD line
+//! * [`slow_stochastic`](single::slow_stochastic) - Calculates the slow stochastic to be used with
+//! the stochastic oscillator
+//! * [`slowest_stochastic`](single::slowest_stochastic) - Calculates the slowest stochastic to be
+//! used with the stochastic oscillator
+//! * [`stochastic_oscillator`](single::stochastic_oscillator) - Calculates the Stochastic Oscillator
+//! * [`williams_percent_r`](single::williams_percent_r) - Calcualtes the Williams %R
 
 /// `single` module holds functions that return a singular values
 pub mod single {
@@ -88,7 +138,7 @@ pub mod single {
         return rsi(&previous_average_gains, &previous_average_loss);
     }
 
-    /// The `mcginley_dynamic_rsi` is a variation of the `relative_strength_index` that uses the
+    /// The `mcginley_dynamic_rsi` is a variation of the [`relative_strength_index`] that uses the
     /// McGinley dynamic.
     ///
     /// Returns the McGinley dynamic RSI, previous gain McGinley dynamic, and previous loss
@@ -1472,7 +1522,7 @@ pub mod bulk {
     /// # Panics
     ///
     /// `williams_percent_r` will panic if lengths of `high`, `low`, and `close` aren't equal
-    /// 
+    ///
     /// # Examples
     ///
     /// ```rust
@@ -2026,7 +2076,7 @@ pub mod bulk {
     /// # Panics
     ///
     /// `chaikin_oscillator` will panic if:
-    /// * Length of `highs`, `lows`, `close`, and `volume` aren't equal 
+    /// * Length of `highs`, `lows`, `close`, and `volume` aren't equal
     /// * `long_period` is greater than the length of prices
     /// * `short_period` is greater or equal to `long_period`
     ///
@@ -2158,7 +2208,7 @@ pub mod bulk {
     /// # Panics
     ///
     /// `mcginley_dynamic_chaikin_oscillator` will panic if:
-    /// * Length of `highs`, `lows`, `close`, and `volume` aren't equal 
+    /// * Length of `highs`, `lows`, `close`, and `volume` aren't equal
     /// * `long_period` is greater than the length of prices
     /// * `short_period` is greater or equal to `long_period`
     ///

@@ -1,9 +1,19 @@
-//! # Moving
+//! # Moving Averages
 //!
 //! The `moving_average` module has functions used to calculate the moving average
 //!
 //! The moving average has three different types available (simple, smoothed, exponential) that the
 //! caller can choose from.
+//!
+//! ## Bulk
+//!
+//! * [`mcginley_dynamic`](bulk::mcginley_dynamic) - Calculates the McGinley Dynamic
+//! * [`moving_average`](bulk::moving_average) - Calculates different types Moving Averages
+//!
+//! ## Single
+//!
+//! * [`mcginley_dynamic`](single::mcginley_dynamic) - Calculates the McGinley Dynamic
+//! * [`moving_average`](single::moving_average) - Calculates different types Moving Averages
 
 /// `single` module holds functions that return a singular values
 pub mod single {
@@ -16,16 +26,16 @@ pub mod single {
     ///
     /// # Arguments
     ///
-    /// * `prices` - A `f64` slice of prices
-    /// * `moving_average_type` - A variant of the `MovingConstantType` enum
+    /// * `prices` - Slice of prices
+    /// * `moving_average_type` - Variant of the [`MovingAverageType`] enum
     ///
     /// # Panics
     ///
-    /// The function will panic if given an empty prices
+    /// `moving_average` will panic if `prices` is empty
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 100.0];
     ///
     /// let simple_moving_average = rust_ti::moving_average::single::moving_average(&prices, &rust_ti::MovingAverageType::Simple);
@@ -89,13 +99,18 @@ pub mod single {
     ///
     /// # Arguments
     ///
-    /// * `latest_price` - An `f64` slice of prices
-    /// * `previous_mcginley_dynamic` - An `f64` value for the previous McGinley dynamic. If there
+    /// * `latest_price` - Slice of prices
+    /// * `previous_mcginley_dynamic` - Value for the previous McGinley dynamic. If there
     /// is no previous value pass in `0.0`
     /// * `period` - Length of the observed period
+    ///
+    /// # Panics
+    ///
+    /// `mcginley_dynamic` will panic if `period` less or equal to 0
+    ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 100.0];
     /// let period:usize = 5;
     /// let mcginley_dynamic = rust_ti::moving_average::single::mcginley_dynamic(&100.0, &0.0_f64, &period);
@@ -110,7 +125,7 @@ pub mod single {
         previous_mcginley_dynamic: &f64,
         period: &usize,
     ) -> f64 {
-        if period == &0_usize {
+        if period <= &0_usize {
             panic!("Cannot have a 0 period");
         };
         if previous_mcginley_dynamic == &0.0_f64 {
@@ -134,17 +149,17 @@ pub mod bulk {
     ///
     /// # Arguments
     ///
-    /// * `prices` - A `f64` slice of prices
-    /// * `moving_average_type` - A variant of the `MovingConstantType` enum
-    /// * `period` - A `usize` period over which to calculate the moving average
+    /// * `prices` - Slice of prices
+    /// * `moving_average_type` - Variant of the [`MovingAverageType`](crate::MovingAverageType) enum
+    /// * `period` - Period over which to calculate the moving average
     ///
     /// # Panics
     ///
-    /// The function will panic if given an empty prices
+    /// `moving_average` will panic if `period` is greater than length of `prices`
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 100.0];
     /// let period: usize = 3;
     ///
@@ -186,14 +201,18 @@ pub mod bulk {
     ///
     /// # Arguments
     ///
-    /// * `prices` - An `f64` slice of prices
-    /// * `previous_mcginley_dynamic` - An `f64` value for the previous McGinley dynamic. If there
+    /// * `prices` - Slice of prices
+    /// * `previous_mcginley_dynamic` - Value for the previous McGinley dynamic. If there
     /// is no previous value pass in `0.0`
-    /// * `period` - A `usize` period over which to calculate the McGinley dynamic
+    /// * `period` - Period over which to calculate the McGinley dynamic
+    ///
+    /// # Panics
+    ///
+    /// `mcginley_dynamic` will panic if `period` is greater than length of `prices`
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 100.0];
     /// let period: usize = 3;
     /// let mcginley_dynamic = rust_ti::moving_average::bulk::mcginley_dynamic(&prices, &0.0_f64, &period);

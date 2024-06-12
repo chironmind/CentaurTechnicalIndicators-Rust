@@ -1,7 +1,7 @@
 //! # Correlation indicators
 //!
 //! Correlation indicators show how closely the prices of two different assets move together.
-//! 
+//!
 //! ## Bulk
 //!
 //! * [`correlate_asset_prices`](bulk::correlate_asset_prices) - Calculates the correlation between two assets

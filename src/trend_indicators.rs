@@ -1,6 +1,26 @@
-//! Trend Indicators
+//! # Trend Indicators
 //!
 //! Trend indicators show the trend direction of an asset
+//!
+//! ## Bulk
+//!
+//! * [`aroon_down`](bulk::aroon_down) - Calculates the Aroon down
+//! * [`aroon_indicator`](bulk::aroon_indicator) - Calculates the Aroon indicator
+//! * [`aroon_oscillator`](bulk::aroon_oscillator) - Calculates the Aroon Oscillator
+//! * [`aroon_up`](bulk::aroon_up) - Calculates the Aroon up
+//! * [`parabolic_time_price_system`](bulk::parabolic_time_price_system) - Calculates the parabolic
+//! time price system
+//!
+//! ## Single
+//!
+//! * [`aroon_down`](single::aroon_down) - Calculates the Aroon down
+//! * [`aroon_indicator`](single::aroon_indicator) - Calculates the Aroon indicator
+//! * [`aroon_oscillator`](single::aroon_oscillator) - Calculates the Aroon Oscillator
+//! * [`aroon_up`](single::aroon_up) - Calculates the Aroon up
+//! * [`long_parabolic_time_price_system`](single::long_parabolic_time_price_system) - Calculates the parabolic
+//! time price system for long positions
+//! * [`short_parabolic_time_price_system`](single::short_parabolic_time_price_system) - Calculates the
+//! parabolic time price system for short positions
 
 /// `single` module holds functions that return a singular values
 pub mod single {
@@ -19,9 +39,13 @@ pub mod single {
     ///
     /// * `highs` - Slice of highs
     ///
+    /// # Panics
+    ///
+    /// `aroon_up` will panic if `highs` is empty
+    ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let highs = vec![103.0, 102.0, 107.0, 104.0, 100.0];
     /// let aroon_up = rust_ti::trend_indicators::single::aroon_up(&highs);
     /// assert_eq!(50.0, aroon_up);
@@ -51,9 +75,13 @@ pub mod single {
     ///
     /// * `low` - Slice of lows
     ///
+    /// # Panics
+    ///
+    /// `aroon_down` will panic if `low` is empty
+    ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let lows = vec![98.0, 95.0, 101.0, 100.0, 97.0];
     /// let aroon_down = rust_ti::trend_indicators::single::aroon_down(&lows);
     /// assert_eq!(25.0, aroon_down);
@@ -82,7 +110,7 @@ pub mod single {
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let aroon_up = 50.0;
     /// let aroon_down = 25.0;
     /// let aroon_oscillator = rust_ti::trend_indicators::single::aroon_oscillator(&aroon_up,
@@ -100,9 +128,13 @@ pub mod single {
     /// * `high` - Slice of highs
     /// * `low` - Slice of lows
     ///
+    /// # Panics
+    ///
+    /// `aroon_indicator` will panic if length of `high` and `low` aren't equal
+    ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let highs = vec![103.0, 102.0, 107.0, 104.0, 100.0];
     /// let lows = vec![98.0, 95.0, 101.0, 100.0, 97.0];
     /// let aroon_indicator = rust_ti::trend_indicators::single::aroon_indicator(&highs, &lows);
@@ -145,7 +177,7 @@ pub mod single {
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let previous_sar = 50.09306;
     /// let extreme_point = 52.35;
     /// let acceleration_factor = 0.02;
@@ -199,7 +231,7 @@ pub mod single {
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let previous_sar = 58.0;
     /// let extreme_point = 56.3;
     /// let acceleration_factor = 0.02;
@@ -249,9 +281,13 @@ pub mod bulk {
     /// * `highs` - Slice of highs
     /// * `period` - Period over which to calculate the Aroon up
     ///
+    /// # Panics
+    ///
+    /// `aroon_up` will panic if `period` is greater than length of `highs`
+    ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let highs = vec![103.0, 102.0, 107.0, 104.0, 100.0, 102.0, 99.0];
     /// let period: usize = 5;
     /// let aroon_up = rust_ti::trend_indicators::bulk::aroon_up(&highs, &period);
@@ -286,9 +322,13 @@ pub mod bulk {
     /// * `low` - Slice of lows
     /// * `period` - Period over which to calculate the Aroon down
     ///
+    /// # Panics
+    ///
+    /// `aroon_down` will panic if `period` is greater than length of `low`
+    ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let lows = vec![98.0, 95.0, 101.0, 100.0, 97.0, 98.0, 97.0];
     /// let period: usize = 5;
     /// let aroon_down = rust_ti::trend_indicators::bulk::aroon_down(&lows, &period);
@@ -319,9 +359,13 @@ pub mod bulk {
     /// * `aroon_up` - Slice of Aroon ups
     /// * `aroon_down` - Slice Aroon downs
     ///
+    /// # Panics
+    ///
+    /// `aroon_oscillators` will panic if lengths of `aroon_up` and `aroon_down` aren't equal
+    ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let aroon_up = vec![50.0, 25.0, 0.0];
     /// let aroon_down = vec![25.0, 0.0, 100.0];
     /// let aroon_oscillator = rust_ti::trend_indicators::bulk::aroon_oscillator(&aroon_up,
@@ -353,9 +397,15 @@ pub mod bulk {
     /// * `low` - Slice of lows
     /// * `period` - Period over which to calculate the Aroon indicator
     ///
+    /// # Panics
+    ///
+    /// `aroon_indicator` will panic if:
+    /// * lengths of `high` and `low` aren't equal
+    /// * if lengths a less than `period`
+    ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let highs = vec![103.0, 102.0, 107.0, 104.0, 100.0, 102.0, 99.0];
     /// let lows = vec![98.0, 95.0, 101.0, 100.0, 97.0, 98.0, 97.0];
     /// let period: usize = 5;
@@ -415,9 +465,13 @@ pub mod bulk {
     /// should start long or short. If unsure start with short and 0.0 for `previous_sar`.
     /// * `previous_sar`- Value for the previous SaR. If none use 0.0
     ///
+    /// # Panics
+    ///
+    /// `parabolic_time_price_system` will panic if lengths of `highs` and `lows` aren't equal
+    ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let highs = vec![52.35, 52.1, 51.8, 52.1, 52.5, 52.8, 52.5, 53.5, 53.5, 53.8, 54.2, 53.4, 53.5, 54.4, 55.2, 55.7, 57.0, 57.5, 58.0, 57.7, 58.0, 57.5, 57.0, 56.7, 57.5, 56.7, 56.0, 56.2, 54.8, 55.5, 54.7, 54.0, 52.5, 51.0, 51.5, 51.7, 53.0];
     /// let lows = vec![51.5, 51.0, 50.5, 51.25, 51.7, 51.85, 51.5, 52.5, 52.5, 53.0, 52.5, 52.5, 52.1, 53.0, 54.0, 55.0, 56.0, 56.5, 57.0, 56.5, 57.3, 56.7, 56.3, 56.2, 56.0, 55.5, 55.0, 54.9, 54.0, 54.5, 53.8, 53.0, 51.5, 50.0, 50.5, 50.2, 51.5];
     /// let acceleration_factor_start = 0.02;
@@ -772,7 +826,13 @@ mod tests {
         let highs = vec![100.64, 102.39, 101.51, 99.48, 96.93];
         let lows = vec![95.92, 96.77, 95.84, 91.22, 89.12];
         assert_eq!(
-            vec![90.7812, 91.245552, 91.69132992, 102.1666, 101.64473600000001],
+            vec![
+                90.7812,
+                91.245552,
+                91.69132992,
+                102.1666,
+                101.64473600000001
+            ],
             bulk::parabolic_time_price_system(
                 &highs,
                 &lows,
@@ -805,7 +865,7 @@ mod tests {
 
     #[test]
     fn bulk_parabolic_time_price_system_short_switch_previous() {
-        let highs = vec![99.48, 96.93, 94.66, 102.79,  105.81];
+        let highs = vec![99.48, 96.93, 94.66, 102.79, 105.81];
         let lows = vec![91.22, 89.12, 87.35, 88.57, 90.64];
         assert_eq!(
             vec![102.1666, 101.64473600000001, 100.78705184, 87.35, 88.0884],
@@ -823,7 +883,7 @@ mod tests {
 
     #[test]
     fn bulk_parabolic_time_price_system_short_switch_no_previous() {
-        let highs = vec![99.48, 96.93, 94.66, 102.79,  105.81];
+        let highs = vec![99.48, 96.93, 94.66, 102.79, 105.81];
         let lows = vec![91.22, 89.12, 87.35, 88.57, 90.64];
         assert_eq!(
             vec![99.48, 99.48, 98.7522, 87.35, 88.0884],
@@ -881,7 +941,13 @@ mod tests {
         let highs = Vec::new();
         let lows = vec![95.92, 96.77, 95.84, 91.22, 89.12];
         assert_eq!(
-            vec![90.7812, 91.245552, 91.69132992, 102.1666, 101.64473600000001],
+            vec![
+                90.7812,
+                91.245552,
+                91.69132992,
+                102.1666,
+                101.64473600000001
+            ],
             bulk::parabolic_time_price_system(
                 &highs,
                 &lows,
@@ -897,10 +963,16 @@ mod tests {
     #[test]
     #[should_panic]
     fn bulk_parabolic_time_price_system_panic_low_empty() {
-        let highs = vec![99.48, 96.93, 94.66, 102.79,  105.81];
+        let highs = vec![99.48, 96.93, 94.66, 102.79, 105.81];
         let lows = Vec::new();
         assert_eq!(
-            vec![90.7812, 91.245552, 91.69132992, 102.1666, 101.64473600000001],
+            vec![
+                90.7812,
+                91.245552,
+                91.69132992,
+                102.1666,
+                101.64473600000001
+            ],
             bulk::parabolic_time_price_system(
                 &highs,
                 &lows,
@@ -919,7 +991,13 @@ mod tests {
         let highs = vec![99.48, 96.93, 94.66, 102.79];
         let lows = vec![95.92, 96.77, 95.84, 91.22, 89.12];
         assert_eq!(
-            vec![90.7812, 91.245552, 91.69132992, 102.1666, 101.64473600000001],
+            vec![
+                90.7812,
+                91.245552,
+                91.69132992,
+                102.1666,
+                101.64473600000001
+            ],
             bulk::parabolic_time_price_system(
                 &highs,
                 &lows,
@@ -935,10 +1013,16 @@ mod tests {
     #[test]
     #[should_panic]
     fn bulk_parabolic_time_price_system_panic_low_length() {
-        let highs = vec![99.48, 96.93, 94.66, 102.79,  105.81];
+        let highs = vec![99.48, 96.93, 94.66, 102.79, 105.81];
         let lows = vec![95.92, 96.77, 95.84, 91.22];
         assert_eq!(
-            vec![90.7812, 91.245552, 91.69132992, 102.1666, 101.64473600000001],
+            vec![
+                90.7812,
+                91.245552,
+                91.69132992,
+                102.1666,
+                101.64473600000001
+            ],
             bulk::parabolic_time_price_system(
                 &highs,
                 &lows,

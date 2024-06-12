@@ -1,7 +1,7 @@
 //! # Basic Indicators
 //!
 //! `basic_indicators` are simple functions that perform simple calculations on prices.
-//! 
+//!
 //! The primary purpose of these functions is to be reused by other functions.
 //!
 //! ## Bulk
@@ -15,7 +15,7 @@
 //! * [`mode`](bulk::mode) - Calculates the mode (most common price) of a slice of prices
 //! * [`standard_deviation`](bulk::standard_deviation) - Calculates the standard deviation of a slice of prices
 //! * [`variance`](bulk::variance) - Calculates the variance of slice of prices
-//! 
+//!
 //! ## Single
 //!
 //! * [`absolute_deviation`](single::absolute_deviation) - Calculates the absolute deviation
@@ -28,7 +28,7 @@
 //! * [`mode`](single::mode) - Calculates the mode (most common price) of a slice of prices
 //! * [`standard_deviation`](single::standard_deviation) - Calculates the standard deviation of a slice of prices
 //! * [`variance`](single::variance) - Calculates the variance of slice of prices
-//! 
+//!
 
 /// `single` module holds functions that return a singular value
 pub mod single {
@@ -61,7 +61,7 @@ pub mod single {
 
     /// Calculates the median (middle value) of a slice of prices and returns it as an `f64`.
     ///
-    /// `median` orders the numbers and takes the middle value. If the number of prices is even it 
+    /// `median` orders the numbers and takes the middle value. If the number of prices is even it
     /// will take the average of the two middle values.
     ///
     /// # Argument
@@ -117,7 +117,7 @@ pub mod single {
     /// # Panics
     ///
     /// The fuction will panic if given an empty `prices` slice
-    /// 
+    ///
     /// # Examples
     ///
     /// ```rust

@@ -260,7 +260,7 @@ pub mod single {
     /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
     /// let multiplier = 2.0;
-    /// 
+    ///
     /// let mcginley_bands = rust_ti::candle_indicators::single::mcginley_dynamic_bands(&prices,
     /// &rust_ti::DeviationModel::StandardDeviation, &multiplier, &0.0);
     /// assert_eq!((96.17157287525382, 99.0, 101.82842712474618), mcginley_bands);
@@ -325,7 +325,7 @@ pub mod single {
     /// * `span_b_period` - Period used to calculate the Span B line
     ///
     /// # Panics
-    /// 
+    ///
     /// `ichimoku_cloud` will panic if:
     /// * the length of `highs`, `lows`, and `close` don't match
     /// * `conversion_period`, `base_period`, or `span_b_period` are greater than the
@@ -340,11 +340,11 @@ pub mod single {
     /// 99.0, 101.0, 98.0, 93.0, 98.0];
     /// let closing_prices = vec![100.0, 102.0, 103.0, 101.0, 99.0, 99.0, 102.0, 103.0, 106.0, 107.0,
     /// 105.0, 104.0, 101.0, 97.0, 100.0];
-    /// 
+    ///
     /// let conversion_period: usize = 5;
     /// let base_period: usize = 10;
     /// let span_b_period: usize = 15;
-    /// 
+    ///
     /// let ichimoku_cloud = rust_ti::candle_indicators::single::ichimoku_cloud(&high_prices,
     /// &low_prices, &closing_prices, &conversion_period, &base_period, &span_b_period);
     /// assert_eq!((102.25, 102.5, 102.5, 102.0, 99.0), ichimoku_cloud);
@@ -474,7 +474,7 @@ pub mod bulk {
     /// * `previous_mcginley_dynamic` - Previous value for the McGinley dynamic. 0.0 is no
     /// previous.
     /// * `period` - Period over which to calculate the McGinley dynamic envelopes.
-    /// 
+    ///
     /// # Panics
     ///
     /// `mcginley_dynamic_envelopes` will panic if `period` is larger than length of `prices`
@@ -598,7 +598,7 @@ pub mod bulk {
     /// * `period` - Period over which to calculate the McGinley dynamic bands.
     ///
     /// # Panics
-    /// 
+    ///
     /// `mcginley_dynamic_bands` panics if `period` is greater than length of `prices`
     ///
     /// # Examples
@@ -668,7 +668,7 @@ pub mod bulk {
     /// * `span_b_period` - Period used to calculate the Span B line
     ///
     /// # Panics
-    /// 
+    ///
     /// `ichimoku_cloud` will panic if:
     /// * the length of `highs`, `lows`, and `close` don't match
     /// * `conversion_period`, `base_period`, or `span_b_period` are greater than the
@@ -688,7 +688,7 @@ pub mod bulk {
     /// let conversion_period: usize = 5;
     /// let base_period: usize = 10;
     /// let span_b_period: usize = 15;
-    /// 
+    ///
     /// let ichimoku_cloud = rust_ti::candle_indicators::bulk::ichimoku_cloud(&high_prices,
     /// &low_prices, &closing_prices, &conversion_period, &base_period, &span_b_period);
     /// assert_eq!(vec![(102.25, 102.5, 102.5, 102.0, 99.0), (100.0, 101.5, 101.5, 98.5, 102.0), (99.0, 100.5, 100.5, 97.5, 103.0)], ichimoku_cloud);

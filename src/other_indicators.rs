@@ -1,6 +1,14 @@
 //! # Other Indicators
 //!
-//! Indicators that don't really fit in
+//! Indicators that don't really fit in anywhere else
+//!
+//! ## Bulk
+//!
+//! * [`return_on_investment`](bulk::return_on_investment) - Calculates the return on investment
+//!
+//! ## Single
+//!
+//! * [`return_on_investment`](single::return_on_investment) - Calculates the return on investment
 
 /// `single` module holds functions that return a singular values
 pub mod single {
@@ -18,7 +26,7 @@ pub mod single {
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let start_price = 100.0;
     /// let end_price = 110.0;
     /// let initial_investment = 1000.0;
@@ -60,9 +68,13 @@ pub mod bulk {
     /// * `prices` - Price of the asset at the start of the period
     /// * `investment` - Amount of money invested in the asset
     ///
+    /// # Panics
+    ///
+    /// `return_on_investment` will panic if `prices` is empty
+    ///
     /// # Examples
     ///
-    /// ```
+    /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0, 99.0, 102.0];
     /// let initial_investment = 1000.0;
     /// let return_on_investment =
