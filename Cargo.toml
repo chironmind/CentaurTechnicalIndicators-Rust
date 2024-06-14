@@ -10,4 +10,8 @@ keywords  = ["trading", "technical-analysis", "finance", "indicators"]
 categories = ["finance", "mathematics"]
 exclude = ["/assets", "/.git", "/.github"]
 
+[[example]]
+name = "sp500"
+path = "examples/main.rs"
+
 [dependencies]

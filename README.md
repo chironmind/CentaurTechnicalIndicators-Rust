@@ -38,6 +38,16 @@ indicators from its default behaviour. For example, if a function normally uses 
 the indicator, it can be told to use the median, or mode instead. More information is given in the
 functions that allow this.
 
+## S&P 500 Example
+
+An example using the Rust TI for the S&P 500 can be found in `examples/main.rs`
+
+The code in `examples/main.rs` can be run by cloning this repo, then running the following commands:
+```shell
+cargo build
+cargo run --example sp500
+```
+
 ## Available indicators:
 
 ### Basic Indicators
@@ -266,3 +276,6 @@ the parabolic time price system
 #### Single
 
 * [`ulcer_index`](volatility_indicators::single::ulcer_index) - Calculates the Ulcer Index
+
+
+
