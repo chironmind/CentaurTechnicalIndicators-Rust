@@ -27,6 +27,7 @@ would be very helpful.
     * Go over Welles book 
     * Check other sources (such as investopedia, TI books...) for any other common indicators 
 that may have been missed
+    * Indicators derived from bbands
 
 ## I have an indicator I want to add
 

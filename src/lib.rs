@@ -6,10 +6,9 @@
 //! functions are.
 //!
 //! Many models were created decades ago when the work weeks were different (such as RSI, SO,
-//! Ichimoku cloud...) and the observations were made daily. For example, if one decides to study
+//! Ichimoku cloud...). For example, if one studies
 //!  stocks the work week is 5 days, but if one studies cryptocurrencies the work week is 7 days.
 //!
-//! RustTI allows the caller to determine their own period based on the market being studied.
 //! Everything is configurable in the RustTI functions, from period to moving average models.
 //!
 //! A lot of online articles recommend sticking with the TI defaults as these are used by
@@ -20,10 +19,10 @@
 //!
 //! Many of the functions accept parameters that allow the caller to move the technial
 //! indicators away from its default behaviour. For example, if a TI uses the mean to calculate
-//! the indicator, it can be told to use the median, or mode instead.
+//! part of the indicator, it can be told to use the median, or mode instead.
 //!
 //! For this reason, RustTI is a more advanced Technical Inidcators package, and the users should
-//! have some base knowledge of the indicators they plan on using.
+//! have some basic knowledge of the indicators they plan on using.
 //!
 //! RustTI is split into different modules, organised by common TI areas. Each module is then split
 //! into a `single` and a `bulk` submodule.
@@ -32,11 +31,6 @@
 //! that is passed in.
 //!
 //! The `bulk` submodule is used to iterate over a slice of prices to calculate the indicator for a period.
-//!
-//! Many of the functions accept parameters that will allow the caller to move away from the technial
-//! indicators from its default behaviour. For example, if a function normally uses the mean to calculate
-//! the indicator, it can be told to use the median, or mode instead. More information is given in the
-//! functions that allow this.
 //!
 //! ## Available indicators:
 //!
@@ -275,6 +269,7 @@ pub mod momentum_indicators;
 pub mod moving_average;
 pub mod other_indicators;
 pub mod strength_indicators;
+pub mod standard_indicators;
 pub mod trend_indicators;
 pub mod volatility_indicators;
 

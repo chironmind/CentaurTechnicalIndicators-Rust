@@ -1,5 +1,7 @@
 use rust_ti;
 
+// TODO: round typical price to two variables so it can be formatted
+
 fn main() {
     // open, high, low, close are the prices for the S&P500 for the past year that are going to be
     // used to show how the bulk part of the package works
