@@ -392,7 +392,7 @@ fn main() {
         5425.80333333333,
     ];
 
-    let high_week = vec![5362.35, 5375.08, 5365.79, 5375.95,  5447.25];
+    let high_week = vec![5362.35, 5375.08, 5365.79, 5375.95, 5447.25];
     let low_week = vec![5352.96, 5346.99, 5360.79, 5375.32, 5409.13];
 
     println!("{:?}", week);
@@ -401,7 +401,7 @@ fn main() {
     let period: usize = 5;
 
     // Basic Indicators
-    
+
     // Absolute Deviation
     let bulk_absolute_deviation = rust_ti::basic_indicators::bulk::absolute_deviation(
         &typical_price,
@@ -417,17 +417,20 @@ fn main() {
     println!("Single absolute deviation: {}", single_absolute_deviation);
 
     // Candle indicators
-    
+
     // Moving Constant bands
     let bulk_moving_constant_bands = rust_ti::candle_indicators::bulk::moving_constant_bands(
         &typical_price,
         &rust_ti::ConstantModelType::ExponentialMovingAverage,
         &rust_ti::DeviationModel::MeanAbsoluteDeviation,
         &2.0,
-        &period
+        &period,
     );
 
-    println!("Bulk moving constant bands: {:?})", bulk_moving_constant_bands);
+    println!(
+        "Bulk moving constant bands: {:?})",
+        bulk_moving_constant_bands
+    );
 
     let single_moving_constant_bands = rust_ti::candle_indicators::single::moving_constant_bands(
         &week,
@@ -436,7 +439,10 @@ fn main() {
         &2.0,
     );
 
-    println!("Single moving constant bands: {:?})", single_moving_constant_bands);
+    println!(
+        "Single moving constant bands: {:?})",
+        single_moving_constant_bands
+    );
 
     // Chart Trends
 
@@ -445,7 +451,7 @@ fn main() {
         &typical_price,
         &2.0,
         &2.0,
-        &rust_ti::DeviationModel::MeanAbsoluteDeviation
+        &rust_ti::DeviationModel::MeanAbsoluteDeviation,
     );
 
     println!("Broken down trends: {:?}", break_down_trends);
@@ -456,12 +462,12 @@ fn main() {
     let bulk_rsi = rust_ti::momentum_indicators::bulk::relative_strength_index(
         &typical_price,
         &rust_ti::ConstantModelType::ExponentialMovingAverage,
-        &period
+        &period,
     );
 
     println!("Bulk RSI: {:?}", bulk_rsi);
 
-    let single_rsi =  rust_ti::momentum_indicators::single::relative_strength_index(
+    let single_rsi = rust_ti::momentum_indicators::single::relative_strength_index(
         &week,
         &rust_ti::ConstantModelType::ExponentialMovingAverage,
     );
@@ -474,7 +480,7 @@ fn main() {
     let bulk_ema = rust_ti::moving_average::bulk::moving_average(
         &typical_price,
         &rust_ti::MovingAverageType::Exponential,
-        &period
+        &period,
     );
 
     println!("Bulk EMA: {:?}", bulk_ema);
@@ -488,52 +494,40 @@ fn main() {
 
     // Other indicators
     // Return on investment
-    let bulk_roi  = rust_ti::other_indicators::bulk::return_on_investment(
-        &typical_price, 
-        &1000.0
-    );
+    let bulk_roi = rust_ti::other_indicators::bulk::return_on_investment(&typical_price, &1000.0);
 
     println!("Bulk RoI: {:?}", bulk_roi);
 
     let single_roi = rust_ti::other_indicators::single::return_on_investment(
         &typical_price.last().unwrap(),
         &next_typical_price,
-        &bulk_roi.last().unwrap().0
+        &bulk_roi.last().unwrap().0,
     );
 
     println!("Single RoI: {:?}", single_roi);
 
     // Strength Indicators
     // Accumulation Distribution
-    
+
     // Trend Indicators
-    let bulk_aroon_indicator = rust_ti::trend_indicators::bulk::aroon_indicator(
-        &high,
-        &low,
-        &period
-    );
+    let bulk_aroon_indicator =
+        rust_ti::trend_indicators::bulk::aroon_indicator(&high, &low, &period);
 
     println!("Bulk Aroon Indicator: {:?}", bulk_aroon_indicator);
 
-    let single_aroon_indicator = rust_ti::trend_indicators::single::aroon_indicator(
-        &high_week,
-        &low_week
-    );
+    let single_aroon_indicator =
+        rust_ti::trend_indicators::single::aroon_indicator(&high_week, &low_week);
 
     println!("Sinlge Aroon Indicator: {:?}", single_aroon_indicator);
 
     // Volatility Indicators
     // Ulcer Index
-    let bulk_ulcer_index = rust_ti::volatility_indicators::bulk::ulcer_index(
-        &typical_price,
-        &period
-    );
+    let bulk_ulcer_index =
+        rust_ti::volatility_indicators::bulk::ulcer_index(&typical_price, &period);
 
     println!("Bulk Ulcer Index: {:?}", bulk_ulcer_index);
 
-    let single_ulcer_index = rust_ti::volatility_indicators::single::ulcer_index(
-        &week
-    );
+    let single_ulcer_index = rust_ti::volatility_indicators::single::ulcer_index(&week);
 
     println!("Single Ulcer Index: {:?}", single_ulcer_index);
 }
