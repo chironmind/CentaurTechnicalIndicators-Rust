@@ -120,258 +120,32 @@ fn main() {
     ];
 
     let typical_price = vec![
-        4327.81,
-        4364.56333333333,
-        4367.42,
-        4409.21333333333,
-        4421.83333333333,
-        4385.35,
-        4370.68333333333,
-        4371.98666666667,
-        4352.07333333333,
-        4339.65333333333,
-        4365.94333333333,
-        4375.81,
-        4388.93333333333,
-        4443.76666666667,
-        4451.44666666667,
-        4445.83,
-        4406.42,
-        4412.24666666667,
-        4404.01666666667,
-        4430.45333333333,
-        4474.57666666667,
-        4505.59333333333,
-        4510.91333333333,
-        4520.18,
-        4543.95666666667,
-        4567.21,
-        4542.39,
-        4542.37666666667,
-        4553.11333333333,
-        4566.83333333333,
-        4565.6,
-        4557.68,
-        4578.8,
-        4585.44,
-        4576.29333333333,
-        4523.35666666667,
-        4502.30666666667,
-        4497.64,
-        4509.81,
-        4489.02666666667,
-        4477.16,
-        4484.70666666667,
-        4461.42,
-        4477.83,
-        4449.64,
-        4419.27666666667,
-        4385.45333333333,
-        4362.28,
-        4389.20666666667,
-        4396.30333333333,
-        4425.21,
-        4403.38666666667,
-        4393.48666666667,
-        4429.28333333333,
-        4476.48333333333,
-        4510.03666666667,
-        4515.77,
-        4519.45666666667,
-        4502.37666666667,
-        4466.07,
-        4446.47,
-        4459.8,
-        4482.04,
-        4468.61333333333,
-        4466.78333333333,
-        4498.59333333333,
-        4465.17,
-        4454.0,
-        4436.80333333333,
-        4421.53666666667,
-        4344.95666666667,
-        4331.31666666667,
-        4326.21666666667,
-        4284.17333333333,
-        4268.40333333333,
-        4293.78333333333,
-        4298.68666666667,
-        4283.06,
-        4242.35,
-        4250.91,
-        4250.41,
-        4284.05,
-        4320.39333333333,
-        4361.11333333333,
-        4366.97666666667,
-        4353.63,
-        4338.95,
-        4366.44333333333,
-        4368.10333333333,
-        4327.54666666667,
-        4295.74333333333,
-        4241.25,
-        4220.7,
-        4242.16333333333,
-        4200.20333333333,
-        4149.57666666667,
-        4125.95,
-        4159.07666666667,
-        4180.82333333333,
-        4227.08,
-        4301.92,
-        4355.39666666667,
-        4361.90666666667,
-        4373.35,
-        4377.91333333333,
-        4361.56333333333,
-        4395.53666666667,
-        4409.04333333333,
-        4487.78,
-        4506.45333333333,
-        4502.68666666667,
-        4511.26666666667,
-        4538.28333333333,
-        4535.28,
-        4556.7,
-        4557.48333333333,
-        4552.42333333333,
-        4554.51333333333,
-        4561.79,
-        4558.31,
-        4582.91,
-        4562.95666666667,
-        4565.80666666667,
-        4562.19333333333,
-        4580.57666666667,
-        4595.88666666667,
-        4613.18,
-        4631.90666666667,
-        4686.67,
-        4717.48666666667,
-        4716.47,
-        4738.55333333333,
-        4760.26,
-        4724.72666666667,
-        4734.60333333333,
-        4754.78,
-        4772.64,
-        4778.62333333333,
-        4785.87666666667,
-        4770.08333333333,
-        4739.94333333333,
-        4711.27,
-        4700.99666666667,
-        4700.28,
-        4742.63333333333,
-        4750.77333333333,
-        4776.81666666667,
-        4772.77333333333,
-        4785.07,
-        4765.14666666667,
-        4732.75333333333,
-        4769.1,
-        4822.58333333333,
-        4854.29666666667,
-        4858.48333333333,
-        4879.39,
-        4887.21666666667,
-        4893.04333333333,
-        4914.88,
-        4924.11,
-        4865.85,
-        4888.89333333333,
-        4947.29666666667,
-        4939.36333333333,
-        4948.96,
-        4988.0,
-        4995.13333333333,
-        5019.00333333333,
-        5029.02,
-        4948.26,
-        4986.53,
-        5020.63,
-        5014.59666666667,
-        4974.74666666667,
-        4970.33666666667,
-        5073.41666666667,
-        5093.77333333333,
-        5078.7,
-        5072.05333333333,
-        5068.49333333333,
-        5087.71666666667,
-        5123.85666666667,
-        5135.93333333333,
-        5083.33666666667,
-        5108.31666666667,
-        5150.39666666667,
-        5143.48333333333,
-        5111.24666666667,
-        5156.54,
-        5165.44333333333,
-        5150.21,
-        5119.43333333333,
-        5156.83,
-        5163.47,
-        5207.45333333333,
-        5247.76333333333,
-        5236.71333333333,
-        5221.12333333333,
-        5214.05333333333,
-        5237.22333333333,
-        5255.00666666667,
-        5245.64,
-        5199.4,
-        5211.53666666667,
-        5183.28666666667,
-        5194.57666666667,
-        5206.43666666667,
-        5198.5,
-        5159.25666666667,
-        5183.20333333333,
-        5135.46,
-        5094.24,
-        5057.02666666667,
-        5035.80666666667,
-        5023.22333333333,
-        4979.93666666667,
-        5006.28,
-        5058.21,
-        5069.37666666667,
-        5032.25,
-        5095.90666666667,
-        5109.43666666667,
-        5060.61,
-        5042.65333333333,
-        5049.48666666667,
-        5122.71,
-        5168.05333333333,
-        5188.96333333333,
-        5181.82666666667,
-        5203.26333333333,
-        5224.00666666667,
-        5223.28,
-        5238.34333333333,
-        5294.39,
-        5306.26,
-        5297.43666666667,
-        5311.95,
-        5314.53333333333,
-        5305.4,
-        5288.88333333333,
-        5298.25333333333,
-        5300.94666666667,
-        5270.64,
-        5239.26333333333,
-        5249.84,
-        5273.27666666667,
-        5282.59,
-        5335.27666666667,
-        5350.22333333333,
-        5351.13333333333,
-        5352.7,
-        5359.50666666667,
+        4327.81, 4364.56, 4367.42, 4409.21, 4421.83, 4385.35, 4370.68, 4371.99, 4352.07, 4339.65,
+        4365.94, 4375.81, 4388.93, 4443.77, 4451.45, 4445.83, 4406.42, 4412.25, 4404.02, 4430.45,
+        4474.58, 4505.59, 4510.91, 4520.18, 4543.96, 4567.21, 4542.39, 4542.38, 4553.11, 4566.83,
+        4565.6, 4557.68, 4578.8, 4585.44, 4576.29, 4523.36, 4502.31, 4497.64, 4509.81, 4489.03,
+        4477.16, 4484.71, 4461.42, 4477.83, 4449.64, 4419.28, 4385.45, 4362.28, 4389.21, 4396.3,
+        4425.21, 4403.39, 4393.49, 4429.28, 4476.48, 4510.04, 4515.77, 4519.46, 4502.38, 4466.07,
+        4446.47, 4459.8, 4482.04, 4468.61, 4466.78, 4498.59, 4465.17, 4454.0, 4436.8, 4421.54,
+        4344.96, 4331.32, 4326.22, 4284.17, 4268.4, 4293.78, 4298.69, 4283.06, 4242.35, 4250.91,
+        4250.41, 4284.05, 4320.39, 4361.11, 4366.98, 4353.63, 4338.95, 4366.44, 4368.1, 4327.55,
+        4295.74, 4241.25, 4220.7, 4242.16, 4200.2, 4149.58, 4125.95, 4159.08, 4180.82, 4227.08,
+        4301.92, 4355.4, 4361.91, 4373.35, 4377.91, 4361.56, 4395.54, 4409.04, 4487.78, 4506.45,
+        4502.69, 4511.27, 4538.28, 4535.28, 4556.7, 4557.48, 4552.42, 4554.51, 4561.79, 4558.31,
+        4582.91, 4562.96, 4565.81, 4562.19, 4580.58, 4595.89, 4613.18, 4631.91, 4686.67, 4717.49,
+        4716.47, 4738.55, 4760.26, 4724.73, 4734.6, 4754.78, 4772.64, 4778.62, 4785.88, 4770.08,
+        4739.94, 4711.27, 4701.0, 4700.28, 4742.63, 4750.77, 4776.82, 4772.77, 4785.07, 4765.15,
+        4732.75, 4769.1, 4822.58, 4854.3, 4858.48, 4879.39, 4887.22, 4893.04, 4914.88, 4924.11,
+        4865.85, 4888.89, 4947.3, 4939.36, 4948.96, 4988.0, 4995.13, 5019.0, 5029.02, 4948.26, 4986.53,
+        5020.63, 5014.6, 4974.75, 4970.34, 5073.42, 5093.77, 5078.7, 5072.05, 5068.49, 5087.72,
+        5123.86, 5135.93, 5083.34, 5108.32, 5150.4, 5143.48, 5111.25, 5156.54, 5165.44, 5150.21,
+        5119.43, 5156.83, 5163.47, 5207.45, 5247.76, 5236.71, 5221.12, 5214.05, 5237.22, 5255.01,
+        5245.64, 5199.4, 5211.54, 5183.29, 5194.58, 5206.44, 5198.5, 5159.26, 5183.2, 5135.46,
+        5094.24, 5057.03, 5035.81, 5023.22, 4979.94, 5006.28, 5058.21, 5069.38, 5032.25, 5095.91,
+        5109.44, 5060.61, 5042.65, 5049.49, 5122.71, 5168.05, 5188.96, 5181.83, 5203.26, 5224.01,
+        5223.28, 5238.34, 5294.39, 5306.26, 5297.44, 5311.95, 5314.53, 5305.4, 5288.88, 5298.25,
+        5300.95, 5270.64, 5239.26, 5249.84, 5273.28, 5282.59, 5335.28, 5350.22, 5351.13, 5352.7,
+        5359.51, 5425.8,
     ];
 
     // next_open, next_high, next_low, next_close are the t+1 values that are going to be used to
@@ -390,7 +164,7 @@ fn main() {
         5425.80333333333,
     ];
 
-    let high_week = vec![5362.35, 5375.08, 5365.79, 5375.95,  5447.25];
+    let high_week = vec![5362.35, 5375.08, 5365.79, 5375.95, 5447.25];
     let low_week = vec![5352.96, 5346.99, 5360.79, 5375.32, 5409.13];
 
     println!("{:?}", week);
@@ -398,8 +172,99 @@ fn main() {
     // For all indicators we will use a period of 5 (a week) so that they are comparable
     let period: usize = 5;
 
+    // Standard Indicators
+    // TODO: For the later indicators create another vec like week instead of recalcing the same
+    // value
+
+    // Simple Moving Average
+
+    let bulk_simple_ma = rust_ti::standard_indicators::bulk::simple_moving_average(
+        &typical_price,
+        &period
+    );
+
+    println!("Bulk simple MA {:?}", bulk_simple_ma);
+
+    let single_simple_ma = rust_ti::standard_indicators::single::simple_moving_average(
+        &week
+    );
+
+    println!("Single simple MA {:?}", single_simple_ma);
+
+    // Smoothed Moving Average
+
+    let bulk_smoothed_ma = rust_ti::standard_indicators::bulk::smoothed_moving_average(
+        &typical_price,
+        &period
+    );
+
+    println!("Bulk smoothed MA {:?}", bulk_smoothed_ma);
+
+    let single_smoothed_ma = rust_ti::standard_indicators::single::smoothed_moving_average(
+        &week
+    );
+
+    println!("Single smoothed MA {:?}", single_smoothed_ma);
+
+    // Exponential Moving Average
+
+    let bulk_exponential_ma = rust_ti::standard_indicators::bulk::exponential_moving_average(
+        &typical_price,
+        &period
+    );
+
+    println!("Bulk exponential MA {:?}", bulk_exponential_ma);
+
+    let single_exponential_ma = rust_ti::standard_indicators::single::exponential_moving_average(
+        &week
+    );
+
+    println!("Single exponential MA {:?}", single_exponential_ma);
+
+    // Bollinger Bands
+
+    let bulk_bollinger_bands = rust_ti::standard_indicators::bulk::bollinger_bands(
+        &typical_price
+    );
+
+    println!("Bulk Bollinger Bands {:?}", bulk_bollinger_bands);
+
+    let single_bollinger_bands = rust_ti::standard_indicators::single::bollinger_bands(
+        &typical_price[typical_price.len() - 20 ..]
+    );
+
+    println!("Single Bollinger Band {:?}", single_bollinger_bands);
+
+    // MACD
+
+    let bulk_macd = rust_ti::standard_indicators::bulk::macd(
+        &typical_price
+    );
+
+    println!("Bulk MACD {:?}", bulk_macd);
+
+    let single_macd = rust_ti::standard_indicators::single::macd(
+        &typical_price[typical_price.len() - 34 ..]
+    );
+
+    println!("Single MACD {:?}", single_macd);
+
+    // RSI
+
+    let bulk_rsi = rust_ti::standard_indicators::bulk::rsi(
+        &typical_price
+    );
+
+    println!("Bulk RSI {:?}", bulk_rsi);
+
+    let single_rsi = rust_ti::standard_indicators::single::rsi(
+        &typical_price[typical_price.len() - 14 ..]
+    );
+
+    println!("Singe RSI {}", single_rsi);
+
     // Basic Indicators
-    
+
     // Absolute Deviation
     let bulk_absolute_deviation = rust_ti::basic_indicators::bulk::absolute_deviation(
         &typical_price,
@@ -415,17 +280,20 @@ fn main() {
     println!("Single absolute deviation: {}", single_absolute_deviation);
 
     // Candle indicators
-    
+
     // Moving Constant bands
     let bulk_moving_constant_bands = rust_ti::candle_indicators::bulk::moving_constant_bands(
         &typical_price,
         &rust_ti::ConstantModelType::ExponentialMovingAverage,
         &rust_ti::DeviationModel::MeanAbsoluteDeviation,
         &2.0,
-        &period
+        &period,
     );
 
-    println!("Bulk moving constant bands: {:?})", bulk_moving_constant_bands);
+    println!(
+        "Bulk moving constant bands: {:?})",
+        bulk_moving_constant_bands
+    );
 
     let single_moving_constant_bands = rust_ti::candle_indicators::single::moving_constant_bands(
         &week,
@@ -434,7 +302,10 @@ fn main() {
         &2.0,
     );
 
-    println!("Single moving constant bands: {:?})", single_moving_constant_bands);
+    println!(
+        "Single moving constant bands: {:?})",
+        single_moving_constant_bands
+    );
 
     // Chart Trends
 
@@ -443,7 +314,7 @@ fn main() {
         &typical_price,
         &2.0,
         &2.0,
-        &rust_ti::DeviationModel::MeanAbsoluteDeviation
+        &rust_ti::DeviationModel::MeanAbsoluteDeviation,
     );
 
     println!("Broken down trends: {:?}", break_down_trends);
@@ -454,12 +325,12 @@ fn main() {
     let bulk_rsi = rust_ti::momentum_indicators::bulk::relative_strength_index(
         &typical_price,
         &rust_ti::ConstantModelType::ExponentialMovingAverage,
-        &period
+        &period,
     );
 
     println!("Bulk RSI: {:?}", bulk_rsi);
 
-    let single_rsi =  rust_ti::momentum_indicators::single::relative_strength_index(
+    let single_rsi = rust_ti::momentum_indicators::single::relative_strength_index(
         &week,
         &rust_ti::ConstantModelType::ExponentialMovingAverage,
     );
@@ -472,7 +343,7 @@ fn main() {
     let bulk_ema = rust_ti::moving_average::bulk::moving_average(
         &typical_price,
         &rust_ti::MovingAverageType::Exponential,
-        &period
+        &period,
     );
 
     println!("Bulk EMA: {:?}", bulk_ema);
@@ -486,52 +357,40 @@ fn main() {
 
     // Other indicators
     // Return on investment
-    let bulk_roi  = rust_ti::other_indicators::bulk::return_on_investment(
-        &typical_price, 
-        &1000.0
-    );
+    let bulk_roi = rust_ti::other_indicators::bulk::return_on_investment(&typical_price, &1000.0);
 
     println!("Bulk RoI: {:?}", bulk_roi);
 
     let single_roi = rust_ti::other_indicators::single::return_on_investment(
         &typical_price.last().unwrap(),
         &next_typical_price,
-        &bulk_roi.last().unwrap().0
+        &bulk_roi.last().unwrap().0,
     );
 
     println!("Single RoI: {:?}", single_roi);
 
     // Strength Indicators
     // Accumulation Distribution
-    
+
     // Trend Indicators
-    let bulk_aroon_indicator = rust_ti::trend_indicators::bulk::aroon_indicator(
-        &high,
-        &low,
-        &period
-    );
+    let bulk_aroon_indicator =
+        rust_ti::trend_indicators::bulk::aroon_indicator(&high, &low, &period);
 
     println!("Bulk Aroon Indicator: {:?}", bulk_aroon_indicator);
 
-    let single_aroon_indicator = rust_ti::trend_indicators::single::aroon_indicator(
-        &high_week,
-        &low_week
-    );
+    let single_aroon_indicator =
+        rust_ti::trend_indicators::single::aroon_indicator(&high_week, &low_week);
 
     println!("Sinlge Aroon Indicator: {:?}", single_aroon_indicator);
 
     // Volatility Indicators
     // Ulcer Index
-    let bulk_ulcer_index = rust_ti::volatility_indicators::bulk::ulcer_index(
-        &typical_price,
-        &period
-    );
+    let bulk_ulcer_index =
+        rust_ti::volatility_indicators::bulk::ulcer_index(&typical_price, &period);
 
     println!("Bulk Ulcer Index: {:?}", bulk_ulcer_index);
 
-    let single_ulcer_index = rust_ti::volatility_indicators::single::ulcer_index(
-        &week
-    );
+    let single_ulcer_index = rust_ti::volatility_indicators::single::ulcer_index(&week);
 
     println!("Single Ulcer Index: {:?}", single_ulcer_index);
 }

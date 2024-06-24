@@ -6,10 +6,9 @@
 //! functions are.
 //!
 //! Many models were created decades ago when the work weeks were different (such as RSI, SO,
-//! Ichimoku cloud...) and the observations were made daily. For example, if one decides to study
+//! Ichimoku cloud...). For example, if one studies
 //!  stocks the work week is 5 days, but if one studies cryptocurrencies the work week is 7 days.
 //!
-//! RustTI allows the caller to determine their own period based on the market being studied.
 //! Everything is configurable in the RustTI functions, from period to moving average models.
 //!
 //! A lot of online articles recommend sticking with the TI defaults as these are used by
@@ -20,10 +19,10 @@
 //!
 //! Many of the functions accept parameters that allow the caller to move the technial
 //! indicators away from its default behaviour. For example, if a TI uses the mean to calculate
-//! the indicator, it can be told to use the median, or mode instead.
+//! part of the indicator, it can be told to use the median, or mode instead.
 //!
 //! For this reason, RustTI is a more advanced Technical Inidcators package, and the users should
-//! have some base knowledge of the indicators they plan on using.
+//! have some basic knowledge of the indicators they plan on using.
 //!
 //! RustTI is split into different modules, organised by common TI areas. Each module is then split
 //! into a `single` and a `bulk` submodule.
@@ -33,12 +32,32 @@
 //!
 //! The `bulk` submodule is used to iterate over a slice of prices to calculate the indicator for a period.
 //!
-//! Many of the functions accept parameters that will allow the caller to move away from the technial
-//! indicators from its default behaviour. For example, if a function normally uses the mean to calculate
-//! the indicator, it can be told to use the median, or mode instead. More information is given in the
-//! functions that allow this.
-//!
 //! ## Available indicators:
+//!
+//! ### Standard Indicators
+//!
+//! [`standard_indicators`] are configurable indicators that have had their configurations hardcoded to
+//! follow industry standards.
+//!
+//! These are essentially wrappers for the other functions.
+//!
+//! #### Bulk
+//!
+//! * [`simple_moving_average`](standard_indicators::bulk::simple_moving_average)
+//! * [`smoothed_moving_average`](standard_indicators::bulk::smoothed_moving_average)
+//! * [`exponential_moving_average`](standard_indicators::bulk::exponential_moving_average)
+//! * [`bollinger_bands`](standard_indicators::bulk::bollinger_bands)
+//! * [`macd`](standard_indicators::bulk::macd)
+//! * [`rsi`](standard_indicators::bulk::rsi)
+//!
+//! #### Single
+//!
+//! * [`simple_moving_average`](standard_indicators::single::simple_moving_average)
+//! * [`smoothed_moving_average`](standard_indicators::single::smoothed_moving_average)
+//! * [`exponential_moving_average`](standard_indicators::single::exponential_moving_average)
+//! * [`bollinger_bands`](standard_indicators::single::bollinger_bands)
+//! * [`macd`](standard_indicators::single::macd)
+//! * [`rsi`](standard_indicators::single::rsi)
 //!
 //! ### Basic Indicators
 //! [`basic_indicators`] are basic functions that are often the foundation of more complex
@@ -274,6 +293,7 @@ pub mod correlation_indicators;
 pub mod momentum_indicators;
 pub mod moving_average;
 pub mod other_indicators;
+pub mod standard_indicators;
 pub mod strength_indicators;
 pub mod trend_indicators;
 pub mod volatility_indicators;

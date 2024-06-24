@@ -751,7 +751,7 @@ pub mod single {
             );
         };
 
-        let short_period_index = short_period - 1;
+        let short_period_index = length - short_period;
         let short_period_average = match short_period_model {
             ConstantModelType::SimpleMovingAverage => {
                 moving_average(&prices[short_period_index..], &MovingAverageType::Simple)
@@ -829,7 +829,6 @@ pub mod single {
         if macds.is_empty() {
             panic!("macds cannot be empty");
         };
-
         match constant_model_type {
             ConstantModelType::SimpleMovingAverage => {
                 return moving_average(&macds, &MovingAverageType::Simple)

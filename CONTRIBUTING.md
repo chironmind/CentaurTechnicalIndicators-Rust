@@ -19,14 +19,14 @@ would be very helpful.
 
     * Add all the docs that GH wants
     * remove test_ prefix from all tests
-    * have standard indicators for indicator defaults
-    * shorted README
+    * update readme link with stndard indicators
 
 ### New indicators
 
     * Go over Welles book 
     * Check other sources (such as investopedia, TI books...) for any other common indicators 
 that may have been missed
+    * Indicators derived from bbands
 
 ## I have an indicator I want to add
 

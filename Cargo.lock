@@ -4,4 +4,4 @@ version = 3
 
 [[package]]
 name = "rust_ti"
-version = "0.0.1"
+version = "1.0.0"

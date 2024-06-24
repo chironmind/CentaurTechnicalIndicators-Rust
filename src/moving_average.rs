@@ -70,7 +70,6 @@ pub mod single {
         alpha_denominator: &f64,
     ) -> f64 {
         let length = prices.len() as f64;
-
         if length == 1.0 {
             return prices[0];
         };
