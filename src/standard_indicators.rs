@@ -10,26 +10,19 @@
 //!
 //! * [`simple_moving_average`](bulk::simple_moving_average)
 //! * [`smoothed_moving_average`](bulk::smoothed_moving_average)
-//! * [`exponential_moving_average](bulk::exponential_moving_average)
+//! * [`exponential_moving_average`](bulk::exponential_moving_average)
 //! * [`bollinger_bands`](bulk::bollinger_bands)
 //! * [`macd`](bulk::macd)
 //! * [`rsi`](bulk::rsi)
-//! * [`stochastic_oscillator`](bulk::stochastic_oscillator)
-//! * [`aroon_oscillator`](bulk::aroon_oscillator)
 //!
 //! ## Single
 //!
 //! * [`simple_moving_average`](single::simple_moving_average)
 //! * [`smoothed_moving_average`](single::smoothed_moving_average)
-//! * [`exponential_moving_average](single::exponential_moving_average)
+//! * [`exponential_moving_average`](single::exponential_moving_average)
 //! * [`bollinger_bands`](single::bollinger_bands)
 //! * [`macd`](single::macd)
 //! * [`rsi`](single::rsi)
-//! * [`stochastic_oscillator`](single::stochastic_oscillator)
-//! * [`aroon_oscillator`](bulk::aroon_oscillator)
-
-// TODO:
-//  * Add these to examples/main.rs
 
 /// `single` module holds functions that return a singular value
 pub mod single {
@@ -124,7 +117,7 @@ pub mod single {
     /// The function returns a tulpe with the lower band, moving average, and upper band in that order.
     ///
     /// The `bollinger_bands` function is a wrapper for the
-    /// [`moving_constant_bands`](crate::candle_indicators::single::moving_constant_bands) using a
+    /// [`moving_constant_bands`] using a
     /// simple moving average, standard deviation, and a deviation multiplier of 2.
     ///
     /// The standard period for Bollinger Bands is 20 periods, as such the function will panic if
@@ -458,7 +451,7 @@ pub mod bulk {
     ///
     /// # Panics
     ///
-    /// `macd` will panic if length of `prices` is less than 35.
+    /// `macd` will panic if length of `prices` is less than 34.
     ///
     /// 26 periods for the MACD, and as the signal does the exponential moving average of the MACD
     /// over periods, these need to be added to the total length.
@@ -754,5 +747,43 @@ mod tests {
         bulk::macd(&prices);
     }
 
-    //TODO: rsi
+    #[test]
+    fn single_rsi() {
+        let prices = vec![
+            99.75, 99.55, 98.8, 98.97, 98.83, 98.15, 97.42, 96.94, 96.51, 96.71, 96.5, 97.22,
+            98.03, 98.21,
+        ];
+        assert_eq!(49.49693728728258, single::rsi(&prices));
+    }
+
+    #[test]
+    #[should_panic]
+    fn single_rsi_panic() {
+        let prices = vec![
+            99.75, 99.55, 98.8, 98.97, 98.83, 98.15, 97.42, 96.94, 96.51, 96.71, 96.5,
+        ];
+        single::rsi(&prices);
+    }
+
+    #[test]
+    fn bulk_rsi() {
+        let prices = vec![
+            99.75, 99.55, 98.8, 98.97, 98.83, 98.15, 97.42, 96.94, 96.51, 96.71, 96.5, 97.22,
+            98.03, 98.21, 98.05, 98.24,
+        ];
+
+        assert_eq!(
+            vec![49.49693728728258, 51.7387808206744, 49.93948387240627],
+            bulk::rsi(&prices)
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_rsi_panic() {
+        let prices = vec![
+            99.75, 99.55, 98.8, 98.97, 98.83, 98.15, 97.42, 96.94, 96.51, 96.71, 96.5,
+        ];
+        bulk::rsi(&prices);
+    }
 }

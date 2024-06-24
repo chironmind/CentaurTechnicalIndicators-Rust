@@ -11,6 +11,25 @@ the indicator, it can be told to use the median, or mode instead.
 For this reason, RustTI is a more advanced Technical Inidcators package, and users should
 have some knowledge of the indicators they plan on using.
 
+* [Install](#install)
+* [Documentation](#documentation)
+* [Examples](#examples)
+* [Available indicators](#available-indicators)
+
+## Install
+
+Run the following Cargo command in your project directory:
+
+```shell
+cargo add rust_ti
+```
+
+Or add the following line to your Cargo.toml:
+
+```
+rust_ti = "1.0.1" 
+```
+
 ## Documentation
 
 Documentation can be found here: [rust_ti](https://docs.rs/rust_ti/latest/rust_ti/)
@@ -116,20 +135,6 @@ cargo build
 cargo run --example sp500
 ```
 
-## Install
-
-Run the following Cargo command in your project directory:
-
-```shell
-cargo add rust_ti
-```
-
-Or add the following line to your Cargo.toml:
-
-```
-rust_ti = "1.0.0" 
-```
-
 ## Available indicators:
 
 The indicators a split into two modules. 
@@ -137,6 +142,28 @@ The indicators a split into two modules.
 `Bulk` to calculate indicators over a vector of prices for a given period.
 
 `Single` to calculate indicators once 
+
+### Standard Indicators
+
+#### Bulk
+
+* [simple_moving_average]()
+* [smoothed_moving_average]()
+* [exponential_moving_average]()
+* [bollinger_bands]()
+* [macd]()
+* [rsi]()
+
+#### Single 
+
+* [simple_moving_average]()
+* [smoothed_moving_average]()
+* [exponential_moving_average]()
+* [bollinger_bands]()
+* [macd]()
+* [rsi]()
+
+#### Single
 
 ### Basic Indicators
 

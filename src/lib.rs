@@ -34,6 +34,31 @@
 //!
 //! ## Available indicators:
 //!
+//! ### Standard Indicators
+//!
+//! [`standard_indicators`] are configurable indicators that have had their configurations hardcoded to
+//! follow industry standards.
+//!
+//! These are essentially wrappers for the other functions.
+//!
+//! #### Bulk
+//!
+//! * [`simple_moving_average`](standard_indicators::bulk::simple_moving_average)
+//! * [`smoothed_moving_average`](standard_indicators::bulk::smoothed_moving_average)
+//! * [`exponential_moving_average`](standard_indicators::bulk::exponential_moving_average)
+//! * [`bollinger_bands`](standard_indicators::bulk::bollinger_bands)
+//! * [`macd`](standard_indicators::bulk::macd)
+//! * [`rsi`](standard_indicators::bulk::rsi)
+//!
+//! #### Single
+//!
+//! * [`simple_moving_average`](standard_indicators::single::simple_moving_average)
+//! * [`smoothed_moving_average`](standard_indicators::single::smoothed_moving_average)
+//! * [`exponential_moving_average`](standard_indicators::single::exponential_moving_average)
+//! * [`bollinger_bands`](standard_indicators::single::bollinger_bands)
+//! * [`macd`](standard_indicators::single::macd)
+//! * [`rsi`](standard_indicators::single::rsi)
+//!
 //! ### Basic Indicators
 //! [`basic_indicators`] are basic functions that are often the foundation of more complex
 //! indicators.
