@@ -15,6 +15,7 @@ have some knowledge of the indicators they plan on using.
 * [Documentation](#documentation)
 * [Examples](#examples)
 * [Available indicators](#available-indicators)
+* [Release notes](#release-notes)
 
 ## Install
 
@@ -30,9 +31,11 @@ Or add the following line to your Cargo.toml:
 rust_ti = "1.0.1" 
 ```
 
+
 ## Documentation
 
 Documentation can be found here: [rust_ti](https://docs.rs/rust_ti/latest/rust_ti/)
+
 
 ## Examples
 
@@ -135,196 +138,132 @@ cargo build
 cargo run --example sp500
 ```
 
+
 ## Available indicators:
 
-The indicators a split into two modules. 
+All indicators are grouped and split into modules based on their analysis area.
 
-`Bulk` to calculate indicators over a vector of prices for a given period.
+The modules are split into two sub modules: `bulk` and `single`. 
 
-`Single` to calculate indicators once 
+`Bulk` indicators calculate the indicator for a given period and return a vector of the indicator.
+
+`Single` indicators calculate the indicator for the entire vector and return a single value. 
 
 ### Standard Indicators
 
-#### Bulk
+Standard indicators are indicators with the configurations hardcoded to meet industry defaults.
 
-* [simple_moving_average]()
-* [smoothed_moving_average]()
-* [exponential_moving_average]()
-* [bollinger_bands]()
-* [macd]()
-* [rsi]()
-
-#### Single 
-
-* [simple_moving_average]()
-* [smoothed_moving_average]()
-* [exponential_moving_average]()
-* [bollinger_bands]()
-* [macd]()
-* [rsi]()
-
-#### Single
+* Simple Moving Average
+* Smoothed Moving Average
+* Exponential Moving Average
+* Bollinger Bands
+* MACD
+* RSI
 
 ### Basic Indicators
 
-#### Bulk
+Basic indicators are very simple indicators primarily used by other indicators. 
          
-* [absolute_deviation](https://docs.rs/rust_ti/latest/rust_ti/basic_indicators/bulk/fn.absolute_deviation.html)
-* [log](https://docs.rs/rust_ti/latest/rust_ti/basic_indicators/bulk/fn.log.html)
-* [log_difference](https://docs.rs/rust_ti/latest/rust_ti/basic_indicators/bulk/fn.log_difference.html)
-* [mean](https://docs.rs/rust_ti/latest/rust_ti/basic_indicators/bulk/fn.mean.html) 
-* [median](https://docs.rs/rust_ti/latest/rust_ti/basic_indicators/bulk/fn.median.html) 
-* [mode](https://docs.rs/rust_ti/latest/rust_ti/basic_indicators/bulk/fn.mode.html) 
-* [standard_deviation](https://docs.rs/rust_ti/latest/rust_ti/basic_indicators/bulk/fn.standard_deviation.html) 
-* [variance](https://docs.rs/rust_ti/latest/rust_ti/basic_indicators/bulk/fn.variance.html)
-
-#### Single
-
-* [absolute_deviation](https://docs.rs/rust_ti/latest/rust_ti/basic_indicators/single/fn.absolute_deviation.html)
-* [log_difference](https://docs.rs/rust_ti/latest/rust_ti/basic_indicators/single/fn.log_difference.html)
-* [max](https://docs.rs/rust_ti/latest/rust_ti/basic_indicators/single/fn.max.html)
-* [mean](https://docs.rs/rust_ti/latest/rust_ti/basic_indicators/single/fn.mean.html)
-* [median](https://docs.rs/rust_ti/latest/rust_ti/basic_indicators/single/fn.median.html) 
-* [min](https://docs.rs/rust_ti/latest/rust_ti/basic_indicators/single/fn.min.html) 
-* [mode](https://docs.rs/rust_ti/latest/rust_ti/basic_indicators/single/fn.mode.html) 
-* [standard_deviation](https://docs.rs/rust_ti/latest/rust_ti/basic_indicators/single/fn.standard_deviation.html)
-* [variance](https://docs.rs/rust_ti/latest/rust_ti/basic_indicators/single/fn.variance.html)  
-
+* Absolute Deviation
+* Log
+* Log Difference
+* Mean 
+* Median 
+* Mode 
+* Standard Deviation 
+* Variance
+* Max
+* Min
+ 
 ### Candle Indicators
 
-#### Bulk
+Candle indicators are indicators to be used with candle charts
 
-* [ichimoku_cloud](https://docs.rs/rust_ti/latest/rust_ti/candle_indicators/bulk/fn.ichimoku_cloud.html) 
-* [mcginley_dynamic_bands](https://docs.rs/rust_ti/latest/rust_ti/candle_indicators/bulk/fn.mcginley_dynamic_bands.html) 
-* [mcginley_dynamic_envelopes](https://docs.rs/rust_ti/latest/rust_ti/candle_indicators/bulk/fn.mcginley_dynamic_envelopes.html) 
-* [moving_constant_bands](https://docs.rs/rust_ti/latest/rust_ti/candle_indicators/bulk/fn.moving_constant_bands.html) 
-* [moving_constant_envelopes](https://docs.rs/rust_ti/latest/rust_ti/candle_indicators/bulk/fn.moving_constant_envelopes.html) 
-
-#### Single
-
-* [ichimoku_cloud](https://docs.rs/rust_ti/latest/rust_ti/candle_indicators/single/fn.ichimoku_cloud.html) 
-* [mcginley_dynamic_bands](https://docs.rs/rust_ti/latest/rust_ti/candle_indicators/single/fn.mcginley_dynamic_bands.html) 
-* [mcginley_dynamic_envelopes](https://docs.rs/rust_ti/latest/rust_ti/candle_indicators/single/fn.mcginley_dynamic_envelopes.html) 
-* [moving_constant_bands](https://docs.rs/rust_ti/latest/rust_ti/candle_indicators/single/fn.moving_constant_bands.html) 
-* [moving_constant_envelopes](https://docs.rs/rust_ti/latest/rust_ti/candle_indicators/single/fn.moving_constant_envelopes.html) 
+* Ichimoku Cloud 
+* McGinley Dynamic Bands 
+* McGinley Dynamic Envelopes 
+* Moving Constant Bands, generic version of Bollinger bansa 
+* Moving Constant envelopes, generic version of moving average envelopes 
 
 ### Chart Trends
 
-* [break_down_trends](https://docs.rs/rust_ti/latest/rust_ti/chart_trends/fn.break_down_trends.html) 
-* [overall_trend](https://docs.rs/rust_ti/latest/rust_ti/chart_trends/fn.overall_trend.html) 
-* [peak_trend](https://docs.rs/rust_ti/latest/rust_ti/chart_trends/fn.peak_trend.html) 
-* [peaks](https://docs.rs/rust_ti/latest/rust_ti/chart_trends/fn.peaks.html) 
-* [valley_trend](https://docs.rs/rust_ti/latest/rust_ti/chart_trends/fn.valley_trend.html) 
-* [valleys](https://docs.rs/rust_ti/latest/rust_ti/chart_trends/fn.valleys.html) 
+Chart trends are indicators to be used with charts that show trend direction
+
+* Break down trends 
+* Overall trend 
+* Peak trend 
+* Peaks 
+* Valley trend 
+* Valleys 
 
 ### Correlation indicators
 
-#### Bulk
+Correlation calculate the correlation between two assests
 
-* [correlate_asset_prices](https://docs.rs/rust_ti/latest/rust_ti/correlation_indicators/bulk/fn.correlate_asset_prices.html) 
-
-#### Single
-
-* [correlate_asset_prices](https://docs.rs/rust_ti/latest/rust_ti/correlation_indicators/single/fn.correlate_asset_prices.html) 
+* Correlate asset prices 
 
 ### Momentum Indicators
 
-#### Bulk
+Momentum indicators calculate the momentum of price movement
 
-* [chaikin_oscillator](https://docs.rs/rust_ti/latest/rust_ti/momentum_indicators/bulk/fn.chaikin_oscillator.html)
-* [commodity_channel_index](https://docs.rs/rust_ti/latest/rust_ti/momentum_indicators/bulk/fn.commodity_channel_index.html) 
-* [macd_line](https://docs.rs/rust_ti/latest/rust_ti/momentum_indicators/bulk/fn.macd_line.html) 
-* [mcginley_dynamic_chaikin_oscillator](https://docs.rs/rust_ti/latest/rust_ti/momentum_indicators/bulk/fn.mcginley_dynamic_chaikin_oscillator.html) 
-* [mcginley_dynamic_commodity_channel_index](https://docs.rs/rust_ti/latest/rust_ti/momentum_indicators/bulk/fn.mcginley_dynamic_commodity_channel_index.html) 
-* [mcginley_dynamic_macd_line](https://docs.rs/rust_ti/latest/rust_ti/momentum_indicators/bulk/fn.mcginley_dynamic_macd_line.html) 
-* [mcginley_dynamic_rsi](https://docs.rs/rust_ti/latest/rust_ti/momentum_indicators/bulk/fn.mcginley_dynamic_rsi.html) 
-* [money_flow_index](https://docs.rs/rust_ti/latest/rust_ti/momentum_indicators/bulk/fn.money_flow_index.html)
-* [on_balance_volume](https://docs.rs/rust_ti/latest/rust_ti/momentum_indicators/bulk/fn.on_balance_volume.html) 
-* [rate_of_change](https://docs.rs/rust_ti/latest/rust_ti/momentum_indicators/bulk/fn.rate_of_change.html) 
-* [relative_strength_index](https://docs.rs/rust_ti/latest/rust_ti/momentum_indicators/bulk/fn.relative_strength_index.html) 
-* [signal_line](https://docs.rs/rust_ti/latest/rust_ti/momentum_indicators/bulk/fn.signal_line.html) 
-* [slow_stochastic](https://docs.rs/rust_ti/latest/rust_ti/momentum_indicators/bulk/fn.slow_stochastic.html) 
-* [slowest_stochastic](https://docs.rs/rust_ti/latest/rust_ti/momentum_indicators/bulk/fn.slowest_stochastic.html)
-* [stochastic_oscillator](https://docs.rs/rust_ti/latest/rust_ti/momentum_indicators/bulk/fn.stochastic_oscillator.html) 
-* [williams_percent_r](https://docs.rs/rust_ti/latest/rust_ti/momentum_indicators/bulk/fn.williams_percent_r.html)
-
-#### Single
-
-* [chaikin_oscillator](https://docs.rs/rust_ti/latest/rust_ti/momentum_indicators/single/fn.chaikin_oscillator.html) 
-* [commodity_channel_index](https://docs.rs/rust_ti/latest/rust_ti/momentum_indicators/single/fn.commodity_channel_index.html) 
-* [macd_line](https://docs.rs/rust_ti/latest/rust_ti/momentum_indicators/single/fn.macd_line.html)
-* [mcginley_dynamic_chaikin_oscillator](https://docs.rs/rust_ti/latest/rust_ti/momentum_indicators/single/fn.mcginley_dynamic_chaikin_oscillator.html)
-* [mcginley_dynamic_commodity_channel_index](https://docs.rs/rust_ti/latest/rust_ti/momentum_indicators/single/fn.mcginley_dynamic_commodity_channel_index.html)
-* [mcginley_dynamic_macd_line](https://docs.rs/rust_ti/latest/rust_ti/momentum_indicators/single/fn.mcginley_dynamic_macd_line.html) 
-* [mcginley_dynamic_rsi](https://docs.rs/rust_ti/latest/rust_ti/momentum_indicators/single/fn.mcginley_dynamic_rsi.html) 
-* [money_flow_index](https://docs.rs/rust_ti/latest/rust_ti/momentum_indicators/single/fn.money_flow_index.html)
-* [on_balance_volume](https://docs.rs/rust_ti/latest/rust_ti/momentum_indicators/single/fn.on_balance_volume.html)
-* [rate_of_change](https://docs.rs/rust_ti/latest/rust_ti/momentum_indicators/single/fn.rate_of_change.html) 
-* [relative_strength_index](https://docs.rs/rust_ti/latest/rust_ti/momentum_indicators/single/fn.relative_strength_index.html)
-* [signal_line](https://docs.rs/rust_ti/latest/rust_ti/momentum_indicators/single/fn.signal_line.html)
-* [slow_stochastic](https://docs.rs/rust_ti/latest/rust_ti/momentum_indicators/single/fn.slow_stochastic.html)
-* [slowest_stochastic](https://docs.rs/rust_ti/latest/rust_ti/momentum_indicators/single/fn.slowest_stochastic.html) 
-* [stochastic_oscillator](https://docs.rs/rust_ti/latest/rust_ti/momentum_indicators/single/fn.stochastic_oscillator.html)
-* [williams_percent_r](https://docs.rs/rust_ti/latest/rust_ti/momentum_indicators/single/fn.williams_percent_r.html)
+* Chaikin Oscillator
+* Commodity Channel Index 
+* MACD Line 
+* McGinley Dynamic Chaikin Oscillator 
+* McGinley Dynamic Commodity Channel Index 
+* McGinley Dynamic MACD Line 
+* McGinley Dynamic RSI  
+* Money Flow Index
+* On Balance Volume 
+* Rate of Change 
+* Relative Strength Index 
+* Signal Line 
+* Slow Stochastic 
+* Slowest Stochastic
+* Stochastic Oscillator 
+* Williams %r
 
 ### Moving Averages
 
-#### Bulk
-
-* [mcginley_dynamic](https://docs.rs/rust_ti/latest/rust_ti/moving_average/bulk/fn.mcginley_dynamic.html)
-* [moving_average](https://docs.rs/rust_ti/latest/rust_ti/moving_average/bulk/fn.moving_average.html)
-
-#### Single
-
-* [mcginley_dynamic](https://docs.rs/rust_ti/latest/rust_ti/moving_average/bulk/fn.mcginley_dynamic.html)
-* [moving_average](https://docs.rs/rust_ti/latest/rust_ti/moving_average/bulk/fn.moving_average.html)
+* McGinley Dynamic
+* Moving Average
 
 ### Other Indicators
 
-#### Bulk
+Indicators that don't belong anywhere else
 
-* [return_on_investment](https://docs.rs/rust_ti/latest/rust_ti/other_indicators/bulk/fn.return_on_investment.html)
-
-#### Single
-
-* [return_on_investment](https://docs.rs/rust_ti/latest/rust_ti/other_indicators/single/fn.return_on_investment.html) 
+* Return on Investment
 
 ### Strength Indicators
 
-#### Bulk
+Strength indicators calculate the strength of price movement
 
-* [accumulation_distribution](https://docs.rs/rust_ti/latest/rust_ti/strength_indicators/bulk/fn.accumulation_distribution.html)
-
-#### Single
-
-* [accumulation_distribution](https://docs.rs/rust_ti/latest/rust_ti/strength_indicators/single/fn.accumulation_distribution.html) 
+* Accumulation Distribution
 
 ### Trend Indicators
 
-#### Bulk
+Trend indicators show the trend of price movement
 
-* [aroon_down](https://docs.rs/rust_ti/latest/rust_ti/trend_indicators/bulk/fn.aroon_down.html)
-* [aroon_indicator](https://docs.rs/rust_ti/latest/rust_ti/trend_indicators/bulk/fn.aroon_indicator.html) 
-* [aroon_oscillator](https://docs.rs/rust_ti/latest/rust_ti/trend_indicators/bulk/fn.aroon_oscillator.html)
-* [aroon_up](https://docs.rs/rust_ti/latest/rust_ti/trend_indicators/bulk/fn.aroon_up.html)
-* [parabolic_time_price_system](https://docs.rs/rust_ti/latest/rust_ti/trend_indicators/bulk/fn.parabolic_time_price_system.html) 
-
-#### Single
-
-* [aroon_down](https://docs.rs/rust_ti/latest/rust_ti/trend_indicators/single/fn.aroon_down.html) 
-* [aroon_indicator](https://docs.rs/rust_ti/latest/rust_ti/trend_indicators/single/fn.aroon_indicator.html)
-* [aroon_oscillator](https://docs.rs/rust_ti/latest/rust_ti/trend_indicators/single/fn.aroon_oscillator.html)
-* [aroon_up](https://docs.rs/rust_ti/latest/rust_ti/trend_indicators/single/fn.aroon_up.html)
-* [long_parabolic_time_price_system](https://docs.rs/rust_ti/latest/rust_ti/trend_indicators/single/fn.long_parabolic_time_price_system.html)
-* [short_parabolic_time_price_system](https://docs.rs/rust_ti/latest/rust_ti/trend_indicators/single/fn.short_parabolic_time_price_system.html) 
+* Aroon Down
+* Aroon Indicator 
+* Aroon Oscillator
+* Aroon Up
+* Parabolic Time Price System 
+* Long Parabolic Time Price System
+* Short Parabolic Time Price System 
 
 ### Volatility Indicators
 
-#### Bulk
+Volatility indicators show how volatile an asset is
 
-* [ulcer_index](https://docs.rs/rust_ti/latest/rust_ti/volatility_indicators/bulk/fn.ulcer_index.html)
+* Ulcer Index
 
-#### Single
 
-* [ulcer_index](https://docs.rs/rust_ti/latest/rust_ti/volatility_indicators/single/fn.ulcer_index.html)
+## Release notes
 
+What's new in v1.0.2?
+
+* README update
+* CONTRIBUTING update
+
+[Full changelog](https://github.com/0100101001010000/RustTI/releases/tag/v1.0.2)

@@ -20,6 +20,7 @@ would be very helpful.
     * Add all the docs that GH wants
     * remove test_ prefix from all tests
     * update readme link with stndard indicators
+    * Add link to release page in README
 
 ### New indicators
 
