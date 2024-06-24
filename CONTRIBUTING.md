@@ -19,8 +19,7 @@ would be very helpful.
 
     * Add all the docs that GH wants
     * remove test_ prefix from all tests
-    * have standard indicators for indicator defaults
-    * shorted README
+    * update readme link with stndard indicators
 
 ### New indicators
 
