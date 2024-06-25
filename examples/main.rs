@@ -356,6 +356,7 @@ fn main() {
     println!("Single EMA: {:?}", single_ema);
 
     // Other indicators
+
     // Return on investment
     let bulk_roi = rust_ti::other_indicators::bulk::return_on_investment(&typical_price, &1000.0);
 
@@ -369,7 +370,34 @@ fn main() {
 
     println!("Single RoI: {:?}", single_roi);
 
+    // True Range
+    // TODO: need to shift close
+    let bulk_tr = rust_ti::other_indicators::bulk::true_range(&close, &high, &low);
+
+    println!("Bulk TR: {:?}", bulk_tr);
+
+    let single_tr = rust_ti::other_indicators::single::true_range(&next_close, &next_high, &next_low); 
+
+    println!("Single TR: {}", single_tr);
+
+    // Average True Range
+    let bulk_atr = rust_ti::other_indicators::bulk::average_true_range(
+        &close, 
+        &high, 
+        &low, 
+        &rust_ti::ConstantModelType::SimpleMovingAverage,
+        &period
+    );
+
+    println!("Bulk ATR: {:?}", bulk_atr);
+
+    // TODO: Need to create sub vecs for close, high, low with next value
+    //let single_tr = rust_ti::other_indicators::single::average_true_range(
+
+
+
     // Strength Indicators
+    
     // Accumulation Distribution
 
     // Trend Indicators
