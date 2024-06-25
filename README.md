@@ -1,6 +1,6 @@
 # RustTI
 
-A configurable Technical Indicators library for Rust
+A configurable technical indicators library for Rust for all of your technical analysis needs.
 
 Everything is configurable in the RustTI functions.
 
@@ -28,7 +28,7 @@ cargo add rust_ti
 Or add the following line to your Cargo.toml:
 
 ```
-rust_ti = "1.0.1" 
+rust_ti = "1.0.3" 
 ```
 
 
@@ -233,6 +233,8 @@ Momentum indicators calculate the momentum of price movement
 Indicators that don't belong anywhere else
 
 * Return on Investment
+* True Range
+* Average True Range
 
 ### Strength Indicators
 
@@ -261,9 +263,8 @@ Volatility indicators show how volatile an asset is
 
 ## Release notes
 
-What's new in v1.0.2?
+What's new in v1.0.3?
 
-* README update
-* CONTRIBUTING update
+* Added indicators from Welles "New concepts in technical trading systems" Volatility chapter
 
-[Full changelog](https://github.com/0100101001010000/RustTI/releases/tag/v1.0.2)
+[Full changelog](https://github.com/0100101001010000/RustTI/releases/tag/v1.0.3)

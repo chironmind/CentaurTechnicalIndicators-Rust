@@ -48,6 +48,17 @@ pub mod single {
         let squared_average: f64 = sqaured_percentage_drawdown.iter().sum::<f64>() / length as f64;
         return squared_average.sqrt();
     }
+
+    /// The `long_volatility_system` calculates Welles volatility system when the trade is in a
+    /// long position.
+    ///
+    /// Welles suggests using a constant multiplier between 2.8 and 3.1, he uses 3.0.
+    ///
+    /// # Arguments 
+    ///
+    /// Decide whether to pass in the ATR and just do the math, or pass in the vec of high, low,
+    /// close, and do the math in function. Maybe the bulk version calculates the ATRs and pass
+    /// them in, and the single version are just dumbed down simple calcs?
 }
 
 /// `bulk` module holds functions that return multiple values

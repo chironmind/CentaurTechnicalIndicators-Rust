@@ -4,11 +4,15 @@
 //!
 //! ## Bulk
 //!
-//! * [`return_on_investment`](bulk::return_on_investment) - Calculates the return on investment
+//! * [`return_on_investment`](bulk::return_on_investment)
+//! * [`true_range`](bulk::true_range)
+//! * [`average_true_range`](bulk::average_true_range)
 //!
 //! ## Single
 //!
-//! * [`return_on_investment`](single::return_on_investment) - Calculates the return on investment
+//! * [`return_on_investment`](single::return_on_investment)
+//! * [`true_range`](single::true_range)
+//! * [`average_true_range`](single::average_true_range)
 
 /// `single` module holds functions that return a singular values
 pub mod single {

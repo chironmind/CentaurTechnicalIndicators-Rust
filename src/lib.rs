@@ -230,11 +230,15 @@
 //!
 //! * [`return_on_investment`](other_indicators::bulk::return_on_investment) - Calculates the return
 //! on investment
+//! * [`true_range`](other_indicators::bulk::true_range) 
+//! * [`average_true_range`](other_indicators::bulk::average_true_range) 
 //!
 //! #### Single
 //!
 //! * [`return_on_investment`](other_indicators::single::return_on_investment) - Calculates the return
 //! on investment
+//! * [`true_range`](other_indicators::bulk::true_range) 
+//! * [`average_true_range`](other_indicators::bulk::average_true_range) 
 //!
 //! ### Strength Indicators
 //!
