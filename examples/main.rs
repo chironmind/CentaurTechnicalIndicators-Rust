@@ -421,4 +421,16 @@ fn main() {
     let single_ulcer_index = rust_ti::volatility_indicators::single::ulcer_index(&week);
 
     println!("Single Ulcer Index: {:?}", single_ulcer_index);
+
+    // Volatility system
+    let volatility_system = 
+        rust_ti::volatility_indicators::bulk::volatility_system(
+            &high,
+            &low,
+            &close,
+            &period,
+            &3.0,
+            &rust_ti::ConstantModelType::SimpleMovingAverage
+        );
+    println!("Volatility system: {:?}", volatility_system);
 }
