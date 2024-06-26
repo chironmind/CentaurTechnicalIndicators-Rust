@@ -285,10 +285,14 @@
 //! #### Bulk
 //!
 //! * [`ulcer_index`](volatility_indicators::bulk::ulcer_index) - Calculates the Ulcer Index
+//! * [`voltility_system`](volatility_indicators::bulk::volatility_system) - Calculates Welles
+//! volatility system
 //!
 //! #### Single
 //!
 //! * [`ulcer_index`](volatility_indicators::single::ulcer_index) - Calculates the Ulcer Index
+//! * [`voltility_system`](volatility_indicators::single::volatility_system) - Calculates Welles
+//! volatility system
 
 pub mod basic_indicators;
 pub mod candle_indicators;

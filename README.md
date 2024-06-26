@@ -259,6 +259,7 @@ Trend indicators show the trend of price movement
 Volatility indicators show how volatile an asset is
 
 * Ulcer Index
+* Volatility System
 
 
 ## Release notes

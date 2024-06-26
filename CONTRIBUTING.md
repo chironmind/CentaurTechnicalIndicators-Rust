@@ -20,6 +20,8 @@ would be very helpful.
     * Add all the docs that GH wants
     * remove test_ prefix from all tests
     * update readme link with stndard indicators
+    * in parabolic t/p system remove single functions, and have the bulk function find the trend and determine
+      whether to go long or short like it does in the volatility system ... or return s/l in vol system
 
 ### New indicators
 
