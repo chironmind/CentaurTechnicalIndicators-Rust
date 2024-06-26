@@ -230,11 +230,15 @@
 //!
 //! * [`return_on_investment`](other_indicators::bulk::return_on_investment) - Calculates the return
 //! on investment
+//! * [`true_range`](other_indicators::bulk::true_range) 
+//! * [`average_true_range`](other_indicators::bulk::average_true_range) 
 //!
 //! #### Single
 //!
 //! * [`return_on_investment`](other_indicators::single::return_on_investment) - Calculates the return
 //! on investment
+//! * [`true_range`](other_indicators::bulk::true_range) 
+//! * [`average_true_range`](other_indicators::bulk::average_true_range) 
 //!
 //! ### Strength Indicators
 //!
@@ -281,10 +285,14 @@
 //! #### Bulk
 //!
 //! * [`ulcer_index`](volatility_indicators::bulk::ulcer_index) - Calculates the Ulcer Index
+//! * [`voltility_system`](volatility_indicators::bulk::volatility_system) - Calculates Welles
+//! volatility system
 //!
 //! #### Single
 //!
 //! * [`ulcer_index`](volatility_indicators::single::ulcer_index) - Calculates the Ulcer Index
+//! * [`voltility_system`](volatility_indicators::single::volatility_system) - Calculates Welles
+//! volatility system
 
 pub mod basic_indicators;
 pub mod candle_indicators;

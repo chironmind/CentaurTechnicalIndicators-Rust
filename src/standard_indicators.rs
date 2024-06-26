@@ -211,13 +211,9 @@ pub mod single {
         let mut macds = Vec::new();
         let model = crate::ConstantModelType::ExponentialMovingAverage;
         for i in 0..9 {
-            println!("{}, {}", i, i + 26);
-            println!("{:?}", &prices[i..i + 26]);
             macds.push(macd_line(&prices[i..i + 26], &12_usize, &model, &model));
         }
-        println!("{:?}", macds);
         let signal = signal_line(&macds, &model);
-        println!("{}, {}", macds[8], macds.last().unwrap());
         return (macds[8], signal, macds[8] - signal);
     }
 
