@@ -391,6 +391,18 @@ fn main() {
 
     println!("Sinlge Aroon Indicator: {:?}", single_aroon_indicator);
 
+    // Directional Movement System
+
+    let directional_movement_system = rust_ti::trend_indicators::bulk::directional_movement_system(
+        &high,
+        &low, 
+        &close,
+        &period,
+        &rust_ti::ConstantModelType::SimpleMovingAverage
+    );
+
+    println!("Directional Movement System: {:?}", directional_movement_system);
+
     // Volatility Indicators
     // Ulcer Index
     let bulk_ulcer_index =
