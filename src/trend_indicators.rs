@@ -10,6 +10,9 @@
 //! * [`aroon_up`](bulk::aroon_up) - Calculates the Aroon up
 //! * [`parabolic_time_price_system`](bulk::parabolic_time_price_system) - Calculates the parabolic
 //! time price system
+//! * [`directional_movement`](bulk::directional_movement) - Calculates Welles positive/negative
+//! Directional Index, Directional Movement, Directional Movement Index, Average Directional
+//! Movement Index, Average Directional Movement Index Rating.
 //!
 //! ## Single
 //!
@@ -267,8 +270,11 @@ pub mod single {
 /// `bulk` module holds functions that return multiple vaues
 pub mod bulk {
     use crate::basic_indicators::single::{max, min};
+    use crate::basic_indicators::bulk::{median, mode};
     use crate::trend_indicators::single;
-    use crate::Position;
+    use crate::{Position, ConstantModelType, MovingAverageType};
+    use crate::other_indicators::bulk::true_range;
+    use crate::moving_average::bulk::moving_average;
     /// The `aroon_up` indicator tracks the uptrends in the `aroon_indicator` and is used to
     /// calculate the `aroon_oscillator`.
     ///
@@ -472,8 +478,16 @@ pub mod bulk {
     /// # Examples
     ///
     /// ```rust
-    /// let highs = vec![52.35, 52.1, 51.8, 52.1, 52.5, 52.8, 52.5, 53.5, 53.5, 53.8, 54.2, 53.4, 53.5, 54.4, 55.2, 55.7, 57.0, 57.5, 58.0, 57.7, 58.0, 57.5, 57.0, 56.7, 57.5, 56.7, 56.0, 56.2, 54.8, 55.5, 54.7, 54.0, 52.5, 51.0, 51.5, 51.7, 53.0];
-    /// let lows = vec![51.5, 51.0, 50.5, 51.25, 51.7, 51.85, 51.5, 52.5, 52.5, 53.0, 52.5, 52.5, 52.1, 53.0, 54.0, 55.0, 56.0, 56.5, 57.0, 56.5, 57.3, 56.7, 56.3, 56.2, 56.0, 55.5, 55.0, 54.9, 54.0, 54.5, 53.8, 53.0, 51.5, 50.0, 50.5, 50.2, 51.5];
+    /// let highs = vec![
+    ///     52.35, 52.1, 51.8, 52.1, 52.5, 52.8, 52.5, 53.5, 53.5, 53.8, 54.2,
+    ///     53.4, 53.5, 54.4, 55.2, 55.7, 57.0, 57.5, 58.0, 57.7, 58.0, 57.5, 57.0, 56.7,
+    ///     57.5, 56.7, 56.0, 56.2, 54.8, 55.5, 54.7, 54.0, 52.5, 51.0, 51.5, 51.7, 53.0
+    /// ];
+    /// let lows = vec![
+    ///     51.5, 51.0, 50.5, 51.25, 51.7, 51.85, 51.5, 52.5, 52.5, 53.0, 52.5,
+    ///     52.5, 52.1, 53.0, 54.0, 55.0, 56.0, 56.5, 57.0, 56.5, 57.3, 56.7, 56.3, 56.2,
+    ///     56.0, 55.5, 55.0, 54.9, 54.0, 54.5, 53.8, 53.0, 51.5, 50.0, 50.5, 50.2, 51.5
+    /// ];
     /// let acceleration_factor_start = 0.02;
     /// let acceleration_factor_max = 0.2;
     /// let acceleration_factor_step = 0.02;
@@ -481,17 +495,45 @@ pub mod bulk {
     /// &lows, &acceleration_factor_start, &acceleration_factor_max, &acceleration_factor_step,
     /// &rust_ti::Position::Long, &50.0);
     /// assert_eq!(
-    ///     vec![50.047, 50.093059999999994, 50.1381988, 50.182434824, 50.27513743104, 50.4266291851776, 50.56903143406695, 50.803508919341596, 51.01922820579427, 51.29730538521484, 51.64562873898906, 51.95215329031037, 52.1, 52.1, 52.596000000000004, 53.154720000000005, 53.923776000000004, 54.639020800000004, 55.311216640000005, 55.848973312000005, 56.279178649600006, 56.623342919680006, 57.966, 57.895360000000004, 57.781638400000006, 57.599107328, 57.3391965952, 57.046493003776, 56.61998398324736, 56.25318622559273, 55.86067642949789, 55.34575467218827, 54.57660373775062, 53.66128299020049, 52.929026392160395, 52.34322111372832, 50.06],
+    ///     vec![
+    ///     50.047, 50.093059999999994, 50.1381988, 50.182434824, 50.27513743104,
+    ///     50.4266291851776, 50.56903143406695, 50.803508919341596, 51.01922820579427,
+    ///     51.29730538521484, 51.64562873898906, 51.95215329031037, 52.1, 52.1,
+    ///     52.596000000000004, 53.154720000000005, 53.923776000000004, 54.639020800000004,
+    ///     55.311216640000005, 55.848973312000005, 56.279178649600006, 56.623342919680006,
+    ///     57.966, 57.895360000000004, 57.781638400000006, 57.599107328, 57.3391965952,
+    ///     57.046493003776, 56.61998398324736, 56.25318622559273, 55.86067642949789,
+    ///     55.34575467218827, 54.57660373775062, 53.66128299020049, 52.929026392160395,
+    ///     52.34322111372832, 50.06
+    ///     ],
     ///     parabolic_time_price_system);
     ///
-    /// let highs = vec![52.3, 52.0, 52.35, 52.1, 51.8, 52.1, 52.5, 52.8, 52.5, 53.5, 53.5, 53.8, 54.2, 53.4, 53.5, 54.4, 55.2, 55.7, 57.0, 57.5, 58.0, 57.7, 58.0, 57.5, 57.0, 56.7, 57.5, 56.7, 56.0, 56.2, 54.8, 55.5, 54.7, 54.0, 52.5, 51.0, 51.5, 51.7, 53.0];
-    /// let lows = vec![50.0, 51.0, 51.5, 51.0, 50.5, 51.25, 51.7, 51.85, 51.5, 52.5, 52.5, 53.0, 52.5, 52.5, 52.1, 53.0, 54.0, 55.0, 56.0, 56.5, 57.0, 56.5, 57.3, 56.7, 56.3, 56.2, 56.0, 55.5, 55.0, 54.9, 54.0, 54.5, 53.8, 53.0, 51.5, 50.0, 50.5, 50.2, 51.5];
+    /// let highs = vec![
+    ///     52.3, 52.0, 52.35, 52.1, 51.8, 52.1, 52.5, 52.8, 52.5, 53.5, 53.5, 53.8, 54.2,
+    ///     53.4, 53.5, 54.4, 55.2, 55.7, 57.0, 57.5, 58.0, 57.7, 58.0, 57.5, 57.0, 56.7,
+    ///     57.5, 56.7, 56.0, 56.2, 54.8, 55.5, 54.7, 54.0, 52.5, 51.0, 51.5, 51.7, 53.0
+    /// ];
+    /// let lows = vec![
+    ///     50.0, 51.0, 51.5, 51.0, 50.5, 51.25, 51.7, 51.85, 51.5, 52.5, 52.5, 53.0, 52.5,
+    ///     52.5, 52.1, 53.0, 54.0, 55.0, 56.0, 56.5, 57.0, 56.5, 57.3, 56.7, 56.3, 56.2,
+    ///     56.0, 55.5, 55.0, 54.9, 54.0, 54.5, 53.8, 53.0, 51.5, 50.0, 50.5, 50.2, 51.5
+    /// ];
     ///
     /// let parabolic_time_price_system = rust_ti::trend_indicators::bulk::parabolic_time_price_system(&highs,
     /// &lows, &acceleration_factor_start, &acceleration_factor_max, &acceleration_factor_step,
     /// &rust_ti::Position::Short, &0.0);
     /// assert_eq!(
-    ///     vec![52.3, 52.3, 50.047, 50.093059999999994, 50.1381988, 50.182434824, 50.27513743104, 50.4266291851776, 50.56903143406695, 50.803508919341596, 51.01922820579427, 51.29730538521484, 51.64562873898906, 51.95215329031037, 52.1, 52.1, 52.596000000000004, 53.154720000000005, 53.923776000000004, 54.639020800000004, 55.311216640000005, 55.848973312000005, 56.279178649600006, 56.623342919680006, 57.966, 57.895360000000004, 57.781638400000006, 57.599107328, 57.3391965952, 57.046493003776, 56.61998398324736, 56.25318622559273, 55.86067642949789, 55.34575467218827, 54.57660373775062, 53.66128299020049, 52.929026392160395, 52.34322111372832, 50.06],
+    ///     vec![
+    ///         52.3, 52.3, 50.047, 50.093059999999994, 50.1381988, 50.182434824,
+    ///         50.27513743104, 50.4266291851776, 50.56903143406695, 50.803508919341596,
+    ///         51.01922820579427, 51.29730538521484, 51.64562873898906, 51.95215329031037,
+    ///         52.1, 52.1, 52.596000000000004, 53.154720000000005, 53.923776000000004,
+    ///         54.639020800000004, 55.311216640000005, 55.848973312000005, 56.279178649600006,
+    ///         56.623342919680006, 57.966, 57.895360000000004, 57.781638400000006,
+    ///         57.599107328, 57.3391965952, 57.046493003776, 56.61998398324736,
+    ///         56.25318622559273, 55.86067642949789, 55.34575467218827, 54.57660373775062,
+    ///         53.66128299020049, 52.929026392160395, 52.34322111372832, 50.06
+    ///     ],
     ///     parabolic_time_price_system);
     /// ```
     pub fn parabolic_time_price_system(
@@ -625,6 +667,201 @@ pub mod bulk {
             }
         }
         return sars;
+    }
+
+    /// The `directional_movement_system` function calculates the positive/negative Directional Movement (+/-
+    /// DM), positive/negative Directional Movement (+/-DI), Directional Movement Index (DX), 
+    /// Average Directional Movement Index (ADX), and the Average Directional Movement Index Rating (ADXR).
+    /// 
+    /// As Welles only used the +/- DI, ADX, and ADXR in his Directional Movement System, these are
+    /// the only values that will be returned as a tuple.
+    ///
+    /// When calculating the +/- DI and TR, Welles uses a accumulation technique for calculations 
+    /// after the first to avoid having to keep track of previous data, and to make calculations
+    /// quick and easy by hand. However as things are now done programmatically this function will
+    /// not use the accumulation technique but will fully calculate the DI and TR.
+    ///
+    /// Unlike for most of the other functions there is no single version of this function as the
+    /// function calculates too many different indicators that are all dependant of each.
+    ///
+    /// # Arguments
+    ///
+    /// * `high` - Slice of highs
+    /// * `low` - Slice of lows
+    /// * `close` - Slice of closing prices
+    /// * `period` - Period over which to calculate the DM. Welles recommends using a period of 14
+    /// * `constant_model_type` - Variant of [`ConstantModelType`] to calculate ADX
+    ///
+    /// # Panics
+    ///
+    /// `directional_movement_system` will panic if:
+    ///     * length of `high`, `low`, and `close` aren't equal
+    ///     * `high`, `close`, or `low` are empty
+    ///     * `period` is greater than lengths
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// let high = vec![
+    ///     4383.33, 4393.57, 4364.2, 4339.54, 4276.56, 4255.84, 4259.38, 4232.42, 4183.6, 4156.7,
+    ///     4177.47, 4195.55, 4245.64, 4319.72, 4373.62, 4372.21, 4386.26, 4391.2, 4393.4, 4418.03,
+    ///     4421.76, 4508.67, 4521.17, 4511.99, 4520.12, 4557.11, 4542.14, 4568.43, 4560.31, 4560.52,
+    ///     4568.14
+    /// ];
+    ///
+    /// let low = vec![
+    ///     4342.37, 4337.54, 4303.84, 4269.69, 4223.03, 4189.22, 4219.43, 4181.42, 4127.9,
+    ///     4103.78, 4132.94, 4153.12, 4197.74, 4268.26, 4334.23, 4347.53, 4355.41, 4359.76,
+    ///     4343.94, 4353.34, 4393.82, 4458.97, 4495.31, 4487.83, 4499.66, 4510.36, 4525.51,
+    ///     4545.05, 4552.8, 4546.32, 4540.51
+    /// ];
+    ///
+    /// let close = vec![
+    ///     4373.63, 4373.2, 4314.6, 4278.0, 4224.16, 4217.04, 4247.68, 4186.77, 4137.23,
+    ///     4117.37, 4166.82, 4193.8, 4237.86, 4317.78, 4358.34, 4365.98, 4378.38, 4382.78,
+    ///     4347.35, 4415.24, 4411.55, 4495.7, 4502.88, 4508.24, 4514.02, 4547.38, 4538.19,
+    ///     4556.62, 4559.34, 4550.43, 4554.89
+    /// ];
+    ///
+    /// let period: usize = 5;
+    ///
+    /// let directional_movement_system = rust_ti::trend_indicators::bulk::directional_movement_system(
+    ///     &high,
+    ///     &low,
+    ///     &close,
+    ///     &period,
+    ///     &rust_ti::ConstantModelType::SimpleMovingAverage
+    /// );
+    ///
+    /// assert_eq!(
+    ///     vec![
+    ///         (68.14077913392383, 10.081926099314382, 58.269764963691, 76.0576148830475),
+    ///         (96.10562225864973, 0.0, 59.19525515976943, 74.33813493134635),
+    ///         (95.28320217623542, 0.0, 66.14295450243883, 73.24907727490466),
+    ///         (98.8882025941931, 0.0, 76.20120692962332, 69.40990834820704),
+    ///         (82.65099538859455, 0.0, 94.84450144277015, 76.55713320323058),
+    ///         (41.45717210783709, 8.997838698669414, 92.86664412129383, 76.03094964053163),
+    ///         (21.688544152744587, 7.865950676213518, 82.22061451160306, 74.18178450702095),
+    ///         (23.167628926509607, 7.740483413250127, 72.2032011824909, 74.20220405605711),
+    ///         (53.850288939658775, 7.086861084979907, 67.55128616374488, 81.19789380325751),
+    ///         (58.70434183321876, 7.268550424994554, 63.14429403337355, 78.00546907733369),
+    ///         (66.42578632700847, 3.8887444762154897, 68.06545028176535, 75.1430323966842),
+    ///         (75.12152308938734, 5.04995949230386, 76.19190094408756, 74.19755106328924),
+    ///         (86.5812017013121, 4.480920146169353, 84.2410227134338, 75.89615443858933),
+    ///         (43.04497235918126, 5.587927685642082, 84.29693158778632, 73.72061281057994),
+    ///         (54.35378291977454, 5.693408433551885, 84.91130107903966, 76.4883756804025),
+    ///         (62.241785060576625, 0.0, 87.12350070935402, 81.6577008267208),
+    ///         (58.33871116437639, 5.974002028210937, 85.92748332644709, 85.08425301994043),
+    ///         (37.95187465025111, 7.252378287633331, 81.47834482926781, 82.88763820852706) 
+    ///     ], directional_movement_system);
+    /// ```
+    pub fn directional_movement_system(
+        high: &[f64],
+        low: &[f64],
+        close: &[f64],
+        period: &usize,
+        constant_model_type: &ConstantModelType
+    ) -> Vec<(f64, f64, f64, f64)> {
+        let length = high.len();
+        if length != low.len() || length != close.len() {
+            panic!(
+                "Length of high ({}), low ({}), and close ({}) need to be equal", 
+                length, low.len(), close.len()
+            )
+        };
+        if high.is_empty() {
+            panic!("Prices cannot be empty")
+        };
+        let length_min = 3 * period;
+        if length_min > length {
+            panic!("Length of prices ({}) must be greater than ({})", length, length_min)
+        };
+
+        let mut positive_dm = Vec::new();
+        let mut negative_dm = Vec::new();
+
+        for i in 1..length {
+            let high_diff = high[i] - high[i-1];
+            let low_diff = low[i-1] - low[i];
+
+            if high_diff > 0.0 && high_diff > low_diff {
+                positive_dm.push(high_diff);
+                negative_dm.push(0.0);
+            } else if low_diff > 0.0 && low_diff > high_diff {
+                negative_dm.push(low_diff);
+                positive_dm.push(0.0);
+            } else {
+                positive_dm.push(0.0);
+                negative_dm.push(0.0);
+            };
+        };
+
+        let tr = true_range(&close[1..], &high[1..], &low[1..]);
+
+        let mut positive_di: Vec<f64> = Vec::new();
+        let mut negative_di: Vec<f64> = Vec::new();
+
+        for i in *period..length {
+            let tr_sum: f64 = tr[i-period..i].iter().sum();
+            let positive_dm_sum: f64 = positive_dm[i-period..i].iter().sum();
+            let negative_dm_sum: f64 = negative_dm[i-period..i].iter().sum();
+            positive_di.push((positive_dm_sum/tr_sum)*100.0);
+            negative_di.push((negative_dm_sum/tr_sum)*100.0);
+        };
+
+        let mut dx = Vec::new();
+        for i in 0..positive_di.len() {
+            let di_diff = (positive_di[i] - negative_di[i]).abs();
+            let di_sum = positive_di[i] + negative_di[i];
+            dx.push((di_diff/di_sum)*100.0);
+        };
+
+        let adx = match constant_model_type {
+            ConstantModelType::SimpleMovingAverage => {
+                moving_average(&dx, &MovingAverageType::Simple, period)
+            }
+            ConstantModelType::SmoothedMovingAverage => {
+                moving_average(&dx, &MovingAverageType::Smoothed, period)
+            }
+            ConstantModelType::ExponentialMovingAverage => {
+                moving_average(&dx, &MovingAverageType::Exponential, period)
+            }
+            ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => {
+                moving_average(
+                    &dx, 
+                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
+                    period
+                )
+            }
+            ConstantModelType::SimpleMovingMedian => {
+                median(&dx, &period)
+            }
+            ConstantModelType::SimpleMovingMode => {
+                mode(&dx, &period)
+            }
+            _ => panic!("Not a supported constant model type")
+        };
+
+        let mut adxr = Vec::new();
+        for i in *period..adx.len()+1 {
+            adxr.push((adx[i-period]+adx[i-1])/2.0);
+        };
+
+        let mut directional_movement_system = Vec::new();
+        for i in 0..adxr.len() {
+            directional_movement_system.push(
+                (
+                    // Because the period is used 3 times to get various indicators 
+                    // we need to get to a point where all indicators exist but for some
+                    // indicators that means going forward 2 times the period and removing 2
+                    positive_di[i+(2*period)-2], 
+                    negative_di[i+(2*period)-2],
+                    adx[i+period-1],
+                    adxr[i]
+                )
+            );
+        };
+        return directional_movement_system
     }
 }
 
@@ -1032,6 +1269,272 @@ mod tests {
                 &crate::Position::Long,
                 &90.58
             )
+        );
+    }
+
+    #[test]
+    fn bulk_directional_movement_system_ma() {
+        let highs = vec![
+            100.83, 100.91, 101.03, 101.27, 100.52, 101.27, 101.03, 100.91, 100.83
+        ];
+        let lows = vec![
+            100.59, 100.72, 100.84, 100.91, 99.85, 100.91, 100.84, 100.72, 100.59
+        ];
+        let close = vec![
+            100.76, 100.88, 100.96, 101.14, 100.01, 101.14, 100.96, 100.88, 100.76
+        ];
+        
+        assert_eq!(
+            vec![
+                (101.35135135135205, 25.675675675675546, 27.733956062965074, 39.31871283052075), 
+                (0.0, 51.61290322580615, 59.92907801418446, 42.118401465704885)
+            ],
+            bulk::directional_movement_system(
+                &highs,
+                &lows,
+                &close,
+                &3_usize,
+                &crate::ConstantModelType::SimpleMovingAverage
+            )
+        );
+    }
+
+    #[test]
+    fn bulk_directional_movement_system_sma() {
+        let highs = vec![
+            100.83, 100.91, 101.03, 101.27, 100.52, 101.27, 101.03, 100.91, 100.83
+        ];
+        let lows = vec![
+            100.59, 100.72, 100.84, 100.91, 99.85, 100.91, 100.84, 100.72, 100.59
+        ];
+        let close = vec![
+            100.76, 100.88, 100.96, 101.14, 100.01, 101.14, 100.96, 100.88, 100.76
+        ];
+        
+        assert_eq!(
+            vec![
+                (101.35135135135205, 25.675675675675546, 35.32133395242147, 36.779255271063406), 
+                (0.0, 51.61290322580615, 70.43673012318037, 45.73378077439598)
+            ],
+            bulk::directional_movement_system(
+                &highs,
+                &lows,
+                &close,
+                &3_usize,
+                &crate::ConstantModelType::SmoothedMovingAverage
+            )
+        );
+    }
+
+    #[test]
+    fn bulk_directional_movement_system_ema() {
+        let highs = vec![
+            100.83, 100.91, 101.03, 101.27, 100.52, 101.27, 101.03, 100.91, 100.83
+        ];
+        let lows = vec![
+            100.59, 100.72, 100.84, 100.91, 99.85, 100.91, 100.84, 100.72, 100.59
+        ];
+        let close = vec![
+            100.76, 100.88, 100.96, 101.14, 100.01, 101.14, 100.96, 100.88, 100.76
+        ];
+        
+        assert_eq!(
+            vec![
+                (101.35135135135205, 25.675675675675546, 40.3054340573803, 35.31343744877174), 
+                (0.0, 51.61290322580615, 77.05167173252289, 48.30984349271556)
+            ],
+            bulk::directional_movement_system(
+                &highs,
+                &lows,
+                &close,
+                &3_usize,
+                &crate::ConstantModelType::ExponentialMovingAverage
+            )
+        );
+    }
+
+    #[test]
+    fn bulk_directional_movement_system_pma() {
+        let highs = vec![
+            100.83, 100.91, 101.03, 101.27, 100.52, 101.27, 101.03, 100.91, 100.83
+        ];
+        let lows = vec![
+            100.59, 100.72, 100.84, 100.91, 99.85, 100.91, 100.84, 100.72, 100.59
+        ];
+        let close = vec![
+            100.76, 100.88, 100.96, 101.14, 100.01, 101.14, 100.96, 100.88, 100.76
+        ];
+        
+        assert_eq!(
+            vec![
+                (101.35135135135205, 25.675675675675546, 47.99680889790824, 33.38241876418677), 
+                (0.0, 51.61290322580615, 86.78945697046689, 52.614232280421646)
+            ],
+            bulk::directional_movement_system(
+                &highs,
+                &lows,
+                &close,
+                &3_usize,
+                &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0)
+            )
+        );
+    }
+
+    #[test]
+    fn bulk_directional_movement_system_median() {
+        let highs = vec![
+            100.83, 100.91, 101.03, 101.27, 100.52, 101.27, 101.03, 100.91, 100.83
+        ];
+        let lows = vec![
+            100.59, 100.72, 100.84, 100.91, 99.85, 100.91, 100.84, 100.72, 100.59
+        ];
+        let close = vec![
+            100.76, 100.88, 100.96, 101.14, 100.01, 101.14, 100.96, 100.88, 100.76
+        ];
+        
+        assert_eq!(
+            vec![
+                (101.35135135135205, 25.675675675675546, 20.212765957446617, 34.75427030266704), 
+                (0.0, 51.61290322580615, 59.574468085106766, 39.89361702127669)
+            ],
+            bulk::directional_movement_system(
+                &highs,
+                &lows,
+                &close,
+                &3_usize,
+                &crate::ConstantModelType::SimpleMovingMedian
+            )
+        );
+    }
+    
+    #[test]
+    fn bulk_directional_movement_system_mode() {
+        let highs = vec![
+            100.83, 100.91, 101.03, 101.27, 100.52, 101.27, 101.03, 100.91, 100.83
+        ];
+        let lows = vec![
+            100.59, 100.72, 100.84, 100.91, 99.85, 100.91, 100.84, 100.72, 100.59
+        ];
+        let close = vec![
+            100.76, 100.88, 100.96, 101.14, 100.01, 101.14, 100.96, 100.88, 100.76
+        ];
+        
+        assert_eq!(
+            vec![
+                (101.35135135135205, 25.675675675675546, 27.666666666666668, 39.166666666666664), 
+                (0.0, 51.61290322580615, 60.0, 42.0)
+            ],
+            bulk::directional_movement_system(
+                &highs,
+                &lows,
+                &close,
+                &3_usize,
+                &crate::ConstantModelType::SimpleMovingMode
+            )
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_directional_movement_system_panic_high_length() {
+        let highs = vec![
+            100.83, 100.91, 101.03, 101.27, 100.52, 101.03, 100.91, 100.83
+        ];
+        let lows = vec![
+            100.59, 100.72, 100.84, 100.91, 99.85, 100.91, 100.84, 100.72, 100.59
+        ];
+        let close = vec![
+            100.76, 100.88, 100.96, 101.14, 100.01, 101.14, 100.96, 100.88, 100.76
+        ];
+        
+        bulk::directional_movement_system(
+            &highs,
+            &lows,
+            &close,
+            &3_usize,
+            &crate::ConstantModelType::SimpleMovingMode
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_directional_movement_system_panic_lows_length() {
+        let highs = vec![
+            100.83, 100.91, 101.03, 101.27, 100.52, 101.27, 101.03, 100.91, 100.83
+        ];
+        let lows = vec![
+            100.59, 100.72, 100.84, 100.91, 99.85, 100.91, 100.72, 100.59
+        ];
+        let close = vec![
+            100.76, 100.88, 100.96, 101.14, 100.01, 101.14, 100.96, 100.88, 100.76
+        ];
+        
+        bulk::directional_movement_system(
+            &highs,
+            &lows,
+            &close,
+            &3_usize,
+            &crate::ConstantModelType::SimpleMovingMode
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_directional_movement_system_panic_close_length() {
+        let highs = vec![
+            100.83, 100.91, 101.03, 101.27, 100.52, 101.27, 101.03, 100.91, 100.83
+        ];
+        let lows = vec![
+            100.59, 100.72, 100.84, 100.91, 99.85, 100.91, 100.84, 100.72, 100.59
+        ];
+        let close = vec![
+            100.76, 100.88, 101.14, 100.01, 101.14, 100.96, 100.88, 100.76
+        ];
+        
+        bulk::directional_movement_system(
+            &highs,
+            &lows,
+            &close,
+            &3_usize,
+            &crate::ConstantModelType::SimpleMovingMode
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_directional_movement_system_panic_empty() {
+        let highs = Vec::new();
+        let lows = Vec::new();
+        let close = Vec::new();
+        
+        bulk::directional_movement_system(
+            &highs,
+            &lows,
+            &close,
+            &3_usize,
+            &crate::ConstantModelType::SimpleMovingMode
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_directional_movement_system_panic_period() {
+        let highs = vec![
+            100.83, 100.91, 101.03, 101.27, 100.52, 101.27, 101.03, 100.91
+        ];
+        let lows = vec![
+            100.59, 100.72, 100.84, 100.91, 99.85, 100.91, 100.84, 100.72
+        ];
+        let close = vec![
+            100.76, 100.88, 100.96, 101.14, 100.01, 101.14, 100.96, 100.88
+        ];
+        
+        bulk::directional_movement_system(
+            &highs,
+            &lows,
+            &close,
+            &3_usize,
+            &crate::ConstantModelType::SimpleMovingMode
         );
     }
 }

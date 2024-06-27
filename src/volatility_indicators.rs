@@ -49,54 +49,15 @@ pub mod single {
         let squared_average: f64 = sqaured_percentage_drawdown.iter().sum::<f64>() / length as f64;
         return squared_average.sqrt();
     }
-
-    // The `long_volatility_system` calculates Welles volatility system when the trade is in a
-    // long position.
-    //
-    // Welles suggests using a constant multiplier between 2.8 and 3.1, he uses 3.0.
-    //
-    // # Arguments 
-    //
-    // * `significant_price` - Welles defines the significant close as the highest close for the period being
-    // studied, but can be whatever price the caller deems significant.
-    // * `average_true_range` - ATR for the period being studied
-    // * `constant_multiplier` - Value by which to mulitply the ATR
-    fn long_volatility_system(
-        significant_price: &f64,
-        average_true_range: &f64,
-        constant_multiplier: &f64
-    ) -> f64 {
-        return significant_price - (average_true_range * constant_multiplier)
-    }
-
-    // The `short_volatility_system` calculates Welles volatility system when the trade is in a
-    // short position.
-    //
-    // Welles suggests using a constant multiplier between 2.8 and 3.1, he uses 3.0.
-    //
-    // # Arguments 
-    //
-    // * `significant_price` - Welles defines the significant close as the highest close for the period being
-    // studied, but can be whatever price the caller deems significant.
-    // * `average_true_range` - ATR for the period being studied
-    // * `constant_multiplier` - Value by which to mulitply the ATR
-    //
-    fn short_volatility_system(
-        significant_price: &f64,
-        average_true_range: &f64,
-        constant_multiplier: &f64
-    ) -> f64 {
-        return significant_price + (average_true_range * constant_multiplier)
-    }
 }
 
 /// `bulk` module holds functions that return multiple values
 pub mod bulk {
-    use crate::volatility_indicators::single;
-    use crate::ConstantModelType;
+    use crate::basic_indicators::single::{max, min};
     use crate::chart_trends::overall_trend;
     use crate::other_indicators::bulk::average_true_range;
-    use crate::basic_indicators::single::{max, min};
+    use crate::volatility_indicators::single;
+    use crate::ConstantModelType;
     /// The `ulcer_index` how quickly the price at t is able to get back to its former high
     ///
     /// It can be used to instead of the standard deviation so is an option in the `DeviationModel`
@@ -144,7 +105,7 @@ pub mod bulk {
     /// and finally the SaR point.
     ///
     /// Welles was doing all of the above manually, in to be able to do this programatically some
-    /// liberties were taken. 
+    /// liberties were taken.
     ///
     /// Firstly the trend of the first period is calculated from the typical
     /// price to determine whether we're in an up or down trend using the [`overall_trend`]
@@ -168,7 +129,7 @@ pub mod bulk {
     /// caller would need to know the position taken by the function to know which single function
     /// to call. This may be done in the future.
     ///
-    /// # Arguments 
+    /// # Arguments
     ///
     /// * `high` - Slice of highs
     /// * `low` - Slice of lows
@@ -213,7 +174,7 @@ pub mod bulk {
     ///
     /// let volatility_system = rust_ti::volatility_indicators::bulk::volatility_system(
     ///     &high,
-    ///     &low, 
+    ///     &low,
     ///     &close,
     ///     &period,
     ///     &constant_multiplier,
@@ -222,10 +183,10 @@ pub mod bulk {
     ///
     /// assert_eq!(
     ///     vec![
-    ///         4392.598, 4407.994, 4398.3460000000005, 4392.7300000000005, 4384.240000000001, 
-    ///         4383.874, 4370.620000000001, 4372.108000000001, 4370.248000000001, 4367.704000000001, 
-    ///         4359.586000000001, 4234.824, 4241.771999999999, 4251.648, 4252.848, 4237.668000000001, 
-    ///         4235.712, 4224.402, 4227.75, 4242.93, 4269.468, 4258.182000000001, 4278.024, 4279.512, 
+    ///         4392.598, 4407.994, 4398.3460000000005, 4392.7300000000005, 4384.240000000001,
+    ///         4383.874, 4370.620000000001, 4372.108000000001, 4370.248000000001, 4367.704000000001,
+    ///         4359.586000000001, 4234.824, 4241.771999999999, 4251.648, 4252.848, 4237.668000000001,
+    ///         4235.712, 4224.402, 4227.75, 4242.93, 4269.468, 4258.182000000001, 4278.024, 4279.512,
     ///         4289.5019999999995, 4293.258, 4304.73
     ///     ], volatility_system);
     /// ```
@@ -235,29 +196,37 @@ pub mod bulk {
         close: &[f64],
         period: &usize,
         constant_multiplier: &f64,
-        constant_model_type: &ConstantModelType
+        constant_model_type: &ConstantModelType,
     ) -> Vec<f64> {
         let length = close.len();
         if length != high.len() || length != low.len() {
-            panic!("Lengths of close ({}), high ({}), and low ({}) must be equal", length, high.len(), low.len())
+            panic!(
+                "Lengths of close ({}), high ({}), and low ({}) must be equal",
+                length,
+                high.len(),
+                low.len()
+            )
         };
         if close.is_empty() {
             panic!("Prices cannot be empty");
         };
         if &length < period {
-            panic!("Period ({}) must be less than or equal to length of prices ({})", period, length)
+            panic!(
+                "Period ({}) must be less than or equal to length of prices ({})",
+                period, length
+            )
         };
-        
+
         let mut typical_price = vec![];
         for i in 0..length {
             typical_price.push((high[i] + low[i] + close[i]) / 3.0);
-        };
+        }
 
-                let mut sars = Vec::new();
+        let mut sars = Vec::new();
         let mut position = 'u';
         let mut significant_close = 0.0;
         let mut previous_period = *period;
-        
+
         let trend = overall_trend(&typical_price[..previous_period]);
         let atr = average_true_range(&close, &high, &low, &constant_model_type, &period);
         let arc: Vec<f64> = atr.iter().map(|x| x * constant_multiplier).collect();
@@ -273,9 +242,9 @@ pub mod bulk {
         };
 
         for i in 1..arc.len() {
-            let max_period = i+period-1;
+            let max_period = i + period - 1;
             if position == 's' {
-                if close[max_period] > sars[i-1] {
+                if close[max_period] > sars[i - 1] {
                     position = 'l';
                     significant_close = max(&close[previous_period..max_period]);
                     previous_period = max_period;
@@ -284,7 +253,7 @@ pub mod bulk {
                     sars.push(significant_close + arc[i]);
                 }
             } else if position == 'l' {
-                if close[max_period] < sars[i-1] {
+                if close[max_period] < sars[i - 1] {
                     position = 's';
                     significant_close = min(&close[previous_period..max_period]);
                     previous_period = max_period;
@@ -295,7 +264,7 @@ pub mod bulk {
             } else {
                 panic!("Invalid position {}", position);
             }
-        };
+        }
         return sars;
     }
 }
@@ -341,7 +310,14 @@ mod tests {
         let period: usize = 3;
         assert_eq!(
             vec![100.54666666666667, 100.46666666666667, 101.95333333333333],
-            bulk::volatility_system(&highs, &lows, &close, &period, &2.0, &crate::ConstantModelType::SimpleMovingAverage)
+            bulk::volatility_system(
+                &highs,
+                &lows,
+                &close,
+                &period,
+                &2.0,
+                &crate::ConstantModelType::SimpleMovingAverage
+            )
         );
     }
 
@@ -353,7 +329,14 @@ mod tests {
         let period: usize = 3;
         assert_eq!(
             vec![101.37333333333332, 101.29333333333332, 99.9],
-            bulk::volatility_system(&highs, &lows, &close, &period, &2.0, &crate::ConstantModelType::SimpleMovingAverage)
+            bulk::volatility_system(
+                &highs,
+                &lows,
+                &close,
+                &period,
+                &2.0,
+                &crate::ConstantModelType::SimpleMovingAverage
+            )
         );
     }
 
@@ -364,7 +347,14 @@ mod tests {
         let lows = vec![100.91, 100.84, 100.72, 100.59, 100.68];
         let close = vec![101.14, 100.96, 100.88, 100.76, 101.37];
         let period: usize = 3;
-        bulk::volatility_system(&highs, &lows, &close, &period, &2.0, &crate::ConstantModelType::SimpleMovingAverage);
+        bulk::volatility_system(
+            &highs,
+            &lows,
+            &close,
+            &period,
+            &2.0,
+            &crate::ConstantModelType::SimpleMovingAverage,
+        );
     }
 
     #[test]
@@ -374,7 +364,14 @@ mod tests {
         let lows = vec![100.91, 100.84, 100.72, 100.68];
         let close = vec![101.14, 100.96, 100.88, 100.76, 101.37];
         let period: usize = 3;
-        bulk::volatility_system(&highs, &lows, &close, &period, &2.0, &crate::ConstantModelType::SimpleMovingAverage);
+        bulk::volatility_system(
+            &highs,
+            &lows,
+            &close,
+            &period,
+            &2.0,
+            &crate::ConstantModelType::SimpleMovingAverage,
+        );
     }
 
     #[test]
@@ -384,7 +381,14 @@ mod tests {
         let lows = vec![100.91, 100.84, 100.72, 100.59, 100.68];
         let close = vec![101.14, 100.96, 100.88, 101.37];
         let period: usize = 3;
-        bulk::volatility_system(&highs, &lows, &close, &period, &2.0, &crate::ConstantModelType::SimpleMovingAverage);
+        bulk::volatility_system(
+            &highs,
+            &lows,
+            &close,
+            &period,
+            &2.0,
+            &crate::ConstantModelType::SimpleMovingAverage,
+        );
     }
 
     #[test]
@@ -394,7 +398,14 @@ mod tests {
         let lows = Vec::new();
         let close = Vec::new();
         let period: usize = 3;
-        bulk::volatility_system(&highs, &lows, &close, &period, &2.0, &crate::ConstantModelType::SimpleMovingAverage);
+        bulk::volatility_system(
+            &highs,
+            &lows,
+            &close,
+            &period,
+            &2.0,
+            &crate::ConstantModelType::SimpleMovingAverage,
+        );
     }
 
     #[test]
@@ -404,17 +415,13 @@ mod tests {
         let lows = vec![100.91, 100.84, 100.72, 100.59, 100.68];
         let close = vec![101.14, 100.96, 100.88, 100.76, 101.37];
         let period: usize = 30;
-        bulk::volatility_system(&highs, &lows, &close, &period, &2.0, &crate::ConstantModelType::SimpleMovingAverage);
+        bulk::volatility_system(
+            &highs,
+            &lows,
+            &close,
+            &period,
+            &2.0,
+            &crate::ConstantModelType::SimpleMovingAverage,
+        );
     }
-
-
-
-
-
-
-
-
-
-
-
 }

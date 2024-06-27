@@ -28,7 +28,7 @@ cargo add rust_ti
 Or add the following line to your Cargo.toml:
 
 ```
-rust_ti = "1.0.3" 
+rust_ti = "1.1.0" 
 ```
 
 
@@ -253,6 +253,7 @@ Trend indicators show the trend of price movement
 * Parabolic Time Price System 
 * Long Parabolic Time Price System
 * Short Parabolic Time Price System 
+* Direcational Movement
 
 ### Volatility Indicators
 
@@ -264,8 +265,8 @@ Volatility indicators show how volatile an asset is
 
 ## Release notes
 
-What's new in v1.0.3?
+What's new in v1.1.0?
 
-* Added indicators from Welles "New concepts in technical trading systems" Volatility chapter
+* Added indicators from Welles "New concepts in technical trading systems" Directional Movement chapter
 
-[Full changelog](https://github.com/0100101001010000/RustTI/releases/tag/v1.0.3)
+[Full changelog](https://github.com/0100101001010000/RustTI/releases/tag/v1.1.0)
