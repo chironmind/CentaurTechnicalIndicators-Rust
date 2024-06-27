@@ -136,16 +136,16 @@ fn main() {
         4716.47, 4738.55, 4760.26, 4724.73, 4734.6, 4754.78, 4772.64, 4778.62, 4785.88, 4770.08,
         4739.94, 4711.27, 4701.0, 4700.28, 4742.63, 4750.77, 4776.82, 4772.77, 4785.07, 4765.15,
         4732.75, 4769.1, 4822.58, 4854.3, 4858.48, 4879.39, 4887.22, 4893.04, 4914.88, 4924.11,
-        4865.85, 4888.89, 4947.3, 4939.36, 4948.96, 4988.0, 4995.13, 5019.0, 5029.02, 4948.26, 4986.53,
-        5020.63, 5014.6, 4974.75, 4970.34, 5073.42, 5093.77, 5078.7, 5072.05, 5068.49, 5087.72,
-        5123.86, 5135.93, 5083.34, 5108.32, 5150.4, 5143.48, 5111.25, 5156.54, 5165.44, 5150.21,
-        5119.43, 5156.83, 5163.47, 5207.45, 5247.76, 5236.71, 5221.12, 5214.05, 5237.22, 5255.01,
-        5245.64, 5199.4, 5211.54, 5183.29, 5194.58, 5206.44, 5198.5, 5159.26, 5183.2, 5135.46,
-        5094.24, 5057.03, 5035.81, 5023.22, 4979.94, 5006.28, 5058.21, 5069.38, 5032.25, 5095.91,
-        5109.44, 5060.61, 5042.65, 5049.49, 5122.71, 5168.05, 5188.96, 5181.83, 5203.26, 5224.01,
-        5223.28, 5238.34, 5294.39, 5306.26, 5297.44, 5311.95, 5314.53, 5305.4, 5288.88, 5298.25,
-        5300.95, 5270.64, 5239.26, 5249.84, 5273.28, 5282.59, 5335.28, 5350.22, 5351.13, 5352.7,
-        5359.51, 5425.8,
+        4865.85, 4888.89, 4947.3, 4939.36, 4948.96, 4988.0, 4995.13, 5019.0, 5029.02, 4948.26,
+        4986.53, 5020.63, 5014.6, 4974.75, 4970.34, 5073.42, 5093.77, 5078.7, 5072.05, 5068.49,
+        5087.72, 5123.86, 5135.93, 5083.34, 5108.32, 5150.4, 5143.48, 5111.25, 5156.54, 5165.44,
+        5150.21, 5119.43, 5156.83, 5163.47, 5207.45, 5247.76, 5236.71, 5221.12, 5214.05, 5237.22,
+        5255.01, 5245.64, 5199.4, 5211.54, 5183.29, 5194.58, 5206.44, 5198.5, 5159.26, 5183.2,
+        5135.46, 5094.24, 5057.03, 5035.81, 5023.22, 4979.94, 5006.28, 5058.21, 5069.38, 5032.25,
+        5095.91, 5109.44, 5060.61, 5042.65, 5049.49, 5122.71, 5168.05, 5188.96, 5181.83, 5203.26,
+        5224.01, 5223.28, 5238.34, 5294.39, 5306.26, 5297.44, 5311.95, 5314.53, 5305.4, 5288.88,
+        5298.25, 5300.95, 5270.64, 5239.26, 5249.84, 5273.28, 5282.59, 5335.28, 5350.22, 5351.13,
+        5352.7, 5359.51, 5425.8,
     ];
 
     // next_open, next_high, next_low, next_close are the t+1 values that are going to be used to
@@ -178,88 +178,69 @@ fn main() {
 
     // Simple Moving Average
 
-    let bulk_simple_ma = rust_ti::standard_indicators::bulk::simple_moving_average(
-        &typical_price,
-        &period
-    );
+    let bulk_simple_ma =
+        rust_ti::standard_indicators::bulk::simple_moving_average(&typical_price, &period);
 
     println!("Bulk simple MA {:?}", bulk_simple_ma);
 
-    let single_simple_ma = rust_ti::standard_indicators::single::simple_moving_average(
-        &week
-    );
+    let single_simple_ma = rust_ti::standard_indicators::single::simple_moving_average(&week);
 
     println!("Single simple MA {:?}", single_simple_ma);
 
     // Smoothed Moving Average
 
-    let bulk_smoothed_ma = rust_ti::standard_indicators::bulk::smoothed_moving_average(
-        &typical_price,
-        &period
-    );
+    let bulk_smoothed_ma =
+        rust_ti::standard_indicators::bulk::smoothed_moving_average(&typical_price, &period);
 
     println!("Bulk smoothed MA {:?}", bulk_smoothed_ma);
 
-    let single_smoothed_ma = rust_ti::standard_indicators::single::smoothed_moving_average(
-        &week
-    );
+    let single_smoothed_ma = rust_ti::standard_indicators::single::smoothed_moving_average(&week);
 
     println!("Single smoothed MA {:?}", single_smoothed_ma);
 
     // Exponential Moving Average
 
-    let bulk_exponential_ma = rust_ti::standard_indicators::bulk::exponential_moving_average(
-        &typical_price,
-        &period
-    );
+    let bulk_exponential_ma =
+        rust_ti::standard_indicators::bulk::exponential_moving_average(&typical_price, &period);
 
     println!("Bulk exponential MA {:?}", bulk_exponential_ma);
 
-    let single_exponential_ma = rust_ti::standard_indicators::single::exponential_moving_average(
-        &week
-    );
+    let single_exponential_ma =
+        rust_ti::standard_indicators::single::exponential_moving_average(&week);
 
     println!("Single exponential MA {:?}", single_exponential_ma);
 
     // Bollinger Bands
 
-    let bulk_bollinger_bands = rust_ti::standard_indicators::bulk::bollinger_bands(
-        &typical_price
-    );
+    let bulk_bollinger_bands = rust_ti::standard_indicators::bulk::bollinger_bands(&typical_price);
 
     println!("Bulk Bollinger Bands {:?}", bulk_bollinger_bands);
 
     let single_bollinger_bands = rust_ti::standard_indicators::single::bollinger_bands(
-        &typical_price[typical_price.len() - 20 ..]
+        &typical_price[typical_price.len() - 20..],
     );
 
     println!("Single Bollinger Band {:?}", single_bollinger_bands);
 
     // MACD
 
-    let bulk_macd = rust_ti::standard_indicators::bulk::macd(
-        &typical_price
-    );
+    let bulk_macd = rust_ti::standard_indicators::bulk::macd(&typical_price);
 
     println!("Bulk MACD {:?}", bulk_macd);
 
-    let single_macd = rust_ti::standard_indicators::single::macd(
-        &typical_price[typical_price.len() - 34 ..]
-    );
+    let single_macd =
+        rust_ti::standard_indicators::single::macd(&typical_price[typical_price.len() - 34..]);
 
     println!("Single MACD {:?}", single_macd);
 
     // RSI
 
-    let bulk_rsi = rust_ti::standard_indicators::bulk::rsi(
-        &typical_price
-    );
+    let bulk_rsi = rust_ti::standard_indicators::bulk::rsi(&typical_price);
 
     println!("Bulk RSI {:?}", bulk_rsi);
 
-    let single_rsi = rust_ti::standard_indicators::single::rsi(
-        &typical_price[typical_price.len() - 14 ..]
-    );
+    let single_rsi =
+        rust_ti::standard_indicators::single::rsi(&typical_price[typical_price.len() - 14..]);
 
     println!("Singe RSI {}", single_rsi);
 
@@ -376,17 +357,18 @@ fn main() {
 
     println!("Bulk TR: {:?}", bulk_tr);
 
-    let single_tr = rust_ti::other_indicators::single::true_range(&next_close, &next_high, &next_low); 
+    let single_tr =
+        rust_ti::other_indicators::single::true_range(&next_close, &next_high, &next_low);
 
     println!("Single TR: {}", single_tr);
 
     // Average True Range
     let bulk_atr = rust_ti::other_indicators::bulk::average_true_range(
-        &close, 
-        &high, 
-        &low, 
+        &close,
+        &high,
+        &low,
         &rust_ti::ConstantModelType::SimpleMovingAverage,
-        &period
+        &period,
     );
 
     println!("Bulk ATR: {:?}", bulk_atr);
@@ -394,10 +376,8 @@ fn main() {
     // TODO: Need to create sub vecs for close, high, low with next value
     //let single_tr = rust_ti::other_indicators::single::average_true_range(
 
-
-
     // Strength Indicators
-    
+
     // Accumulation Distribution
 
     // Trend Indicators
@@ -411,6 +391,18 @@ fn main() {
 
     println!("Sinlge Aroon Indicator: {:?}", single_aroon_indicator);
 
+    // Directional Movement System
+
+    let directional_movement_system = rust_ti::trend_indicators::bulk::directional_movement_system(
+        &high,
+        &low, 
+        &close,
+        &period,
+        &rust_ti::ConstantModelType::SimpleMovingAverage
+    );
+
+    println!("Directional Movement System: {:?}", directional_movement_system);
+
     // Volatility Indicators
     // Ulcer Index
     let bulk_ulcer_index =
@@ -423,14 +415,13 @@ fn main() {
     println!("Single Ulcer Index: {:?}", single_ulcer_index);
 
     // Volatility system
-    let volatility_system = 
-        rust_ti::volatility_indicators::bulk::volatility_system(
-            &high,
-            &low,
-            &close,
-            &period,
-            &3.0,
-            &rust_ti::ConstantModelType::SimpleMovingAverage
-        );
+    let volatility_system = rust_ti::volatility_indicators::bulk::volatility_system(
+        &high,
+        &low,
+        &close,
+        &period,
+        &3.0,
+        &rust_ti::ConstantModelType::SimpleMovingAverage,
+    );
     println!("Volatility system: {:?}", volatility_system);
 }
