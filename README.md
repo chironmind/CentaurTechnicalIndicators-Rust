@@ -28,7 +28,7 @@ cargo add rust_ti
 Or add the following line to your Cargo.toml:
 
 ```
-rust_ti = "1.1.0" 
+rust_ti = "1.2.0" 
 ```
 
 
@@ -186,6 +186,7 @@ Candle indicators are indicators to be used with candle charts
 * Moving Constant envelopes, generic version of moving average envelopes 
 * Donchian Channels
 * Keltner Channel
+* Supertrend
 
 ### Chart Trends
 
@@ -224,6 +225,8 @@ Momentum indicators calculate the momentum of price movement
 * Slowest Stochastic
 * Stochastic Oscillator 
 * Williams %r
+* Percentage-Price Oscillator
+* Chande Momentum Oscillator
 
 ### Moving Averages
 
@@ -237,6 +240,7 @@ Indicators that don't belong anywhere else
 * Return on Investment
 * True Range
 * Average True Range
+* Internal Bar Strength
 
 ### Strength Indicators
 

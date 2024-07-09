@@ -7,12 +7,14 @@
 //! * [`return_on_investment`](bulk::return_on_investment)
 //! * [`true_range`](bulk::true_range)
 //! * [`average_true_range`](bulk::average_true_range)
+//! * [`internal_bar_strength`](bulk::internal_bar_strength)
 //!
 //! ## Single
 //!
 //! * [`return_on_investment`](single::return_on_investment)
 //! * [`true_range`](single::true_range)
 //! * [`average_true_range`](single::average_true_range)
+//! * [`internal_bar_strength`](single::internal_bar_strength)
 
 /// `single` module holds functions that return a singular values
 pub mod single {
@@ -202,6 +204,36 @@ pub mod single {
             _ => panic!("Unsupported ConstantModelType"),
         };
     }
+
+    /// The `internal_bar_strength` is caclulated using the close, low, and high, to give a
+    /// buy/sell oscillator.
+    ///
+    /// The standard is to use close, low, and high at t.
+    ///
+    /// # Arguments
+    ///
+    /// * `high` - High
+    /// * `low` - Low
+    /// * `close` - Close
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// let high = 110.0;
+    /// let low = 90.0;
+    /// let close = 100.0;
+    ///
+    /// let internal_bar_strength = rust_ti::other_indicators::single::internal_bar_strength(
+    ///     &high,
+    ///     &low,
+    ///     &close
+    /// );
+    ///
+    /// assert_eq!(0.5, internal_bar_strength);
+    /// ```
+    pub fn internal_bar_strength(high: &f64, low: &f64, close: &f64) -> f64 {
+        return (close - low) / (high - low);
+    }
 }
 
 /// `bulk` module holds functions that return a vector of values
@@ -320,7 +352,7 @@ pub mod bulk {
     /// the close for the same period as the high or low /!\
     /// * `high` - Slice of high prices
     /// * `low` - Slice of low prices
-    /// * `constant_model_type` - Variant of [`ConstantModelType`]
+    /// * `constant_model_type` - Variant of [`ConstantModelType`](crate::ConstantModelType)
     /// * `period` - Period over which to calculate the `average_true_range`
     ///
     /// # Panics
@@ -393,6 +425,59 @@ pub mod bulk {
             ));
         }
         return atrs;
+    }
+
+    /// The `internal_bar_strength` is caclulated using the close, low, and high, to give a
+    /// buy/sell oscillator.
+    ///
+    /// The standard is to use close, low, and high at t.
+    ///
+    /// # Arguments
+    ///
+    /// * `high` - Slice of highs
+    /// * `low` - Slice of lows
+    /// * `close` - Slice of closing prices
+    ///
+    /// # Panics
+    ///
+    /// `internal_bar_strength` will panic if:
+    ///     * Lengths of `high`, `low`, and `close` aren't equal
+    ///     * high`, `low`, and `close` are empty
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// let high = vec![110.0, 115.0, 120.0, 130.0, 135.0];
+    /// let low = vec![90.0, 110.0, 105.0, 110.0, 120.0];
+    /// let close = vec![100.0, 115.0, 115.0, 120.0, 125.0];
+    ///
+    /// let internal_bar_strength = rust_ti::other_indicators::bulk::internal_bar_strength(
+    ///     &high,
+    ///     &low,
+    ///     &close
+    /// );
+    ///
+    /// assert_eq!(vec![0.5, 1.0, 0.6666666666666666, 0.5, 0.33333333333333333], internal_bar_strength);
+    /// ```
+    pub fn internal_bar_strength(high: &[f64], low: &[f64], close: &[f64]) -> Vec<f64> {
+        let length = high.len();
+        if length != low.len() || length != close.len() {
+            panic!(
+                "Lengths of high ({}), low ({}), and close ({}) must be equal",
+                length,
+                low.len(),
+                close.len()
+            )
+        };
+        if high.is_empty() {
+            panic!("Prices cannot be empty");
+        };
+
+        let mut ibs = Vec::new();
+        for i in 0..length {
+            ibs.push(single::internal_bar_strength(&high[i], &low[i], &close[i]));
+        }
+        return ibs;
     }
 }
 
@@ -753,5 +838,69 @@ mod tests {
             &crate::ConstantModelType::SimpleMovingAverage,
             &period,
         );
+    }
+
+    #[test]
+    fn single_internal_bar_strengh() {
+        let close = 100.55;
+        let high = 102.32;
+        let low = 100.14;
+        assert_eq!(
+            0.1880733944954119,
+            single::internal_bar_strength(&high, &low, &close)
+        );
+    }
+
+    #[test]
+    fn bulk_internal_bar_strength() {
+        let close = vec![100.55, 99.01, 100.43, 101.0, 101.76];
+        let high = vec![102.32, 100.69, 100.83, 101.73, 102.01];
+        let low = vec![100.14, 98.98, 99.07, 100.1, 99.96];
+        assert_eq!(
+            vec![
+                0.1880733944954119,
+                0.017543859649123535,
+                0.7727272727272783,
+                0.5521472392638039,
+                0.8780487804878055
+            ],
+            bulk::internal_bar_strength(&high, &low, &close)
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_internal_bar_strength_panic_close_length() {
+        let close = vec![100.55, 99.01, 100.43, 101.0];
+        let high = vec![102.32, 100.69, 100.83, 101.73, 102.01];
+        let low = vec![100.14, 98.98, 99.07, 100.1, 99.96];
+        bulk::internal_bar_strength(&high, &low, &close);
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_internal_bar_strength_panic_high_length() {
+        let close = vec![100.55, 99.01, 100.43, 101.0, 101.76];
+        let high = vec![102.32, 100.69, 100.83, 101.73];
+        let low = vec![100.14, 98.98, 99.07, 100.1, 99.96];
+        bulk::internal_bar_strength(&high, &low, &close);
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_internal_bar_strength_panic_low_length() {
+        let close = vec![100.55, 99.01, 100.43, 101.0, 101.76];
+        let high = vec![102.32, 100.69, 100.83, 101.73, 102.01];
+        let low = vec![100.14, 98.98, 99.07, 100.1];
+        bulk::internal_bar_strength(&high, &low, &close);
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_internal_bar_strength_panic_empty() {
+        let close = Vec::new();
+        let high = Vec::new();
+        let low = Vec::new();
+        bulk::internal_bar_strength(&high, &low, &close);
     }
 }

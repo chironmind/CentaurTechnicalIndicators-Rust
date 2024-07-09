@@ -10,10 +10,11 @@
 //! * [`aroon_up`](bulk::aroon_up) - Calculates the Aroon up
 //! * [`parabolic_time_price_system`](bulk::parabolic_time_price_system) - Calculates the parabolic
 //! time price system
-//! * [`directional_movement`](bulk::directional_movement) - Calculates Welles positive/negative
+//! * [`directional_movement_system`](bulk::directional_movement_system) - Calculates Welles positive/negative
 //! Directional Index, Directional Movement, Directional Movement Index, Average Directional
 //! Movement Index, Average Directional Movement Index Rating.
 //! * [`volume_price_trend`](bulk::volume_price_trend)
+//! * [`true_strength_index`](bulk::true_strength_index)
 //!
 //! ## Single
 //!
@@ -26,10 +27,18 @@
 //! * [`short_parabolic_time_price_system`](single::short_parabolic_time_price_system) - Calculates the
 //! parabolic time price system for short positions
 //! * [`volume_price_trend`](single::volume_price_trend)
+//! * [`true_strength_index`](single::true_strength_index)
 
 /// `single` module holds functions that return a singular values
 pub mod single {
+    use crate::basic_indicators::bulk::median as bulk_median;
+    use crate::basic_indicators::bulk::mode as bulk_mode;
+    use crate::basic_indicators::single::median as single_median;
+    use crate::basic_indicators::single::mode as single_mode;
     use crate::basic_indicators::single::{max, min};
+    use crate::moving_average::bulk::moving_average as bulk_ma;
+    use crate::moving_average::single::moving_average as single_ma;
+    use crate::{ConstantModelType, MovingAverageType};
     /// The `aroon_up` indicator tracks the uptrends in the `aroon_indicator` and is used to
     /// calculate the `aroon_oscillator`.
     ///
@@ -309,23 +318,178 @@ pub mod single {
     /// assert_eq!(-19.510774606872452, volume_price_trend);
     /// ```
     pub fn volume_price_trend(
-        current_price: &f64, 
-        previous_price: &f64, 
+        current_price: &f64,
+        previous_price: &f64,
         volume: &f64,
-        previous_volume_price_trend: &f64
+        previous_volume_price_trend: &f64,
     ) -> f64 {
-        return previous_volume_price_trend + ( volume * ((current_price - previous_price) / previous_price))
+        return previous_volume_price_trend
+            + (volume * ((current_price - previous_price) / previous_price));
+    }
+
+    /// The `true_strength_index` measures trend direction by applying the moving average on the
+    /// difference of the prices twice.
+    ///
+    /// The standard model is an exponential moving average, the first smoothing period is 25, the
+    /// second smoothing period is 13.
+    ///
+    /// Due to the double smoothing, caller needs to be aware that the legnth of prices needs to be
+    /// the sum of the first and second period. For the standard TSI, the length of prices needs to
+    /// be 38.
+    ///
+    /// In the single function the length of the second period is assumed to be the difference
+    /// between length of `prices` and `first_period`.
+    ///
+    /// # Arguments
+    ///
+    /// * `prices` - Slice of prices
+    /// * `first_constant_model` - Variant of [`ConstantModelType`]
+    /// * `first_period` - Period over which to apply the first smoothing
+    /// * `second_constant_model` - Variant of [`ConstantModelType`]
+    ///
+    /// # Panics
+    ///
+    /// `true_strength_index` will panic if:
+    ///     * `prices` is empty
+    ///     * Length of `prices` needs to be greater than `first_period` + 1
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// let prices = vec![100.0, 115.0, 118.0, 120.0, 125.0, 117.0, 113.0, 115.0];
+    /// let true_strength_index = rust_ti::trend_indicators::single::true_strength_index(
+    ///     &prices,
+    ///     &rust_ti::ConstantModelType::ExponentialMovingAverage,
+    ///     &5_usize,
+    ///     &rust_ti::ConstantModelType::ExponentialMovingAverage,
+    /// );
+    ///
+    /// assert_eq!(-0.25821030430852665, true_strength_index);
+    /// ```
+    pub fn true_strength_index(
+        prices: &[f64],
+        first_constant_model: &ConstantModelType,
+        first_period: &usize,
+        second_constant_model: &ConstantModelType,
+    ) -> f64 {
+        if prices.is_empty() {
+            panic!("Prices cannot be empty")
+        };
+        let length = prices.len();
+        if length < first_period + 1 {
+            panic!(
+                "Length of prices ({}) needs to be equal or greater than the sum ({}) of first_period ({}) and second_period({})",
+                length, first_period + 1, first_period, 1
+            )
+        };
+
+        let mut price_momentum = Vec::new();
+        let mut abs_price_momentum = Vec::new();
+        for i in 1..length {
+            price_momentum.push(prices[i] - prices[i - 1]);
+            abs_price_momentum.push((prices[i] - prices[i - 1]).abs());
+        }
+
+        let (initial_smoothing, abs_initial_smoothing) = match first_constant_model {
+            ConstantModelType::SimpleMovingAverage => (
+                bulk_ma(&price_momentum, &MovingAverageType::Simple, first_period),
+                bulk_ma(
+                    &abs_price_momentum,
+                    &MovingAverageType::Simple,
+                    first_period,
+                ),
+            ),
+            ConstantModelType::SmoothedMovingAverage => (
+                bulk_ma(&price_momentum, &MovingAverageType::Smoothed, first_period),
+                bulk_ma(
+                    &abs_price_momentum,
+                    &MovingAverageType::Smoothed,
+                    first_period,
+                ),
+            ),
+            ConstantModelType::ExponentialMovingAverage => (
+                bulk_ma(
+                    &price_momentum,
+                    &MovingAverageType::Exponential,
+                    first_period,
+                ),
+                bulk_ma(
+                    &abs_price_momentum,
+                    &MovingAverageType::Exponential,
+                    first_period,
+                ),
+            ),
+            ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => (
+                bulk_ma(
+                    &price_momentum,
+                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
+                    first_period,
+                ),
+                bulk_ma(
+                    &abs_price_momentum,
+                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
+                    first_period,
+                ),
+            ),
+            ConstantModelType::SimpleMovingMedian => (
+                bulk_median(&price_momentum, &first_period),
+                bulk_median(&abs_price_momentum, &first_period),
+            ),
+            ConstantModelType::SimpleMovingMode => (
+                bulk_mode(&price_momentum, &first_period),
+                bulk_mode(&abs_price_momentum, &first_period),
+            ),
+            _ => panic!("Not a supported constant model type"),
+        };
+
+        let (second_smoothing, abs_second_smoothing) = match second_constant_model {
+            ConstantModelType::SimpleMovingAverage => (
+                single_ma(&initial_smoothing, &MovingAverageType::Simple),
+                single_ma(&abs_initial_smoothing, &MovingAverageType::Simple),
+            ),
+            ConstantModelType::SmoothedMovingAverage => (
+                single_ma(&initial_smoothing, &MovingAverageType::Smoothed),
+                single_ma(&abs_initial_smoothing, &MovingAverageType::Smoothed),
+            ),
+            ConstantModelType::ExponentialMovingAverage => (
+                single_ma(&initial_smoothing, &MovingAverageType::Exponential),
+                single_ma(&abs_initial_smoothing, &MovingAverageType::Exponential),
+            ),
+            ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => (
+                single_ma(
+                    &initial_smoothing,
+                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
+                ),
+                single_ma(
+                    &abs_initial_smoothing,
+                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
+                ),
+            ),
+            ConstantModelType::SimpleMovingMedian => (
+                single_median(&initial_smoothing),
+                single_median(&abs_initial_smoothing),
+            ),
+            ConstantModelType::SimpleMovingMode => (
+                single_mode(&initial_smoothing),
+                single_mode(&abs_initial_smoothing),
+            ),
+            _ => panic!("Not a supported constant model type"),
+        };
+        if abs_second_smoothing == 0.0 {
+            return 0.0;
+        };
+        return second_smoothing / abs_second_smoothing;
     }
 }
 
 /// `bulk` module holds functions that return multiple vaues
 pub mod bulk {
-    use crate::basic_indicators::single::{max, min};
     use crate::basic_indicators::bulk::{median, mode};
-    use crate::trend_indicators::single;
-    use crate::{Position, ConstantModelType, MovingAverageType};
-    use crate::other_indicators::bulk::true_range;
+    use crate::basic_indicators::single::{max, min};
     use crate::moving_average::bulk::moving_average;
+    use crate::other_indicators::bulk::true_range;
+    use crate::trend_indicators::single;
+    use crate::{ConstantModelType, MovingAverageType, Position};
     /// The `aroon_up` indicator tracks the uptrends in the `aroon_indicator` and is used to
     /// calculate the `aroon_oscillator`.
     ///
@@ -721,13 +885,13 @@ pub mod bulk {
     }
 
     /// The `directional_movement_system` function calculates the positive/negative Directional Movement (+/-
-    /// DM), positive/negative Directional Movement (+/-DI), Directional Movement Index (DX), 
+    /// DM), positive/negative Directional Movement (+/-DI), Directional Movement Index (DX),
     /// Average Directional Movement Index (ADX), and the Average Directional Movement Index Rating (ADXR).
-    /// 
+    ///
     /// As Welles only used the +/- DI, ADX, and ADXR in his Directional Movement System, these are
     /// the only values that will be returned as a tuple.
     ///
-    /// When calculating the +/- DI and TR, Welles uses a accumulation technique for calculations 
+    /// When calculating the +/- DI and TR, Welles uses a accumulation technique for calculations
     /// after the first to avoid having to keep track of previous data, and to make calculations
     /// quick and easy by hand. However as things are now done programmatically this function will
     /// not use the accumulation technique but will fully calculate the DI and TR.
@@ -803,7 +967,7 @@ pub mod bulk {
     ///         (54.35378291977454, 5.693408433551885, 84.91130107903966, 76.4883756804025),
     ///         (62.241785060576625, 0.0, 87.12350070935402, 81.6577008267208),
     ///         (58.33871116437639, 5.974002028210937, 85.92748332644709, 85.08425301994043),
-    ///         (37.95187465025111, 7.252378287633331, 81.47834482926781, 82.88763820852706) 
+    ///         (37.95187465025111, 7.252378287633331, 81.47834482926781, 82.88763820852706)
     ///     ], directional_movement_system);
     /// ```
     pub fn directional_movement_system(
@@ -811,13 +975,15 @@ pub mod bulk {
         low: &[f64],
         close: &[f64],
         period: &usize,
-        constant_model_type: &ConstantModelType
+        constant_model_type: &ConstantModelType,
     ) -> Vec<(f64, f64, f64, f64)> {
         let length = high.len();
         if length != low.len() || length != close.len() {
             panic!(
-                "Length of high ({}), low ({}), and close ({}) need to be equal", 
-                length, low.len(), close.len()
+                "Length of high ({}), low ({}), and close ({}) need to be equal",
+                length,
+                low.len(),
+                close.len()
             )
         };
         if high.is_empty() {
@@ -825,15 +991,18 @@ pub mod bulk {
         };
         let length_min = 3 * period;
         if length_min > length {
-            panic!("Length of prices ({}) must be greater than ({})", length, length_min)
+            panic!(
+                "Length of prices ({}) must be greater than ({})",
+                length, length_min
+            )
         };
 
         let mut positive_dm = Vec::new();
         let mut negative_dm = Vec::new();
 
         for i in 1..length {
-            let high_diff = high[i] - high[i-1];
-            let low_diff = low[i-1] - low[i];
+            let high_diff = high[i] - high[i - 1];
+            let low_diff = low[i - 1] - low[i];
 
             if high_diff > 0.0 && high_diff > low_diff {
                 positive_dm.push(high_diff);
@@ -845,7 +1014,7 @@ pub mod bulk {
                 positive_dm.push(0.0);
                 negative_dm.push(0.0);
             };
-        };
+        }
 
         let tr = true_range(&close[1..], &high[1..], &low[1..]);
 
@@ -853,19 +1022,19 @@ pub mod bulk {
         let mut negative_di: Vec<f64> = Vec::new();
 
         for i in *period..length {
-            let tr_sum: f64 = tr[i-period..i].iter().sum();
-            let positive_dm_sum: f64 = positive_dm[i-period..i].iter().sum();
-            let negative_dm_sum: f64 = negative_dm[i-period..i].iter().sum();
-            positive_di.push((positive_dm_sum/tr_sum)*100.0);
-            negative_di.push((negative_dm_sum/tr_sum)*100.0);
-        };
+            let tr_sum: f64 = tr[i - period..i].iter().sum();
+            let positive_dm_sum: f64 = positive_dm[i - period..i].iter().sum();
+            let negative_dm_sum: f64 = negative_dm[i - period..i].iter().sum();
+            positive_di.push((positive_dm_sum / tr_sum) * 100.0);
+            negative_di.push((negative_dm_sum / tr_sum) * 100.0);
+        }
 
         let mut dx = Vec::new();
         for i in 0..positive_di.len() {
             let di_diff = (positive_di[i] - negative_di[i]).abs();
             let di_sum = positive_di[i] + negative_di[i];
-            dx.push((di_diff/di_sum)*100.0);
-        };
+            dx.push((di_diff / di_sum) * 100.0);
+        }
 
         let adx = match constant_model_type {
             ConstantModelType::SimpleMovingAverage => {
@@ -879,40 +1048,34 @@ pub mod bulk {
             }
             ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => {
                 moving_average(
-                    &dx, 
+                    &dx,
                     &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
-                    period
+                    period,
                 )
             }
-            ConstantModelType::SimpleMovingMedian => {
-                median(&dx, &period)
-            }
-            ConstantModelType::SimpleMovingMode => {
-                mode(&dx, &period)
-            }
-            _ => panic!("Not a supported constant model type")
+            ConstantModelType::SimpleMovingMedian => median(&dx, &period),
+            ConstantModelType::SimpleMovingMode => mode(&dx, &period),
+            _ => panic!("Not a supported constant model type"),
         };
 
         let mut adxr = Vec::new();
-        for i in *period..adx.len()+1 {
-            adxr.push((adx[i-period]+adx[i-1])/2.0);
-        };
+        for i in *period..adx.len() + 1 {
+            adxr.push((adx[i - period] + adx[i - 1]) / 2.0);
+        }
 
         let mut directional_movement_system = Vec::new();
         for i in 0..adxr.len() {
-            directional_movement_system.push(
-                (
-                    // Because the period is used 3 times to get various indicators 
-                    // we need to get to a point where all indicators exist but for some
-                    // indicators that means going forward 2 times the period and removing 2
-                    positive_di[i+(2*period)-2], 
-                    negative_di[i+(2*period)-2],
-                    adx[i+period-1],
-                    adxr[i]
-                )
-            );
-        };
-        return directional_movement_system
+            directional_movement_system.push((
+                // Because the period is used 3 times to get various indicators
+                // we need to get to a point where all indicators exist but for some
+                // indicators that means going forward 2 times the period and removing 2
+                positive_di[i + (2 * period) - 2],
+                negative_di[i + (2 * period) - 2],
+                adx[i + period - 1],
+                adxr[i],
+            ));
+        }
+        return directional_movement_system;
     }
 
     /// The `volume_price_trend` relates prices to the volume to give an indicator that tracks the
@@ -961,33 +1124,109 @@ pub mod bulk {
     /// assert_eq!(vec![-59.51077460687245, -67.6740399129949], volume_price_trend);
     /// ```
     pub fn volume_price_trend(
-        prices: &[f64], 
+        prices: &[f64],
         volumes: &[f64],
-        previous_volume_price_trend: &f64
+        previous_volume_price_trend: &f64,
     ) -> Vec<f64> {
         let length = volumes.len();
         if length != prices.len() - 1 {
-            panic!("Length of volumes ({}) must equal length of prices ({}) - 1", length, prices.len())
+            panic!(
+                "Length of volumes ({}) must equal length of prices ({}) - 1",
+                length,
+                prices.len()
+            )
         };
-        
+
         if volumes.is_empty() || prices.is_empty() {
             panic!("Volumes nor prices can be empty")
         };
 
         let mut vpts = vec![single::volume_price_trend(
-            &prices[1], &prices[0], &volumes[0], previous_volume_price_trend
+            &prices[1],
+            &prices[0],
+            &volumes[0],
+            previous_volume_price_trend,
         )];
 
         for i in 1..length {
             vpts.push(single::volume_price_trend(
-                    &prices[i+1],
-                    &prices[i],
-                    &volumes[i],
-                    &vpts[i-1]
-                )
-            );
-        };
+                &prices[i + 1],
+                &prices[i],
+                &volumes[i],
+                &vpts[i - 1],
+            ));
+        }
         return vpts;
+    }
+
+    /// The `true_strength_index` measures trend direction by applying the moving average on the
+    /// difference of the prices twice.
+    ///
+    /// The standard model is an exponential moving average, the first smoothing period is 25, the
+    /// second smoothing period is 13.
+    ///
+    /// Due to the double smoothing, caller needs to be aware that the legnth of prices needs to be
+    /// the sum of the first and second period. For the standard TSI, the length of prices needs to
+    /// be 38.
+    ///
+    /// # Arguments
+    ///
+    /// * `prices` - Slice of prices
+    /// * `first_constant_model` - Variant of [`ConstantModelType`]
+    /// * `first_period` - Period over which to apply the first smoothing
+    /// * `second_constant_model` - Variant of [`ConstantModelType`]
+    ///
+    /// # Panics
+    ///
+    /// `true_strength_index` will panic if:
+    ///     * `prices` is empty
+    ///     * Length of `prices` needs to be greater than sum of `first_period` and `second_period`
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// let prices = vec![100.0, 115.0, 118.0, 120.0, 125.0, 117.0, 113.0, 115.0, 110.0, 107.0];
+    /// let true_strength_index = rust_ti::trend_indicators::bulk::true_strength_index(
+    ///     &prices,
+    ///     &rust_ti::ConstantModelType::ExponentialMovingAverage,
+    ///     &5_usize,
+    ///     &rust_ti::ConstantModelType::ExponentialMovingAverage,
+    ///     &3_usize
+    /// );
+    ///
+    /// assert_eq!(vec![-0.25821030430852665, -0.48120300751879697, -0.6691474966170501], true_strength_index);
+    /// ```
+    pub fn true_strength_index(
+        prices: &[f64],
+        first_constant_model: &ConstantModelType,
+        first_period: &usize,
+        second_constant_model: &ConstantModelType,
+        second_period: &usize,
+    ) -> Vec<f64> {
+        if prices.is_empty() {
+            panic!("Prices cannot be empty")
+        };
+        let length = prices.len();
+        let period_sum = first_period + second_period;
+        if length < period_sum {
+            panic!(
+                "Length of prices ({}) needs to be equal or greater than the sum ({}) of first_period ({}) and second_period({})",
+                length, first_period + second_period, first_period, second_period
+            )
+        };
+
+        let loop_max = length - period_sum + 1;
+        let mut tsis = Vec::new();
+
+        for i in 0..loop_max {
+            tsis.push(single::true_strength_index(
+                &prices[i..i + period_sum],
+                first_constant_model,
+                first_period,
+                second_constant_model,
+            ));
+        }
+        return tsis;
     }
 }
 
@@ -1401,19 +1640,29 @@ mod tests {
     #[test]
     fn bulk_directional_movement_system_ma() {
         let highs = vec![
-            100.83, 100.91, 101.03, 101.27, 100.52, 101.27, 101.03, 100.91, 100.83
+            100.83, 100.91, 101.03, 101.27, 100.52, 101.27, 101.03, 100.91, 100.83,
         ];
         let lows = vec![
-            100.59, 100.72, 100.84, 100.91, 99.85, 100.91, 100.84, 100.72, 100.59
+            100.59, 100.72, 100.84, 100.91, 99.85, 100.91, 100.84, 100.72, 100.59,
         ];
         let close = vec![
-            100.76, 100.88, 100.96, 101.14, 100.01, 101.14, 100.96, 100.88, 100.76
+            100.76, 100.88, 100.96, 101.14, 100.01, 101.14, 100.96, 100.88, 100.76,
         ];
-        
+
         assert_eq!(
             vec![
-                (101.35135135135205, 25.675675675675546, 27.733956062965074, 39.31871283052075), 
-                (0.0, 51.61290322580615, 59.92907801418446, 42.118401465704885)
+                (
+                    101.35135135135205,
+                    25.675675675675546,
+                    27.733956062965074,
+                    39.31871283052075
+                ),
+                (
+                    0.0,
+                    51.61290322580615,
+                    59.92907801418446,
+                    42.118401465704885
+                )
             ],
             bulk::directional_movement_system(
                 &highs,
@@ -1428,18 +1677,23 @@ mod tests {
     #[test]
     fn bulk_directional_movement_system_sma() {
         let highs = vec![
-            100.83, 100.91, 101.03, 101.27, 100.52, 101.27, 101.03, 100.91, 100.83
+            100.83, 100.91, 101.03, 101.27, 100.52, 101.27, 101.03, 100.91, 100.83,
         ];
         let lows = vec![
-            100.59, 100.72, 100.84, 100.91, 99.85, 100.91, 100.84, 100.72, 100.59
+            100.59, 100.72, 100.84, 100.91, 99.85, 100.91, 100.84, 100.72, 100.59,
         ];
         let close = vec![
-            100.76, 100.88, 100.96, 101.14, 100.01, 101.14, 100.96, 100.88, 100.76
+            100.76, 100.88, 100.96, 101.14, 100.01, 101.14, 100.96, 100.88, 100.76,
         ];
-        
+
         assert_eq!(
             vec![
-                (101.35135135135205, 25.675675675675546, 35.32133395242147, 36.779255271063406), 
+                (
+                    101.35135135135205,
+                    25.675675675675546,
+                    35.32133395242147,
+                    36.779255271063406
+                ),
                 (0.0, 51.61290322580615, 70.43673012318037, 45.73378077439598)
             ],
             bulk::directional_movement_system(
@@ -1455,18 +1709,23 @@ mod tests {
     #[test]
     fn bulk_directional_movement_system_ema() {
         let highs = vec![
-            100.83, 100.91, 101.03, 101.27, 100.52, 101.27, 101.03, 100.91, 100.83
+            100.83, 100.91, 101.03, 101.27, 100.52, 101.27, 101.03, 100.91, 100.83,
         ];
         let lows = vec![
-            100.59, 100.72, 100.84, 100.91, 99.85, 100.91, 100.84, 100.72, 100.59
+            100.59, 100.72, 100.84, 100.91, 99.85, 100.91, 100.84, 100.72, 100.59,
         ];
         let close = vec![
-            100.76, 100.88, 100.96, 101.14, 100.01, 101.14, 100.96, 100.88, 100.76
+            100.76, 100.88, 100.96, 101.14, 100.01, 101.14, 100.96, 100.88, 100.76,
         ];
-        
+
         assert_eq!(
             vec![
-                (101.35135135135205, 25.675675675675546, 40.3054340573803, 35.31343744877174), 
+                (
+                    101.35135135135205,
+                    25.675675675675546,
+                    40.3054340573803,
+                    35.31343744877174
+                ),
                 (0.0, 51.61290322580615, 77.05167173252289, 48.30984349271556)
             ],
             bulk::directional_movement_system(
@@ -1482,19 +1741,29 @@ mod tests {
     #[test]
     fn bulk_directional_movement_system_pma() {
         let highs = vec![
-            100.83, 100.91, 101.03, 101.27, 100.52, 101.27, 101.03, 100.91, 100.83
+            100.83, 100.91, 101.03, 101.27, 100.52, 101.27, 101.03, 100.91, 100.83,
         ];
         let lows = vec![
-            100.59, 100.72, 100.84, 100.91, 99.85, 100.91, 100.84, 100.72, 100.59
+            100.59, 100.72, 100.84, 100.91, 99.85, 100.91, 100.84, 100.72, 100.59,
         ];
         let close = vec![
-            100.76, 100.88, 100.96, 101.14, 100.01, 101.14, 100.96, 100.88, 100.76
+            100.76, 100.88, 100.96, 101.14, 100.01, 101.14, 100.96, 100.88, 100.76,
         ];
-        
+
         assert_eq!(
             vec![
-                (101.35135135135205, 25.675675675675546, 47.99680889790824, 33.38241876418677), 
-                (0.0, 51.61290322580615, 86.78945697046689, 52.614232280421646)
+                (
+                    101.35135135135205,
+                    25.675675675675546,
+                    47.99680889790824,
+                    33.38241876418677
+                ),
+                (
+                    0.0,
+                    51.61290322580615,
+                    86.78945697046689,
+                    52.614232280421646
+                )
             ],
             bulk::directional_movement_system(
                 &highs,
@@ -1509,19 +1778,29 @@ mod tests {
     #[test]
     fn bulk_directional_movement_system_median() {
         let highs = vec![
-            100.83, 100.91, 101.03, 101.27, 100.52, 101.27, 101.03, 100.91, 100.83
+            100.83, 100.91, 101.03, 101.27, 100.52, 101.27, 101.03, 100.91, 100.83,
         ];
         let lows = vec![
-            100.59, 100.72, 100.84, 100.91, 99.85, 100.91, 100.84, 100.72, 100.59
+            100.59, 100.72, 100.84, 100.91, 99.85, 100.91, 100.84, 100.72, 100.59,
         ];
         let close = vec![
-            100.76, 100.88, 100.96, 101.14, 100.01, 101.14, 100.96, 100.88, 100.76
+            100.76, 100.88, 100.96, 101.14, 100.01, 101.14, 100.96, 100.88, 100.76,
         ];
-        
+
         assert_eq!(
             vec![
-                (101.35135135135205, 25.675675675675546, 20.212765957446617, 34.75427030266704), 
-                (0.0, 51.61290322580615, 59.574468085106766, 39.89361702127669)
+                (
+                    101.35135135135205,
+                    25.675675675675546,
+                    20.212765957446617,
+                    34.75427030266704
+                ),
+                (
+                    0.0,
+                    51.61290322580615,
+                    59.574468085106766,
+                    39.89361702127669
+                )
             ],
             bulk::directional_movement_system(
                 &highs,
@@ -1532,22 +1811,27 @@ mod tests {
             )
         );
     }
-    
+
     #[test]
     fn bulk_directional_movement_system_mode() {
         let highs = vec![
-            100.83, 100.91, 101.03, 101.27, 100.52, 101.27, 101.03, 100.91, 100.83
+            100.83, 100.91, 101.03, 101.27, 100.52, 101.27, 101.03, 100.91, 100.83,
         ];
         let lows = vec![
-            100.59, 100.72, 100.84, 100.91, 99.85, 100.91, 100.84, 100.72, 100.59
+            100.59, 100.72, 100.84, 100.91, 99.85, 100.91, 100.84, 100.72, 100.59,
         ];
         let close = vec![
-            100.76, 100.88, 100.96, 101.14, 100.01, 101.14, 100.96, 100.88, 100.76
+            100.76, 100.88, 100.96, 101.14, 100.01, 101.14, 100.96, 100.88, 100.76,
         ];
-        
+
         assert_eq!(
             vec![
-                (101.35135135135205, 25.675675675675546, 27.666666666666668, 39.166666666666664), 
+                (
+                    101.35135135135205,
+                    25.675675675675546,
+                    27.666666666666668,
+                    39.166666666666664
+                ),
                 (0.0, 51.61290322580615, 60.0, 42.0)
             ],
             bulk::directional_movement_system(
@@ -1564,21 +1848,21 @@ mod tests {
     #[should_panic]
     fn bulk_directional_movement_system_panic_high_length() {
         let highs = vec![
-            100.83, 100.91, 101.03, 101.27, 100.52, 101.03, 100.91, 100.83
+            100.83, 100.91, 101.03, 101.27, 100.52, 101.03, 100.91, 100.83,
         ];
         let lows = vec![
-            100.59, 100.72, 100.84, 100.91, 99.85, 100.91, 100.84, 100.72, 100.59
+            100.59, 100.72, 100.84, 100.91, 99.85, 100.91, 100.84, 100.72, 100.59,
         ];
         let close = vec![
-            100.76, 100.88, 100.96, 101.14, 100.01, 101.14, 100.96, 100.88, 100.76
+            100.76, 100.88, 100.96, 101.14, 100.01, 101.14, 100.96, 100.88, 100.76,
         ];
-        
+
         bulk::directional_movement_system(
             &highs,
             &lows,
             &close,
             &3_usize,
-            &crate::ConstantModelType::SimpleMovingMode
+            &crate::ConstantModelType::SimpleMovingMode,
         );
     }
 
@@ -1586,21 +1870,21 @@ mod tests {
     #[should_panic]
     fn bulk_directional_movement_system_panic_lows_length() {
         let highs = vec![
-            100.83, 100.91, 101.03, 101.27, 100.52, 101.27, 101.03, 100.91, 100.83
+            100.83, 100.91, 101.03, 101.27, 100.52, 101.27, 101.03, 100.91, 100.83,
         ];
         let lows = vec![
-            100.59, 100.72, 100.84, 100.91, 99.85, 100.91, 100.72, 100.59
+            100.59, 100.72, 100.84, 100.91, 99.85, 100.91, 100.72, 100.59,
         ];
         let close = vec![
-            100.76, 100.88, 100.96, 101.14, 100.01, 101.14, 100.96, 100.88, 100.76
+            100.76, 100.88, 100.96, 101.14, 100.01, 101.14, 100.96, 100.88, 100.76,
         ];
-        
+
         bulk::directional_movement_system(
             &highs,
             &lows,
             &close,
             &3_usize,
-            &crate::ConstantModelType::SimpleMovingMode
+            &crate::ConstantModelType::SimpleMovingMode,
         );
     }
 
@@ -1608,21 +1892,21 @@ mod tests {
     #[should_panic]
     fn bulk_directional_movement_system_panic_close_length() {
         let highs = vec![
-            100.83, 100.91, 101.03, 101.27, 100.52, 101.27, 101.03, 100.91, 100.83
+            100.83, 100.91, 101.03, 101.27, 100.52, 101.27, 101.03, 100.91, 100.83,
         ];
         let lows = vec![
-            100.59, 100.72, 100.84, 100.91, 99.85, 100.91, 100.84, 100.72, 100.59
+            100.59, 100.72, 100.84, 100.91, 99.85, 100.91, 100.84, 100.72, 100.59,
         ];
         let close = vec![
-            100.76, 100.88, 101.14, 100.01, 101.14, 100.96, 100.88, 100.76
+            100.76, 100.88, 101.14, 100.01, 101.14, 100.96, 100.88, 100.76,
         ];
-        
+
         bulk::directional_movement_system(
             &highs,
             &lows,
             &close,
             &3_usize,
-            &crate::ConstantModelType::SimpleMovingMode
+            &crate::ConstantModelType::SimpleMovingMode,
         );
     }
 
@@ -1632,13 +1916,13 @@ mod tests {
         let highs = Vec::new();
         let lows = Vec::new();
         let close = Vec::new();
-        
+
         bulk::directional_movement_system(
             &highs,
             &lows,
             &close,
             &3_usize,
-            &crate::ConstantModelType::SimpleMovingMode
+            &crate::ConstantModelType::SimpleMovingMode,
         );
     }
 
@@ -1646,21 +1930,21 @@ mod tests {
     #[should_panic]
     fn bulk_directional_movement_system_panic_period() {
         let highs = vec![
-            100.83, 100.91, 101.03, 101.27, 100.52, 101.27, 101.03, 100.91
+            100.83, 100.91, 101.03, 101.27, 100.52, 101.27, 101.03, 100.91,
         ];
         let lows = vec![
-            100.59, 100.72, 100.84, 100.91, 99.85, 100.91, 100.84, 100.72
+            100.59, 100.72, 100.84, 100.91, 99.85, 100.91, 100.84, 100.72,
         ];
         let close = vec![
-            100.76, 100.88, 100.96, 101.14, 100.01, 101.14, 100.96, 100.88
+            100.76, 100.88, 100.96, 101.14, 100.01, 101.14, 100.96, 100.88,
         ];
-        
+
         bulk::directional_movement_system(
             &highs,
             &lows,
             &close,
             &3_usize,
-            &crate::ConstantModelType::SimpleMovingMode
+            &crate::ConstantModelType::SimpleMovingMode,
         );
     }
 
@@ -1668,12 +1952,7 @@ mod tests {
     fn single_volume_price_trend_no_previous() {
         assert_eq!(
             -11.379612133266974,
-            single::volume_price_trend(
-                &99.01,
-                &100.55,
-                &743.0,
-                &0.0
-            )
+            single::volume_price_trend(&99.01, &100.55, &743.0, &0.0)
         );
     }
 
@@ -1681,12 +1960,7 @@ mod tests {
     fn single_volume_price_trend_previous() {
         assert_eq!(
             4.023680463440446,
-            single::volume_price_trend(
-                &100.43,
-                &99.01,
-                &1074.0,
-                &-11.379612133266974
-            )
+            single::volume_price_trend(&100.43, &99.01, &1074.0, &-11.379612133266974)
         );
     }
 
@@ -1695,12 +1969,13 @@ mod tests {
         let prices = vec![100.55, 99.01, 100.43, 101.0, 101.76];
         let volume = vec![743.0, 1074.0, 861.0, 966.0];
         assert_eq!(
-            vec![-11.379612133266974, 4.023680463440446, 8.910367708287545, 16.1792785993767],
-            bulk::volume_price_trend(
-                &prices,
-                &volume,
-                &0.0
-            )
+            vec![
+                -11.379612133266974,
+                4.023680463440446,
+                8.910367708287545,
+                16.1792785993767
+            ],
+            bulk::volume_price_trend(&prices, &volume, &0.0)
         );
     }
 
@@ -1709,12 +1984,13 @@ mod tests {
         let prices = vec![100.55, 99.01, 100.43, 101.0, 101.76];
         let volume = vec![743.0, 1074.0, 861.0, 966.0];
         assert_eq!(
-            vec![-1.3796121332669742, 14.023680463440446, 18.910367708287545, 26.1792785993767],
-            bulk::volume_price_trend(
-                &prices,
-                &volume,
-                &10.0
-            )
+            vec![
+                -1.3796121332669742,
+                14.023680463440446,
+                18.910367708287545,
+                26.1792785993767
+            ],
+            bulk::volume_price_trend(&prices, &volume, &10.0)
         );
     }
 
@@ -1723,11 +1999,7 @@ mod tests {
     fn bulk_volume_price_trend_panic_length() {
         let prices = vec![100.55, 99.01, 101.0, 101.76];
         let volume = vec![743.0, 1074.0, 861.0, 966.0];
-        bulk::volume_price_trend(
-                &prices,
-                &volume,
-                &10.0
-        );
+        bulk::volume_price_trend(&prices, &volume, &10.0);
     }
 
     #[test]
@@ -1735,11 +2007,7 @@ mod tests {
     fn bulk_volume_price_trend_panic_volume_empty() {
         let prices = vec![100.55, 99.01, 100.43, 101.0, 101.76];
         let volume = Vec::new();
-        bulk::volume_price_trend(
-                &prices,
-                &volume,
-                &10.0
-        );
+        bulk::volume_price_trend(&prices, &volume, &10.0);
     }
 
     #[test]
@@ -1747,10 +2015,157 @@ mod tests {
     fn bulk_volume_price_trend_panic_prices_empty() {
         let prices = Vec::new();
         let volume = vec![743.0, 1074.0, 861.0, 966.0];
-        bulk::volume_price_trend(
+        bulk::volume_price_trend(&prices, &volume, &10.0);
+    }
+
+    #[test]
+    fn single_true_strength_index_ma() {
+        let prices = vec![100.14, 98.98, 99.07, 100.1, 99.96, 99.56, 100.72, 101.16];
+        assert_eq!(
+            0.3688989784336005,
+            single::true_strength_index(
                 &prices,
-                &volume,
-                &10.0
+                &crate::ConstantModelType::SimpleMovingAverage,
+                &5_usize,
+                &crate::ConstantModelType::SimpleMovingAverage
+            )
+        );
+    }
+
+    #[test]
+    fn single_true_strength_index_sma() {
+        let prices = vec![100.14, 98.98, 99.07, 100.1, 99.96, 99.56, 100.72, 101.16];
+        assert_eq!(
+            0.5156567622865983,
+            single::true_strength_index(
+                &prices,
+                &crate::ConstantModelType::SmoothedMovingAverage,
+                &5_usize,
+                &crate::ConstantModelType::SmoothedMovingAverage
+            )
+        );
+    }
+
+    #[test]
+    fn single_true_strength_index_ema() {
+        let prices = vec![100.14, 98.98, 99.07, 100.1, 99.96, 99.56, 100.72, 101.16];
+        assert_eq!(
+            0.6031084483806584,
+            single::true_strength_index(
+                &prices,
+                &crate::ConstantModelType::ExponentialMovingAverage,
+                &5_usize,
+                &crate::ConstantModelType::ExponentialMovingAverage
+            )
+        );
+    }
+
+    #[test]
+    fn single_true_strength_index_pma() {
+        let prices = vec![100.14, 98.98, 99.07, 100.1, 99.96, 99.56, 100.72, 101.16];
+        assert_eq!(
+            0.7550056326977878,
+            single::true_strength_index(
+                &prices,
+                &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0),
+                &5_usize,
+                &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0)
+            )
+        );
+    }
+
+    #[test]
+    fn single_true_strength_index_median() {
+        let prices = vec![100.14, 98.98, 99.07, 100.1, 99.96, 99.56, 100.72, 101.16];
+        assert_eq!(
+            0.2249999999999778,
+            single::true_strength_index(
+                &prices,
+                &crate::ConstantModelType::SimpleMovingMedian,
+                &5_usize,
+                &crate::ConstantModelType::SimpleMovingMedian
+            )
+        );
+    }
+
+    #[test]
+    fn single_true_strength_index_mode() {
+        let prices = vec![100.14, 98.98, 99.07, 100.1, 99.96, 99.56, 100.72, 101.16];
+        assert_eq!(
+            0.0,
+            single::true_strength_index(
+                &prices,
+                &crate::ConstantModelType::SimpleMovingMode,
+                &5_usize,
+                &crate::ConstantModelType::SimpleMovingMode
+            )
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn single_true_strength_index_panic_length() {
+        let prices = vec![100.14, 98.98, 99.07, 100.1, 99.96];
+        single::true_strength_index(
+            &prices,
+            &crate::ConstantModelType::SimpleMovingMode,
+            &5_usize,
+            &crate::ConstantModelType::SimpleMovingMode,
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn single_true_strength_index_panic_empty() {
+        let prices = Vec::new();
+        single::true_strength_index(
+            &prices,
+            &crate::ConstantModelType::SimpleMovingMode,
+            &5_usize,
+            &crate::ConstantModelType::SimpleMovingMode,
+        );
+    }
+
+    #[test]
+    fn bulk_true_strength_index() {
+        let prices = vec![
+            100.14, 98.98, 99.07, 100.1, 99.96, 99.56, 100.72, 101.16, 100.76, 100.3,
+        ];
+        assert_eq!(
+            vec![0.6031084483806584, 0.43792017300550673, 0.06758060421426838],
+            bulk::true_strength_index(
+                &prices,
+                &crate::ConstantModelType::ExponentialMovingAverage,
+                &5_usize,
+                &crate::ConstantModelType::ExponentialMovingAverage,
+                &3_usize
+            )
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_true_strength_index_panic_length() {
+        let prices = vec![100.14, 98.98, 99.07, 100.1, 99.96, 99.52, 101.16];
+        bulk::true_strength_index(
+            &prices,
+            &crate::ConstantModelType::SimpleMovingMode,
+            &5_usize,
+            &crate::ConstantModelType::SimpleMovingMode,
+            &3_usize,
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_true_strength_index_panic_() {
+        let prices = Vec::new();
+        bulk::true_strength_index(
+            &prices,
+            &crate::ConstantModelType::SimpleMovingMode,
+            &5_usize,
+            &crate::ConstantModelType::SimpleMovingMode,
+            &3_usize,
         );
     }
 }

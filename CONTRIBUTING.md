@@ -22,20 +22,13 @@ would be very helpful.
     * update readme link with stndard indicators
     * in parabolic t/p system remove single functions, and have the bulk function find the trend and determine
       whether to go long or short like it does in the volatility system ... or return s/l in vol system
+    * Fix documentation warnings
 
 ### New indicators
 
-    * Supertrend Indicator: https://www.investopedia.com/supertrend-indicator-7976167
     * Relative Vigor Index: https://www.investopedia.com/terms/r/relative_vigor_index.asp
-    * Percentage Price Oscillator: https://www.investopedia.com/terms/p/ppo.asp
-    * Chande Momentum Oscillator: https://www.investopedia.com/terms/c/chandemomentumoscillator.asp
     * Polarized Fractal Efficiency: https://www.investopedia.com/terms/p/pfe.asp
-    * Internal Bar Strength: https://www.quantifiedstrategies.com/internal-bar-strength-ibs-indicator-strategy/
-    * True strength index: https://en.wikipedia.org/wiki/True_strength_index
-    * Fisher Transform Indicator: https://www.investopedia.com/terms/f/fisher-transform.asp
-    * Positive Volume Index: https://www.investopedia.com/terms/p/pvi.asp
-    * Negative Volume Index: https://www.investopedia.com/terms/n/nvi.asp
-    * McGinley ATR
+    * McGinley dynamic versions of anything using MA
     * positivity index, see s&P spreadsheet
 
 ## I have an indicator I want to add

@@ -107,6 +107,7 @@
 //!  constant envelopes
 //! * [`donchian_channels`](candle_indicators::bulk::donchian_channels)
 //! * [`keltner_channel`](candle_indicators::bulk::keltner_channel)
+//! * [`supertrend`](candle_indicators::bulk::supertrend)
 //!
 //! #### Single
 //!
@@ -121,6 +122,7 @@
 //! * [`moving_constant_envelopes`](candle_indicators::single::moving_constant_envelopes) - Calculates the moving
 //! * [`donchian_channels`](candle_indicators::single::donchian_channels)
 //! * [`keltner_channel`](candle_indicators::single::keltner_channel)
+//! * [`supertrend`](candle_indicators::single::supertrend)
 //!
 //! ### Chart Trends
 //! [`chart_trends`] shows trends on charts. Unlike the other modules it has no bulk or single.
@@ -181,6 +183,8 @@
 //! * [`stochastic_oscillator`](momentum_indicators::bulk::stochastic_oscillator) - Calculates the
 //! Stochastic Oscillator
 //! * [`williams_percent_r`](momentum_indicators::bulk::williams_percent_r) - Calcualtes the Williams %R
+//! * [`percentage_price_oscillator`](momentum_indicators::bulk::percentage_price_oscillator)
+//! * [`chande_momentum_oscillator`](momentum_indicators::bulk::chande_momentum_oscillator)
 //!
 //! #### Single
 //!
@@ -211,6 +215,8 @@
 //! * [`stochastic_oscillator`](momentum_indicators::single::stochastic_oscillator) - Calculates
 //! the Stochastic Oscillator
 //! * [`williams_percent_r`](momentum_indicators::single::williams_percent_r) - Calcualtes the Williams %R
+//! * [`percentage_price_oscillator`](momentum_indicators::single::percentage_price_oscillator)
+//! * [`chande_momentum_oscillator`](momentum_indicators::single::chande_momentum_oscillator)
 //!
 //! ### Moving Averages
 //!
@@ -236,6 +242,7 @@
 //! on investment
 //! * [`true_range`](other_indicators::bulk::true_range)
 //! * [`average_true_range`](other_indicators::bulk::average_true_range)
+//! * [`internal_bar_strength`](other_indicators::bulk::internal_bar_strength)
 //!
 //! #### Single
 //!
@@ -243,6 +250,7 @@
 //! on investment
 //! * [`true_range`](other_indicators::bulk::true_range)
 //! * [`average_true_range`](other_indicators::bulk::average_true_range)
+//! * [`internal_bar_strength`](other_indicators::single::internal_bar_strength)
 //!
 //! ### Strength Indicators
 //!
@@ -270,7 +278,7 @@
 //! * [`aroon_up`](trend_indicators::bulk::aroon_up) - Calculates the Aroon up
 //! * [`parabolic_time_price_system`](trend_indicators::bulk::parabolic_time_price_system) - Calculates
 //! the parabolic time price system
-//! * [`volume_price_trend`](trend_indicators::bulk:volume_price_trend)
+//! * [`volume_price_trend`](trend_indicators::bulk::volume_price_trend)
 //!
 //! #### Single
 //!
@@ -282,7 +290,7 @@
 //!  Calculates the parabolic time price system for long positions
 //! * [`short_parabolic_time_price_system`](trend_indicators::single::short_parabolic_time_price_system) -
 //!  Calculates the parabolic time price system for short positions
-//! * [`volume_price_trend`](trend_indicators::single:volume_price_trend)
+//! * [`volume_price_trend`](trend_indicators::single::volume_price_trend)
 //!
 //! ### Volatility Indicators
 //!
@@ -297,8 +305,8 @@
 //! #### Single
 //!
 //! * [`ulcer_index`](volatility_indicators::single::ulcer_index) - Calculates the Ulcer Index
-//! * [`voltility_system`](volatility_indicators::single::volatility_system) - Calculates Welles
-//! volatility system
+
+#![allow(unreachable_patterns)]
 
 pub mod basic_indicators;
 pub mod candle_indicators;

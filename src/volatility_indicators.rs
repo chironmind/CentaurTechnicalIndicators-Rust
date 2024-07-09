@@ -5,7 +5,7 @@
 //! ## Bulk
 //!
 //! * [`ulcer_index`](bulk::ulcer_index) - Calculates the Ulcer Index
-//! * [`volatility_system`](bulk::volatility_index)
+//! * [`volatility_system`](bulk::volatility_system)
 //!
 //! ## Single
 //!
