@@ -28,7 +28,7 @@ cargo add rust_ti
 Or add the following line to your Cargo.toml:
 
 ```
-rust_ti = "1.1.0" 
+rust_ti = "1.2.0" 
 ```
 
 
@@ -184,6 +184,9 @@ Candle indicators are indicators to be used with candle charts
 * McGinley Dynamic Envelopes 
 * Moving Constant Bands, generic version of Bollinger bansa 
 * Moving Constant envelopes, generic version of moving average envelopes 
+* Donchian Channels
+* Keltner Channel
+* Supertrend
 
 ### Chart Trends
 
@@ -222,6 +225,8 @@ Momentum indicators calculate the momentum of price movement
 * Slowest Stochastic
 * Stochastic Oscillator 
 * Williams %r
+* Percentage-Price Oscillator
+* Chande Momentum Oscillator
 
 ### Moving Averages
 
@@ -235,12 +240,16 @@ Indicators that don't belong anywhere else
 * Return on Investment
 * True Range
 * Average True Range
+* Internal Bar Strength
 
 ### Strength Indicators
 
 Strength indicators calculate the strength of price movement
 
 * Accumulation Distribution
+* Positive Volume Index
+* Negative Volume Index
+* Relative Vigor Index
 
 ### Trend Indicators
 
@@ -254,6 +263,8 @@ Trend indicators show the trend of price movement
 * Long Parabolic Time Price System
 * Short Parabolic Time Price System 
 * Direcational Movement
+* Volume-Price trend
+* True Strength Index
 
 ### Volatility Indicators
 
@@ -265,8 +276,8 @@ Volatility indicators show how volatile an asset is
 
 ## Release notes
 
-What's new in v1.1.0?
+What's new in v1.2.0?
 
-* Added indicators from Welles "New concepts in technical trading systems" Directional Movement chapter
+* Added some final indicators
 
-[Full changelog](https://github.com/0100101001010000/RustTI/releases/tag/v1.1.0)
+[Full changelog](https://github.com/0100101001010000/RustTI/releases/tag/v1.2.0)

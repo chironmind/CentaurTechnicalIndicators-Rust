@@ -19,16 +19,13 @@ would be very helpful.
 
     * Add all the docs that GH wants
     * remove test_ prefix from all tests
-    * update readme link with stndard indicators
     * in parabolic t/p system remove single functions, and have the bulk function find the trend and determine
       whether to go long or short like it does in the volatility system ... or return s/l in vol system
 
 ### New indicators
 
-    * Go over Welles book 
-    * Check other sources (such as investopedia, TI books...) for any other common indicators 
-that may have been missed
-    * Indicators derived from bbands
+    * McGinley dynamic versions of anything using MA (Donchain channels, Keltner channels, Supertrend, 
+percentage price oscillator, relative vigor index)
 
 ## I have an indicator I want to add
 

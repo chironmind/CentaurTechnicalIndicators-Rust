@@ -5,7 +5,7 @@
 //! ## Bulk
 //!
 //! * [`ulcer_index`](bulk::ulcer_index) - Calculates the Ulcer Index
-//! * [`volatility_system`](bulk::volatility_index)
+//! * [`volatility_system`](bulk::volatility_system)
 //!
 //! ## Single
 //!
@@ -223,8 +223,8 @@ pub mod bulk {
         }
 
         let mut sars = Vec::new();
-        let mut position = 'u';
-        let mut significant_close = 0.0;
+        let mut position;
+        let mut significant_close;
         let mut previous_period = *period;
 
         let trend = overall_trend(&typical_price[..previous_period]);

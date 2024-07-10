@@ -1,8 +1,6 @@
 use rust_ti;
 
 fn main() {
-    // open, high, low, close are the prices for the S&P500 for the past year that are going to be
-    // used to show how the bulk part of the package works
     let open = vec![
         4308.32, 4352.61, 4366.29, 4365.33, 4442.7, 4396.11, 4380.01, 4355.4, 4354.17, 4344.84,
         4337.36, 4367.48, 4374.94, 4422.44, 4449.45, 4442.04, 4422.62, 4404.54, 4394.23, 4415.55,
@@ -169,6 +167,12 @@ fn main() {
 
     println!("{:?}", week);
 
+    // TODO:
+    //  * have a next close, open, low...
+    //  * move short period up
+    //  * have variables for models that can be referenced
+    let ma = rust_ti::ConstantModelType::SimpleMovingAverage;
+
     // For all indicators we will use a period of 5 (a week) so that they are comparable
     let period: usize = 5;
 
@@ -288,6 +292,42 @@ fn main() {
         single_moving_constant_bands
     );
 
+    // Donchian Channels
+    let bulk_donchian_channels =
+        rust_ti::candle_indicators::bulk::donchian_channels(&high, &low, &period);
+
+    println!("Donchian Channels: {:?}", bulk_donchian_channels);
+
+    let single_donchian_chanels =
+        rust_ti::candle_indicators::single::donchian_channels(&high_week, &low_week);
+
+    println!("Donchian Channels: {:?}", single_donchian_chanels);
+
+    // Keltner Channel
+    let bulk_keltner_channel = rust_ti::candle_indicators::bulk::keltner_channel(
+        &high,
+        &low,
+        &close,
+        &rust_ti::ConstantModelType::ExponentialMovingAverage,
+        &rust_ti::ConstantModelType::ExponentialMovingAverage,
+        &2.0,
+        &period,
+    );
+
+    println!("Keltner Channel: {:?}", bulk_keltner_channel);
+
+    // SuperTrend
+    let bulk_supertrend = rust_ti::candle_indicators::bulk::supertrend(
+        &high,
+        &low,
+        &close,
+        &rust_ti::ConstantModelType::ExponentialMovingAverage,
+        &2.0,
+        &period,
+    );
+
+    println!("SuperTrend: {:?}", bulk_supertrend);
+
     // Chart Trends
 
     // Break down trends
@@ -317,6 +357,35 @@ fn main() {
     );
 
     println!("Single RSI: {:?}", single_rsi);
+
+    // Percentage-Price Oscillator
+    let short_period: usize = 3;
+    let bulk_ppo = rust_ti::momentum_indicators::bulk::percentage_price_oscillator(
+        &typical_price,
+        &short_period,
+        &period,
+        &rust_ti::ConstantModelType::ExponentialMovingAverage,
+    );
+
+    println!("Bulk PPO: {:?}", bulk_ppo);
+
+    let single_ppo = rust_ti::momentum_indicators::single::percentage_price_oscillator(
+        &week,
+        &short_period,
+        &rust_ti::ConstantModelType::ExponentialMovingAverage,
+    );
+
+    println!("Single PPO: {:?}", single_ppo);
+
+    // Chande Momentum Oscillator
+    let bulk_cmo =
+        rust_ti::momentum_indicators::bulk::chande_momentum_oscillator(&typical_price, &period);
+
+    println!("Bulk CMO: {:?}", bulk_cmo);
+
+    let single_cmo = rust_ti::momentum_indicators::single::chande_momentum_oscillator(&week);
+
+    println!("Single CMO: {:?}:", single_cmo);
 
     // Moving Average
 
@@ -351,6 +420,19 @@ fn main() {
 
     println!("Single RoI: {:?}", single_roi);
 
+    // Internal Bar Strength
+    let bulk_ibs = rust_ti::other_indicators::bulk::internal_bar_strength(&high, &low, &close);
+
+    println!("Bulk IBS: {:?}", bulk_ibs);
+
+    let single_ibs = rust_ti::other_indicators::single::internal_bar_strength(
+        &next_high,
+        &next_low,
+        &next_close,
+    );
+
+    println!("Single IBS: {:?}", single_ibs);
+
     // True Range
     // TODO: need to shift close
     let bulk_tr = rust_ti::other_indicators::bulk::true_range(&close, &high, &low);
@@ -372,13 +454,35 @@ fn main() {
     );
 
     println!("Bulk ATR: {:?}", bulk_atr);
+    
+    let length = open.len();
+    // Positivity indicator
+    let positivity_indicator = rust_ti::other_indicators::bulk::positivity_indicator(
+        &open[1..length],
+        &close[..length-1],
+        &period,
+        &rust_ti::ConstantModelType::ExponentialMovingAverage,
+    );
+
+    println!("Positivity Indicator: {:?}", positivity_indicator);
+
 
     // TODO: Need to create sub vecs for close, high, low with next value
     //let single_tr = rust_ti::other_indicators::single::average_true_range(
 
     // Strength Indicators
 
-    // Accumulation Distribution
+    // Relative Vigor Index
+    let bulk_rvi = rust_ti::strength_indicators::bulk::relative_vigor_index(
+        &open,
+        &high,
+        &low,
+        &close,
+        &rust_ti::ConstantModelType::SimpleMovingAverage,
+        &period,
+    );
+
+    println!("Bulk RVI: {:?}", bulk_rvi);
 
     // Trend Indicators
     let bulk_aroon_indicator =
@@ -395,13 +499,27 @@ fn main() {
 
     let directional_movement_system = rust_ti::trend_indicators::bulk::directional_movement_system(
         &high,
-        &low, 
+        &low,
         &close,
         &period,
-        &rust_ti::ConstantModelType::SimpleMovingAverage
+        &rust_ti::ConstantModelType::SimpleMovingAverage,
     );
 
-    println!("Directional Movement System: {:?}", directional_movement_system);
+    println!(
+        "Directional Movement System: {:?}",
+        directional_movement_system
+    );
+
+    // True Strength Index
+    let bulk_tsi = rust_ti::trend_indicators::bulk::true_strength_index(
+        &typical_price,
+        &rust_ti::ConstantModelType::ExponentialMovingAverage,
+        &period,
+        &rust_ti::ConstantModelType::ExponentialMovingAverage,
+        &short_period,
+    );
+
+    println!("Bulk TSI: {:?}", bulk_tsi);
 
     // Volatility Indicators
     // Ulcer Index

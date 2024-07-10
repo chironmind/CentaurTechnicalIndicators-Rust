@@ -28,6 +28,8 @@
 //! used with the stochastic oscillator
 //! * [`stochastic_oscillator`](bulk::stochastic_oscillator) - Calculates the Stochastic Oscillator
 //! * [`williams_percent_r`](bulk::williams_percent_r) - Calcualtes the Williams %R
+//! * [`percentage_price_oscillator`](bulk::percentage_price_oscillator)
+//! * [`chande_momentum_oscillator`](bulk::chande_momentum_oscillator)
 //!
 //! ## Single
 //!
@@ -55,6 +57,8 @@
 //! used with the stochastic oscillator
 //! * [`stochastic_oscillator`](single::stochastic_oscillator) - Calculates the Stochastic Oscillator
 //! * [`williams_percent_r`](single::williams_percent_r) - Calcualtes the Williams %R
+//! * [`percentage_price_oscillator`](single::percentage_price_oscillator)
+//! * [`chande_momentum_oscillator`](single::chande_momentum_oscillator)
 
 /// `single` module holds functions that return a singular values
 pub mod single {
@@ -1198,6 +1202,130 @@ pub mod single {
         );
     }
 
+    /// The `percentage_price_oscillator` shows the relationship between two moving averages.
+    ///
+    /// Standard periods used are 26 and 12, and a exponential moving average.
+    ///
+    /// The long period will be assumed to be the legnth of prices.
+    ///
+    /// # Arguments
+    ///
+    /// * `prices` - Slice of prices
+    /// * `short_period` - Length of short period, standard is 12.
+    /// * `constant_model_type` Variant of [`ConstantModelType`]
+    ///
+    /// # Panics
+    ///
+    /// `percentage_price_oscillator` will panic if length of `prices` is less or equal to
+    /// `short_period`
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// let prices = vec![100.0, 103.0, 106.0, 100.0, 97.0];
+    /// let short_period: usize = 3;
+    ///
+    /// let percentage_price_oscillator =
+    /// rust_ti::momentum_indicators::single::percentage_price_oscillator(
+    ///     &prices,
+    ///     &short_period,
+    ///     &rust_ti::ConstantModelType::ExponentialMovingAverage
+    /// );
+    ///
+    /// assert_eq!(-1.0681349863189704 , percentage_price_oscillator);
+    /// ```
+    pub fn percentage_price_oscillator(
+        prices: &[f64],
+        short_period: &usize,
+        constant_model_type: &ConstantModelType,
+    ) -> f64 {
+        let long_period = prices.len();
+        if short_period > &long_period {
+            panic!(
+                "Length of prices ({}) must be longer than short period ({})",
+                long_period, short_period
+            )
+        };
+        if prices.is_empty() {
+            panic!("Prices cannot be empty")
+        };
+
+        let short_period_index: usize = long_period - short_period;
+        let (short_period, long_period) = match constant_model_type {
+            ConstantModelType::SimpleMovingAverage => (
+                moving_average(&prices[short_period_index..], &MovingAverageType::Simple),
+                moving_average(prices, &MovingAverageType::Simple),
+            ),
+            ConstantModelType::SmoothedMovingAverage => (
+                moving_average(&prices[short_period_index..], &MovingAverageType::Smoothed),
+                moving_average(prices, &MovingAverageType::Smoothed),
+            ),
+            ConstantModelType::ExponentialMovingAverage => (
+                moving_average(
+                    &prices[short_period_index..],
+                    &MovingAverageType::Exponential,
+                ),
+                moving_average(&prices, &MovingAverageType::Exponential),
+            ),
+            ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => (
+                moving_average(
+                    &prices[short_period_index..],
+                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
+                ),
+                moving_average(
+                    &prices,
+                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
+                ),
+            ),
+            ConstantModelType::SimpleMovingMedian => {
+                (median(&prices[short_period_index..]), median(prices))
+            }
+            ConstantModelType::SimpleMovingMode => {
+                (mode(&prices[short_period_index..]), mode(prices))
+            }
+            _ => panic!("Unsupported ConstantModelType"),
+        };
+
+        return ((short_period - long_period) / long_period) * 100.0;
+    }
+
+    /// The `chande_momentum_oscillator` by comparing the sum of recent gains to the sum of recent
+    /// losses.
+    ///
+    /// # Arguments
+    ///
+    /// * `prices` - Slice of prices
+    ///
+    /// # Panics
+    ///
+    /// `chande_momentum_oscillator` will panic if `prices` is empty
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// let prices = vec![100.0, 103.0, 106.0, 100.0, 97.0];
+    /// let chande_momentum_oscillator =
+    ///     rust_ti::momentum_indicators::single::chande_momentum_oscillator(&prices);
+    /// assert_eq!(-20.0, chande_momentum_oscillator)
+    /// ```
+    pub fn chande_momentum_oscillator(prices: &[f64]) -> f64 {
+        if prices.is_empty() {
+            panic!("Prices cannot be empty")
+        };
+
+        let (previous_gains, previous_loss) = previous_gains_loss(prices);
+        if previous_gains.is_empty() {
+            return -100.0;
+        }
+        if previous_loss.is_empty() {
+            return 100.0;
+        }
+
+        let gains_sum: f64 = previous_gains.iter().sum();
+        let loss_sum: f64 = previous_loss.iter().sum();
+        return ((gains_sum - loss_sum) / (gains_sum + loss_sum)) * 100.0;
+    }
+
     fn previous_gains_loss(prices: &[f64]) -> (Vec<f64>, Vec<f64>) {
         if prices.is_empty() {
             panic!("Prices is empty");
@@ -2293,6 +2421,121 @@ pub mod bulk {
             ));
         }
         return cos;
+    }
+
+    /// The `percentage_price_oscillator` shows the relationship between two moving averages.
+    ///
+    /// Standard periods used are 26 and 12, and a exponential moving average.
+    ///
+    /// # Arguments
+    ///
+    /// * `prices` - Slice of prices
+    /// * `short_period` - Length of short period, standard is 12.
+    /// * `long_period` - Length of long period, standard is 26.
+    /// * `constant_model_type` Variant of [`ConstantModelType`](crate::ConstantModelType)
+    ///
+    /// # Panics
+    ///
+    /// `percentage_price_oscillator` will panic if:
+    ///     * `short_period` is greater or equal to `long_period`
+    ///     * `prices` is empty
+    ///     * 'long_period` is greater than length of `prices`
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// let prices = vec![100.0, 103.0, 106.0, 100.0, 97.0, 105.0, 102.0];
+    /// let short_period: usize = 3;
+    /// let long_period: usize = 5;
+    ///
+    /// let percentage_price_oscillator =
+    /// rust_ti::momentum_indicators::bulk::percentage_price_oscillator(
+    ///     &prices,
+    ///     &short_period,
+    ///     &long_period,
+    ///     &rust_ti::ConstantModelType::ExponentialMovingAverage
+    /// );
+    ///
+    /// assert_eq!(
+    ///     vec![-1.0681349863189704, -0.06036684467148623, 0.14936271906531415],
+    ///     percentage_price_oscillator
+    /// );
+    /// ```
+    pub fn percentage_price_oscillator(
+        prices: &[f64],
+        short_period: &usize,
+        long_period: &usize,
+        constant_model_type: &crate::ConstantModelType,
+    ) -> Vec<f64> {
+        let length = prices.len();
+        if short_period >= long_period {
+            panic!(
+                "Length of prices ({}) must be longer than short period ({})",
+                long_period, short_period
+            )
+        };
+        if prices.is_empty() {
+            panic!("Prices cannot be empty")
+        };
+        if long_period > &length {
+            panic!(
+                "Long period ({}) cannot be greater than length of prices ({})",
+                long_period, length
+            )
+        };
+
+        let mut ppos = Vec::new();
+        let loop_max = length - long_period + 1;
+        for i in 0..loop_max {
+            ppos.push(single::percentage_price_oscillator(
+                &prices[i..i + long_period],
+                short_period,
+                constant_model_type,
+            ));
+        }
+        return ppos;
+    }
+
+    /// The `chande_momentum_oscillator` by comparing the sum of recent gains to the sum of recent
+    /// losses.
+    ///
+    /// # Arguments
+    ///
+    /// * `prices` - Slice of prices
+    /// * `period` - Period over which to calculate the Chande Momentum Oscillator
+    ///
+    /// # Panics
+    ///
+    /// `chande_momentum_oscillator` will panic if:
+    ///     * `prices` is empty
+    ///     * `period` is greater than length of `prices`
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// let prices = vec![100.0, 103.0, 106.0, 100.0, 97.0, 105.0, 102.0];
+    /// let chande_momentum_oscillator =
+    ///     rust_ti::momentum_indicators::bulk::chande_momentum_oscillator(&prices, &5_usize);
+    /// assert_eq!(vec![-20.0, 10.0, -20.0], chande_momentum_oscillator)
+    /// ```
+    pub fn chande_momentum_oscillator(prices: &[f64], period: &usize) -> Vec<f64> {
+        let length = prices.len();
+        if prices.is_empty() {
+            panic!("Prices cannot be empty")
+        };
+        if period > &length {
+            panic!(
+                "Period ({}) cannot be greater than length of prices ({})",
+                period, length
+            )
+        };
+
+        let mut cmos = Vec::new();
+        let loop_max = length - period + 1;
+        for i in 0..loop_max {
+            cmos.push(single::chande_momentum_oscillator(&prices[i..i + period]));
+        }
+        return cmos;
     }
 }
 
@@ -4630,5 +4873,203 @@ mod tests {
         bulk::mcginley_dynamic_chaikin_oscillator(
             &highs, &lows, &close, &volume, &30_usize, &5_usize, &0.0, &0.0, &0.0,
         );
+    }
+
+    #[test]
+    fn single_percentge_price_oscillator_ma() {
+        let prices = vec![100.01, 100.44, 100.39, 100.63, 100.71];
+        assert_eq!(
+            0.1400560224089579,
+            single::percentage_price_oscillator(
+                &prices,
+                &3_usize,
+                &crate::ConstantModelType::SimpleMovingAverage
+            )
+        );
+    }
+
+    #[test]
+    fn single_percentge_price_oscillator_sma() {
+        let prices = vec![100.01, 100.44, 100.39, 100.63, 100.71];
+        assert_eq!(
+            0.1131763552115475,
+            single::percentage_price_oscillator(
+                &prices,
+                &3_usize,
+                &crate::ConstantModelType::SmoothedMovingAverage
+            )
+        );
+    }
+
+    #[test]
+    fn single_percentge_price_oscillator_ema() {
+        let prices = vec![100.01, 100.44, 100.39, 100.63, 100.71];
+        assert_eq!(
+            0.08979623002617415,
+            single::percentage_price_oscillator(
+                &prices,
+                &3_usize,
+                &crate::ConstantModelType::ExponentialMovingAverage
+            )
+        );
+    }
+
+    #[test]
+    fn single_percentge_price_oscillator_pma() {
+        let prices = vec![100.01, 100.44, 100.39, 100.63, 100.71];
+        assert_eq!(
+            0.0485562141788203,
+            single::percentage_price_oscillator(
+                &prices,
+                &3_usize,
+                &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0)
+            )
+        );
+    }
+
+    #[test]
+    fn single_percentge_price_oscillator_median() {
+        let prices = vec![100.01, 100.44, 100.39, 100.63, 100.71];
+        assert_eq!(
+            0.1891676622859396,
+            single::percentage_price_oscillator(
+                &prices,
+                &3_usize,
+                &crate::ConstantModelType::SimpleMovingMedian
+            )
+        );
+    }
+
+    #[test]
+    fn single_percentge_price_oscillator_mode() {
+        let prices = vec![100.01, 100.44, 100.39, 100.63, 100.71];
+        assert_eq!(
+            1.0,
+            single::percentage_price_oscillator(
+                &prices,
+                &3_usize,
+                &crate::ConstantModelType::SimpleMovingMode
+            )
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn single_percentage_price_oscillator_panic_period() {
+        let prices = vec![100.01, 100.44, 100.39, 100.63, 100.71];
+        single::percentage_price_oscillator(
+            &prices,
+            &30_usize,
+            &crate::ConstantModelType::SimpleMovingMode,
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn single_percentage_price_oscillator_panic_empty() {
+        let prices = Vec::new();
+        single::percentage_price_oscillator(
+            &prices,
+            &0_usize,
+            &crate::ConstantModelType::SimpleMovingMode,
+        );
+    }
+
+    #[test]
+    fn bulk_percentage_price_oscillator() {
+        let prices = vec![100.01, 100.44, 100.39, 100.63, 100.71, 100.35, 100.12];
+        assert_eq!(
+            vec![
+                0.08979623002617415,
+                -0.008380468415664317,
+                -0.08769552039759204
+            ],
+            bulk::percentage_price_oscillator(
+                &prices,
+                &3_usize,
+                &5_usize,
+                &crate::ConstantModelType::ExponentialMovingAverage
+            )
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_percentage_price_oscillator_panic_short_period() {
+        let prices = vec![100.01, 100.44, 100.39, 100.63, 100.71, 100.35, 100.12];
+        bulk::percentage_price_oscillator(
+            &prices,
+            &30_usize,
+            &5_usize,
+            &crate::ConstantModelType::ExponentialMovingAverage,
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_percentage_price_oscillator_panic_long_period() {
+        let prices = vec![100.01, 100.44, 100.39, 100.63, 100.71, 100.35, 100.12];
+        bulk::percentage_price_oscillator(
+            &prices,
+            &3_usize,
+            &50_usize,
+            &crate::ConstantModelType::ExponentialMovingAverage,
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_percentage_price_oscillator_panic_empty() {
+        let prices = Vec::new();
+        bulk::percentage_price_oscillator(
+            &prices,
+            &3_usize,
+            &5_usize,
+            &crate::ConstantModelType::ExponentialMovingAverage,
+        );
+    }
+
+    #[test]
+    fn single_chande_momentum_oscillator() {
+        let prices = vec![100.01, 100.44, 100.39, 100.63, 100.71];
+        assert_eq!(
+            87.50000000000044,
+            single::chande_momentum_oscillator(&prices)
+        );
+    }
+
+    #[test]
+    fn single_chande_momentum_oscillator_fall() {
+        let prices = vec![100.1, 100.0, 99.9, 99.8, 99.7];
+        assert_eq!(-100.0, single::chande_momentum_oscillator(&prices));
+    }
+
+    #[test]
+    fn single_chande_momentum_oscillator_rise() {
+        let prices = vec![100.1, 100.2, 100.3, 100.4, 100.5];
+        assert_eq!(100.0, single::chande_momentum_oscillator(&prices));
+    }
+
+    #[test]
+    fn bulk_chande_momentum_oscillator() {
+        let prices = vec![100.01, 100.44, 100.39, 100.63, 100.71, 100.35, 100.12];
+        assert_eq!(
+            vec![87.50000000000044, -12.328767123288312, -29.67032967032981],
+            bulk::chande_momentum_oscillator(&prices, &5_usize)
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_chande_momentum_oscillator_panic_period() {
+        let prices = vec![100.01, 100.44, 100.39, 100.63, 100.71, 100.35, 100.12];
+        bulk::chande_momentum_oscillator(&prices, &50_usize);
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_chande_momentum_oscillator_panic_empty() {
+        let prices = Vec::new();
+        bulk::chande_momentum_oscillator(&prices, &5_usize);
     }
 }
