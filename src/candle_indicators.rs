@@ -1107,7 +1107,7 @@ pub mod bulk {
     ///
     /// # Panics
     ///
-    /// `keltner_channel` will panic if:
+    /// `supertrend` will panic if:
     ///     * Lengths of `high`, `low`, and `close` aren't equal
     ///     * `high`, `low`, or `close` are empty
     ///     * If lengths are less than `period`

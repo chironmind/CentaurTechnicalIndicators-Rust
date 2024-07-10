@@ -29,6 +29,7 @@
 //! * [`stochastic_oscillator`](bulk::stochastic_oscillator) - Calculates the Stochastic Oscillator
 //! * [`williams_percent_r`](bulk::williams_percent_r) - Calcualtes the Williams %R
 //! * [`percentage_price_oscillator`](bulk::percentage_price_oscillator)
+//! * [`chande_momentum_oscillator`](bulk::chande_momentum_oscillator)
 //!
 //! ## Single
 //!
@@ -57,6 +58,7 @@
 //! * [`stochastic_oscillator`](single::stochastic_oscillator) - Calculates the Stochastic Oscillator
 //! * [`williams_percent_r`](single::williams_percent_r) - Calcualtes the Williams %R
 //! * [`percentage_price_oscillator`](single::percentage_price_oscillator)
+//! * [`chande_momentum_oscillator`](single::chande_momentum_oscillator)
 
 /// `single` module holds functions that return a singular values
 pub mod single {

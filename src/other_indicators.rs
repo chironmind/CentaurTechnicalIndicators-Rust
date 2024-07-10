@@ -238,7 +238,10 @@ pub mod single {
 
 /// `bulk` module holds functions that return a vector of values
 pub mod bulk {
+    use crate::basic_indicators::bulk::{median, mode};
+    use crate::moving_average::bulk::moving_average;
     use crate::other_indicators::single;
+    use crate::{ConstantModelType, MovingAverageType};
     /// The `return_on_investment` function calculates the value of the investment at the end of
     /// the period, as well as the percentage change. Returns the final investment worth and the
     /// percent change of the investment.
@@ -352,7 +355,7 @@ pub mod bulk {
     /// the close for the same period as the high or low /!\
     /// * `high` - Slice of high prices
     /// * `low` - Slice of low prices
-    /// * `constant_model_type` - Variant of [`ConstantModelType`](crate::ConstantModelType)
+    /// * `constant_model_type` - Variant of [`ConstantModelType`]
     /// * `period` - Period over which to calculate the `average_true_range`
     ///
     /// # Panics
@@ -478,6 +481,108 @@ pub mod bulk {
             ibs.push(single::internal_bar_strength(&high[i], &low[i], &close[i]));
         }
         return ibs;
+    }
+
+    /// The `positivity_indicator` is a simple indicator that makes the assumption that if things
+    /// are positive at the beginning of the day, things will be positive at the end of the day.
+    ///
+    /// The signal line is calculated by taking the average of postivity indicators. A long signal
+    /// is produced when the positivity indicator is above 0 and above the signal line. A short signal is
+    /// produced when the positivity indicator is under 0 and under the signal line.
+    ///
+    /// The passed in close prices must be the closing prices for the previous day.
+    ///
+    /// # Arguments
+    ///
+    /// * `open` - Slice of opening prices
+    /// * `previous_close` - Slice of closing prices
+    /// * `signal_period` - Period over which to calculate the average of positivity indicators
+    /// * `constant_model_type` - Variant of [`ConstantModelType`]
+    ///
+    /// # Panics
+    ///
+    /// `positivity_indicator` will panic if:
+    ///     * Length of `open` and `previous_close` aren't equal
+    ///     * `open` or `previous_close` are empty
+    ///     * `signal_period` is greater than length of prices
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// let open = vec![5278.24, 5314.48, 5357.8, 5343.81, 5341.22, 5353.0, 5409.13];
+    /// let previous_close = vec![5283.4, 5291.34, 5354.03, 5352.96, 5346.99, 5360.79, 5375.32];
+    /// let signal_period: usize = 5;
+    ///
+    /// let positivity_indicator = rust_ti::other_indicators::bulk::positivity_indicator(
+    ///     &open,
+    ///     &previous_close,
+    ///     &signal_period,
+    ///     &rust_ti::ConstantModelType::SimpleMovingAverage
+    /// );
+    ///
+    /// assert_eq!(vec![
+    ///     (-0.10791117993487043, 0.026244711276039178),
+    ///     (-0.14531440328757447, 0.01671470717528643),
+    ///     (0.6289858092169471, 0.05504820197025553)],
+    ///     positivity_indicator
+    /// );
+    /// ```
+    pub fn positivity_indicator(
+        open: &[f64],
+        previous_close: &[f64],
+        signal_period: &usize,
+        constant_model_type: &ConstantModelType,
+    ) -> Vec<(f64, f64)> {
+        let length = open.len();
+        if length != previous_close.len() {
+            panic!(
+                "Length of open ({}) and close ({}) must be equal",
+                length,
+                previous_close.len()
+            )
+        };
+        if open.is_empty() {
+            panic!("Prices cannot be empty")
+        };
+        if signal_period > &length {
+            panic!(
+                "Period ({}) cannot be longer than length of prices ({})",
+                signal_period, length
+            )
+        };
+
+        let mut pis = Vec::new();
+        for i in 0..length {
+            pis.push(((open[i] - previous_close[i]) / previous_close[i]) * 100.0);
+        }
+
+        let signal_line = match constant_model_type {
+            ConstantModelType::SimpleMovingAverage => {
+                moving_average(&pis, &MovingAverageType::Simple, signal_period)
+            }
+            ConstantModelType::SmoothedMovingAverage => {
+                moving_average(&pis, &MovingAverageType::Smoothed, signal_period)
+            }
+            ConstantModelType::ExponentialMovingAverage => {
+                moving_average(&pis, &MovingAverageType::Exponential, signal_period)
+            }
+            ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => {
+                moving_average(
+                    &pis,
+                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
+                    signal_period,
+                )
+            }
+            ConstantModelType::SimpleMovingMedian => median(&pis, signal_period),
+            ConstantModelType::SimpleMovingMode => mode(&pis, signal_period),
+            _ => panic!("Unsupported ConstantModelType"),
+        };
+
+        let mut r = Vec::new();
+        for i in 0..signal_line.len() {
+            r.push((pis[i + signal_period - 1], signal_line[i]));
+        }
+        return r;
     }
 }
 
@@ -902,5 +1007,167 @@ mod tests {
         let high = Vec::new();
         let low = Vec::new();
         bulk::internal_bar_strength(&high, &low, &close);
+    }
+
+    #[test]
+    fn bulk_positivity_indicator_ma() {
+        let open = vec![5278.24, 5314.48, 5357.8, 5343.81, 5341.22, 5353.0, 5409.13];
+        let previous_close = vec![5283.4, 5291.34, 5354.03, 5352.96, 5346.99, 5360.79, 5375.32];
+        let signal_period: usize = 5;
+        assert_eq!(
+            vec![
+                (-0.10791117993487043, 0.026244711276039178),
+                (-0.14531440328757447, 0.01671470717528643),
+                (0.6289858092169471, 0.05504820197025553)
+            ],
+            bulk::positivity_indicator(
+                &open,
+                &previous_close,
+                &signal_period,
+                &crate::ConstantModelType::SimpleMovingAverage
+            )
+        );
+    }
+
+    #[test]
+    fn bulk_positivity_indicator_sma() {
+        let open = vec![5278.24, 5314.48, 5357.8, 5343.81, 5341.22, 5353.0, 5409.13];
+        let previous_close = vec![5283.4, 5291.34, 5354.03, 5352.96, 5346.99, 5360.79, 5375.32];
+        let signal_period: usize = 5;
+        assert_eq!(
+            vec![
+                (-0.10791117993487043, -0.004667175210233987),
+                (-0.14531440328757447, -0.0374414205397291),
+                (0.6289858092169471, 0.11452727085189565)
+            ],
+            bulk::positivity_indicator(
+                &open,
+                &previous_close,
+                &signal_period,
+                &crate::ConstantModelType::SmoothedMovingAverage
+            )
+        );
+    }
+
+    #[test]
+    fn bulk_positivity_indicator_ema() {
+        let open = vec![5278.24, 5314.48, 5357.8, 5343.81, 5341.22, 5353.0, 5409.13];
+        let previous_close = vec![5283.4, 5291.34, 5354.03, 5352.96, 5346.99, 5360.79, 5375.32];
+        let signal_period: usize = 5;
+        assert_eq!(
+            vec![
+                (-0.10791117993487043, -0.03082127868198756),
+                (-0.14531440328757447, -0.0713945013484951),
+                (0.6289858092169471, 0.17175495314835065)
+            ],
+            bulk::positivity_indicator(
+                &open,
+                &previous_close,
+                &signal_period,
+                &crate::ConstantModelType::ExponentialMovingAverage
+            )
+        );
+    }
+
+    #[test]
+    fn bulk_positivity_indicator_pma() {
+        let open = vec![5278.24, 5314.48, 5357.8, 5343.81, 5341.22, 5353.0, 5409.13];
+        let previous_close = vec![5283.4, 5291.34, 5354.03, 5352.96, 5346.99, 5360.79, 5375.32];
+        let signal_period: usize = 5;
+        assert_eq!(
+            vec![
+                (-0.10791117993487043, -0.07654434206147799),
+                (-0.14531440328757447, -0.1152171021135638),
+                (0.6289858092169471, 0.3001081065924838)
+            ],
+            bulk::positivity_indicator(
+                &open,
+                &previous_close,
+                &signal_period,
+                &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0)
+            )
+        );
+    }
+
+    #[test]
+    fn bulk_positivity_indicator_median() {
+        let open = vec![5278.24, 5314.48, 5357.8, 5343.81, 5341.22, 5353.0, 5409.13];
+        let previous_close = vec![5283.4, 5291.34, 5354.03, 5352.96, 5346.99, 5360.79, 5375.32];
+        let signal_period: usize = 5;
+        assert_eq!(
+            vec![
+                (-0.10791117993487043, -0.0976643827838107),
+                (-0.14531440328757447, -0.10791117993487043),
+                (0.6289858092169471, -0.10791117993487043)
+            ],
+            bulk::positivity_indicator(
+                &open,
+                &previous_close,
+                &signal_period,
+                &crate::ConstantModelType::SimpleMovingMedian
+            )
+        );
+    }
+
+    #[test]
+    fn bulk_positivity_indicator_mode() {
+        let open = vec![5278.24, 5314.48, 5357.8, 5343.81, 5341.22, 5353.0, 5409.13];
+        let previous_close = vec![5283.4, 5291.34, 5354.03, 5352.96, 5346.99, 5360.79, 5375.32];
+        let signal_period: usize = 5;
+        assert_eq!(
+            vec![
+                (-0.10791117993487043, 0.0),
+                (-0.14531440328757447, 0.0),
+                (0.6289858092169471, 0.0)
+            ],
+            bulk::positivity_indicator(
+                &open,
+                &previous_close,
+                &signal_period,
+                &crate::ConstantModelType::SimpleMovingMode
+            )
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_positivity_indicator_panic_length() {
+        let open = vec![5278.24, 5314.48, 5343.81, 5341.22, 5353.0, 5409.13];
+        let previous_close = vec![5283.4, 5291.34, 5354.03, 5352.96, 5346.99, 5360.79, 5375.32];
+        let signal_period: usize = 5;
+        bulk::positivity_indicator(
+            &open,
+            &previous_close,
+            &signal_period,
+            &crate::ConstantModelType::SimpleMovingMode,
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_positivity_indicator_panic_empty() {
+        let open = Vec::new();
+        let previous_close = Vec::new();
+        let signal_period: usize = 5;
+        bulk::positivity_indicator(
+            &open,
+            &previous_close,
+            &signal_period,
+            &crate::ConstantModelType::SimpleMovingMode,
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_positivity_indicator_panic_period() {
+        let open = vec![5278.24, 5314.48, 5357.8, 5343.81, 5341.22, 5353.0, 5409.13];
+        let previous_close = vec![5283.4, 5291.34, 5354.03, 5352.96, 5346.99, 5360.79, 5375.32];
+        let signal_period: usize = 50;
+        bulk::positivity_indicator(
+            &open,
+            &previous_close,
+            &signal_period,
+            &crate::ConstantModelType::SimpleMovingMode,
+        );
     }
 }

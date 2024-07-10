@@ -19,17 +19,13 @@ would be very helpful.
 
     * Add all the docs that GH wants
     * remove test_ prefix from all tests
-    * update readme link with stndard indicators
     * in parabolic t/p system remove single functions, and have the bulk function find the trend and determine
       whether to go long or short like it does in the volatility system ... or return s/l in vol system
-    * Fix documentation warnings
 
 ### New indicators
 
-    * Relative Vigor Index: https://www.investopedia.com/terms/r/relative_vigor_index.asp
-    * Polarized Fractal Efficiency: https://www.investopedia.com/terms/p/pfe.asp
-    * McGinley dynamic versions of anything using MA
-    * positivity index, see s&P spreadsheet
+    * McGinley dynamic versions of anything using MA (Donchain channels, Keltner channels, Supertrend, 
+percentage price oscillator, relative vigor index)
 
 ## I have an indicator I want to add
 

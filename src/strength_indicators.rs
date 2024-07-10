@@ -471,6 +471,94 @@ pub mod bulk {
 
         return nvis;
     }
+
+    /// The `relative_vigor_index` measures the strength of an asset by looking at previous prices.
+    ///
+    /// The standard model to use is a simple moving average.
+    ///
+    /// Period needs to be at least 4 to perform the calculations.
+    ///
+    /// # Arguments
+    ///
+    /// * `open` - Slice of opening prices
+    /// * `high` - Slice of highs
+    /// * `low` - Slice of lows
+    /// * `close` - Slice of closing prices
+    /// * `constant_model_type` - Variant of [`ConstantModelType`](crate::ConstantModelType)
+    /// * `period` - Period over which to calculate the RVI
+    ///
+    /// # Panics
+    ///
+    /// `relative_vigor_index` will panic if:
+    ///     * Lengths of `open`, `high`, `low`, and `close` aren't equal
+    ///     * Prices are empty
+    ///     * `period` is greater than length of prices
+    ///     * `period` is less than 4
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// let open = vec![95.0, 105.0, 110.0, 115.0, 120.0, 115.0, 110.0, 100.0, 90.0, 100.0];
+    /// let high = vec![110.0, 115.0, 120.0, 130.0, 135.0, 130.0, 120.0, 105.0, 100.0, 120.0];
+    /// let low = vec![90.0, 110.0, 105.0, 110.0, 120.0, 105.0, 95.0, 85.0, 70.0, 85.0];
+    /// let close = vec![100.0, 115.0, 115.0, 120.0, 125.0, 110.0, 100.0, 90.0, 80.0, 110.0];
+    /// let period: usize = 8;
+    ///
+    /// let relative_vigor_index = rust_ti::strength_indicators::bulk::relative_vigor_index(
+    ///     &open,
+    ///     &high,
+    ///     &low,
+    ///     &close,
+    ///     &rust_ti::ConstantModelType::SimpleMovingAverage,
+    ///     &period
+    /// );
+    ///
+    /// assert_eq!(vec![0.10185185185185186, -0.06611570247933886, -0.17037037037037037], relative_vigor_index);
+    /// ```
+    pub fn relative_vigor_index(
+        open: &[f64],
+        high: &[f64],
+        low: &[f64],
+        close: &[f64],
+        constant_model_type: &crate::ConstantModelType,
+        period: &usize,
+    ) -> Vec<f64> {
+        let length = open.len();
+        if length != high.len() || length != low.len() || length != close.len() {
+            panic!(
+                "Length of open ({}), high ({}), low ({}), and close ({}) must be equal",
+                length,
+                high.len(),
+                low.len(),
+                close.len()
+            )
+        };
+        if open.is_empty() {
+            panic!("Prices cannot be empty")
+        };
+        if &length < period {
+            panic!(
+                "Period ({}) less than or equal to length of prices ({})",
+                period, length
+            )
+        };
+        if period < &4 {
+            panic!("Period ({}) needs to be greater or equal to 4", period)
+        };
+
+        let mut rvis = Vec::new();
+        let loop_max = length - period + 1;
+        for i in 0..loop_max {
+            rvis.push(single::relative_vigor_index(
+                &open[i..i + period],
+                &high[i..i + period],
+                &low[i..i + period],
+                &close[i..i + period],
+                constant_model_type,
+            ));
+        }
+        return rvis;
+    }
 }
 
 #[cfg(test)]
@@ -926,6 +1014,175 @@ mod tests {
             &low,
             &close,
             &crate::ConstantModelType::SimpleMovingAverage,
+        );
+    }
+
+    #[test]
+    fn bulk_relative_vigor_index_sinlgle() {
+        let open = vec![100.73, 99.62, 99.82, 100.38, 100.97, 101.81];
+        let high = vec![102.32, 100.69, 100.83, 101.73, 102.01, 102.75];
+        let low = vec![100.14, 98.98, 99.07, 100.1, 99.96, 100.55];
+        let close = vec![100.55, 99.01, 100.43, 101.0, 101.76, 102.03];
+        assert_eq!(
+            vec![0.2063784115302081],
+            bulk::relative_vigor_index(
+                &open,
+                &high,
+                &low,
+                &close,
+                &crate::ConstantModelType::SimpleMovingAverage,
+                &6_usize
+            )
+        );
+    }
+
+    #[test]
+    fn bulk_relative_vigor_index_ma() {
+        let open = vec![100.73, 99.62, 99.82, 100.38, 100.97, 101.81, 101.85, 102.09];
+        let high = vec![
+            102.32, 100.69, 100.83, 101.73, 102.01, 102.75, 103.04, 102.94,
+        ];
+        let low = vec![100.14, 98.98, 99.07, 100.1, 99.96, 100.55, 101.17, 100.38];
+        let close = vec![100.55, 99.01, 100.43, 101.0, 101.76, 102.03, 102.35, 101.51];
+        assert_eq!(
+            vec![0.2063784115302081, 0.27849970466627455, 0.23398946492930492],
+            bulk::relative_vigor_index(
+                &open,
+                &high,
+                &low,
+                &close,
+                &crate::ConstantModelType::SimpleMovingAverage,
+                &6_usize
+            )
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_relative_vigor_index_panic_length_open() {
+        let open = vec![100.73, 99.62, 99.82, 100.97, 101.81, 101.85, 102.09];
+        let high = vec![
+            102.32, 100.69, 100.83, 101.73, 102.01, 102.75, 103.04, 102.94,
+        ];
+        let low = vec![100.14, 98.98, 99.07, 100.1, 99.96, 100.55, 101.17, 100.38];
+        let close = vec![100.55, 99.01, 100.43, 101.0, 101.76, 102.03, 102.35, 101.51];
+        bulk::relative_vigor_index(
+            &open,
+            &high,
+            &low,
+            &close,
+            &crate::ConstantModelType::SimpleMovingAverage,
+            &6_usize,
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_relative_vigor_index_panic_length_high() {
+        let open = vec![100.73, 99.62, 99.82, 100.38, 100.97, 101.81, 101.85, 102.09];
+        let high = vec![102.32, 100.69, 100.83, 102.01, 102.75, 103.04, 102.94];
+        let low = vec![100.14, 98.98, 99.07, 100.1, 99.96, 100.55, 101.17, 100.38];
+        let close = vec![100.55, 99.01, 100.43, 101.0, 101.76, 102.03, 102.35, 101.51];
+        bulk::relative_vigor_index(
+            &open,
+            &high,
+            &low,
+            &close,
+            &crate::ConstantModelType::SimpleMovingAverage,
+            &6_usize,
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_relative_vigor_index_panic_length_low() {
+        let open = vec![100.73, 99.62, 99.82, 100.38, 100.97, 101.81, 101.85, 102.09];
+        let high = vec![
+            102.32, 100.69, 100.83, 101.73, 102.01, 102.75, 103.04, 102.94,
+        ];
+        let low = vec![18.98, 99.07, 100.1, 99.96, 100.55, 101.17, 100.38];
+        let close = vec![100.55, 99.01, 100.43, 101.0, 101.76, 102.03, 102.35, 101.51];
+        bulk::relative_vigor_index(
+            &open,
+            &high,
+            &low,
+            &close,
+            &crate::ConstantModelType::SimpleMovingAverage,
+            &6_usize,
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_relative_vigor_index_panic_length_close() {
+        let open = vec![100.73, 99.62, 99.82, 100.38, 100.97, 101.81, 101.85, 102.09];
+        let high = vec![
+            102.32, 100.69, 100.83, 101.73, 102.01, 102.75, 103.04, 102.94,
+        ];
+        let low = vec![100.14, 98.98, 99.07, 100.1, 99.96, 100.55, 101.17, 100.38];
+        let close = vec![100.55, 99.01, 100.43, 101.76, 102.03, 102.35, 101.51];
+        bulk::relative_vigor_index(
+            &open,
+            &high,
+            &low,
+            &close,
+            &crate::ConstantModelType::SimpleMovingAverage,
+            &6_usize,
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_relative_vigor_index_panic_period_high() {
+        let open = vec![100.73, 99.62, 99.82, 100.38, 100.97, 101.81, 101.85, 102.09];
+        let high = vec![
+            102.32, 100.69, 100.83, 101.73, 102.01, 102.75, 103.04, 102.94,
+        ];
+        let low = vec![100.14, 98.98, 99.07, 100.1, 99.96, 100.55, 101.17, 100.38];
+        let close = vec![100.55, 99.01, 100.43, 101.0, 101.76, 102.03, 102.35, 101.51];
+        bulk::relative_vigor_index(
+            &open,
+            &high,
+            &low,
+            &close,
+            &crate::ConstantModelType::SimpleMovingAverage,
+            &60_usize,
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_relative_vigor_index_panic_period_low() {
+        let open = vec![100.73, 99.62, 99.82, 100.38, 100.97, 101.81, 101.85, 102.09];
+        let high = vec![
+            102.32, 100.69, 100.83, 101.73, 102.01, 102.75, 103.04, 102.94,
+        ];
+        let low = vec![100.14, 98.98, 99.07, 100.1, 99.96, 100.55, 101.17, 100.38];
+        let close = vec![100.55, 99.01, 100.43, 101.0, 101.76, 102.03, 102.35, 101.51];
+        bulk::relative_vigor_index(
+            &open,
+            &high,
+            &low,
+            &close,
+            &crate::ConstantModelType::SimpleMovingAverage,
+            &3_usize,
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn bulk_relative_vigor_index_panic_empty() {
+        let open = Vec::new();
+        let high = Vec::new();
+        let low = Vec::new();
+        let close = Vec::new();
+        bulk::relative_vigor_index(
+            &open,
+            &high,
+            &low,
+            &close,
+            &crate::ConstantModelType::SimpleMovingAverage,
+            &6_usize,
         );
     }
 }

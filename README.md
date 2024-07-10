@@ -247,6 +247,9 @@ Indicators that don't belong anywhere else
 Strength indicators calculate the strength of price movement
 
 * Accumulation Distribution
+* Positive Volume Index
+* Negative Volume Index
+* Relative Vigor Index
 
 ### Trend Indicators
 
@@ -261,6 +264,7 @@ Trend indicators show the trend of price movement
 * Short Parabolic Time Price System 
 * Direcational Movement
 * Volume-Price trend
+* True Strength Index
 
 ### Volatility Indicators
 
@@ -272,8 +276,8 @@ Volatility indicators show how volatile an asset is
 
 ## Release notes
 
-What's new in v1.1.0?
+What's new in v1.2.0?
 
-* Added indicators from Welles "New concepts in technical trading systems" Directional Movement chapter
+* Added some final indicators
 
-[Full changelog](https://github.com/0100101001010000/RustTI/releases/tag/v1.1.0)
+[Full changelog](https://github.com/0100101001010000/RustTI/releases/tag/v1.2.0)

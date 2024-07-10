@@ -260,11 +260,16 @@
 //!
 //! * [`accumulation_distribution`](strength_indicators::bulk::accumulation_distribution) - Calculates
 //! the Accumulation Distribution
+//! * [`positive_volume_index`](strength_indicators::bulk::positive_volume_index)
+//! * [`negative_volume_index`](strength_indicators::bulk::negative_volume_index)
+//! * [`relative_vigor_index`](strength_indicators::bulk::relative_vigor_index)
 //!
 //! #### Single
 //!
 //! * [`accumulation_distribution`](strength_indicators::single::accumulation_distribution) - Calculates
 //! the Accumulation Distribution
+//! * [`volume_index`](strength_indicators::single::volume_index)
+//! * [`relative_vigor_index`](strength_indicators::single::relative_vigor_index)
 //!
 //! ### Trend Indicators
 //!
@@ -279,6 +284,7 @@
 //! * [`parabolic_time_price_system`](trend_indicators::bulk::parabolic_time_price_system) - Calculates
 //! the parabolic time price system
 //! * [`volume_price_trend`](trend_indicators::bulk::volume_price_trend)
+//! * [`true_strength_index`](trend_indicators::bulk::true_strength_index)
 //!
 //! #### Single
 //!
@@ -291,6 +297,7 @@
 //! * [`short_parabolic_time_price_system`](trend_indicators::single::short_parabolic_time_price_system) -
 //!  Calculates the parabolic time price system for short positions
 //! * [`volume_price_trend`](trend_indicators::single::volume_price_trend)
+//! * [`true_strength_index`](trend_indicators::single::true_strength_index)
 //!
 //! ### Volatility Indicators
 //!
