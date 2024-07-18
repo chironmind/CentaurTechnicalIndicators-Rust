@@ -1175,6 +1175,7 @@ pub mod bulk {
     /// * `first_constant_model` - Variant of [`ConstantModelType`]
     /// * `first_period` - Period over which to apply the first smoothing
     /// * `second_constant_model` - Variant of [`ConstantModelType`]
+    /// * `second_period` - Period over which to apply the second smoothing
     ///
     /// # Panics
     ///

@@ -1,6 +1,9 @@
 use rust_ti;
+use std::time::Instant;
 
 fn main() {
+    let now = Instant::now();
+
     let open = vec![
         4308.32, 4352.61, 4366.29, 4365.33, 4442.7, 4396.11, 4380.01, 4355.4, 4354.17, 4344.84,
         4337.36, 4367.48, 4374.94, 4422.44, 4449.45, 4442.04, 4422.62, 4404.54, 4394.23, 4415.55,
@@ -146,400 +149,615 @@ fn main() {
         5352.7, 5359.51, 5425.8,
     ];
 
-    // next_open, next_high, next_low, next_close are the t+1 values that are going to be used to
-    // show how the single parts of the package work
-    let next_open = 5409.13;
-    let next_high = 5447.25;
-    let next_low = 5409.13;
-    let next_close = 5421.03;
-    let next_typical_price = 5425.80333333333;
+    let length = close.len();
 
-    let week = vec![
-        5350.22333333333,
-        5351.13333333333,
-        5352.7,
-        5359.50666666667,
-        5425.80333333333,
+    let nominator = 5.0;
+    let denominator = 4.0;
+
+    let available_models = vec![
+        rust_ti::ConstantModelType::SimpleMovingAverage,
+        rust_ti::ConstantModelType::SmoothedMovingAverage,
+        rust_ti::ConstantModelType::ExponentialMovingAverage,
+        rust_ti::ConstantModelType::PersonalisedMovingAverage(&nominator, &denominator),
+        rust_ti::ConstantModelType::SimpleMovingMedian,
+        rust_ti::ConstantModelType::SimpleMovingMode,
+    ];
+    let available_deviations = vec![
+        rust_ti::DeviationModel::StandardDeviation,
+        rust_ti::DeviationModel::MeanAbsoluteDeviation,
+        rust_ti::DeviationModel::MedianAbsoluteDeviation,
+        rust_ti::DeviationModel::ModeAbsoluteDeviation,
+        rust_ti::DeviationModel::UlcerIndex,
     ];
 
-    let high_week = vec![5362.35, 5375.08, 5365.79, 5375.95, 5447.25];
-    let low_week = vec![5352.96, 5346.99, 5360.79, 5375.32, 5409.13];
+    let available_moving_averages = vec![
+        rust_ti::MovingAverageType::Simple,
+        rust_ti::MovingAverageType::Smoothed,
+        rust_ti::MovingAverageType::Exponential,
+        rust_ti::MovingAverageType::Personalised(&nominator, &denominator),
+    ];
 
-    println!("{:?}", week);
-
-    // TODO:
-    //  * have a next close, open, low...
-    //  * move short period up
-    //  * have variables for models that can be referenced
-    let ma = rust_ti::ConstantModelType::SimpleMovingAverage;
-
-    // For all indicators we will use a period of 5 (a week) so that they are comparable
     let period: usize = 5;
+    let previous_mcginley_dynamic = 0.0;
+    let long_period: usize = 20;
+    // basic_indicators.rs
 
-    // Standard Indicators
-    // TODO: For the later indicators create another vec like week instead of recalcing the same
-    // value
+    // Median
 
-    // Simple Moving Average
+    let median = rust_ti::basic_indicators::bulk::median(&typical_price, &period);
+    println!("Median vs Typical Price: {:?}", median);
 
-    let bulk_simple_ma =
-        rust_ti::standard_indicators::bulk::simple_moving_average(&typical_price, &period);
+    // Mode
 
-    println!("Bulk simple MA {:?}", bulk_simple_ma);
+    let mode = rust_ti::basic_indicators::bulk::mode(&typical_price, &period);
+    println!("Mode vs Typical Price: {:?}", mode);
 
-    let single_simple_ma = rust_ti::standard_indicators::single::simple_moving_average(&week);
+    // Natural logarithm
 
-    println!("Single simple MA {:?}", single_simple_ma);
+    let log = rust_ti::basic_indicators::bulk::log(&typical_price);
+    println!("Natural log of Typical Price: {:?}", log);
 
-    // Smoothed Moving Average
+    // Log difference
 
-    let bulk_smoothed_ma =
-        rust_ti::standard_indicators::bulk::smoothed_moving_average(&typical_price, &period);
+    let log_diff = rust_ti::basic_indicators::bulk::log_difference(&typical_price);
+    println!("Log diff of Typical Price: {:?}", log_diff);
 
-    println!("Bulk smoothed MA {:?}", bulk_smoothed_ma);
+    // Variance
 
-    let single_smoothed_ma = rust_ti::standard_indicators::single::smoothed_moving_average(&week);
+    let variance = rust_ti::basic_indicators::bulk::variance(&typical_price, &period);
+    println!("Variance of Typical Price: {:?}", variance);
 
-    println!("Single smoothed MA {:?}", single_smoothed_ma);
+    // Standard Deviation
 
-    // Exponential Moving Average
+    let standard_dev = rust_ti::basic_indicators::bulk::standard_deviation(&typical_price, &period);
+    println!("Standard Deviation of Typical Price: {:?}", standard_dev);
 
-    let bulk_exponential_ma =
-        rust_ti::standard_indicators::bulk::exponential_moving_average(&typical_price, &period);
+    // Mean Absolute Deviation
 
-    println!("Bulk exponential MA {:?}", bulk_exponential_ma);
-
-    let single_exponential_ma =
-        rust_ti::standard_indicators::single::exponential_moving_average(&week);
-
-    println!("Single exponential MA {:?}", single_exponential_ma);
-
-    // Bollinger Bands
-
-    let bulk_bollinger_bands = rust_ti::standard_indicators::bulk::bollinger_bands(&typical_price);
-
-    println!("Bulk Bollinger Bands {:?}", bulk_bollinger_bands);
-
-    let single_bollinger_bands = rust_ti::standard_indicators::single::bollinger_bands(
-        &typical_price[typical_price.len() - 20..],
-    );
-
-    println!("Single Bollinger Band {:?}", single_bollinger_bands);
-
-    // MACD
-
-    let bulk_macd = rust_ti::standard_indicators::bulk::macd(&typical_price);
-
-    println!("Bulk MACD {:?}", bulk_macd);
-
-    let single_macd =
-        rust_ti::standard_indicators::single::macd(&typical_price[typical_price.len() - 34..]);
-
-    println!("Single MACD {:?}", single_macd);
-
-    // RSI
-
-    let bulk_rsi = rust_ti::standard_indicators::bulk::rsi(&typical_price);
-
-    println!("Bulk RSI {:?}", bulk_rsi);
-
-    let single_rsi =
-        rust_ti::standard_indicators::single::rsi(&typical_price[typical_price.len() - 14..]);
-
-    println!("Singe RSI {}", single_rsi);
-
-    // Basic Indicators
-
-    // Absolute Deviation
-    let bulk_absolute_deviation = rust_ti::basic_indicators::bulk::absolute_deviation(
+    let mean_ad = rust_ti::basic_indicators::bulk::absolute_deviation(
         &typical_price,
         &period,
         &rust_ti::CentralPoint::Mean,
     );
+    println!("Mean Absolute Deviation of Typical Price: {:?}", mean_ad);
 
-    println!("Bulk absolute deviation {:?}", bulk_absolute_deviation);
+    // Median Absolute Deviation
 
-    let single_absolute_deviation =
-        rust_ti::basic_indicators::single::absolute_deviation(&week, &rust_ti::CentralPoint::Mean);
-
-    println!("Single absolute deviation: {}", single_absolute_deviation);
-
-    // Candle indicators
-
-    // Moving Constant bands
-    let bulk_moving_constant_bands = rust_ti::candle_indicators::bulk::moving_constant_bands(
+    let median_ad = rust_ti::basic_indicators::bulk::absolute_deviation(
         &typical_price,
-        &rust_ti::ConstantModelType::ExponentialMovingAverage,
-        &rust_ti::DeviationModel::MeanAbsoluteDeviation,
-        &2.0,
+        &period,
+        &rust_ti::CentralPoint::Median,
+    );
+    println!(
+        "Median Absolute Deviation of Typical Price: {:?}",
+        median_ad
+    );
+
+    // Mode Absolute Deviation
+
+    let mode_ad = rust_ti::basic_indicators::bulk::absolute_deviation(
+        &typical_price,
+        &period,
+        &rust_ti::CentralPoint::Mode,
+    );
+    println!("Mode Absolute Deviation of Typical Price: {:?}", mode_ad);
+
+    // candle_indicators.rs
+
+    let difference = 2.0;
+
+    // MA Envelope
+
+    for model in &available_models {
+        let envelope = rust_ti::candle_indicators::bulk::moving_constant_envelopes(
+            &typical_price,
+            &model,
+            &difference,
+            &period,
+        );
+        println!("{:?} Envelope of Typical Price: {:?}", model, envelope);
+    }
+
+    // McGinley Dynamic Envelope
+
+    let mcginley_envelope = rust_ti::candle_indicators::bulk::mcginley_dynamic_envelopes(
+        &typical_price,
+        &difference,
+        &previous_mcginley_dynamic,
         &period,
     );
-
     println!(
-        "Bulk moving constant bands: {:?})",
-        bulk_moving_constant_bands
+        "McGinley Envelope of Typical Price: {:?}",
+        mcginley_envelope
     );
 
-    let single_moving_constant_bands = rust_ti::candle_indicators::single::moving_constant_bands(
-        &week,
-        &rust_ti::ConstantModelType::ExponentialMovingAverage,
-        &rust_ti::DeviationModel::MeanAbsoluteDeviation,
-        &2.0,
-    );
+    // MA Bands
 
-    println!(
-        "Single moving constant bands: {:?})",
-        single_moving_constant_bands
-    );
+    let deviation_multiplier = 2.0;
+    for model in &available_models {
+        for deviation in &available_deviations {
+            let bands = rust_ti::candle_indicators::bulk::moving_constant_bands(
+                &typical_price,
+                &model,
+                &deviation,
+                &deviation_multiplier,
+                &period,
+            );
+            println!(
+                "{:?} Band with {:?} of Typical Price: {:?}",
+                model, deviation, bands
+            );
+        }
+    }
+
+    // McGinley Dynamic Bands
+
+    for deviation in &available_deviations {
+        let md_bands = rust_ti::candle_indicators::bulk::mcginley_dynamic_bands(
+            &typical_price,
+            &deviation,
+            &deviation_multiplier,
+            &previous_mcginley_dynamic,
+            &period,
+        );
+        println!(
+            "McGinley Dynamic Band with {:?} of Typical Price: {:?}",
+            deviation, md_bands
+        );
+    }
+
+    // Ichimoku Cloud
+
+    let ichimoku_cloud =
+        rust_ti::candle_indicators::bulk::ichimoku_cloud(&high, &low, &close, &9, &26, &52);
+
+    println!("Ichimoku cloud: {:?}", ichimoku_cloud);
 
     // Donchian Channels
-    let bulk_donchian_channels =
+
+    let donchian_channels =
         rust_ti::candle_indicators::bulk::donchian_channels(&high, &low, &period);
 
-    println!("Donchian Channels: {:?}", bulk_donchian_channels);
-
-    let single_donchian_chanels =
-        rust_ti::candle_indicators::single::donchian_channels(&high_week, &low_week);
-
-    println!("Donchian Channels: {:?}", single_donchian_chanels);
+    println!("Donchian Channels: {:?}", donchian_channels);
 
     // Keltner Channel
-    let bulk_keltner_channel = rust_ti::candle_indicators::bulk::keltner_channel(
-        &high,
-        &low,
-        &close,
-        &rust_ti::ConstantModelType::ExponentialMovingAverage,
-        &rust_ti::ConstantModelType::ExponentialMovingAverage,
-        &2.0,
-        &period,
-    );
 
-    println!("Keltner Channel: {:?}", bulk_keltner_channel);
+    let multiplier = 2.0;
+    for model in &available_models {
+        for atr_model in &available_models {
+            let keltner_channel = rust_ti::candle_indicators::bulk::keltner_channel(
+                &high[1..],
+                &low[1..],
+                &close[..length - 1],
+                &model,
+                &atr_model,
+                &multiplier,
+                &period,
+            );
+            println!(
+                "Keltner Channel {:?} {:?}: {:?}",
+                model, atr_model, keltner_channel
+            );
+        }
+    }
 
-    // SuperTrend
-    let bulk_supertrend = rust_ti::candle_indicators::bulk::supertrend(
-        &high,
-        &low,
-        &close,
-        &rust_ti::ConstantModelType::ExponentialMovingAverage,
-        &2.0,
-        &period,
-    );
+    // Supertrend
 
-    println!("SuperTrend: {:?}", bulk_supertrend);
+    for model in &available_models {
+        let supertrend = rust_ti::candle_indicators::bulk::supertrend(
+            &high,
+            &low,
+            &close,
+            &model,
+            &multiplier,
+            &period,
+        );
+        println!("Supertrend {:?}: {:?}", model, supertrend);
+    }
 
-    // Chart Trends
+    // momentum_indicators.rs
 
-    // Break down trends
-    let break_down_trends = rust_ti::chart_trends::break_down_trends(
-        &typical_price,
-        &2.0,
-        &2.0,
-        &rust_ti::DeviationModel::MeanAbsoluteDeviation,
-    );
-
-    println!("Broken down trends: {:?}", break_down_trends);
-
-    // Momentum indicators
-    //
     // RSI
-    let bulk_rsi = rust_ti::momentum_indicators::bulk::relative_strength_index(
+
+    for model in &available_models {
+        let rsi = rust_ti::momentum_indicators::bulk::relative_strength_index(
+            &typical_price,
+            &model,
+            &period,
+        );
+        println!("{:?} RSI: {:?}", model, rsi);
+    }
+
+    // McGinley Dynamic RSI
+    let md_rsi = rust_ti::momentum_indicators::bulk::mcginley_dynamic_rsi(
         &typical_price,
-        &rust_ti::ConstantModelType::ExponentialMovingAverage,
+        &previous_mcginley_dynamic,
+        &previous_mcginley_dynamic,
         &period,
     );
+    println!("McGinlet Dynamic RSI: {:?}", md_rsi);
 
-    println!("Bulk RSI: {:?}", bulk_rsi);
+    // Stochastic Oscillator
 
-    let single_rsi = rust_ti::momentum_indicators::single::relative_strength_index(
-        &week,
-        &rust_ti::ConstantModelType::ExponentialMovingAverage,
-    );
+    let stochastic_oscillator =
+        rust_ti::momentum_indicators::bulk::stochastic_oscillator(&typical_price, &period);
+    println!("Stochastic Oscillator: {:?}", stochastic_oscillator);
 
-    println!("Single RSI: {:?}", single_rsi);
+    // Slow stochastic and slowest stochastic
+    // Because different MA models may want to be used on the SO at different times
+    // there is a nested loop to apply all models of slow SO to all models for slowest
 
-    // Percentage-Price Oscillator
-    let short_period: usize = 3;
-    let bulk_ppo = rust_ti::momentum_indicators::bulk::percentage_price_oscillator(
-        &typical_price,
-        &short_period,
+    for model in &available_models {
+        let slow_so = rust_ti::momentum_indicators::bulk::slow_stochastic(
+            &stochastic_oscillator,
+            &model,
+            &period,
+        );
+        println!("Slow Stochastic {:?}: {:?}", model, slow_so);
+
+        for slowest_model in &available_models {
+            let slowest_so = rust_ti::momentum_indicators::bulk::slowest_stochastic(
+                &slow_so,
+                &slowest_model,
+                &period,
+            );
+            println!("Slowest Stochastic {:?}: {:?}", slowest_model, slowest_so);
+        }
+    }
+
+    // McGinley Dynamic slow stochasitic
+
+    let md_slow_so = rust_ti::moving_average::bulk::mcginley_dynamic(
+        &stochastic_oscillator,
+        &previous_mcginley_dynamic,
         &period,
-        &rust_ti::ConstantModelType::ExponentialMovingAverage,
     );
+    println!("McGinley Dynamic Slow Stochasitc: {:?}", md_slow_so);
 
-    println!("Bulk PPO: {:?}", bulk_ppo);
+    // McGinley Dynamic slowest stochasitic
 
-    let single_ppo = rust_ti::momentum_indicators::single::percentage_price_oscillator(
-        &week,
-        &short_period,
-        &rust_ti::ConstantModelType::ExponentialMovingAverage,
+    let md_slowest_so = rust_ti::moving_average::bulk::mcginley_dynamic(
+        &md_slow_so,
+        &previous_mcginley_dynamic,
+        &period,
     );
+    println!("McGinley Dynamic Slowest Stochasitc: {:?}", md_slowest_so);
 
-    println!("Single PPO: {:?}", single_ppo);
+    // Money Flow Index
+    /*
+        let mfi_min = -80.0;
+        let mfi_max = -20.0;
+
+        let mfi = rust_ti::momentum_indicators::bulk::money_flow_index(
+            &typical_price,
+            &volume
+        );
+        println!("Money Flow Index");
+    */
+    // Rate of Change
+
+    let roc = rust_ti::momentum_indicators::bulk::rate_of_change(&typical_price);
+    println!("Rate of Change: {:?}", roc);
+    /*
+        // On Balance Volume
+
+        let previous_obv = 0.0;
+        let obv = rust_ti::momentum_indicators::bulk::on_balance_volume(
+            &typical_price,
+            &volume,
+            &previous_obv
+        );
+        println!("On Balance Volume");
+    */
+    // Commodity Channel Index
+
+    let constant_multiplier = 0.015;
+    for model in &available_models {
+        for deviation_model in &available_deviations {
+            let cci = rust_ti::momentum_indicators::bulk::commodity_channel_index(
+                &typical_price,
+                &model,
+                &deviation_model,
+                &constant_multiplier,
+                &period,
+            );
+            println!(
+                "Commoditiy Channel Index {:?} {:?}: {:?}",
+                model, deviation_model, cci
+            );
+        }
+    }
+
+    // McGinley Dynamic CCI
+
+    for deviation_model in &available_deviations {
+        let md_cci = rust_ti::momentum_indicators::bulk::mcginley_dynamic_commodity_channel_index(
+            &typical_price,
+            &previous_mcginley_dynamic,
+            &deviation_model,
+            &constant_multiplier,
+            &period,
+        );
+        println!(
+            "McGinley Dynamic Commoditiy Channel Index {:?}: {:?}",
+            deviation_model, md_cci
+        );
+    }
+
+    // MACD
+
+    for short_model in &available_models {
+        for long_model in &available_models {
+            let macd = rust_ti::momentum_indicators::bulk::macd_line(
+                &typical_price,
+                &period,
+                &short_model,
+                &long_period,
+                &long_model,
+            );
+            println!("MACD {:?} {:?}: {:?}", short_model, long_model, macd);
+
+            for signal_model in &available_models {
+                let signal =
+                    rust_ti::momentum_indicators::bulk::signal_line(&macd, &signal_model, &period);
+                println!("Signal line {:?}: {:?}", signal_model, signal);
+            }
+        }
+    }
+
+    // McGinley Dynamic MACD
+
+    let md_macd = rust_ti::momentum_indicators::bulk::mcginley_dynamic_macd_line(
+        &typical_price,
+        &period,
+        &previous_mcginley_dynamic,
+        &long_period,
+        &previous_mcginley_dynamic,
+    );
+    let trimmed_md_macd = md_macd.iter().map(|x| x.0).collect::<Vec<f64>>();
+    let md_signal = rust_ti::moving_average::bulk::mcginley_dynamic(
+        &trimmed_md_macd,
+        &previous_mcginley_dynamic,
+        &period,
+    );
+    println!("McGinley Dynamic MACD: {:?}", md_macd);
+    println!("McGinley Dynamic Signal: {:?}", md_signal);
+
+    // Chaikin Oscillator
+    /*
+        let previous_ad = 0.0;
+        for short_model in &available_models {
+            for long_model in &available_models {
+                let co = rust_ti::momentum_indicators::bulk::chaikin_oscillator(
+                    &high,
+                    &low,
+                    &close,
+                    &volume,
+                    &period,
+                    &long_period,
+                    &previous_ad,
+                    &short_model,
+                    &long_model
+                );
+                let trimmed_co = co.iter().map(|x| x.0).collect<Vec<f64>>();
+                println!("Chaikin Oscillator {} {}", short_model, long_model);
+            };
+        };
+
+        // McGinley Dynamic Chaikin Oscillator
+
+        let md_co = rust_ti::momentum_indicators::bulk::mcginley_dynamic_chaikin_oscillator(
+            &high,
+            &low,
+            &close,
+            &volume,
+            &period,
+            &long_period,
+            &previous_ad,
+            &previous_mcginley_dynamic,
+            &previous_mcginley_dynamic
+        );
+        println!("McGinley Dynamic Chaikin Oscillator");
+    */
+
+    // Percentage Price Oscillator
+
+    for model in &available_models {
+        let ppo = rust_ti::momentum_indicators::bulk::percentage_price_oscillator(
+            &typical_price,
+            &period,
+            &long_period,
+            &model,
+        );
+        println!("Percentage Price Oscillator {:?}: {:?}", model, ppo);
+        for moving_average in &available_moving_averages {
+            let signal =
+                rust_ti::moving_average::bulk::moving_average(&ppo, &moving_average, &period);
+            println!("{:?} Signal Line: {:?}", moving_average, signal);
+        }
+    }
 
     // Chande Momentum Oscillator
-    let bulk_cmo =
+    let cmo =
         rust_ti::momentum_indicators::bulk::chande_momentum_oscillator(&typical_price, &period);
+    println!("Chande Momentum Oscillator: {:?}", cmo);
 
-    println!("Bulk CMO: {:?}", bulk_cmo);
+    // moving_average.rs
 
-    let single_cmo = rust_ti::momentum_indicators::single::chande_momentum_oscillator(&week);
+    // Moving Averages
 
-    println!("Single CMO: {:?}:", single_cmo);
+    for moving_average in &available_moving_averages {
+        let ma =
+            rust_ti::moving_average::bulk::moving_average(&typical_price, &moving_average, &period);
+        println!("{:?} Moving Average: {:?}", moving_average, ma);
+    }
 
-    // Moving Average
+    // McGinley Dynamic
 
-    // Moving Average
-    let bulk_ema = rust_ti::moving_average::bulk::moving_average(
-        &typical_price,
-        &rust_ti::MovingAverageType::Exponential,
-        &period,
-    );
+    let mcginley_dynamic =
+        rust_ti::moving_average::bulk::mcginley_dynamic(&typical_price, &0.0, &period);
+    println!("McGinley Dynamic vs Typical Price:  {:?}", mcginley_dynamic);
 
-    println!("Bulk EMA: {:?}", bulk_ema);
-
-    let single_ema = rust_ti::moving_average::single::moving_average(
-        &week,
-        &rust_ti::MovingAverageType::Exponential,
-    );
-
-    println!("Single EMA: {:?}", single_ema);
-
-    // Other indicators
-
-    // Return on investment
-    let bulk_roi = rust_ti::other_indicators::bulk::return_on_investment(&typical_price, &1000.0);
-
-    println!("Bulk RoI: {:?}", bulk_roi);
-
-    let single_roi = rust_ti::other_indicators::single::return_on_investment(
-        &typical_price.last().unwrap(),
-        &next_typical_price,
-        &bulk_roi.last().unwrap().0,
-    );
-
-    println!("Single RoI: {:?}", single_roi);
-
-    // Internal Bar Strength
-    let bulk_ibs = rust_ti::other_indicators::bulk::internal_bar_strength(&high, &low, &close);
-
-    println!("Bulk IBS: {:?}", bulk_ibs);
-
-    let single_ibs = rust_ti::other_indicators::single::internal_bar_strength(
-        &next_high,
-        &next_low,
-        &next_close,
-    );
-
-    println!("Single IBS: {:?}", single_ibs);
+    // other_indicators.rs
 
     // True Range
-    // TODO: need to shift close
-    let bulk_tr = rust_ti::other_indicators::bulk::true_range(&close, &high, &low);
 
-    println!("Bulk TR: {:?}", bulk_tr);
-
-    let single_tr =
-        rust_ti::other_indicators::single::true_range(&next_close, &next_high, &next_low);
-
-    println!("Single TR: {}", single_tr);
+    let true_range = rust_ti::other_indicators::bulk::true_range(&close, &high, &low);
+    println!("True Range: {:?}", true_range);
 
     // Average True Range
-    let bulk_atr = rust_ti::other_indicators::bulk::average_true_range(
-        &close,
-        &high,
-        &low,
-        &rust_ti::ConstantModelType::SimpleMovingAverage,
-        &period,
-    );
 
-    println!("Bulk ATR: {:?}", bulk_atr);
-    
-    let length = open.len();
-    // Positivity indicator
-    let positivity_indicator = rust_ti::other_indicators::bulk::positivity_indicator(
-        &open[1..length],
-        &close[..length-1],
-        &period,
-        &rust_ti::ConstantModelType::ExponentialMovingAverage,
-    );
+    for model in &available_models {
+        let average_true_range = rust_ti::other_indicators::bulk::average_true_range(
+            &close, &high, &low, &model, &period,
+        );
+        println!("{:?} Average True Range: {:?}", model, average_true_range);
+    }
 
-    println!("Positivity Indicator: {:?}", positivity_indicator);
+    // Internal Bar Strength
 
+    let ibs = rust_ti::other_indicators::bulk::internal_bar_strength(&high, &low, &close);
+    println!("Internal Bar Strength: {:?}", ibs);
 
-    // TODO: Need to create sub vecs for close, high, low with next value
-    //let single_tr = rust_ti::other_indicators::single::average_true_range(
+    // Positivity Index
 
-    // Strength Indicators
+    for model in &available_models {
+        let pi = rust_ti::other_indicators::bulk::positivity_indicator(
+            &open[1..],
+            &close[..length - 1],
+            &period,
+            &model,
+        );
+        println!("{:?} Positivity Index: {:?}", model, pi);
+    }
+
+    // strength_indicators.rs
+
+    // Accumulation Distribution
+    /*
+        let ad = rust_ti::strength_indicators::bulk::accumulation_distribution(
+            &high,
+            &low,
+            &close,
+            &volume,
+            &0.0
+        );
+
+        // Positive Volume Index
+
+        let pvi = rust_ti::strength_indicators::bulk::positive_volume_index(
+            &close,
+            &volume,
+            &0.0
+        );
+
+        // Negative Volume Index
+
+        let nvi = rust_ti::strength_indicators::bulk::negative_volume_index(
+            &close,
+            &volume,
+            &0.0
+        );
+    */
 
     // Relative Vigor Index
-    let bulk_rvi = rust_ti::strength_indicators::bulk::relative_vigor_index(
-        &open,
+
+    for model in &available_models {
+        let rvi = rust_ti::strength_indicators::bulk::relative_vigor_index(
+            &open, &high, &low, &close, &model, &period,
+        );
+        println!("{:?} Relative Vigor Index: {:?}", model, rvi);
+        for signal_model in &available_moving_averages {
+            let signal =
+                rust_ti::moving_average::bulk::moving_average(&rvi, &signal_model, &period);
+            println!("{:?} Signal Line: {:?}", signal_model, signal);
+        }
+    }
+
+    // trend_indicators.rs
+
+    // Aroon Indicator
+
+    let aroon_indicator = rust_ti::trend_indicators::bulk::aroon_indicator(&high, &low, &period);
+    println!("Aroon Indicator: {:?}", aroon_indicator);
+
+    // Parabolic Time Price System
+
+    let ptps = rust_ti::trend_indicators::bulk::parabolic_time_price_system(
         &high,
         &low,
-        &close,
-        &rust_ti::ConstantModelType::SimpleMovingAverage,
-        &period,
+        &0.02,
+        &0.2,
+        &0.02,
+        &rust_ti::Position::Long,
+        &0.0,
     );
-
-    println!("Bulk RVI: {:?}", bulk_rvi);
-
-    // Trend Indicators
-    let bulk_aroon_indicator =
-        rust_ti::trend_indicators::bulk::aroon_indicator(&high, &low, &period);
-
-    println!("Bulk Aroon Indicator: {:?}", bulk_aroon_indicator);
-
-    let single_aroon_indicator =
-        rust_ti::trend_indicators::single::aroon_indicator(&high_week, &low_week);
-
-    println!("Sinlge Aroon Indicator: {:?}", single_aroon_indicator);
+    println!("Parabolic Time Price System: {:?}", ptps);
 
     // Directional Movement System
 
-    let directional_movement_system = rust_ti::trend_indicators::bulk::directional_movement_system(
-        &high,
-        &low,
-        &close,
-        &period,
-        &rust_ti::ConstantModelType::SimpleMovingAverage,
-    );
+    for model in &available_models {
+        let dms = rust_ti::trend_indicators::bulk::directional_movement_system(
+            &high, &low, &close, &period, &model,
+        );
+        println!("{:?} Directional Movement System: {:?}", model, dms);
+    }
 
-    println!(
-        "Directional Movement System: {:?}",
-        directional_movement_system
-    );
+    // Volume Price Trend
+    /*
+        let vpt = rust_ti::trend_indicators::bulk::volume_price_trend(
+            &typical_price,
+            &volume,
+            &0.0
+        );
+        println!("Volume Price Trend: {:?}", vpt);
+    */
 
     // True Strength Index
-    let bulk_tsi = rust_ti::trend_indicators::bulk::true_strength_index(
-        &typical_price,
-        &rust_ti::ConstantModelType::ExponentialMovingAverage,
-        &period,
-        &rust_ti::ConstantModelType::ExponentialMovingAverage,
-        &short_period,
-    );
 
-    println!("Bulk TSI: {:?}", bulk_tsi);
+    for first_model in &available_models {
+        for second_model in &available_models {
+            let tsi = rust_ti::trend_indicators::bulk::true_strength_index(
+                &typical_price,
+                &first_model,
+                &period,
+                &second_model,
+                &period,
+            );
+            println!(
+                "{:?} {:?} True Strength Index: {:?}",
+                first_model, second_model, tsi
+            );
+            for signal_model in &available_moving_averages {
+                let signal =
+                    rust_ti::moving_average::bulk::moving_average(&tsi, &signal_model, &period);
+                println!("{:?} Signal Line: {:?}", signal_model, signal);
+            }
+        }
+    }
 
-    // Volatility Indicators
+    // volatility_indicators.rs
+
     // Ulcer Index
-    let bulk_ulcer_index =
-        rust_ti::volatility_indicators::bulk::ulcer_index(&typical_price, &period);
 
-    println!("Bulk Ulcer Index: {:?}", bulk_ulcer_index);
+    let ulcer_index = rust_ti::volatility_indicators::bulk::ulcer_index(&typical_price, &period);
+    println!("Ulcer Index: {:?}", ulcer_index);
 
-    let single_ulcer_index = rust_ti::volatility_indicators::single::ulcer_index(&week);
+    // Volatility System
 
-    println!("Single Ulcer Index: {:?}", single_ulcer_index);
+    let constant_multiplier = 3.0;
+    for model in &available_models {
+        let vs = rust_ti::volatility_indicators::bulk::volatility_system(
+            &high,
+            &low,
+            &close,
+            &period,
+            &constant_multiplier,
+            &model,
+        );
+        println!("{:?} Volatility System: {:?}", model, vs);
+    }
 
-    // Volatility system
-    let volatility_system = rust_ti::volatility_indicators::bulk::volatility_system(
-        &high,
-        &low,
-        &close,
-        &period,
-        &3.0,
-        &rust_ti::ConstantModelType::SimpleMovingAverage,
-    );
-    println!("Volatility system: {:?}", volatility_system);
+    let elapsed = now.elapsed();
+    println!("Elapsed: {:.2?}", elapsed);
 }
