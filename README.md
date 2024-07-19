@@ -276,8 +276,10 @@ Volatility indicators show how volatile an asset is
 
 ## Release notes
 
-What's new in v1.2.0?
+What's new in v1.2.1?
 
-* Added some final indicators
+* Removed McGinley Dynamic RSI as the numbers would get too big when smoothing
+* Fixed bug with Commodity Channel Index that would return `Inf` and `-Inf` values
+* Fixed bug with Williams %r
 
-[Full changelog](https://github.com/0100101001010000/RustTI/releases/tag/v1.2.0)
+[Full changelog](https://github.com/0100101001010000/RustTI/releases/tag/v1.2.1)

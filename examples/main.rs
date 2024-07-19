@@ -368,15 +368,6 @@ fn main() {
         println!("{:?} RSI: {:?}", model, rsi);
     }
 
-    // McGinley Dynamic RSI
-    let md_rsi = rust_ti::momentum_indicators::bulk::mcginley_dynamic_rsi(
-        &typical_price,
-        &previous_mcginley_dynamic,
-        &previous_mcginley_dynamic,
-        &period,
-    );
-    println!("McGinlet Dynamic RSI: {:?}", md_rsi);
-
     // Stochastic Oscillator
 
     let stochastic_oscillator =
@@ -404,24 +395,6 @@ fn main() {
             println!("Slowest Stochastic {:?}: {:?}", slowest_model, slowest_so);
         }
     }
-
-    // McGinley Dynamic slow stochasitic
-
-    let md_slow_so = rust_ti::moving_average::bulk::mcginley_dynamic(
-        &stochastic_oscillator,
-        &previous_mcginley_dynamic,
-        &period,
-    );
-    println!("McGinley Dynamic Slow Stochasitc: {:?}", md_slow_so);
-
-    // McGinley Dynamic slowest stochasitic
-
-    let md_slowest_so = rust_ti::moving_average::bulk::mcginley_dynamic(
-        &md_slow_so,
-        &previous_mcginley_dynamic,
-        &period,
-    );
-    println!("McGinley Dynamic Slowest Stochasitc: {:?}", md_slowest_so);
 
     // Money Flow Index
     /*
@@ -514,14 +487,7 @@ fn main() {
         &long_period,
         &previous_mcginley_dynamic,
     );
-    let trimmed_md_macd = md_macd.iter().map(|x| x.0).collect::<Vec<f64>>();
-    let md_signal = rust_ti::moving_average::bulk::mcginley_dynamic(
-        &trimmed_md_macd,
-        &previous_mcginley_dynamic,
-        &period,
-    );
     println!("McGinley Dynamic MACD: {:?}", md_macd);
-    println!("McGinley Dynamic Signal: {:?}", md_signal);
 
     // Chaikin Oscillator
     /*
