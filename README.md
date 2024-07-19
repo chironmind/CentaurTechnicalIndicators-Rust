@@ -215,7 +215,6 @@ Momentum indicators calculate the momentum of price movement
 * McGinley Dynamic Chaikin Oscillator 
 * McGinley Dynamic Commodity Channel Index 
 * McGinley Dynamic MACD Line 
-* McGinley Dynamic RSI  
 * Money Flow Index
 * On Balance Volume 
 * Rate of Change 
