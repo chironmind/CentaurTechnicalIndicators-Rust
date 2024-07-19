@@ -437,7 +437,7 @@ pub mod single {
     /// ```rust
     /// let current_price = 120.0;
     /// let previous_price = 100.0;
-    /// let current_volume = 1500;
+    /// let current_volume = 1500.0;
     /// let on_balance_volume =
     /// rust_ti::momentum_indicators::single::on_balance_volume(&current_price, &previous_price,
     /// &current_volume, &0);
@@ -445,7 +445,7 @@ pub mod single {
     ///
     /// let current_price = 100.0;
     /// let previous_price = 120.0;
-    /// let current_volume = 1000;
+    /// let current_volume = 1000.0;
     /// let on_balance_volume =
     /// rust_ti::momentum_indicators::single::on_balance_volume(&current_price, &previous_price,
     /// &current_volume, &1500);
@@ -454,7 +454,7 @@ pub mod single {
     pub fn on_balance_volume(
         current_price: &f64,
         previous_price: &f64,
-        current_volume: &i64,
+        current_volume: &f64,
         previous_on_balance_volume: &i64,
     ) -> i64 {
         let mut volume = 0;
