@@ -130,7 +130,6 @@ pub mod single {
         if previous_mcginley_dynamic == &0.0_f64 {
             return *latest_price;
         };
-
         let base = latest_price / previous_mcginley_dynamic;
         return previous_mcginley_dynamic
             + ((latest_price - previous_mcginley_dynamic) / (*period as f64 * base.powi(4)));

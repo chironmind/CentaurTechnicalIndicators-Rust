@@ -17,13 +17,16 @@ would be very helpful.
 
 ### General
 
-    * Add all the docs that GH wants
     * remove test_ prefix from all tests
     * in parabolic t/p system remove single functions, and have the bulk function find the trend and determine
       whether to go long or short like it does in the volatility system ... or return s/l in vol system
+    * Add the ability for indicators to use something other than normal distributions (for variance, std dev...)
+    * In `break_down_trends` have a variable to indicate the number of accepted outliers before determining a new trend. So if the variable is set to 1, it will allow for 1 variable outside of the trend standard deviation.
 
 ### New indicators
 
+    * Indicator that shows the distribution of prices over a period. Essentially does a count for each unique price, and orders the prices in ascending order
+    * Create a version of mode/median absolute deviation that doesn't take the mode/median from the absolute deviation of the mean, but rather the absolute deviation from the mode/mean
     * McGinley dynamic versions of anything using MA (Donchain channels, Keltner channels, Supertrend, 
 percentage price oscillator, relative vigor index)
 

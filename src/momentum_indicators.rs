@@ -62,7 +62,9 @@
 
 /// `single` module holds functions that return a singular values
 pub mod single {
-    use crate::basic_indicators::single::{absolute_deviation, median, mode, standard_deviation};
+    use crate::basic_indicators::single::{
+        absolute_deviation, max, median, min, mode, standard_deviation,
+    };
     use crate::moving_average::single::{mcginley_dynamic, moving_average};
     use crate::strength_indicators::single::accumulation_distribution;
     use crate::volatility_indicators::single::ulcer_index;
@@ -140,86 +142,6 @@ pub mod single {
             _ => panic!("Unsupported ConstantModelType"),
         };
         return rsi(&previous_average_gains, &previous_average_loss);
-    }
-
-    /// The `mcginley_dynamic_rsi` is a variation of the [`relative_strength_index`] that uses the
-    /// McGinley dynamic.
-    ///
-    /// Returns the McGinley dynamic RSI, previous gain McGinley dynamic, and previous loss
-    /// McGinley dynamic.
-    ///
-    /// # Arguments
-    ///  
-    /// * `prices` - Slice of prices
-    /// * `previous_gain_mcginley_dynamic` - The previous McGinley dynamic used for the gains
-    /// calculation. Use 0.0 if it hasn't yet been calculated.
-    /// * `previous_loss_mcginley_dynamic` - The previous McGinley dynamic used for the loss
-    /// caclulation. Use 0.0 if it hasn't yet been calculated.
-    ///
-    /// # Panics
-    ///
-    /// `mcginley_dynamic_rsi` will panic if `prices` is empty
-    ///
-    /// # Examples
-    ///
-    /// ```rust
-    /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
-    /// let previous_gain_dynamic = 0.0;
-    /// let previous_loss_dynamic = 0.0;
-    /// let mcginley_rsi = rust_ti::momentum_indicators::single::mcginley_dynamic_rsi(&prices,
-    /// &previous_gain_dynamic, &previous_loss_dynamic);
-    /// assert_eq!((33.33333333333333, 1.0, 2.0), mcginley_rsi);
-    ///
-    /// let prices = vec![102.0, 103.0, 101.0, 99.0, 97.0];
-    /// let previous_gain_dynamic = mcginley_rsi.1;
-    /// let previous_loss_dynamic = mcginley_rsi.2;
-    /// let mcginley_rsi = rust_ti::momentum_indicators::single::mcginley_dynamic_rsi(&prices,
-    /// &previous_gain_dynamic, &previous_loss_dynamic);
-    /// assert_eq!((33.33333333333333, 1.0, 2.0), mcginley_rsi);
-    /// ```
-    pub fn mcginley_dynamic_rsi(
-        prices: &[f64],
-        previous_gain_mcginley_dynamic: &f64,
-        previous_loss_mcginley_dynamic: &f64,
-    ) -> (f64, f64, f64) {
-        let (previous_gains, previous_loss) = previous_gains_loss(prices);
-        if previous_gains.is_empty() {
-            return (
-                0.0,
-                *previous_gain_mcginley_dynamic,
-                mcginley_dynamic(
-                    &previous_loss.last().unwrap(),
-                    previous_loss_mcginley_dynamic,
-                    &previous_loss.len(),
-                ),
-            );
-        };
-        if previous_loss.is_empty() {
-            return (
-                100.0,
-                mcginley_dynamic(
-                    &previous_gains.last().unwrap(),
-                    previous_gain_mcginley_dynamic,
-                    &previous_gains.len(),
-                ),
-                *previous_loss_mcginley_dynamic,
-            );
-        }
-        let previous_gain_dynamic = mcginley_dynamic(
-            &previous_gains.last().unwrap(),
-            previous_gain_mcginley_dynamic,
-            &previous_gains.len(),
-        );
-        let previous_loss_dynamic = mcginley_dynamic(
-            &previous_loss.last().unwrap(),
-            previous_loss_mcginley_dynamic,
-            &previous_loss.len(),
-        );
-        return (
-            rsi(&previous_gain_dynamic, &previous_loss_dynamic),
-            previous_gain_dynamic,
-            previous_loss_dynamic,
-        );
     }
 
     /// The `stochastic_oscillator` is a momentum indicator calculated using support and
@@ -386,22 +308,24 @@ pub mod single {
     ///
     /// # Arguments
     ///
-    /// * `high` - High price for the observed period
-    /// * `low` - Low price for the observed period
+    /// * `high` - Slice of highs
+    /// * `low` - Slice of lows
     /// * `close` - Close price for the observed period
     ///
     /// # Examples
     ///
     /// ```rust
-    /// let high = 200.0;
-    /// let low = 175.0;
+    /// let high = [200.0, 215.0, 206.0];
+    /// let low = [175.0, 189.0, 182.0];
     /// let close = 192.0;
     /// let williams_percent_r = rust_ti::momentum_indicators::single::williams_percent_r(&high, &low,
     /// &close);
-    /// assert_eq!(-32.0, williams_percent_r);
+    /// assert_eq!(-57.49999999999999, williams_percent_r);
     /// ```
-    pub fn williams_percent_r(high: &f64, low: &f64, close: &f64) -> f64 {
-        return -100.0_f64 * ((high - close) / (high - low));
+    pub fn williams_percent_r(high: &[f64], low: &[f64], close: &f64) -> f64 {
+        let max_high = max(high);
+        let min_low = min(low);
+        return -100.0_f64 * ((max_high - close) / (max_high - min_low));
     }
 
     /// The `money_flow_index` is a momentum indicator that shows the volume of money (a.k.a money
@@ -626,6 +550,9 @@ pub mod single {
             DeviationModel::UlcerIndex => ulcer_index(&prices),
             _ => panic!("Unsupported DeviationModel"),
         };
+        if deviation == 0.0 {
+            return 0.0;
+        };
         return (prices.last().unwrap() - moving_constant) / (constant_multiplier * deviation);
     }
 
@@ -690,6 +617,9 @@ pub mod single {
             }
             DeviationModel::UlcerIndex => ulcer_index(&prices),
             _ => panic!("Unsupported DeviationModel"),
+        };
+        if deviation == 0.0 {
+            return (0.0, mcginley_dynamic);
         };
         return (
             (last_price - mcginley_dynamic) / (constant_multiplier * deviation),
@@ -1427,60 +1357,6 @@ pub mod bulk {
         }
         return rsis;
     }
-    /// The `mcginley_dynamic_rsi` is a variation of the `relative_strength_index` that accepts
-    /// previous dynamics for the gains and loss calculations, but also returns the new ones so
-    /// that they can be used going forward
-    ///
-    /// # Arguments
-    ///  
-    /// * `prices` - Slice of prices
-    /// * `previous_gain_mcginley_dynamic` - The previous McGinley dynamic used for the gains
-    /// calculation. Use 0.0 if it hasn't yet been calculated.
-    /// * `previous_loss_mcginley_dynamic` - The previous McGinley dynamic used for the loss
-    /// caclulation. Use 0.0 if it hasn't yet been calculated.
-    /// * `period` - Period over which to calculate the McGinley dynamic RSI
-    ///
-    /// # Examples
-    ///
-    /// ```rust
-    /// let prices = vec![100.0, 102.0, 103.0, 101.0, 100.0, 97.0, 102.0, 103.0];
-    /// let period: usize = 5;
-    /// let previous_gain_dynamic = 0.0;
-    /// let previous_loss_dynamic = 0.0;
-    /// let mcginley_rsi = rust_ti::momentum_indicators::bulk::mcginley_dynamic_rsi(&prices,
-    /// &previous_gain_dynamic, &previous_loss_dynamic, &period);
-    /// assert_eq!(vec![(50.0, 1.0, 1.0), (49.795081967213115, 1.0, 1.008230452674897),
-    /// (49.745434479572864, 1.0064, 1.0167002312649644), (49.344186087882605, 1.003117290207188, 1.0297813544692562)], mcginley_rsi);
-    /// ```
-    pub fn mcginley_dynamic_rsi(
-        prices: &[f64],
-        previous_gain_mcginley_dynamic: &f64,
-        previous_loss_mcginley_dynamic: &f64,
-        period: &usize,
-    ) -> Vec<(f64, f64, f64)> {
-        let length = prices.len();
-        if &length < period {
-            panic!(
-                "Period ({}) is longer than length ({}) of prices",
-                period, length
-            );
-        };
-        let mut rsis = vec![single::mcginley_dynamic_rsi(
-            &prices[..*period],
-            previous_gain_mcginley_dynamic,
-            previous_loss_mcginley_dynamic,
-        )];
-        let loop_max = length - period + 1;
-        for i in 1..loop_max {
-            let previous_rsi = rsis[i - 1];
-            rsis.push(single::mcginley_dynamic_rsi(
-                &prices[i..i + period],
-                &previous_rsi.1,
-                &previous_rsi.2,
-            ));
-        }
-        return rsis;
-    }
 
     /// The `stochastic_oscillator` is a momentum indicator that is calculated by using support and
     /// resistance levels
@@ -1642,9 +1518,10 @@ pub mod bulk {
     ///
     /// # Arguments
     ///
-    /// * `high` - High price for the observed period
-    /// * `low` - Low price for the observed period
-    /// * `close` - Close price for the observed period
+    /// * `high` - Slice of highs
+    /// * `low` - Slice of lows
+    /// * `close` - Slice of closing prices
+    /// * `period` - Period over which to calculate the Williams %R
     ///
     /// # Panics
     ///
@@ -1656,11 +1533,12 @@ pub mod bulk {
     /// let high = vec![200.0, 210.0, 205.0, 190.0];
     /// let low = vec![175.0, 192.0, 200.0, 174.0];
     /// let close = vec![192.0, 200.0, 201.0, 187.0];
+    /// let period: usize = 3;
     /// let williams_percent_r = rust_ti::momentum_indicators::bulk::williams_percent_r(&high, &low,
-    /// &close);
-    /// assert_eq!(vec![-32.0, -55.55555555555556, -80.0, -18.75], williams_percent_r);
+    /// &close, &period);
+    /// assert_eq!(vec![-25.71428571428571, -63.888888888888886], williams_percent_r);
     /// ```
-    pub fn williams_percent_r(high: &[f64], low: &[f64], close: &[f64]) -> Vec<f64> {
+    pub fn williams_percent_r(high: &[f64], low: &[f64], close: &[f64], period: &usize) -> Vec<f64> {
         let length = close.len();
         if length != high.len() || length != low.len() {
             panic!(
@@ -1670,10 +1548,19 @@ pub mod bulk {
                 close.len()
             );
         };
+        if period > &length {
+            panic!("Length of price ({}) must be greater or equal to period ({})", length, period)
+        };
 
         let mut wprs = Vec::new();
-        for i in 0..length {
-            wprs.push(single::williams_percent_r(&high[i], &low[i], &close[i]));
+        let loop_max = length - period + 1;
+        println!("{}", loop_max);
+        for i in 0..loop_max {
+            wprs.push(single::williams_percent_r(
+                &high[i..i + period],
+                &low[i..i + period],
+                &close[i + period -1],
+            ));
         }
         return wprs;
     }
@@ -2798,77 +2685,6 @@ mod tests {
     }
 
     #[test]
-    fn test_mcginley_dynamic_rsi_no_previous() {
-        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
-        assert_eq!(
-            (26.923076923079236, 0.07000000000000739, 0.18999999999999773),
-            single::mcginley_dynamic_rsi(&prices, &0.0, &0.0)
-        );
-    }
-
-    #[test]
-    fn test_mcginley_dynamic_rsi_previous() {
-        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
-        assert_eq!(
-            (105.44168978787299, -3.6815625000054153, 0.18999999999999773),
-            single::mcginley_dynamic_rsi(&prices, &0.07000000000000739, &0.18999999999999773)
-        );
-    }
-
-    #[test]
-    #[should_panic]
-    fn test_mcginley_dynamic_rsi_panic() {
-        let prices = Vec::new();
-        single::mcginley_dynamic_rsi(&prices, &0.0, &0.0);
-    }
-
-    #[test]
-    fn test_bulk_mcginley_dynamic_rsi_no_previous() {
-        let prices = vec![
-            100.2, 100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28,
-        ];
-        let period: usize = 5;
-        assert_eq!(
-            vec![
-                (26.923076923079236, 0.07000000000000739, 0.18999999999999773),
-                (105.44168978787299, -3.6815625000054153, 0.18999999999999773),
-                (99.99999201255198, 2378732.0357780023, 0.18999999999999773),
-                (100.0, -2.6009191432509403e35, -37.989980468780004)
-            ],
-            bulk::mcginley_dynamic_rsi(&prices, &0.0, &0.0, &period)
-        );
-    }
-
-    #[test]
-    fn test_bulk_mcginley_dynamic_rsi_previous() {
-        let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
-        let period: usize = 5;
-        assert_eq!(
-            vec![
-                (105.44168978787299, -3.6815625000054153, 0.18999999999999773),
-                (99.99999201255198, 2378732.0357780023, 0.18999999999999773),
-                (100.0, -2.6009191432509403e35, -37.989980468780004)
-            ],
-            bulk::mcginley_dynamic_rsi(
-                &prices,
-                &0.07000000000000739,
-                &0.18999999999999773,
-                &period
-            )
-        );
-    }
-
-    #[test]
-    #[should_panic]
-    fn test_bulk_mcginley_dynamic_rsi_panic() {
-        let prices = vec![
-            100.2, 100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28,
-        ];
-        let period: usize = 50;
-        bulk::mcginley_dynamic_rsi(&prices, &0.0, &0.0, &period);
-    }
-
-    #[test]
     fn test_single_stochastic_oscillator_min() {
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
         assert_eq!(0.0, single::stochastic_oscillator(&prices));
@@ -3252,23 +3068,23 @@ mod tests {
 
     #[test]
     fn test_single_williams_percent_r() {
-        let high = 100.93;
-        let low = 100.37;
-        let close = 100.49;
+        let high = [100.93, 101.58, 101.25];
+        let low = [100.37, 100.57, 100.94];
+        let close = 101.13;
         assert_eq!(
-            -78.57142857143037,
+            -37.190082644628525,
             single::williams_percent_r(&high, &low, &close)
         );
     }
 
     #[test]
     fn test_bulk_williams_percent_r() {
-        let high = vec![100.93, 101.58, 101.25];
-        let low = vec![100.37, 100.57, 100.94];
-        let close = vec![100.49, 101.06, 101.13];
+        let high = vec![100.93, 101.58, 101.25, 101.72];
+        let low = vec![100.37, 100.57, 100.94, 100.89];
+        let close = vec![100.49, 101.06, 101.13, 100.95];
         assert_eq!(
-            vec![-78.57142857143037, -51.485148514850835, -38.70967741935602],
-            bulk::williams_percent_r(&high, &low, &close)
+            vec![-37.190082644628525, -66.95652173912976],
+            bulk::williams_percent_r(&high, &low, &close, &3_usize)
         );
     }
 
@@ -3278,7 +3094,7 @@ mod tests {
         let high = vec![101.58, 101.25];
         let low = vec![100.37, 100.57, 100.94];
         let close = vec![100.49, 101.06, 101.13];
-        bulk::williams_percent_r(&high, &low, &close);
+        bulk::williams_percent_r(&high, &low, &close, &3_usize);
     }
 
     #[test]
@@ -3287,7 +3103,25 @@ mod tests {
         let high = vec![100.93, 101.58, 101.25];
         let low = vec![100.37, 100.57, 100.94, 100.59];
         let close = vec![100.49, 101.06, 101.13];
-        bulk::williams_percent_r(&high, &low, &close);
+        bulk::williams_percent_r(&high, &low, &close, &3_usize);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_bulk_williams_percent_r_close_panic() {
+        let high = vec![100.93, 101.58, 101.25];
+        let low = vec![100.57, 100.94, 100.59];
+        let close = vec![101.06, 101.13];
+        bulk::williams_percent_r(&high, &low, &close, &3_usize);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_bulk_williams_percent_r_period_panic() {
+        let high = vec![101.58, 101.25, 100.93];
+        let low = vec![100.37, 100.57, 100.94];
+        let close = vec![100.49, 101.06, 101.13];
+        bulk::williams_percent_r(&high, &low, &close, &30_usize);
     }
 
     #[test]

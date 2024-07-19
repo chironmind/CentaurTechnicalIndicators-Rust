@@ -8,6 +8,7 @@
 //! * [`true_range`](bulk::true_range)
 //! * [`average_true_range`](bulk::average_true_range)
 //! * [`internal_bar_strength`](bulk::internal_bar_strength)
+//! * [`positivity_index`](bulk::positivity_index)
 //!
 //! ## Single
 //!

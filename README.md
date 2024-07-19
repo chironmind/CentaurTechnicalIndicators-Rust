@@ -215,7 +215,6 @@ Momentum indicators calculate the momentum of price movement
 * McGinley Dynamic Chaikin Oscillator 
 * McGinley Dynamic Commodity Channel Index 
 * McGinley Dynamic MACD Line 
-* McGinley Dynamic RSI  
 * Money Flow Index
 * On Balance Volume 
 * Rate of Change 
@@ -276,8 +275,10 @@ Volatility indicators show how volatile an asset is
 
 ## Release notes
 
-What's new in v1.2.0?
+What's new in v1.2.1?
 
-* Added some final indicators
+* Removed McGinley Dynamic RSI as the numbers would get too big when smoothing
+* Fixed bug with Commodity Channel Index that would return `Inf` and `-Inf` values
+* Fixed bug with Williams %r
 
-[Full changelog](https://github.com/0100101001010000/RustTI/releases/tag/v1.2.0)
+[Full changelog](https://github.com/0100101001010000/RustTI/releases/tag/v1.2.1)
