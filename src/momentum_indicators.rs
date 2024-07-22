@@ -440,24 +440,24 @@ pub mod single {
     /// let current_volume = 1500.0;
     /// let on_balance_volume =
     /// rust_ti::momentum_indicators::single::on_balance_volume(&current_price, &previous_price,
-    /// &current_volume, &0);
-    /// assert_eq!(1500 ,on_balance_volume);
+    /// &current_volume, &0.0);
+    /// assert_eq!(1500.0 ,on_balance_volume);
     ///
     /// let current_price = 100.0;
     /// let previous_price = 120.0;
     /// let current_volume = 1000.0;
     /// let on_balance_volume =
     /// rust_ti::momentum_indicators::single::on_balance_volume(&current_price, &previous_price,
-    /// &current_volume, &1500);
-    /// assert_eq!(500, on_balance_volume);
+    /// &current_volume, &1500.0);
+    /// assert_eq!(500.0, on_balance_volume);
     /// ```
     pub fn on_balance_volume(
         current_price: &f64,
         previous_price: &f64,
         current_volume: &f64,
-        previous_on_balance_volume: &i64,
-    ) -> i64 {
-        let mut volume = 0;
+        previous_on_balance_volume: &f64,
+    ) -> f64 {
+        let mut volume = 0.0;
         if current_price > previous_price {
             volume = volume + current_volume;
         } else if current_price < previous_price {
@@ -1006,132 +1006,6 @@ pub mod single {
         return (short_period_average - long_period_average, ad[0]);
     }
 
-    /// The `mcginley_dynamic_chaikin_oscillator` measures momentum by taking the difference a short period and
-    /// long period Accumulation Distribution line, but uses the McGinley dynamic rather than a
-    /// moving constant model.
-    ///
-    /// The standard is to use the same short and long periods used in the MACD to track the
-    /// accumulation distribution of the MACD, but as for the MACD the periods are determined by
-    /// the caller.
-    ///
-    /// Returns a tuple with the Chaikin Oscillator, the first Accumulation Distribution, the
-    /// short period McGinley dynamic, and the long period McGinely dynamic.
-    ///
-    /// # Arguments
-    ///
-    /// * `highs` - Slice of price highs
-    /// * `lows` - Slice of price lows
-    /// * `close` - Slice of closing prices
-    /// * `volume` - Slice of transction volumes
-    /// * `short_period` - Short period over which to calculate the Accumulation Distribution
-    /// * `previous_accumulation_distribution` - Previous accumulation distribution value. If none
-    /// use 0.0
-    /// * `previous_short_mcginley_dynamic` - Previous McGinley dynamic for the short period. If none use 0.0
-    /// * `previous_long_mcginley_dynamic` - Previous McGinley dynamic for the long period. If none use 0.0
-    ///
-    /// # Panics
-    ///
-    /// `mcginley_dynamic_chaikin_oscillator` will panic if:
-    /// * Lengths of `highs`, `lows`, `close`, and `volume` are different
-    /// * Lengths are less than the `short_period`
-    ///
-    /// # Examples
-    ///
-    /// ```rust
-    /// let high = vec![103.0, 102.0, 105.0, 109.0, 106.0];
-    /// let low = vec![99.0, 99.0, 100.0, 103.0, 98.0];
-    /// let close = vec![102.0, 100.0, 103.0, 106.0, 100.0];
-    /// let volume = vec![1000.0, 1500.0, 1200.0, 1500.0, 2000.0];
-    /// let short_period: usize = 3;
-    ///
-    /// let chaikin_oscillator = rust_ti::momentum_indicators::single::mcginley_dynamic_chaikin_oscillator(
-    ///     &high,
-    ///     &low,
-    ///     &close,
-    ///     &volume,
-    ///     &short_period,
-    ///     &0.0,
-    ///     &0.0,
-    ///     &0.0
-    ///     );
-    /// assert_eq!((0.0, 500.0, -760.0, -760.0), chaikin_oscillator);
-    ///
-    /// let high = vec![102.0, 105.0, 109.0, 106.0, 102.0];
-    /// let low = vec![99.0, 100.0, 103.0, 98.0, 94.0];
-    /// let close = vec![100.0, 103.0, 106.0, 100.0, 97.0];
-    /// let volume = vec![1500.0, 1200.0, 1500.0, 2000.0, 3000.0];
-    ///
-    /// let chaikin_oscillator = rust_ti::momentum_indicators::single::mcginley_dynamic_chaikin_oscillator(
-    ///     &high,
-    ///     &low,
-    ///     &close,
-    ///     &volume,
-    ///     &short_period,
-    ///     &chaikin_oscillator.1,
-    ///     &chaikin_oscillator.2,
-    ///     &chaikin_oscillator.3,
-    ///     );
-    /// assert_eq!((-6.4172148518496215, 0.0, -776.0430371296242, -769.6258222777745), chaikin_oscillator);
-    /// ```
-    pub fn mcginley_dynamic_chaikin_oscillator(
-        highs: &[f64],
-        lows: &[f64],
-        close: &[f64],
-        volume: &[f64],
-        short_period: &usize,
-        previous_accumulation_distribution: &f64,
-        previous_short_mcginley_dynamic: &f64,
-        previous_long_mcginley_dynamic: &f64,
-    ) -> (f64, f64, f64, f64) {
-        let long_period = highs.len();
-        if long_period != lows.len() || long_period != close.len() || long_period != volume.len() {
-            panic!(
-                "Length of highs ({}), lows ({}), close ({}), and volume ({}) must match",
-                long_period,
-                lows.len(),
-                close.len(),
-                volume.len()
-            )
-        };
-
-        if &long_period <= short_period {
-            panic!(
-                "Long period ({}) cannot be smaller or equal to short period ({})",
-                long_period, short_period
-            )
-        };
-
-        let mut ad = vec![accumulation_distribution(
-            &highs[0],
-            &lows[0],
-            &close[0],
-            &volume[0],
-            &previous_accumulation_distribution,
-        )];
-        for i in 1..long_period {
-            ad.push(accumulation_distribution(
-                &highs[i],
-                &lows[i],
-                &close[i],
-                &volume[i],
-                &ad[i - 1],
-            ));
-        }
-        let latest_ad = ad.last().unwrap();
-        let short_period_mcginley =
-            mcginley_dynamic(latest_ad, &previous_short_mcginley_dynamic, &short_period);
-
-        let long_period_mcginley =
-            mcginley_dynamic(latest_ad, &previous_long_mcginley_dynamic, &long_period);
-
-        return (
-            short_period_mcginley - long_period_mcginley,
-            ad[0],
-            short_period_mcginley,
-            long_period_mcginley,
-        );
-    }
-
     /// The `percentage_price_oscillator` shows the relationship between two moving averages.
     ///
     /// Standard periods used are 26 and 12, and a exponential moving average.
@@ -1538,7 +1412,12 @@ pub mod bulk {
     /// &close, &period);
     /// assert_eq!(vec![-25.71428571428571, -63.888888888888886], williams_percent_r);
     /// ```
-    pub fn williams_percent_r(high: &[f64], low: &[f64], close: &[f64], period: &usize) -> Vec<f64> {
+    pub fn williams_percent_r(
+        high: &[f64],
+        low: &[f64],
+        close: &[f64],
+        period: &usize,
+    ) -> Vec<f64> {
         let length = close.len();
         if length != high.len() || length != low.len() {
             panic!(
@@ -1549,17 +1428,19 @@ pub mod bulk {
             );
         };
         if period > &length {
-            panic!("Length of price ({}) must be greater or equal to period ({})", length, period)
+            panic!(
+                "Length of price ({}) must be greater or equal to period ({})",
+                length, period
+            )
         };
 
         let mut wprs = Vec::new();
         let loop_max = length - period + 1;
-        println!("{}", loop_max);
         for i in 0..loop_max {
             wprs.push(single::williams_percent_r(
                 &high[i..i + period],
                 &low[i..i + period],
-                &close[i + period -1],
+                &close[i + period - 1],
             ));
         }
         return wprs;
@@ -1664,7 +1545,7 @@ pub mod bulk {
     ///
     /// * `prices` - An `f64` slice of prices
     /// * `volume` - An `i64` slice of volumes
-    /// * `previous_on_balance_volume` - Previous on balance volume. Use 0 if no previous OBV.
+    /// * `previous_on_balance_volume` - Previous on balance volume. Use 0.0 if no previous OBV.
     ///
     /// # Panics
     ///
@@ -1676,16 +1557,16 @@ pub mod bulk {
     ///
     /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0, 99.0];
-    /// let volume = vec![1000, 1500, 1200, 900, 1300, 1400];
+    /// let volume = vec![1000.0, 1500.0, 1200.0, 900.0, 1300.0, 1400.0];
     /// let on_balance_volume =
-    /// rust_ti::momentum_indicators::bulk::on_balance_volume(&prices, &volume, &0);
-    /// assert_eq!(vec![1500, 2700, 1800, 500, 500], on_balance_volume);
+    /// rust_ti::momentum_indicators::bulk::on_balance_volume(&prices, &volume, &0.0);
+    /// assert_eq!(vec![1500.0, 2700.0, 1800.0, 500.0, 500.0], on_balance_volume);
     /// ```
     pub fn on_balance_volume(
         prices: &[f64],
-        volume: &[i64],
-        previous_on_balance_volume: &i64,
-    ) -> Vec<i64> {
+        volume: &[f64],
+        previous_on_balance_volume: &f64,
+    ) -> Vec<f64> {
         if prices.is_empty() {
             panic!("Prices cannot be empty");
         };
@@ -2072,7 +1953,8 @@ pub mod bulk {
     /// accumulation distribution of the MACD, but as for the MACD the periods are determined by
     /// the caller. The standard moving average model is an Exponential Moving Average.
     ///
-    /// Returns a vector of tuples with the Chaikin Oscillator and the first Accumulation Distribution so that it can be used in further calculations.
+    /// Returns a vector of tuples with the Chaikin Oscillator and the first Accumulation
+    /// Distribution so that it can be used in further calculations.
     ///
     /// # Arguments
     ///
@@ -2190,121 +2072,6 @@ pub mod bulk {
                 &cos[i - 1].1,
                 short_period_model,
                 long_period_model,
-            ));
-        }
-        return cos;
-    }
-
-    /// The `mcginley_dynamic_chaikin_oscillator` measures momentum by taking the difference a short period and
-    /// long period Accumulation Distribution line, but uses the McGinley dynamic rather than a
-    /// moving constant model.
-    ///
-    /// The standard is to use the same short and long periods used in the MACD to track the
-    /// accumulation distribution of the MACD, but as for the MACD the periods are determined by
-    /// the caller.
-    ///
-    /// Returns a tuple with the Chaikin Oscillator, the first Accumulation Distribution, the
-    /// short period McGinley dynamic, and the long period McGinely dynamic.
-    ///
-    /// # Arguments
-    ///
-    /// * `highs` - Slice of price highs
-    /// * `lows` - Slice of price lows
-    /// * `close` - Slice of closing prices
-    /// * `volume` - Slice of transction volumes
-    /// * `short_period` - Short period over which to calculate the Accumulation Distribution
-    /// * `long_period` - Short period over which to calculate the Accumulation Distribution
-    /// * `previous_accumulation_distribution` - Previous accumulation distribution value. If none
-    /// use 0.0
-    /// * `previous_short_mcginley_dynamic` - Previous McGinley dynamic for the short period. If none use 0.0
-    /// * `previous_long_mcginley_dynamic` - Previous McGinley dynamic for the long period. If none use 0.0
-    ///
-    /// # Panics
-    ///
-    /// `mcginley_dynamic_chaikin_oscillator` will panic if:
-    /// * Length of `highs`, `lows`, `close`, and `volume` aren't equal
-    /// * `long_period` is greater than the length of prices
-    /// * `short_period` is greater or equal to `long_period`
-    ///
-    /// # Examples
-    ///
-    /// ```rust
-    /// let high = vec![103.0, 102.0, 105.0, 109.0, 106.0, 102.0, 107.0];
-    /// let low = vec![99.0, 99.0, 100.0, 103.0, 98.0, 94.0, 96.0];
-    /// let close = vec![102.0, 100.0, 103.0, 106.0, 100.0, 97.0, 105.0];
-    /// let volume = vec![1000.0, 1500.0, 1200.0, 1500.0, 2000.0, 3000.0, 1250.0];
-    /// let short_period: usize = 3;
-    /// let long_period: usize = 5;
-    ///
-    /// let chaikin_oscillator = rust_ti::momentum_indicators::bulk::mcginley_dynamic_chaikin_oscillator(
-    ///     &high,
-    ///     &low,
-    ///     &close,
-    ///     &volume,
-    ///     &short_period,
-    ///     &long_period,
-    ///     &0.0,
-    ///     &0.0,
-    ///     &0.0,
-    ///     );
-    /// assert_eq!(vec![(0.0, 500.0, -760.0, -760.0), (-6.4172148518496215, 0.0, -776.0430371296242, -769.6258222777745), (7.277445713098928, 240.0, -747.5223113660325, -754.7997570791314)], chaikin_oscillator);
-    /// ```
-    pub fn mcginley_dynamic_chaikin_oscillator(
-        highs: &[f64],
-        lows: &[f64],
-        close: &[f64],
-        volume: &[f64],
-        short_period: &usize,
-        long_period: &usize,
-        previous_accumulation_distribution: &f64,
-        previous_short_mcginley_dynamic: &f64,
-        previous_long_mcginley_dynamic: &f64,
-    ) -> Vec<(f64, f64, f64, f64)> {
-        let length = highs.len();
-        if length != lows.len() || length != close.len() || length != volume.len() {
-            panic!(
-                "Length of highs ({}), lows ({}), close ({}), and volume ({}) must match",
-                length,
-                lows.len(),
-                close.len(),
-                volume.len()
-            )
-        };
-
-        if &length < long_period {
-            panic!(
-                "Length of prices ({}) must me greater or equal to long period ({})",
-                length, long_period
-            )
-        };
-        if long_period <= short_period {
-            panic!(
-                "Long period ({}) cannot be smaller or equal to short period ({})",
-                long_period, short_period
-            )
-        };
-
-        let mut cos = vec![single::mcginley_dynamic_chaikin_oscillator(
-            &highs[..*long_period],
-            &lows[..*long_period],
-            &close[..*long_period],
-            &volume[..*long_period],
-            short_period,
-            previous_accumulation_distribution,
-            previous_short_mcginley_dynamic,
-            previous_long_mcginley_dynamic,
-        )];
-        let loop_max = length - long_period + 1;
-        for i in 1..loop_max {
-            cos.push(single::mcginley_dynamic_chaikin_oscillator(
-                &highs[i..i + long_period],
-                &lows[i..i + long_period],
-                &close[i..i + long_period],
-                &volume[i..i + long_period],
-                short_period,
-                &cos[i - 1].1,
-                &cos[i - 1].2,
-                &cos[i - 1].3,
             ));
         }
         return cos;
@@ -3267,10 +3034,10 @@ mod tests {
     fn test_single_on_balance_volume_positive_no_previous() {
         let current_price = 100.46;
         let previous_price = 100.2;
-        let volume = 1500;
-        let previous_obv = 0;
+        let volume = 1500.0;
+        let previous_obv = 0.0;
         assert_eq!(
-            1500,
+            1500.0,
             single::on_balance_volume(&current_price, &previous_price, &volume, &previous_obv)
         );
     }
@@ -3279,10 +3046,10 @@ mod tests {
     fn test_single_on_balance_volume_positive_previous() {
         let current_price = 100.46;
         let previous_price = 100.2;
-        let volume = 1500;
-        let previous_obv = 500;
+        let volume = 1500.0;
+        let previous_obv = 500.0;
         assert_eq!(
-            2000,
+            2000.0,
             single::on_balance_volume(&current_price, &previous_price, &volume, &previous_obv)
         );
     }
@@ -3291,10 +3058,10 @@ mod tests {
     fn test_single_on_balance_volume_negative_no_previous() {
         let current_price = 100.19;
         let previous_price = 100.32;
-        let volume = 1500;
-        let previous_obv = 0;
+        let volume = 1500.0;
+        let previous_obv = 0.0;
         assert_eq!(
-            -1500,
+            -1500.0,
             single::on_balance_volume(&current_price, &previous_price, &volume, &previous_obv)
         );
     }
@@ -3303,10 +3070,10 @@ mod tests {
     fn test_single_on_balance_volume_negative_previous() {
         let current_price = 100.19;
         let previous_price = 100.38;
-        let volume = 1500;
-        let previous_obv = 500;
+        let volume = 1500.0;
+        let previous_obv = 500.0;
         assert_eq!(
-            -1000,
+            -1000.0,
             single::on_balance_volume(&current_price, &previous_price, &volume, &previous_obv)
         );
     }
@@ -3315,10 +3082,10 @@ mod tests {
     fn test_single_on_balance_volume_equal_no_previous() {
         let current_price = 100.32;
         let previous_price = 100.32;
-        let volume = 1500;
-        let previous_obv = 0;
+        let volume = 1500.0;
+        let previous_obv = 0.0;
         assert_eq!(
-            0,
+            0.0,
             single::on_balance_volume(&current_price, &previous_price, &volume, &previous_obv)
         );
     }
@@ -3327,10 +3094,10 @@ mod tests {
     fn test_single_on_balance_volume_equal_previous() {
         let current_price = 100.32;
         let previous_price = 100.32;
-        let volume = 1500;
-        let previous_obv = 500;
+        let volume = 1500.0;
+        let previous_obv = 500.0;
         assert_eq!(
-            500,
+            500.0,
             single::on_balance_volume(&current_price, &previous_price, &volume, &previous_obv)
         );
     }
@@ -3338,20 +3105,20 @@ mod tests {
     #[test]
     fn test_bulk_on_balance_volume_no_previous() {
         let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
-        let volume = vec![1400, 1450, 1100, 900, 875];
+        let volume = vec![1400.0, 1450.0, 1100.0, 900.0, 875.0];
         assert_eq!(
-            vec![1450, 350, -550, 325],
-            bulk::on_balance_volume(&prices, &volume, &0)
+            vec![1450.0, 350.0, -550.0, 325.0],
+            bulk::on_balance_volume(&prices, &volume, &0.0)
         );
     }
 
     #[test]
     fn test_bulk_on_balance_volume_previous() {
         let prices = vec![100.53, 100.38, 100.19, 100.21];
-        let volume = vec![1450, 1100, 900, 875];
+        let volume = vec![1450.0, 1100.0, 900.0, 875.0];
         assert_eq!(
-            vec![350, -550, 325],
-            bulk::on_balance_volume(&prices, &volume, &1450)
+            vec![350.0, -550.0, 325.0],
+            bulk::on_balance_volume(&prices, &volume, &1450.0)
         );
     }
 
@@ -3359,8 +3126,8 @@ mod tests {
     #[should_panic]
     fn test_bulk_on_balance_volume_no_price_panic() {
         let prices = Vec::new();
-        let volume = vec![1400, 1450, 1100, 900, 875];
-        bulk::on_balance_volume(&prices, &volume, &0);
+        let volume = vec![1400.0, 1450.0, 1100.0, 900.0, 875.0];
+        bulk::on_balance_volume(&prices, &volume, &0.0);
     }
 
     #[test]
@@ -3368,7 +3135,7 @@ mod tests {
     fn test_bulk_on_balance_volume_no_volume_panic() {
         let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
         let volume = Vec::new();
-        bulk::on_balance_volume(&prices, &volume, &0);
+        bulk::on_balance_volume(&prices, &volume, &0.0);
     }
 
     #[test]
@@ -4464,248 +4231,6 @@ mod tests {
             &0.0,
             &crate::ConstantModelType::SimpleMovingAverage,
             &crate::ConstantModelType::SimpleMovingMedian,
-        );
-    }
-
-    #[test]
-    fn single_mcginley_dynamic_chainkin_oscillator_no_previous() {
-        let highs = vec![100.53, 100.68, 100.73, 100.79, 100.88];
-        let lows = vec![99.62, 99.97, 100.28, 100.12, 100.07];
-        let close = vec![100.01, 100.44, 100.39, 100.63, 100.71];
-        let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0];
-        assert_eq!(
-            (
-                0.0,
-                -38.28571428571309,
-                304.76047677253655,
-                304.76047677253655
-            ),
-            single::mcginley_dynamic_chaikin_oscillator(
-                &highs, &lows, &close, &volume, &3_usize, &0.0, &0.0, &0.0,
-            )
-        );
-    }
-
-    #[test]
-    fn single_mcginley_dynamic_chainkin_oscillator_previous() {
-        let highs = vec![100.68, 100.73, 100.79, 100.88, 100.51];
-        let lows = vec![99.97, 100.28, 100.12, 100.07, 99.86];
-        let close = vec![100.44, 100.39, 100.63, 100.71, 100.35];
-        let volume = vec![319.0, 381.0, 414.0, 376.0, 396.0];
-        assert_eq!(
-            (
-                3.5328972785125643,
-                65.05231388329526,
-                313.592719968818,
-                310.05982269030545
-            ),
-            single::mcginley_dynamic_chaikin_oscillator(
-                &highs,
-                &lows,
-                &close,
-                &volume,
-                &3_usize,
-                &-38.28571428571309,
-                &304.76047677253655,
-                &304.76047677253655
-            )
-        );
-    }
-
-    #[test]
-    #[should_panic]
-    fn single_mcginley_dynamic_chaikin_oscillator_short_period_panic() {
-        let highs = vec![100.53, 100.68, 100.73, 100.79, 100.88];
-        let lows = vec![99.62, 99.97, 100.28, 100.12, 100.07];
-        let close = vec![100.01, 100.44, 100.39, 100.63, 100.71];
-        let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0];
-        single::mcginley_dynamic_chaikin_oscillator(
-            &highs, &lows, &close, &volume, &30_usize, &0.0, &0.0, &0.0,
-        );
-    }
-
-    #[test]
-    #[should_panic]
-    fn single_mcginley_dynamic_chaikin_oscillator_highs_panic() {
-        let highs = vec![100.53, 100.68, 100.79, 100.88];
-        let lows = vec![99.62, 99.97, 100.28, 100.12, 100.07];
-        let close = vec![100.01, 100.44, 100.39, 100.63, 100.71];
-        let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0];
-        single::mcginley_dynamic_chaikin_oscillator(
-            &highs, &lows, &close, &volume, &3_usize, &0.0, &0.0, &0.0,
-        );
-    }
-
-    #[test]
-    #[should_panic]
-    fn single_mcginley_dynamic_chaikin_oscillator_lows_panic() {
-        let highs = vec![100.53, 100.68, 100.73, 100.79, 100.88];
-        let lows = vec![99.97, 100.28, 100.12, 100.07];
-        let close = vec![100.01, 100.44, 100.39, 100.63, 100.71];
-        let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0];
-        single::mcginley_dynamic_chaikin_oscillator(
-            &highs, &lows, &close, &volume, &3_usize, &0.0, &0.0, &0.0,
-        );
-    }
-
-    #[test]
-    #[should_panic]
-    fn single_mcginley_dynamic_chaikin_oscillator_close_panic() {
-        let highs = vec![100.53, 100.68, 100.73, 100.79, 100.88];
-        let lows = vec![99.62, 99.97, 100.28, 100.12, 100.07];
-        let close = vec![100.01, 100.44, 100.39, 100.71];
-        let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0];
-        single::mcginley_dynamic_chaikin_oscillator(
-            &highs, &lows, &close, &volume, &3_usize, &0.0, &0.0, &0.0,
-        );
-    }
-
-    #[test]
-    #[should_panic]
-    fn single_mcginley_dynamic_chaikin_oscillator_volume_panic() {
-        let highs = vec![100.53, 100.68, 100.73, 100.79, 100.88];
-        let lows = vec![99.62, 99.97, 100.28, 100.12, 100.07];
-        let close = vec![100.01, 100.44, 100.39, 100.63, 100.71];
-        let volume = vec![268.0, 319.0, 381.0, 414.0];
-        single::mcginley_dynamic_chaikin_oscillator(
-            &highs, &lows, &close, &volume, &3_usize, &0.0, &0.0, &0.0,
-        );
-    }
-
-    #[test]
-    fn bulk_mcginley_dynamic_chaikin_oscillator_no_previous() {
-        let highs = vec![100.53, 100.68, 100.73, 100.79, 100.88, 100.51, 100.17];
-        let lows = vec![99.62, 99.97, 100.28, 100.12, 100.07, 99.86, 99.60];
-        let close = vec![100.01, 100.44, 100.39, 100.63, 100.71, 100.35, 100.12];
-        let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0, 396.0, 362.0];
-        assert_eq!(
-            vec![
-                (
-                    0.0,
-                    -38.28571428571309,
-                    304.76047677253655,
-                    304.76047677253655
-                ),
-                (
-                    3.5328972785125643,
-                    65.05231388329526,
-                    313.592719968818,
-                    310.05982269030545
-                ),
-                (
-                    5.129795785341628,
-                    -129.68101945004022,
-                    317.3727529530195,
-                    312.2429571676779
-                )
-            ],
-            bulk::mcginley_dynamic_chaikin_oscillator(
-                &highs, &lows, &close, &volume, &3_usize, &5_usize, &0.0, &0.0, &0.0,
-            )
-        );
-    }
-
-    #[test]
-    fn bulk_mcginley_dynamic_chaikin_oscillator_previous() {
-        let highs = vec![100.53, 100.68, 100.73, 100.79, 100.88, 100.51, 100.17];
-        let lows = vec![99.62, 99.97, 100.28, 100.12, 100.07, 99.86, 99.60];
-        let close = vec![100.01, 100.44, 100.39, 100.63, 100.71, 100.35, 100.12];
-        let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0, 396.0, 362.0];
-        assert_eq!(
-            vec![
-                (
-                    6.94018243658914,
-                    61.71428571428691,
-                    209.381384426173,
-                    202.44120198958387
-                ),
-                (
-                    7.819833984160823,
-                    165.05231388329526,
-                    211.2670133370585,
-                    203.44717935289768
-                ),
-                (
-                    8.148929230616375,
-                    -29.681019450040225,
-                    211.95520922146426,
-                    203.80627999084788
-                )
-            ],
-            bulk::mcginley_dynamic_chaikin_oscillator(
-                &highs, &lows, &close, &volume, &3_usize, &5_usize, &100.0, &205.0, &200.0,
-            )
-        );
-    }
-    #[test]
-    #[should_panic]
-    fn bulk_mcginley_dynamic_chaikin_oscillator_period_panic() {
-        let highs = vec![100.53, 100.68, 100.73, 100.79, 100.88, 100.51, 100.17];
-        let lows = vec![99.62, 99.97, 100.28, 100.12, 100.07, 99.86, 99.60];
-        let close = vec![100.01, 100.44, 100.39, 100.63, 100.71, 100.35, 100.12];
-        let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0, 396.0, 362.0];
-        bulk::mcginley_dynamic_chaikin_oscillator(
-            &highs, &lows, &close, &volume, &3_usize, &50_usize, &0.0, &0.0, &0.0,
-        );
-    }
-
-    #[test]
-    #[should_panic]
-    fn bulk_mcginley_dynamic_chaikin_oscillator_high_panic() {
-        let highs = vec![100.53, 100.68, 100.79, 100.88, 100.51, 100.17];
-        let lows = vec![99.62, 99.97, 100.28, 100.12, 100.07, 99.86, 99.60];
-        let close = vec![100.01, 100.44, 100.39, 100.63, 100.71, 100.35, 100.12];
-        let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0, 396.0, 362.0];
-        bulk::mcginley_dynamic_chaikin_oscillator(
-            &highs, &lows, &close, &volume, &3_usize, &5_usize, &0.0, &0.0, &0.0,
-        );
-    }
-
-    #[test]
-    #[should_panic]
-    fn bulk_mcginley_dynamic_chaikin_oscillator_low_panic() {
-        let highs = vec![100.53, 100.68, 100.73, 100.79, 100.88, 100.51, 100.17];
-        let lows = vec![99.62, 99.97, 100.12, 100.07, 99.86, 99.60];
-        let close = vec![100.01, 100.44, 100.39, 100.63, 100.71, 100.35, 100.12];
-        let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0, 396.0, 362.0];
-        bulk::mcginley_dynamic_chaikin_oscillator(
-            &highs, &lows, &close, &volume, &3_usize, &5_usize, &0.0, &0.0, &0.0,
-        );
-    }
-
-    #[test]
-    #[should_panic]
-    fn bulk_mcginley_dynamic_chaikin_oscillator_close_panic() {
-        let highs = vec![100.53, 100.68, 100.73, 100.79, 100.88, 100.51, 100.17];
-        let lows = vec![99.62, 99.97, 100.28, 100.12, 100.07, 99.86, 99.60];
-        let close = vec![100.01, 100.44, 100.63, 100.71, 100.35, 100.12];
-        let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0, 396.0, 362.0];
-        bulk::mcginley_dynamic_chaikin_oscillator(
-            &highs, &lows, &close, &volume, &3_usize, &5_usize, &0.0, &0.0, &0.0,
-        );
-    }
-
-    #[test]
-    #[should_panic]
-    fn bulk_mcginley_dynamic_chaikin_oscillator_volume_panic() {
-        let highs = vec![100.53, 100.68, 100.73, 100.79, 100.88, 100.51, 100.17];
-        let lows = vec![99.62, 99.97, 100.28, 100.12, 100.07, 99.86, 99.60];
-        let close = vec![100.01, 100.44, 100.39, 100.63, 100.71, 100.35, 100.12];
-        let volume = vec![268.0, 319.0, 381.0, 376.0, 396.0, 362.0];
-        bulk::mcginley_dynamic_chaikin_oscillator(
-            &highs, &lows, &close, &volume, &3_usize, &5_usize, &0.0, &0.0, &0.0,
-        );
-    }
-
-    #[test]
-    #[should_panic]
-    fn bulk_mcginley_dynamic_chaikin_oscillator_short_period_panic() {
-        let highs = vec![100.53, 100.68, 100.73, 100.79, 100.88, 100.51, 100.17];
-        let lows = vec![99.62, 99.97, 100.28, 100.12, 100.07, 99.86, 99.60];
-        let close = vec![100.01, 100.44, 100.39, 100.63, 100.71, 100.35, 100.12];
-        let volume = vec![268.0, 319.0, 381.0, 376.0, 396.0, 362.0];
-        bulk::mcginley_dynamic_chaikin_oscillator(
-            &highs, &lows, &close, &volume, &30_usize, &5_usize, &0.0, &0.0, &0.0,
         );
     }
 
