@@ -6,7 +6,7 @@ authors = ["0100101001010000"]
 description = "An advanced and configurable technical indicators library with over 70 unique indicators for stock  market technical analysis"
 repository = "https://github.com/0100101001010000/rustTI"
 license = "MIT"
-keywords  = ["trading", "technical-analysis", "finance", "indicators"]
+keywords = ["trading", "technical-analysis", "finance", "indicators"]
 categories = ["finance", "mathematics"]
 exclude = ["/assets", "/.git", "/.github"]
 documentation = "https://docs.rs/rust_ti/latest/rust_ti/"
@@ -14,5 +14,9 @@ documentation = "https://docs.rs/rust_ti/latest/rust_ti/"
 [[example]]
 name = "sp500"
 path = "examples/main.rs"
+
+[[example]]
+name = "visa"
+path = "examples/visa.rs"
 
 [dependencies]
