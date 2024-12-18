@@ -138,6 +138,15 @@ cargo build
 cargo run --example sp500
 ```
 
+### Visa Example
+
+A large amount of pre-defined data can be used to show speed. [GitHub](https://github.com/0100101001010000/rustTI/blob/main/examples/visa.rs)
+
+The code in `examples/visa.rs` can be run by cloning the repo, and running:
+```shell
+cargo build
+cargo run --example visa
+```
 
 ## Available indicators:
 
