@@ -284,8 +284,8 @@ Volatility indicators show how volatile an asset is
 
 ## Release notes
 
-What's new in v1.3.0?
+What's new in v1.3.2?
 
-* Fixed volume mismatch with on_balance_volume and other functions using volume
+* A new example from the community!
 
-[Full changelog](https://github.com/0100101001010000/RustTI/releases/tag/v1.3.0)
+[Full changelog](https://github.com/0100101001010000/RustTI/releases/tag/v1.3.2)
