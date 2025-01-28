@@ -1,4 +1,4 @@
-![alt text](../assets/banner.webp)
+![alt text](./assets/banner.webp)
 
 # RustTI
 
