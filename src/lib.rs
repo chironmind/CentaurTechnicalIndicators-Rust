@@ -1,3 +1,5 @@
+//! ![banner picture](https://github.com/0100101001010000/RustTI/blob/main/assets/banner.webp)
+//!
 //! # RustTI
 //!
 //! A Technical Indicators library for Rust
