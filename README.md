@@ -1,3 +1,5 @@
+![alt text](./assets/banner.webp)
+
 # RustTI
 
 A configurable technical indicators Rust library for all of your technical analysis needs.
