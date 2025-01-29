@@ -30,7 +30,7 @@ cargo add rust_ti
 Or add the following line to your Cargo.toml:
 
 ```
-rust_ti = "1.3.3" 
+rust_ti = "1.3.4" 
 ```
 
 
@@ -286,8 +286,8 @@ Volatility indicators show how volatile an asset is
 
 ## Release notes
 
-What's new in v1.3.3?
+What's new in v1.3.4?
 
-* Added banner picture
+* Added removed banner from rust docs as it doesn't load
 
-[Full changelog](https://github.com/0100101001010000/RustTI/releases/tag/v1.3.2)
+[Full changelog](https://github.com/0100101001010000/RustTI/releases/tag/v1.3.4)
