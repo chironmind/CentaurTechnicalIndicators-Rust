@@ -522,28 +522,25 @@ fn main() {
 
     // Money Flow Index
 
-        let mfi = rust_ti::momentum_indicators::bulk::money_flow_index(
-            &typical_price,
-            &volume,
-            &period
-        );
-        println!("Money Flow Index: {:?}", mfi);
-        
+    let mfi =
+        rust_ti::momentum_indicators::bulk::money_flow_index(&typical_price, &volume, &period);
+    println!("Money Flow Index: {:?}", mfi);
+
     // Rate of Change
 
     let roc = rust_ti::momentum_indicators::bulk::rate_of_change(&typical_price);
     println!("Rate of Change: {:?}", roc);
-    
-        // On Balance Volume
 
-        let previous_obv = 0.0;
-        let obv = rust_ti::momentum_indicators::bulk::on_balance_volume(
-            &typical_price,
-            &volume,
-            &previous_obv
-        );
-        println!("On Balance Volume: {:?}", obv);
-    
+    // On Balance Volume
+
+    let previous_obv = 0.0;
+    let obv = rust_ti::momentum_indicators::bulk::on_balance_volume(
+        &typical_price,
+        &volume,
+        &previous_obv,
+    );
+    println!("On Balance Volume: {:?}", obv);
+
     // Commodity Channel Index
 
     let constant_multiplier = 0.015;
@@ -612,24 +609,27 @@ fn main() {
     println!("McGinley Dynamic MACD: {:?}", md_macd);
 
     // Chaikin Oscillator
-    
-        let previous_ad = 0.0;
-        for short_model in &available_models {
-            for long_model in &available_models {
-                let co = rust_ti::momentum_indicators::bulk::chaikin_oscillator(
-                    &high,
-                    &low,
-                    &close,
-                    &volume,
-                    &period,
-                    &long_period,
-                    &previous_ad,
-                    &short_model,
-                    &long_model
-                );
-                println!("Chaikin Oscillator {:?} {:?}: {:?}", short_model, long_model, co);
-            };
-        };
+
+    let previous_ad = 0.0;
+    for short_model in &available_models {
+        for long_model in &available_models {
+            let co = rust_ti::momentum_indicators::bulk::chaikin_oscillator(
+                &high,
+                &low,
+                &close,
+                &volume,
+                &period,
+                &long_period,
+                &previous_ad,
+                &short_model,
+                &long_model,
+            );
+            println!(
+                "Chaikin Oscillator {:?} {:?}: {:?}",
+                short_model, long_model, co
+            );
+        }
+    }
 
     // Percentage Price Oscillator
 
@@ -705,34 +705,21 @@ fn main() {
     // strength_indicators.rs
 
     // Accumulation Distribution
-   
-        let ad = rust_ti::strength_indicators::bulk::accumulation_distribution(
-            &high,
-            &low,
-            &close,
-            &volume,
-            &0.0
-        );
-        println!("Accumulation Distribution: {:?}", ad);
 
-        // Positive Volume Index
+    let ad = rust_ti::strength_indicators::bulk::accumulation_distribution(
+        &high, &low, &close, &volume, &0.0,
+    );
+    println!("Accumulation Distribution: {:?}", ad);
 
-        let pvi = rust_ti::strength_indicators::bulk::positive_volume_index(
-            &close,
-            &volume,
-            &0.0
-        );
-        println!("Positive Volume Index: {:?}", pvi);
+    // Positive Volume Index
 
-        // Negative Volume Index
+    let pvi = rust_ti::strength_indicators::bulk::positive_volume_index(&close, &volume, &0.0);
+    println!("Positive Volume Index: {:?}", pvi);
 
-        let nvi = rust_ti::strength_indicators::bulk::negative_volume_index(
-            &close,
-            &volume,
-            &0.0
-        );
-        println!("Negative Volume Index: {:?}", nvi);
-    
+    // Negative Volume Index
+
+    let nvi = rust_ti::strength_indicators::bulk::negative_volume_index(&close, &volume, &0.0);
+    println!("Negative Volume Index: {:?}", nvi);
 
     // Relative Vigor Index
 
@@ -778,14 +765,10 @@ fn main() {
     }
 
     // Volume Price Trend
-   
-        let vpt = rust_ti::trend_indicators::bulk::volume_price_trend(
-            &typical_price,
-            &volume[1..],
-            &0.0
-        );
-        println!("Volume Price Trend: {:?}", vpt);
-    
+
+    let vpt =
+        rust_ti::trend_indicators::bulk::volume_price_trend(&typical_price, &volume[1..], &0.0);
+    println!("Volume Price Trend: {:?}", vpt);
 
     // True Strength Index
 
@@ -831,6 +814,31 @@ fn main() {
         );
         println!("{:?} Volatility System: {:?}", model, vs);
     }
+
+    // chart_trends.rs
+    let max_outliers:usize = 1;
+    let soft_r_squared_minimum = 0.75;
+    let soft_r_squared_maximum = 1.0;
+    let hard_r_squared_minimum = 0.5;
+    let hard_r_squared_maximum = 1.5;
+    let soft_standard_error_multiplier = 1.0;
+    let hard_standard_error_multiplier = 1.0;
+    let soft_reduced_chi_squared_multiplier = 2.0;
+    let hard_reduced_chi_squared_multiplier = 2.0;
+
+    let break_down_trends = rust_ti::chart_trends::break_down_trends(
+        &close,
+        &max_outliers,
+        &soft_r_squared_minimum,
+        &soft_r_squared_maximum,
+        &hard_r_squared_minimum,
+        &hard_r_squared_maximum,
+        &soft_standard_error_multiplier,
+        &hard_standard_error_multiplier,
+        &soft_reduced_chi_squared_multiplier,
+        &hard_reduced_chi_squared_multiplier,
+    );
+    println!("Broken down trends: {:?}", break_down_trends);
 
     let elapsed = now.elapsed();
     println!("Elapsed: {:.2?}", elapsed);
