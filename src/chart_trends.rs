@@ -7,9 +7,7 @@
 //! All the functions that end in `_trend` run  a linear regression on specific points of the charts.
 //! So `peak_trends` runs a linear regression to determine the best fit line for all peaks.
 
-use crate::basic_indicators::single::{absolute_deviation, max, mean, min, standard_deviation};
-use crate::volatility_indicators::single::ulcer_index;
-use crate::DeviationModel;
+use crate::basic_indicators::single::{max, mean, min};
 
 /// The `peaks` function returns all peaks over a period, and returns a vector of tuples where the
 /// first item is the peak value, and the second it the peak index.
@@ -253,38 +251,30 @@ pub fn overall_trend(prices: &[f64]) -> (f64, f64) {
     return get_trend_line(indexed_prices);
 }
 
-// TODO: mean squared error, sum of squares, r squared, standard error (average distance of the
-// variables from the regression line 95% of observations should fall withing of the regression
-// line)
 /// The `break_down_trends` function breaks down the different trends in a slice of prices. It
 /// returns a tuple with the index where the trend starts, an index of where the trend ends, the
 /// slope, and intercept.
 ///
-/// To determine a new trend, the function calculates the trend for a slice of prices, at t+1 it
-/// calculates the next point of the trend line using the slope and intercept, if the price at t+1
-/// exceeds the trend line point at t+1 a new trend is created.
+/// To determine a new trend, the function runs a linear regression to get the slope and intercept 
+/// for a given set of prices, it then adds new prices until r squared, standard
+/// error or adjusted chi squared, exceed passed in limits. At that point it assumes that it is a new period.
 ///
-/// The amount by which the price at t+1 can deviate from the trend line point at t+1 is determine
-/// by the caller when they pass in the standard deviation multiplier and the sensitivity denominator.
-///
-/// The standard deviation multiplier multiplies the standard deviation of the trend line to create
-/// an upper and lower limit value, if the price at t+1 is above or below those value then a new
-/// trend is created.
-///
-/// The sensitivty denominator slightly adjusts the standard deviation multiplier by adding
-/// `(1 / sensitivity denomintor)^(trend line length)`. The idea is as the when there are few points
-/// in the trend line, the sensitivity multiplier will be higher, stopping the function from
-/// creating new trends for outliers at the beginning of the trend. The bigger the trend line gets
-/// the smaller the value gets.
+/// The soft limits are limits that all needs to be passed in order to create a new trend, the hard
+/// limits only need to be passed by one variable to create a new trend.
 ///
 /// # Arguments
 ///
 /// * `prices` - Slice of prices
-/// * `standard_deviation_multiplier` - Multiplier for the standard deviation to create a band that
-/// determines a new trend. Use 2.0 as a default.
-/// * `sensitivity_multiplier` - A time based adjustment for the standard deviation, to stop the
-/// function from constantly creating new trends. Use 2.0 as a default.
-/// * `deviation_model` - A variant of the [`DeviationModel`] enum
+/// * `max_outliers` - The maximum number of times the price can exceed limits without creating a
+/// new trend. To be thought of as a protection against flash crashes creating new trends.
+/// * `soft_r_squared_minimum` - The soft minimum value for r squared
+/// * `soft_r_squared_maximum` - The soft maximum value for r squared
+/// * `hard_r_squared_minimum` - The hard minimum value for r squared
+/// * `hard_r_squared_maximum` - The hard maximum value for r squared
+/// * `soft_standard_error_multiplier` - The soft multiplier for the standard error
+/// * `hard_standard_error_multiplier` - The hard multiplier for the standard error
+/// * `soft_reduced_chi_squared_multiplier` - The soft multiplier for the reduced chi squared
+/// * `hard_reduced_chi_squared_multiplier` - The hard multiplier for the reduced chi squared
 ///
 /// # Panics
 ///
@@ -296,121 +286,48 @@ pub fn overall_trend(prices: &[f64]) -> (f64, f64) {
 /// ```
 /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0, 99.0, 102.0, 103.0, 106.0, 107.0, 105.0,
 /// 104.0, 101.0, 97.0, 100.0];
-/// let standard_deviation_multiplier = 2.0;
-/// let sensitivity_multiplier = 2.0;
-/// let trend_break_down = rust_ti::chart_trends::break_down_trends(&prices,
-/// &standard_deviation_multiplier, &sensitivity_multiplier,
-/// &rust_ti::DeviationModel::StandardDeviation);
+/// let max_outliers = 1;
+/// let soft_r_squared_minimum = 0.75;
+/// let soft_r_squared_maximum = 1.0;
+/// let hard_r_squared_minimum = 0.5;
+/// let hard_r_squared_maximum = 1.5;
+/// let soft_standard_error_multiplier = 2.0;
+/// let hard_standard_error_multiplier = 3.0;
+/// let soft_reduced_chi_squared_multiplier = 2.0;
+/// let hard_reduced_chi_squared_multiplier = 3.0;
+/// let trend_break_down = rust_ti::chart_trends::break_down_trends(
+///     &prices,
+///     &max_outliers,
+///     &soft_r_squared_minimum,
+///     &soft_r_squared_maximum,
+///     &hard_r_squared_minimum,
+///     &hard_r_squared_maximum,
+///     &soft_standard_error_multiplier,
+///     &hard_standard_error_multiplier,
+///     &soft_reduced_chi_squared_multiplier,
+///     &hard_reduced_chi_squared_multiplier
+/// );
 /// assert_eq!(vec![
-///         (0, 2, 1.5, 100.16666666666667),
-///         (2, 5, -1.4, 105.4),
-///         (5, 11, 0.8928571428571429, 96.57142857142857),
-///         (11, 14, -1.6, 120.5)],
+///         (0, 2, 1.5, 100.16666666666667), (2, 4, -2.0, 107.0), 
+///         (4, 9, 1.7714285714285714, 91.15238095238095), (9, 11, -1.5, 120.33333333333333), 
+///         (11, 13, -3.5, 142.66666666666666)],
 ///         trend_break_down);
-///
-/// let ulcer_index_trend_break_down = rust_ti::chart_trends::break_down_trends(&prices,
-/// &standard_deviation_multiplier, &sensitivity_multiplier,
-/// &rust_ti::DeviationModel::UlcerIndex);
-/// assert_eq!(vec![
-///         (0, 1, 2.0, 100.0),
-///         (1, 2, 1.0, 101.0),
-///         (2, 6, -0.4, 102.4),
-///         (6, 7, 1.0, 96.0),
-///         (7, 8, 3.0, 82.0),
-///         (8, 9, 1.0, 98.0),
-///         (9, 14, -1.7714285714285714, 122.7047619047619)],
-///         ulcer_index_trend_break_down);
 /// ```
 pub fn break_down_trends(
     prices: &[f64],
-    standard_deviation_multiplier: &f64,
-    sensitivity_multiplier: &f64,
-    deviation_model: &crate::DeviationModel,
+    max_outliers: &usize,
+    soft_r_squared_minimum: &f64,
+    soft_r_squared_maximum: &f64,
+    hard_r_squared_minimum: &f64,
+    hard_r_squared_maximum: &f64,
+    soft_standard_error_multiplier: &f64,
+    hard_standard_error_multiplier: &f64,
+    soft_reduced_chi_squared_multiplier: &f64,
+    hard_reduced_chi_squared_multiplier: &f64,
 ) -> Vec<(usize, usize, f64, f64)> {
     if prices.is_empty() {
         panic!("Prices cannot be empty");
     }
-    let mut trends: Vec<(usize, usize, f64, f64)> = Vec::new();
-    let mut current_slope = 0.0;
-    let mut current_intercept = 0.0;
-    let mut start_index: usize = 0;
-    let mut end_index: usize = 1;
-    for (index, price) in prices.iter().enumerate() {
-        if index == 0 {
-            continue;
-        };
-        if &index > &end_index {
-            let trend_line: Vec<f64> = (start_index..index + 1)
-                .map(|x| &current_intercept + (&current_slope * x as f64))
-                .collect();
-            let trend_length = trend_line.len() as i32;
-            let adjusted_multiplier =
-                standard_deviation_multiplier + ((1.0 / sensitivity_multiplier).powi(trend_length));
-            let trend_deviation = match deviation_model {
-                DeviationModel::StandardDeviation => standard_deviation(&trend_line),
-                DeviationModel::MeanAbsoluteDeviation => {
-                    absolute_deviation(&trend_line, &crate::CentralPoint::Mean)
-                }
-                DeviationModel::MedianAbsoluteDeviation => {
-                    absolute_deviation(&trend_line, &crate::CentralPoint::Median)
-                }
-                DeviationModel::ModeAbsoluteDeviation => {
-                    absolute_deviation(&trend_line, &crate::CentralPoint::Mode)
-                }
-                DeviationModel::UlcerIndex => ulcer_index(&trend_line),
-                _ => panic!("Unsupported DeviationModel"),
-            };
-            let deviation_multiplied = trend_deviation * adjusted_multiplier;
-            let upper_band = trend_line.last().unwrap() + deviation_multiplied;
-            let lower_band = trend_line.last().unwrap() - deviation_multiplied;
-            if price > &upper_band || price < &lower_band {
-                trends.push((start_index, end_index, current_slope, current_intercept));
-                start_index = index - 1;
-                end_index = index;
-            }
-        }
-        let indexed_points = (start_index..index + 1).map(|x| (prices[x], x)).collect();
-        let current_trend = get_trend_line(indexed_points);
-        current_slope = current_trend.0;
-        current_intercept = current_trend.1;
-        end_index = index;
-    }
-    trends.push((start_index, end_index, current_slope, current_intercept));
-    return trends;
-}
-
-// This is a different flavour of breakdown trends using r2, standard error...
-/// # Examples
-///
-/// ```
-/// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0, 99.0, 102.0, 103.0, 106.0, 107.0, 105.0,
-/// 104.0, 101.0, 97.0, 100.0];
-/// let standard_deviation_multiplier = 2.0;
-/// let sensitivity_multiplier = 2.0;
-/// let trend_break_down = rust_ti::chart_trends::break_down_trends2(&prices);
-/// assert_eq!(vec![
-///         (0, 2, 1.5, 100.16666666666667),
-///         (2, 5, -1.4, 105.4),
-///         (5, 11, 0.8928571428571429, 96.57142857142857),
-///         (11, 14, -1.6, 120.5)],
-///         trend_break_down);
-///
-/// let ulcer_index_trend_break_down = rust_ti::chart_trends::break_down_trends2(&prices);
-/// assert_eq!(vec![
-///         (0, 1, 2.0, 100.0),
-///         (1, 2, 1.0, 101.0),
-///         (2, 6, -0.4, 102.4),
-///         (6, 7, 1.0, 96.0),
-///         (7, 8, 3.0, 82.0),
-///         (8, 9, 1.0, 98.0),
-///         (9, 14, -1.7714285714285714, 122.7047619047619)],
-///         ulcer_index_trend_break_down);
-/// ```
-pub fn break_down_trends2(prices: &[f64]) -> Vec<(usize, usize, f64, f64)> {
-    if prices.is_empty() {
-        panic!("Prices cannot be empty");
-    }
-    let max_outlier: usize = 1;
     let mut outliers: Vec<usize> = Vec::new();
     let mut trends: Vec<(usize, usize, f64, f64)> = Vec::new();
     let mut current_slope = 0.0;
@@ -433,19 +350,18 @@ pub fn break_down_trends2(prices: &[f64]) -> Vec<(usize, usize, f64, f64)> {
             let current_trend = get_trend_line(indexed_points.clone());
             let (standard_error, r_squared, reduced_chi_squared) =
                 goodness_of_fit(&indexed_points, &current_trend);
-            // TODO: Does one of the goodness of fit need to be more important than others? some
-            // times the r2 is 0.95 but the others are just over double so new phase, need to
-            // determine what the rules are!
-            // TODO: these inputs need to be user defined so an algo can tweak them
             // TODO: Is the regression using OLS?
-            if standard_error > previous_standard_error
-                && (r_squared < 0.75 || r_squared > 1.0)
-                && reduced_chi_squared > 5.0
-                || r_squared < 0.5
-                || standard_error > 2.0 * previous_standard_error
-                || reduced_chi_squared > 2.0 * previous_reduced_chi_squared
+            if standard_error > soft_standard_error_multiplier * previous_standard_error
+                && (&r_squared < soft_r_squared_minimum || &r_squared > soft_r_squared_maximum)
+                && reduced_chi_squared
+                    > soft_reduced_chi_squared_multiplier * previous_reduced_chi_squared
+                || &r_squared < hard_r_squared_minimum
+                || &r_squared > hard_r_squared_maximum
+                || standard_error > hard_standard_error_multiplier * previous_standard_error
+                || reduced_chi_squared
+                    > hard_reduced_chi_squared_multiplier * previous_reduced_chi_squared
             {
-                if outliers.len() < max_outlier {
+                if &outliers.len() < max_outliers {
                     println!(
                         "Ignoring price {} at index {} as outlier, removing...",
                         price, index
@@ -503,7 +419,7 @@ fn goodness_of_fit(indexed_points: &Vec<(f64, usize)>, trend: &(f64, f64)) -> (f
     for i in indexed_points.iter() {
         trend_line.push(trend.1 + (trend.0 * i.1 as f64));
         observed_prices.push(i.0);
-    };
+    }
 
     println!("current trend = {:?}", trend);
     println!("trend_line {:?}", trend_line);
@@ -540,8 +456,7 @@ fn goodness_of_fit(indexed_points: &Vec<(f64, usize)>, trend: &(f64, f64)) -> (f
     println!("SSR = {}", sum_squares_residuals);
     let total_sum_squares = total_squares.iter().sum::<f64>();
     println!("SST = {}", total_sum_squares);
-    let standard_error =
-        (sum_squares_residuals / ssr_length).sqrt();
+    let standard_error = (sum_squares_residuals / ssr_length).sqrt();
     println!("Standard Error: {}", standard_error);
     let r_squared = 1.0 - (sum_squares_residuals / total_sum_squares);
     println!("R2 = {}", r_squared);
@@ -637,95 +552,33 @@ mod tests {
     #[test]
     fn break_down_trends_std_dev() {
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
+        let max_outliers = 1;
+        let soft_r_squared_minimum = 0.75;
+        let soft_r_squared_maximum = 1.0;
+        let hard_r_squared_minimum = 0.5;
+        let hard_r_squared_maximum = 1.5;
+        let soft_standard_error_multiplier = 2.0;
+        let hard_standard_error_multiplier = 3.0;
+        let soft_reduced_chi_squared_multiplier = 2.0;
+        let hard_reduced_chi_squared_multiplier = 3.0;
+        let trend_break_down = break_down_trends(
+            &prices,
+            &max_outliers,
+            &soft_r_squared_minimum,
+            &soft_r_squared_maximum,
+            &hard_r_squared_minimum,
+            &hard_r_squared_maximum,
+            &soft_standard_error_multiplier,
+            &hard_standard_error_multiplier,
+            &soft_reduced_chi_squared_multiplier,
+            &hard_reduced_chi_squared_multiplier,
+        );
         assert_eq!(
             vec![
-                (0, 3, 0.06099999999998999, 100.30100000000002),
-                (3, 4, -0.19000000000005457, 100.95000000000019)
-            ],
-            break_down_trends(
-                &prices,
-                &2.0,
-                &1.0,
-                &crate::DeviationModel::StandardDeviation
-            )
-        );
-    }
-
-    #[test]
-    fn break_down_trends_mean_abs_dev() {
-        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
-        assert_eq!(
-            vec![
-                (0, 3, 0.06099999999998999, 100.30100000000002),
-                (3, 4, -0.19000000000005457, 100.95000000000019)
-            ],
-            break_down_trends(
-                &prices,
-                &2.0,
-                &1.0,
-                &crate::DeviationModel::MeanAbsoluteDeviation
-            )
-        );
-    }
-
-    #[test]
-    fn break_down_trends_median_abs_dev() {
-        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
-        assert_eq!(
-            vec![
-                (0, 3, 0.06099999999998999, 100.30100000000002),
-                (3, 4, -0.19000000000005457, 100.95000000000019)
-            ],
-            break_down_trends(
-                &prices,
-                &2.0,
-                &1.0,
-                &crate::DeviationModel::MedianAbsoluteDeviation
-            )
-        );
-    }
-
-    #[test]
-    fn break_down_trends_mode_abs_dev() {
-        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
-        assert_eq!(
-            vec![(0, 4, -0.01000000000001819, 100.37200000000004)],
-            break_down_trends(
-                &prices,
-                &2.0,
-                &1.0,
-                &crate::DeviationModel::ModeAbsoluteDeviation
-            )
-        );
-    }
-
-    #[test]
-    fn break_down_trends_ulcer_index() {
-        let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
-        assert_eq!(
-            vec![
-                (0, 1, 0.2599999999999909, 100.2),
-                (1, 2, 0.06999999999993634, 100.3900000000001),
+                (0, 2, 0.1650000000000015, 100.23166666666667),
                 (2, 4, -0.16999999999999696, 100.87666666666667)
             ],
-            break_down_trends(&prices, &2.0, &1.0, &crate::DeviationModel::UlcerIndex)
+            trend_break_down
         );
-    }
-
-    #[test]
-    #[should_panic]
-    fn break_down_trends_panic() {
-        let prices = Vec::new();
-        break_down_trends(&prices, &2.0, &1.0, &crate::DeviationModel::UlcerIndex);
-    }
-
-    #[test]
-    fn new_break_down_trends() {
-        let prices = vec![
-            5180.74, 5187.7, 5187.67, 5214.08, 5222.68, 5221.42, 5246.68, 5308.15, 5297.1, 5303.27,
-            5308.13, 5321.41,
-        ];
-        println!("Results: {:?}", break_down_trends2(&prices));
-        assert_eq!(1, 2);
     }
 }

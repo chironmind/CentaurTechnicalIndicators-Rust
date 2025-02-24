@@ -816,7 +816,28 @@ fn main() {
     }
 
     // chart_trends.rs
-    let break_down_trends = rust_ti::chart_trends::break_down_trends2(&close);
+    let max_outliers:usize = 1;
+    let soft_r_squared_minimum = 0.75;
+    let soft_r_squared_maximum = 1.0;
+    let hard_r_squared_minimum = 0.5;
+    let hard_r_squared_maximum = 1.5;
+    let soft_standard_error_multiplier = 1.0;
+    let hard_standard_error_multiplier = 1.0;
+    let soft_reduced_chi_squared_multiplier = 2.0;
+    let hard_reduced_chi_squared_multiplier = 2.0;
+
+    let break_down_trends = rust_ti::chart_trends::break_down_trends(
+        &close,
+        &max_outliers,
+        &soft_r_squared_minimum,
+        &soft_r_squared_maximum,
+        &hard_r_squared_minimum,
+        &hard_r_squared_maximum,
+        &soft_standard_error_multiplier,
+        &hard_standard_error_multiplier,
+        &soft_reduced_chi_squared_multiplier,
+        &hard_reduced_chi_squared_multiplier,
+    );
     println!("Broken down trends: {:?}", break_down_trends);
 
     let elapsed = now.elapsed();
