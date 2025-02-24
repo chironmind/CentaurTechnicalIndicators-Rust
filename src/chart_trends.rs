@@ -338,10 +338,7 @@ pub fn break_down_trends(
     let mut previous_standard_error = 10000.0;
     let mut previous_reduced_chi_squared = 10000.0;
     for (index, price) in prices.iter().enumerate() {
-        println!("Index: {}, price: {}", index, price);
         indexed_points.push((*price, index));
-
-        println!("indexed point: {:?}", indexed_points);
 
         if index == 0 {
             continue;
@@ -362,31 +359,15 @@ pub fn break_down_trends(
                     > hard_reduced_chi_squared_multiplier * previous_reduced_chi_squared
             {
                 if &outliers.len() < max_outliers {
-                    println!(
-                        "Ignoring price {} at index {} as outlier, removing...",
-                        price, index
-                    );
                     outliers.push(index);
                     indexed_points.pop();
-                    println!("Removed from indexed prices: {:?}", indexed_points);
                     continue;
                 };
-                println!("New phase!");
-                println!(
-                    "Previous trend: start: {}, end:{},  {} {}",
-                    start_index, end_index, current_slope, current_intercept
-                );
                 trends.push((start_index, end_index, current_slope, current_intercept));
                 start_index = end_index;
                 end_index = index;
-                println!(
-                    "resetting to: start index {} end index {}",
-                    start_index, end_index
-                );
                 indexed_points = (start_index..index + 1).map(|x| (prices[x], x)).collect();
-                println!("new indexed point: {:?}", indexed_points);
                 let current_trend = get_trend_line(indexed_points.clone());
-                println!("new current trend = {:?}", current_trend);
                 current_slope = current_trend.0;
                 current_intercept = current_trend.1;
                 // if list bigger than 2
@@ -421,10 +402,6 @@ fn goodness_of_fit(indexed_points: &Vec<(f64, usize)>, trend: &(f64, f64)) -> (f
         observed_prices.push(i.0);
     }
 
-    println!("current trend = {:?}", trend);
-    println!("trend_line {:?}", trend_line);
-    println!("Observed prices {:?}", observed_prices);
-
     let trend_length = trend_line.len();
     if trend_length != observed_prices.len() {
         panic!(
@@ -436,32 +413,18 @@ fn goodness_of_fit(indexed_points: &Vec<(f64, usize)>, trend: &(f64, f64)) -> (f
     let mut squares_residuals: Vec<f64> = Vec::new();
     let mut total_squares: Vec<f64> = Vec::new();
     let observed_mean = mean(&observed_prices);
-    println!("observed mean: {}", observed_mean);
     for i in 0..trend_length {
         let square_residual = (observed_prices[i] - trend_line[i]).powi(2);
-        println!(
-            "observed prices ({}) - trend line ({}) squared = {}",
-            observed_prices[i], trend_line[i], square_residual
-        );
         squares_residuals.push(square_residual);
         let square_total = (observed_prices[i] - observed_mean).powi(2);
-        println!(
-            "observed prices ({}) - mean ({}) squared = {}",
-            observed_prices[i], observed_mean, square_total
-        );
         total_squares.push(square_total);
     }
     let sum_squares_residuals = squares_residuals.iter().sum::<f64>();
     let ssr_length = squares_residuals.len() as f64;
-    println!("SSR = {}", sum_squares_residuals);
     let total_sum_squares = total_squares.iter().sum::<f64>();
-    println!("SST = {}", total_sum_squares);
     let standard_error = (sum_squares_residuals / ssr_length).sqrt();
-    println!("Standard Error: {}", standard_error);
     let r_squared = 1.0 - (sum_squares_residuals / total_sum_squares);
-    println!("R2 = {}", r_squared);
     let reduced_chi_squared = sum_squares_residuals / ssr_length;
-    println!("Reduced Chi Squared {}", reduced_chi_squared);
     return (standard_error, r_squared, reduced_chi_squared);
 }
 
