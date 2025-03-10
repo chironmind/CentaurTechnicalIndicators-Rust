@@ -162,33 +162,19 @@ pub fn valleys(prices: &[f64], period: &usize) -> Vec<(f64, usize)> {
 /// OLS simple linear regression function
 fn get_trend_line(p: Vec<(f64, usize)>) -> (f64, f64) {
     let length = p.len() as f64;
-    //let mut sum_x: f64 = 0.0;
-    //let mut sum_y: f64 = 0.0;
-    //let mut sum_xy: f64 = 0.0;
-    //let mut sum_x_sq: f64 = 0.0;
-
-    // OLS way
     let mean_x = p.iter().map(|x| x.1 as f64).sum::<f64>() / length;
     let mean_y = p.iter().map(|x| x.0).sum::<f64>() / length;
     let mut nominator: f64 = 0.0;
     let mut denominator: f64 = 0.0;
 
     p.iter().for_each(|i| {
-        //sum_x = sum_x + x.1 as f64;
-        //sum_y = sum_y + x.0;
-        //sum_xy = sum_xy + (x.0 * x.1 as f64);
-        //sum_x_sq = sum_x_sq + x.1.pow(2) as f64;
-
-        // OLS way
         let x = i.1 as f64;
         let y = i.0;
         let x_calculation: f64 = x - mean_x;
         nominator = nominator + (x_calculation * (y - mean_y));
         denominator = denominator + x_calculation.powi(2);
     });
-    // let slope = ((length * sum_xy) - (sum_x * sum_y)) / ((length * sum_x_sq) - (sum_x.powi(2)));
     let slope = nominator / denominator;
-    // let intercept = (sum_y - (slope * sum_x)) / length;
     let intercept = mean_y - (slope * mean_x);
     return (slope, intercept);
 }
