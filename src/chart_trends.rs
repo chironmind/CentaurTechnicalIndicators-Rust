@@ -159,23 +159,41 @@ pub fn valleys(prices: &[f64], period: &usize) -> Vec<(f64, usize)> {
     return valleys;
 }
 
-/// Linear regression function
+/// OLS simple linear regression function
 fn get_trend_line(p: Vec<(f64, usize)>) -> (f64, f64) {
     let length = p.len() as f64;
-    let mut sum_x: f64 = 0.0;
-    let mut sum_y: f64 = 0.0;
-    let mut sum_xy: f64 = 0.0;
-    let mut sum_x_sq: f64 = 0.0;
-    p.iter().for_each(|x| {
-        sum_x = sum_x + x.1 as f64;
-        sum_y = sum_y + x.0;
-        sum_xy = sum_xy + (x.0 * x.1 as f64);
-        sum_x_sq = sum_x_sq + x.1.pow(2) as f64
+    //let mut sum_x: f64 = 0.0;
+    //let mut sum_y: f64 = 0.0;
+    //let mut sum_xy: f64 = 0.0;
+    //let mut sum_x_sq: f64 = 0.0;
+
+    // OLS way
+    let mean_x = p.iter().map(|x| x.1 as f64).sum::<f64>() / length;
+    let mean_y = p.iter().map(|x| x.0).sum::<f64>() / length;
+    let mut nominator: f64 = 0.0;
+    let mut denominator: f64 = 0.0;
+
+    p.iter().for_each(|i| {
+        //sum_x = sum_x + x.1 as f64;
+        //sum_y = sum_y + x.0;
+        //sum_xy = sum_xy + (x.0 * x.1 as f64);
+        //sum_x_sq = sum_x_sq + x.1.pow(2) as f64;
+
+        // OLS way
+        let x = i.1 as f64;
+        let y = i.0;
+        let x_calculation: f64 = x - mean_x;
+        nominator = nominator + (x_calculation * (y - mean_y));
+        denominator = denominator + x_calculation.powi(2);
     });
-    let slope = ((length * sum_xy) - (sum_x * sum_y)) / ((length * sum_x_sq) - (sum_x.powi(2)));
-    let intercept = (sum_y - (slope * sum_x)) / length;
+    // let slope = ((length * sum_xy) - (sum_x * sum_y)) / ((length * sum_x_sq) - (sum_x.powi(2)));
+    let slope = nominator / denominator;
+    // let intercept = (sum_y - (slope * sum_x)) / length;
+    let intercept = mean_y - (slope * mean_x);
     return (slope, intercept);
 }
+
+/// TODO: OLS multi linear regression
 
 /// The `peak_trend` function gets the peaks for a slice of prices over a given period and calculates
 /// the slope and intercept and returns them as a tuple. It is essentially a linear regression on peaks.
@@ -310,7 +328,7 @@ pub fn overall_trend(prices: &[f64]) -> (f64, f64) {
 /// assert_eq!(vec![
 ///         (0, 2, 1.5, 100.16666666666667), (2, 4, -2.0, 107.0), 
 ///         (4, 9, 1.7714285714285714, 91.15238095238095), (9, 11, -1.5, 120.33333333333333), 
-///         (11, 13, -3.5, 142.66666666666666)],
+///         (11, 13, -3.5, 142.66666666666669)],
 ///         trend_break_down);
 /// ```
 pub fn break_down_trends(
@@ -489,7 +507,7 @@ mod tests {
     fn peaks_trend() {
         let highs = vec![101.26, 102.57, 102.32, 100.69, 100.83, 101.73, 102.01];
         assert_eq!(
-            (-0.10214285714285627, 102.60642857142857),
+            (-0.10214285714285458, 102.60642857142857),
             peak_trend(&highs, &4_usize)
         );
     }
@@ -498,7 +516,7 @@ mod tests {
     fn valleys_trend() {
         let lows = vec![100.08, 98.75, 100.14, 98.98, 99.07, 100.1, 99.96];
         assert_eq!(
-            (0.11499999999998067, 98.63500000000005),
+            (0.11500000000000199, 98.635),
             valley_trend(&lows, &4_usize)
         );
     }
@@ -507,7 +525,7 @@ mod tests {
     fn overall_trends() {
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
         assert_eq!(
-            (-0.01000000000001819, 100.37200000000004),
+            (-0.010000000000000852, 100.372),
             overall_trend(&prices)
         );
     }
@@ -538,8 +556,8 @@ mod tests {
         );
         assert_eq!(
             vec![
-                (0, 2, 0.1650000000000015, 100.23166666666667),
-                (2, 4, -0.16999999999999696, 100.87666666666667)
+                (0, 2, 0.16499999999999915, 100.23166666666665),
+                (2, 4, -0.1700000000000017, 100.87666666666668)
             ],
             trend_break_down
         );
