@@ -2,7 +2,7 @@
 
 # RustTI
 
-A configurable technical indicators Rust library for all of your technical analysis needs.
+A configurable technical indicators library written in pure Rust for all of your technical analysis needs.
 
 Everything is configurable in the RustTI functions.
 
