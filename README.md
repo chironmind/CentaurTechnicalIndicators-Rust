@@ -150,17 +150,6 @@ cargo build
 cargo run --example visa
 ```
 
-### Extract from CSV and plot TIs
-
-The most realistic usage of `rust_ti` would be download the data for your favorite ticker, run a couple of TIs against it, and plot the whole thing.
-
-This is what `examples/csv_and_plot.rs` does.
-
-```shell
-cargo build
-cargo run --example csv_and_plot < path_to_your.csv
-```
-
 ## Available indicators:
 
 All indicators are grouped and split into modules based on their analysis area.
