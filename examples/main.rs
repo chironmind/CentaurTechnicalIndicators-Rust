@@ -816,7 +816,7 @@ fn main() {
     }
 
     // chart_trends.rs
-    let max_outliers:usize = 1;
+    let max_outliers: usize = 1;
     let soft_r_squared_minimum = 0.75;
     let soft_r_squared_maximum = 1.0;
     let hard_r_squared_minimum = 0.5;
@@ -842,4 +842,10 @@ fn main() {
 
     let elapsed = now.elapsed();
     println!("Elapsed: {:.2?}", elapsed);
+
+    let valleys = rust_ti::chart_trends::valleys(&close, &30usize, &5usize);
+    println!("Valleys {:?}", valleys);
+
+    let peaks = rust_ti::chart_trends::peaks(&close, &30usize, &5usize);
+    println!("Peaks {:?}", peaks);
 }

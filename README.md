@@ -30,7 +30,7 @@ cargo add rust_ti
 Or add the following line to your Cargo.toml:
 
 ```
-rust_ti = "1.4.1" 
+rust_ti = "1.4.2" 
 ```
 
 
@@ -286,8 +286,9 @@ Volatility indicators show how volatile an asset is
 
 ## Release notes
 
-What's new in v1.4.1?
+What's new in v1.4.2?
 
-Updated linear regression to use OLS
+Updated `peaks` and `valleys` function to stop producing peaks/valleys when the period shifted if
+it was within a given period of the previous one.
 
-[Full changelog](https://github.com/0100101001010000/RustTI/releases/tag/v1.4.1)
+[Full changelog](https://github.com/0100101001010000/RustTI/releases/tag/v1.4.2)
