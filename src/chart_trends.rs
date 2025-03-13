@@ -25,6 +25,8 @@ use crate::basic_indicators::single::{max, mean, min};
 ///
 /// * `prices` - Slice of prices
 /// * `period` - Period over which to find the peak
+/// * `closest_neighbor` - The closest the valleys can be next to one another. Default to use is 1,
+/// so each valley needs to be at least 1 period away from each other.
 ///
 /// # Panics
 ///
@@ -35,30 +37,31 @@ use crate::basic_indicators::single::{max, mean, min};
 /// ```rust
 /// let highs = vec![103.0, 102.0, 107.0, 104.0, 100.0];
 /// let period: usize = 3;
-/// let peaks = rust_ti::chart_trends::peaks(&highs, &period);
+/// let closest_neighbor: usize = 1;
+/// let peaks = rust_ti::chart_trends::peaks(&highs, &period, &closest_neighbor);
 /// assert_eq!(vec![(107.0, 2)], peaks);
 ///
 /// let highs = vec![103.0, 102.0, 107.0, 104.0, 100.0, 109.0];
 /// let period: usize = 3;
-/// let peaks = rust_ti::chart_trends::peaks(&highs, &period);
+/// let peaks = rust_ti::chart_trends::peaks(&highs, &period, &closest_neighbor);
 /// assert_eq!(vec![(107.0, 2), (109.0, 5)], peaks);
 ///
 /// let highs = vec![103.0, 102.0, 107.0, 104.0, 100.0, 109.0];
 /// let period: usize = 6;
-/// let peaks = rust_ti::chart_trends::peaks(&highs, &period);
+/// let peaks = rust_ti::chart_trends::peaks(&highs, &period, &closest_neighbor);
 /// assert_eq!(vec![(109.0, 5)], peaks);
 ///
 /// let highs = vec![103.0, 102.0, 107.0, 104.0, 100.0, 107.0];
 /// let period: usize = 3;
-/// let peaks = rust_ti::chart_trends::peaks(&highs, &period);
+/// let peaks = rust_ti::chart_trends::peaks(&highs, &period, &closest_neighbor);
 /// assert_eq!(vec![(107.0, 2), (107.0, 5)], peaks);
 ///
 /// let highs = vec![103.0, 102.0, 107.0, 104.0, 100.0, 107.0];
 /// let period: usize = 6;
-/// let peaks = rust_ti::chart_trends::peaks(&highs, &period);
+/// let peaks = rust_ti::chart_trends::peaks(&highs, &period, &closest_neighbor);
 /// assert_eq!(vec![(107.0, 5)], peaks);
 /// ```
-pub fn peaks(prices: &[f64], period: &usize) -> Vec<(f64, usize)> {
+pub fn peaks(prices: &[f64], period: &usize, closest_neighbor: &usize) -> Vec<(f64, usize)> {
     let length = prices.len();
     if period > &length {
         panic!(
@@ -69,6 +72,7 @@ pub fn peaks(prices: &[f64], period: &usize) -> Vec<(f64, usize)> {
 
     let mut peaks = Vec::new();
     let loop_max = length - period + 1;
+    let mut neighbor_tuple: (f64, usize) = (0.0, 0);
     for i in 0..loop_max {
         let peak = max(&prices[i..i + period]);
         let index = &prices[i..i + period]
@@ -76,8 +80,21 @@ pub fn peaks(prices: &[f64], period: &usize) -> Vec<(f64, usize)> {
             .rposition(|&x| x == peak)
             .unwrap();
         let peak_tuple = (peak, index + i);
-        if !peaks.contains(&peak_tuple) {
-            peaks.push(peak_tuple)
+        if peak_tuple.0 < neighbor_tuple.0
+            && peak_tuple.1 <= neighbor_tuple.1 + closest_neighbor
+            && neighbor_tuple.1 > 0
+        {
+            neighbor_tuple.1 = peak_tuple.1;
+        } else if peak_tuple.0 > neighbor_tuple.0
+            && peak_tuple.1 <= neighbor_tuple.1 + closest_neighbor
+            && neighbor_tuple.1 > 0
+        {
+            peaks.pop();
+            peaks.push(peak_tuple);
+            neighbor_tuple = peak_tuple;
+        } else if !peaks.contains(&peak_tuple) {
+            peaks.push(peak_tuple);
+            neighbor_tuple = peak_tuple;
         };
     }
     return peaks;
@@ -99,6 +116,8 @@ pub fn peaks(prices: &[f64], period: &usize) -> Vec<(f64, usize)> {
 ///
 /// * `prices` - Slice of prices
 /// * `period` - Period over which to find the valley
+/// * `closest_neighbor` - The closest the valleys can be next to one another. Default to use is 1,
+/// so each valley needs to be at least 1 period away from each other.
 ///
 /// # Panics
 ///
@@ -109,32 +128,31 @@ pub fn peaks(prices: &[f64], period: &usize) -> Vec<(f64, usize)> {
 /// ```rust
 /// let lows = vec![98.0, 101.0, 95.0, 100.0, 97.0];
 /// let period: usize = 3;
-/// let valleys = rust_ti::chart_trends::valleys(&lows, &period);
-/// let period: usize = 3;
-/// let valleys = rust_ti::chart_trends::valleys(&lows, &period);
+/// let closest_neighbor: usize = 1;
+/// let valleys = rust_ti::chart_trends::valleys(&lows, &period, &closest_neighbor);
 /// assert_eq!(vec![(95.0, 2)], valleys);
 ///
 /// let lows = vec![98.0, 101.0, 95.0, 100.0, 97.0, 93.0];
 /// let period: usize = 3;
-/// let valleys = rust_ti::chart_trends::valleys(&lows, &period);
+/// let valleys = rust_ti::chart_trends::valleys(&lows, &period, &closest_neighbor);
 /// assert_eq!(vec![(95.0, 2), (93.0, 5)], valleys);
 ///
 /// let lows = vec![98.0, 101.0, 95.0, 100.0, 97.0, 93.0];
 /// let period: usize = 6;
-/// let valleys = rust_ti::chart_trends::valleys(&lows, &period);
+/// let valleys = rust_ti::chart_trends::valleys(&lows, &period, &closest_neighbor);
 /// assert_eq!(vec![(93.0, 5)], valleys);
 ///
 /// let lows = vec![98.0, 101.0, 95.0, 100.0, 97.0, 95.0];
 /// let period: usize = 3;
-/// let valleys = rust_ti::chart_trends::valleys(&lows, &period);
+/// let valleys = rust_ti::chart_trends::valleys(&lows, &period, &closest_neighbor);
 /// assert_eq!(vec![(95.0, 2), (95.0, 5)], valleys);
 ///
 /// let lows = vec![98.0, 101.0, 95.0, 100.0, 97.0, 95.0];
 /// let period: usize = 6;
-/// let valleys = rust_ti::chart_trends::valleys(&lows, &period);
+/// let valleys = rust_ti::chart_trends::valleys(&lows, &period, &closest_neighbor);
 /// assert_eq!(vec![(95.0, 5)], valleys);
 /// ```
-pub fn valleys(prices: &[f64], period: &usize) -> Vec<(f64, usize)> {
+pub fn valleys(prices: &[f64], period: &usize, closest_neighbor: &usize) -> Vec<(f64, usize)> {
     let length = prices.len();
     if period > &length {
         panic!(
@@ -145,6 +163,7 @@ pub fn valleys(prices: &[f64], period: &usize) -> Vec<(f64, usize)> {
 
     let mut valleys = Vec::new();
     let loop_max = length - period + 1;
+    let mut neighbor_tuple: (f64, usize) = (0.0, 0);
     for i in 0..loop_max {
         let valley = min(&prices[i..i + period]);
         let index = &prices[i..i + period]
@@ -152,8 +171,21 @@ pub fn valleys(prices: &[f64], period: &usize) -> Vec<(f64, usize)> {
             .rposition(|&x| x == valley)
             .unwrap();
         let valley_tuple = (valley, index + i);
-        if !valleys.contains(&valley_tuple) {
-            valleys.push(valley_tuple)
+        if valley_tuple.0 > neighbor_tuple.0
+            && valley_tuple.1 <= neighbor_tuple.1 + closest_neighbor
+            && neighbor_tuple.1 > 0
+        {
+            neighbor_tuple.1 = valley_tuple.1;
+        } else if valley_tuple.0 < neighbor_tuple.0
+            && valley_tuple.1 <= neighbor_tuple.1 + closest_neighbor
+            && neighbor_tuple.1 > 0
+        {
+            valleys.pop();
+            valleys.push(valley_tuple);
+            neighbor_tuple = valley_tuple;
+        } else if !valleys.contains(&valley_tuple) {
+            valleys.push(valley_tuple);
+            neighbor_tuple = valley_tuple;
         };
     }
     return valleys;
@@ -201,7 +233,7 @@ fn get_trend_line(p: Vec<(f64, usize)>) -> (f64, f64) {
 /// assert_eq!((0.6666666666666666, 105.66666666666667), peak_trend);
 /// ```
 pub fn peak_trend(prices: &[f64], period: &usize) -> (f64, f64) {
-    let peaks = peaks(prices, period);
+    let peaks = peaks(prices, period, &1usize);
     return get_trend_line(peaks);
 }
 
@@ -226,7 +258,7 @@ pub fn peak_trend(prices: &[f64], period: &usize) -> (f64, f64) {
 /// assert_eq!((-0.6666666666666666, 96.33333333333333), valley_trend);
 /// ```
 pub fn valley_trend(prices: &[f64], period: &usize) -> (f64, f64) {
-    let valleys = valleys(prices, period);
+    let valleys = valleys(prices, period, &1usize);
     return get_trend_line(valleys);
 }
 
@@ -259,7 +291,7 @@ pub fn overall_trend(prices: &[f64]) -> (f64, f64) {
 /// returns a tuple with the index where the trend starts, an index of where the trend ends, the
 /// slope, and intercept.
 ///
-/// To determine a new trend, the function runs a linear regression to get the slope and intercept 
+/// To determine a new trend, the function runs a linear regression to get the slope and intercept
 /// for a given set of prices, it then adds new prices until r squared, standard
 /// error or adjusted chi squared, exceed passed in limits. At that point it assumes that it is a new period.
 ///
@@ -312,8 +344,8 @@ pub fn overall_trend(prices: &[f64]) -> (f64, f64) {
 ///     &hard_reduced_chi_squared_multiplier
 /// );
 /// assert_eq!(vec![
-///         (0, 2, 1.5, 100.16666666666667), (2, 4, -2.0, 107.0), 
-///         (4, 9, 1.7714285714285714, 91.15238095238095), (9, 11, -1.5, 120.33333333333333), 
+///         (0, 2, 1.5, 100.16666666666667), (2, 4, -2.0, 107.0),
+///         (4, 9, 1.7714285714285714, 91.15238095238095), (9, 11, -1.5, 120.33333333333333),
 ///         (11, 13, -3.5, 142.66666666666669)],
 ///         trend_break_down);
 /// ```
@@ -439,7 +471,7 @@ mod tests {
     #[test]
     fn peaks_single_peak() {
         let highs = vec![101.26, 102.57, 102.32, 100.69];
-        assert_eq!(vec![(102.57, 1)], peaks(&highs, &4_usize));
+        assert_eq!(vec![(102.57, 1)], peaks(&highs, &4_usize, &1usize));
     }
 
     #[test]
@@ -447,46 +479,55 @@ mod tests {
         let highs = vec![101.26, 102.57, 102.32, 100.69, 100.83, 101.73, 102.01];
         assert_eq!(
             vec![(102.57, 1), (102.32, 2), (102.01, 6)],
-            peaks(&highs, &4_usize)
+            peaks(&highs, &4_usize, &1usize)
         );
     }
 
     #[test]
     fn peaks_multiple_peaks_same_period() {
         let highs = vec![101.26, 102.57, 102.57, 100.69, 100.83, 101.73, 102.01];
-        assert_eq!(vec![(102.57, 2), (102.01, 6)], peaks(&highs, &4_usize));
+        assert_eq!(
+            vec![(102.57, 2), (102.01, 6)],
+            peaks(&highs, &4_usize, &1usize)
+        );
     }
 
     #[test]
     #[should_panic]
     fn peaks_panic() {
         let highs = vec![101.26, 102.57, 102.57, 100.69, 100.83, 101.73, 102.01];
-        peaks(&highs, &40_usize);
+        peaks(&highs, &40_usize, &1usize);
     }
 
     #[test]
     fn valleys_single_valley() {
         let lows = vec![100.08, 98.75, 100.14, 98.98, 99.07, 100.1, 99.96];
-        assert_eq!(vec![(98.75, 1)], valleys(&lows, &7_usize));
+        assert_eq!(vec![(98.75, 1)], valleys(&lows, &7_usize, &1usize));
     }
 
     #[test]
     fn valleys_multiple_valleys() {
         let lows = vec![100.08, 98.75, 100.14, 98.98, 99.07, 100.1, 99.96];
-        assert_eq!(vec![(98.75, 1), (98.98, 3)], valleys(&lows, &4_usize));
+        assert_eq!(
+            vec![(98.75, 1), (98.98, 3)],
+            valleys(&lows, &4_usize, &1usize)
+        );
     }
 
     #[test]
     fn valleys_multiple_valleys_same_period() {
         let lows = vec![98.75, 98.75, 100.14, 98.98, 99.07, 100.1, 99.96];
-        assert_eq!(vec![(98.75, 1), (98.98, 3)], valleys(&lows, &4_usize));
+        assert_eq!(
+            vec![(98.75, 1), (98.98, 3)],
+            valleys(&lows, &4_usize, &1usize)
+        );
     }
 
     #[test]
     #[should_panic]
     fn valleys_panic() {
         let lows = vec![98.75, 98.75, 100.14, 98.98, 99.07, 100.1, 99.96];
-        valleys(&lows, &40_usize);
+        valleys(&lows, &40_usize, &1usize);
     }
 
     #[test]
@@ -501,19 +542,13 @@ mod tests {
     #[test]
     fn valleys_trend() {
         let lows = vec![100.08, 98.75, 100.14, 98.98, 99.07, 100.1, 99.96];
-        assert_eq!(
-            (0.11500000000000199, 98.635),
-            valley_trend(&lows, &4_usize)
-        );
+        assert_eq!((0.11500000000000199, 98.635), valley_trend(&lows, &4_usize));
     }
 
     #[test]
     fn overall_trends() {
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
-        assert_eq!(
-            (-0.010000000000000852, 100.372),
-            overall_trend(&prices)
-        );
+        assert_eq!((-0.010000000000000852, 100.372), overall_trend(&prices));
     }
 
     #[test]

@@ -21,7 +21,6 @@ would be very helpful.
     * in parabolic t/p system remove single functions, and have the bulk function find the trend and determine
       whether to go long or short like it does in the volatility system ... or return s/l in vol system
     * Add the ability for indicators to use something other than normal distributions (for variance, std dev...)
-    * In `break_down_trends` have a variable to indicate the number of accepted outliers before determining a new trend. So if the variable is set to 1, it will allow for 1 variable outside of the trend standard deviation.
 
 ### New indicators
 
