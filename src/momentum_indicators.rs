@@ -539,13 +539,13 @@ pub mod single {
         let deviation = match deviation_model {
             DeviationModel::StandardDeviation => standard_deviation(&prices),
             DeviationModel::MeanAbsoluteDeviation => {
-                absolute_deviation(&prices, &crate::CentralPoint::Mean)
+                absolute_deviation(&prices, crate::CentralPoint::Mean)
             }
             DeviationModel::MedianAbsoluteDeviation => {
-                absolute_deviation(&prices, &crate::CentralPoint::Median)
+                absolute_deviation(&prices, crate::CentralPoint::Median)
             }
             DeviationModel::ModeAbsoluteDeviation => {
-                absolute_deviation(&prices, &crate::CentralPoint::Mode)
+                absolute_deviation(&prices, crate::CentralPoint::Mode)
             }
             DeviationModel::UlcerIndex => ulcer_index(&prices),
             _ => panic!("Unsupported DeviationModel"),
@@ -607,13 +607,13 @@ pub mod single {
         let deviation = match deviation_model {
             DeviationModel::StandardDeviation => standard_deviation(&prices),
             DeviationModel::MeanAbsoluteDeviation => {
-                absolute_deviation(&prices, &crate::CentralPoint::Mean)
+                absolute_deviation(&prices, crate::CentralPoint::Mean)
             }
             DeviationModel::MedianAbsoluteDeviation => {
-                absolute_deviation(&prices, &crate::CentralPoint::Median)
+                absolute_deviation(&prices, crate::CentralPoint::Median)
             }
             DeviationModel::ModeAbsoluteDeviation => {
-                absolute_deviation(&prices, &crate::CentralPoint::Mode)
+                absolute_deviation(&prices, crate::CentralPoint::Mode)
             }
             DeviationModel::UlcerIndex => ulcer_index(&prices),
             _ => panic!("Unsupported DeviationModel"),

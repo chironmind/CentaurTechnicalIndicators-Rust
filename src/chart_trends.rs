@@ -383,7 +383,6 @@ pub fn break_down_trends(
             let current_trend = get_trend_line(indexed_points.clone());
             let (standard_error, r_squared, reduced_chi_squared) =
                 goodness_of_fit(&indexed_points, &current_trend);
-            // TODO: Is the regression using OLS?
             if standard_error > soft_standard_error_multiplier * previous_standard_error
                 && (&r_squared < soft_r_squared_minimum || &r_squared > soft_r_squared_maximum)
                 && reduced_chi_squared

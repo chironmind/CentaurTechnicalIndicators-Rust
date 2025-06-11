@@ -132,13 +132,13 @@ pub mod single {
         let asset_a_deviation = match deviation_model {
             DeviationModel::StandardDeviation => standard_deviation(&prices_asset_a),
             DeviationModel::MeanAbsoluteDeviation => {
-                absolute_deviation(&prices_asset_a, &crate::CentralPoint::Mean)
+                absolute_deviation(&prices_asset_a, crate::CentralPoint::Mean)
             }
             DeviationModel::MedianAbsoluteDeviation => {
-                absolute_deviation(&prices_asset_a, &crate::CentralPoint::Median)
+                absolute_deviation(&prices_asset_a, crate::CentralPoint::Median)
             }
             DeviationModel::ModeAbsoluteDeviation => {
-                absolute_deviation(&prices_asset_a, &crate::CentralPoint::Mode)
+                absolute_deviation(&prices_asset_a, crate::CentralPoint::Mode)
             }
             DeviationModel::UlcerIndex => ulcer_index(&prices_asset_a),
             _ => panic!("Unsupported DeviationModel"),
@@ -147,13 +147,13 @@ pub mod single {
         let asset_b_deviation = match deviation_model {
             DeviationModel::StandardDeviation => standard_deviation(&prices_asset_b),
             DeviationModel::MeanAbsoluteDeviation => {
-                absolute_deviation(&prices_asset_b, &crate::CentralPoint::Mean)
+                absolute_deviation(&prices_asset_b, crate::CentralPoint::Mean)
             }
             DeviationModel::MedianAbsoluteDeviation => {
-                absolute_deviation(&prices_asset_b, &crate::CentralPoint::Median)
+                absolute_deviation(&prices_asset_b, crate::CentralPoint::Median)
             }
             DeviationModel::ModeAbsoluteDeviation => {
-                absolute_deviation(&prices_asset_b, &crate::CentralPoint::Mode)
+                absolute_deviation(&prices_asset_b, crate::CentralPoint::Mode)
             }
             DeviationModel::UlcerIndex => ulcer_index(&prices_asset_b),
             _ => panic!("Unsupported DeviationModel"),

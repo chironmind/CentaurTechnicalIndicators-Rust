@@ -20,7 +20,9 @@ would be very helpful.
     * remove test_ prefix from all tests
     * in parabolic t/p system remove single functions, and have the bulk function find the trend and determine
       whether to go long or short like it does in the volatility system ... or return s/l in vol system
-    * Add the ability for indicators to use something other than normal distributions (for variance, std dev...)
+    * Add the ability for indicators to use something other than normal distributions
+        * Variance
+        * Standard Deviation
 
 ### New indicators
 

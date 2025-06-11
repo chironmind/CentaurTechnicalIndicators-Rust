@@ -517,7 +517,7 @@ pub mod bulk {
     /// let positivity_indicator = rust_ti::other_indicators::bulk::positivity_indicator(
     ///     &open,
     ///     &previous_close,
-    ///     &signal_period,
+    ///     signal_period,
     ///     &rust_ti::ConstantModelType::SimpleMovingAverage
     /// );
     ///
@@ -531,7 +531,7 @@ pub mod bulk {
     pub fn positivity_indicator(
         open: &[f64],
         previous_close: &[f64],
-        signal_period: &usize,
+        signal_period: usize,
         constant_model_type: &ConstantModelType,
     ) -> Vec<(f64, f64)> {
         let length = open.len();
@@ -545,7 +545,7 @@ pub mod bulk {
         if open.is_empty() {
             panic!("Prices cannot be empty")
         };
-        if signal_period > &length {
+        if signal_period > length {
             panic!(
                 "Period ({}) cannot be longer than length of prices ({})",
                 signal_period, length
@@ -559,19 +559,19 @@ pub mod bulk {
 
         let signal_line = match constant_model_type {
             ConstantModelType::SimpleMovingAverage => {
-                moving_average(&pis, &MovingAverageType::Simple, signal_period)
+                moving_average(&pis, &MovingAverageType::Simple, &signal_period)
             }
             ConstantModelType::SmoothedMovingAverage => {
-                moving_average(&pis, &MovingAverageType::Smoothed, signal_period)
+                moving_average(&pis, &MovingAverageType::Smoothed, &signal_period)
             }
             ConstantModelType::ExponentialMovingAverage => {
-                moving_average(&pis, &MovingAverageType::Exponential, signal_period)
+                moving_average(&pis, &MovingAverageType::Exponential, &signal_period)
             }
             ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => {
                 moving_average(
                     &pis,
                     &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
-                    signal_period,
+                    &signal_period,
                 )
             }
             ConstantModelType::SimpleMovingMedian => median(&pis, signal_period),
@@ -1024,7 +1024,7 @@ mod tests {
             bulk::positivity_indicator(
                 &open,
                 &previous_close,
-                &signal_period,
+                signal_period,
                 &crate::ConstantModelType::SimpleMovingAverage
             )
         );
@@ -1044,7 +1044,7 @@ mod tests {
             bulk::positivity_indicator(
                 &open,
                 &previous_close,
-                &signal_period,
+                signal_period,
                 &crate::ConstantModelType::SmoothedMovingAverage
             )
         );
@@ -1064,7 +1064,7 @@ mod tests {
             bulk::positivity_indicator(
                 &open,
                 &previous_close,
-                &signal_period,
+                signal_period,
                 &crate::ConstantModelType::ExponentialMovingAverage
             )
         );
@@ -1084,7 +1084,7 @@ mod tests {
             bulk::positivity_indicator(
                 &open,
                 &previous_close,
-                &signal_period,
+                signal_period,
                 &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0)
             )
         );
@@ -1104,7 +1104,7 @@ mod tests {
             bulk::positivity_indicator(
                 &open,
                 &previous_close,
-                &signal_period,
+                signal_period,
                 &crate::ConstantModelType::SimpleMovingMedian
             )
         );
@@ -1124,7 +1124,7 @@ mod tests {
             bulk::positivity_indicator(
                 &open,
                 &previous_close,
-                &signal_period,
+                signal_period,
                 &crate::ConstantModelType::SimpleMovingMode
             )
         );
@@ -1139,7 +1139,7 @@ mod tests {
         bulk::positivity_indicator(
             &open,
             &previous_close,
-            &signal_period,
+            signal_period,
             &crate::ConstantModelType::SimpleMovingMode,
         );
     }
@@ -1153,7 +1153,7 @@ mod tests {
         bulk::positivity_indicator(
             &open,
             &previous_close,
-            &signal_period,
+            signal_period,
             &crate::ConstantModelType::SimpleMovingMode,
         );
     }
@@ -1167,7 +1167,7 @@ mod tests {
         bulk::positivity_indicator(
             &open,
             &previous_close,
-            &signal_period,
+            signal_period,
             &crate::ConstantModelType::SimpleMovingMode,
         );
     }

@@ -308,12 +308,12 @@ fn main() {
 
     // Median
 
-    let median = rust_ti::basic_indicators::bulk::median(&typical_price, &period);
+    let median = rust_ti::basic_indicators::bulk::median(&typical_price, period);
     println!("Median vs Typical Price: {:?}", median);
 
     // Mode
 
-    let mode = rust_ti::basic_indicators::bulk::mode(&typical_price, &period);
+    let mode = rust_ti::basic_indicators::bulk::mode(&typical_price, period);
     println!("Mode vs Typical Price: {:?}", mode);
 
     // Natural logarithm
@@ -328,20 +328,20 @@ fn main() {
 
     // Variance
 
-    let variance = rust_ti::basic_indicators::bulk::variance(&typical_price, &period);
+    let variance = rust_ti::basic_indicators::bulk::variance(&typical_price, period);
     println!("Variance of Typical Price: {:?}", variance);
 
     // Standard Deviation
 
-    let standard_dev = rust_ti::basic_indicators::bulk::standard_deviation(&typical_price, &period);
+    let standard_dev = rust_ti::basic_indicators::bulk::standard_deviation(&typical_price, period);
     println!("Standard Deviation of Typical Price: {:?}", standard_dev);
 
     // Mean Absolute Deviation
 
     let mean_ad = rust_ti::basic_indicators::bulk::absolute_deviation(
         &typical_price,
-        &period,
-        &rust_ti::CentralPoint::Mean,
+        period,
+        rust_ti::CentralPoint::Mean,
     );
     println!("Mean Absolute Deviation of Typical Price: {:?}", mean_ad);
 
@@ -349,8 +349,8 @@ fn main() {
 
     let median_ad = rust_ti::basic_indicators::bulk::absolute_deviation(
         &typical_price,
-        &period,
-        &rust_ti::CentralPoint::Median,
+        period,
+        rust_ti::CentralPoint::Median,
     );
     println!(
         "Median Absolute Deviation of Typical Price: {:?}",
@@ -361,8 +361,8 @@ fn main() {
 
     let mode_ad = rust_ti::basic_indicators::bulk::absolute_deviation(
         &typical_price,
-        &period,
-        &rust_ti::CentralPoint::Mode,
+        period,
+        rust_ti::CentralPoint::Mode,
     );
     println!("Mode Absolute Deviation of Typical Price: {:?}", mode_ad);
 
@@ -696,7 +696,7 @@ fn main() {
         let pi = rust_ti::other_indicators::bulk::positivity_indicator(
             &open[1..],
             &close[..length - 1],
-            &period,
+            period,
             &model,
         );
         println!("{:?} Positivity Index: {:?}", model, pi);
@@ -759,7 +759,7 @@ fn main() {
 
     for model in &available_models {
         let dms = rust_ti::trend_indicators::bulk::directional_movement_system(
-            &high, &low, &close, &period, &model,
+            &high, &low, &close, period, &model,
         );
         println!("{:?} Directional Movement System: {:?}", model, dms);
     }
@@ -777,9 +777,9 @@ fn main() {
             let tsi = rust_ti::trend_indicators::bulk::true_strength_index(
                 &typical_price,
                 &first_model,
-                &period,
+                period,
                 &second_model,
-                &period,
+                period,
             );
             println!(
                 "{:?} {:?} True Strength Index: {:?}",
