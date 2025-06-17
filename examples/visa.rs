@@ -21175,12 +21175,12 @@ fn main() {
 
     // MA Envelope
 
-    for model in &available_models {
+    for model in available_models.iter() {
         let envelope = rust_ti::candle_indicators::bulk::moving_constant_envelopes(
             &typical_price,
-            &model,
-            &difference,
-            &period,
+            *model,
+            difference,
+            period,
         );
         //println!("{:?} Envelope of Typical Price: {:?}", model, envelope);
     }
@@ -21189,9 +21189,9 @@ fn main() {
 
     let mcginley_envelope = rust_ti::candle_indicators::bulk::mcginley_dynamic_envelopes(
         &typical_price,
-        &difference,
-        &previous_mcginley_dynamic,
-        &period,
+        difference,
+        previous_mcginley_dynamic,
+        period,
     );
     //println!(
     //     "McGinley Envelope of Typical Price: {:?}",
@@ -21201,14 +21201,14 @@ fn main() {
     // MA Bands
 
     let deviation_multiplier = 2.0;
-    for model in &available_models {
-        for deviation in &available_deviations {
+    for model in available_models.iter() {
+        for deviation in available_deviations.iter() {
             let bands = rust_ti::candle_indicators::bulk::moving_constant_bands(
                 &typical_price,
-                &model,
-                &deviation,
-                &deviation_multiplier,
-                &period,
+                *model,
+                *deviation,
+                deviation_multiplier,
+                period,
             );
             //println!(
             //     "{:?} Band with {:?} of Typical Price: {:?}",
@@ -21219,13 +21219,13 @@ fn main() {
 
     // McGinley Dynamic Bands
 
-    for deviation in &available_deviations {
+    for deviation in available_deviations.iter() {
         let md_bands = rust_ti::candle_indicators::bulk::mcginley_dynamic_bands(
             &typical_price,
-            &deviation,
-            &deviation_multiplier,
-            &previous_mcginley_dynamic,
-            &period,
+            *deviation,
+            deviation_multiplier,
+            previous_mcginley_dynamic,
+            period,
         );
         //println!(
         //     "McGinley Dynamic Band with {:?} of Typical Price: {:?}",
@@ -21236,30 +21236,30 @@ fn main() {
     // Ichimoku Cloud
 
     let ichimoku_cloud =
-        rust_ti::candle_indicators::bulk::ichimoku_cloud(&high, &low, &close, &9, &26, &52);
+        rust_ti::candle_indicators::bulk::ichimoku_cloud(&high, &low, &close, 9, 26, 52);
 
     //println!("Ichimoku cloud: {:?}", ichimoku_cloud);
 
     // Donchian Channels
 
     let donchian_channels =
-        rust_ti::candle_indicators::bulk::donchian_channels(&high, &low, &period);
+        rust_ti::candle_indicators::bulk::donchian_channels(&high, &low, period);
 
     //println!("Donchian Channels: {:?}", donchian_channels);
 
     // Keltner Channel
 
     let multiplier = 2.0;
-    for model in &available_models {
-        for atr_model in &available_models {
+    for model in available_models.iter() {
+        for atr_model in available_models.iter() {
             let keltner_channel = rust_ti::candle_indicators::bulk::keltner_channel(
                 &high[1..],
                 &low[1..],
                 &close[..length - 1],
-                &model,
-                &atr_model,
-                &multiplier,
-                &period,
+                *model,
+                *atr_model,
+                multiplier,
+                period,
             );
             //println!(
             //     "Keltner Channel {:?} {:?}: {:?}",
@@ -21270,14 +21270,14 @@ fn main() {
 
     // Supertrend
 
-    for model in &available_models {
+    for model in available_models.iter() {
         let supertrend = rust_ti::candle_indicators::bulk::supertrend(
             &high,
             &low,
             &close,
-            &model,
-            &multiplier,
-            &period,
+            *model,
+            multiplier,
+            period,
         );
         //println!("Supertrend {:?}: {:?}", model, supertrend);
     }

@@ -23,6 +23,11 @@ would be very helpful.
     * Add the ability for indicators to use something other than normal distributions
         * Variance
         * Standard Deviation
+    * OLS multi linear regression
+
+### Documentation
+
+In the tutorial repo have an example that explains how breakdown trends works with goodness of fit examples, and charts.
 
 ### New indicators
 

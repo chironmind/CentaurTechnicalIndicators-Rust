@@ -5,9 +5,9 @@
 
 /// `single` module holds functions that return a singular value for a slice of prices.
 pub mod single {
+    use crate::CentralPoint;
     use std::cmp::Ordering;
     use std::collections::HashMap;
-    use crate::CentralPoint;
 
     /// Calculates the mean (average) of a slice of prices
     ///
@@ -221,7 +221,7 @@ pub mod single {
     /// # Arguments
     ///
     /// * `prices` - Slice of prices
-    /// * `central_point` - A variant of the [`CentralPoint`](crate::CentralPoint) enum
+    /// * `central_point` - A variant of the [`CentralPoint`] enum
     ///
     /// # Panics
     ///
@@ -454,7 +454,7 @@ pub mod bulk {
     /// * `prices` - Slice of prices
     ///
     /// # Panics
-    /// 
+    ///
     /// Panics if `prices` is empty.
     ///
     /// # Examples
@@ -468,7 +468,8 @@ pub mod bulk {
         if prices.is_empty() {
             panic!("Prices ({:?}) is empty", prices);
         }
-        prices.windows(2)
+        prices
+            .windows(2)
             .map(|w| single::log_difference(w[1], w[0]))
             .collect()
     }
@@ -498,13 +499,15 @@ pub mod bulk {
         if period <= 0 {
             panic!("Period ({}) must be greater than 0", period)
         };
-        if period > prices.len()  {
+        if period > prices.len() {
             panic!(
                 "Period ({}) cannot be longer than the length of provided prices ({})",
-                period, prices.len()
+                period,
+                prices.len()
             );
         };
-        prices.windows(period)
+        prices
+            .windows(period)
             .map(|w| single::variance(w))
             .collect()
     }
@@ -538,10 +541,12 @@ pub mod bulk {
         if period > prices.len() {
             panic!(
                 "Period ({}) cannot be longer than the length of provided prices ({})",
-                period, prices.len()
+                period,
+                prices.len()
             );
         };
-        prices.windows(period)
+        prices
+            .windows(period)
             .map(|w| single::standard_deviation(w))
             .collect()
     }
@@ -564,15 +569,15 @@ pub mod bulk {
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 100.0];
     /// let period: usize = 3;
     ///
-    /// let mean_absolute_deviation = 
+    /// let mean_absolute_deviation =
     ///     rust_ti::basic_indicators::bulk::absolute_deviation(&prices, period, rust_ti::CentralPoint::Mean);
     /// assert_eq!(vec![1.1111111111111096, 0.6666666666666666, 1.1111111111111096], mean_absolute_deviation);
     ///
-    /// let median_absolute_deviation = 
+    /// let median_absolute_deviation =
     ///     rust_ti::basic_indicators::bulk::absolute_deviation(&prices, period, rust_ti::CentralPoint::Median);
     /// assert_eq!(vec![1.0, 0.6666666666666666, 1.0], median_absolute_deviation);
     ///
-    /// let mode_absolute_deviation = 
+    /// let mode_absolute_deviation =
     ///     rust_ti::basic_indicators::bulk::absolute_deviation(&prices, period, rust_ti::CentralPoint::Mode);
     /// assert_eq!(vec![1.1111111111111096, 0.6666666666666666, 1.1111111111111096], mode_absolute_deviation);
     /// ```
@@ -587,10 +592,12 @@ pub mod bulk {
         if period > prices.len() {
             panic!(
                 "Period ({}) cannot be longer than the length of provided prices ({})",
-                period, prices.len()
+                period,
+                prices.len()
             );
         };
-        prices.windows(period)
+        prices
+            .windows(period)
             .map(|w| single::absolute_deviation(w, central_point))
             .collect()
     }

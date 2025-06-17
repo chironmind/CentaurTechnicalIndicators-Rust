@@ -57,4 +57,3 @@ pub mod volatility_indicators;
 
 mod types;
 pub use types::*;
-

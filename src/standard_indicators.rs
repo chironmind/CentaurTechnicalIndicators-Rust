@@ -157,9 +157,9 @@ pub mod single {
 
         return moving_constant_bands(
             prices,
-            &ConstantModelType::SimpleMovingAverage,
-            &DeviationModel::StandardDeviation,
-            &2.0,
+            ConstantModelType::SimpleMovingAverage,
+            DeviationModel::StandardDeviation,
+            2.0,
         );
     }
 
