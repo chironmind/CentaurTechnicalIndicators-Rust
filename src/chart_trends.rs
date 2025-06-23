@@ -1,9 +1,9 @@
 //! # Chart Trends
 //!
-//! The `chart_trends` module provides functions to reveal and quantify trends 
+//! The `chart_trends` module provides functions to reveal and quantify trends
 //! in price data for financial charts.
 //!
-//! These are designed for use with OHLC data, and offer peak/valley detection 
+//! These are designed for use with OHLC data, and offer peak/valley detection
 //! and linear regression-based trend lines.
 
 use crate::basic_indicators::single::{max, mean, min};
@@ -63,7 +63,8 @@ pub fn peaks(prices: &[f64], period: usize, closest_neighbor: usize) -> Vec<(f64
     };
 
     let mut peaks: Vec<(f64, usize)> = Vec::new();
-    let mut last_peak_idx: Option<usize> = None;
+    let mut last_peak_idx: usize = 0;
+    let mut last_peak: f64 = 0.0;
 
     for i in 0..=length - period {
         let window = &prices[i..i + period];
@@ -71,20 +72,25 @@ pub fn peaks(prices: &[f64], period: usize, closest_neighbor: usize) -> Vec<(f64
         let local_idx = window.iter().rposition(|&x| x == peak).unwrap();
         let idx = i + local_idx;
 
-        if let Some(last_idx) = last_peak_idx {
-            if idx <= last_idx + closest_neighbor {
-                if peak > peaks.last().unwrap().0 {
+        if last_peak_idx != 0 {
+            if idx <= last_peak_idx + closest_neighbor {
+                if peak < last_peak {
+                    last_peak_idx = idx;
+                } else if peak > last_peak {
                     peaks.pop();
                     peaks.push((peak, idx));
-                    last_peak_idx = Some(idx);
+                    last_peak_idx = idx;
+                    last_peak = peak;
                 }
-                continue;
+            } else if !peaks.contains(&(peak, idx)) {
+                peaks.push((peak, idx));
+                last_peak_idx = idx;
+                last_peak = peak;
             }
-        }
-
-        if !peaks.contains(&(peak, idx)) {
+        } else {
             peaks.push((peak, idx));
-            last_peak_idx = Some(idx);
+            last_peak_idx = idx;
+            last_peak = peak;
         }
     }
     peaks
@@ -142,9 +148,40 @@ pub fn valleys(prices: &[f64], period: usize, closest_neighbor: usize) -> Vec<(f
             period, length
         )
     };
+    let mut peaks: Vec<(f64, usize)> = Vec::new();
+    let mut last_peak_idx: usize = 0;
+    let mut last_peak: f64 = 0.0;
 
+    for i in 0..=length - period {
+        let window = &prices[i..i + period];
+        let peak = max(window);
+        let local_idx = window.iter().rposition(|&x| x == peak).unwrap();
+        let idx = i + local_idx;
+
+        if last_peak_idx != 0 {
+            if idx <= last_peak_idx + closest_neighbor {
+                if peak < last_peak {
+                    last_peak_idx = idx;
+                } else if peak > last_peak {
+                    peaks.pop();
+                    peaks.push((peak, idx));
+                    last_peak_idx = idx;
+                    last_peak = peak;
+                }
+            } else if !peaks.contains(&(peak, idx)) {
+                peaks.push((peak, idx));
+                last_peak_idx = idx;
+                last_peak = peak;
+            }
+        } else {
+            peaks.push((peak, idx));
+            last_peak_idx = idx;
+            last_peak = peak;
+        }
+    }
     let mut valleys: Vec<(f64, usize)> = Vec::new();
-    let mut last_valley_idx: Option<usize> = None;
+    let mut last_valley_idx: usize = 0;
+    let mut last_valley: f64 = 0.0;
 
     for i in 0..=length - period {
         let window = &prices[i..i + period];
@@ -152,20 +189,25 @@ pub fn valleys(prices: &[f64], period: usize, closest_neighbor: usize) -> Vec<(f
         let local_idx = window.iter().rposition(|&x| x == valley).unwrap();
         let idx = i + local_idx;
 
-        if let Some(last_idx) = last_valley_idx {
-            if idx <= last_idx + closest_neighbor {
-                if valley < valleys.last().unwrap().0 {
+        if last_valley_idx != 0 {
+            if idx <= last_valley_idx + closest_neighbor {
+                if valley > last_valley {
+                    last_valley_idx = idx;
+                } else if valley < last_valley {
                     valleys.pop();
                     valleys.push((valley, idx));
-                    last_valley_idx = Some(idx);
+                    last_valley_idx = idx;
+                    last_valley = valley;
                 }
-                continue;
+            } else if !valleys.contains(&(valley, idx)) {
+                valleys.push((valley, idx));
+                last_valley_idx = idx;
+                last_valley = valley;
             }
-        }
-
-        if !valleys.contains(&(valley, idx)) {
+        } else {
             valleys.push((valley, idx));
-            last_valley_idx = Some(idx);
+            last_valley_idx = idx;
+            last_valley = valley;
         }
     }
     return valleys;
@@ -174,8 +216,8 @@ pub fn valleys(prices: &[f64], period: usize, closest_neighbor: usize) -> Vec<(f
 /// OLS simple linear regression function
 fn get_trend_line(p: &[(f64, usize)]) -> (f64, f64) {
     let length = p.len() as f64;
-    let mean_x = p.iter().map(|&(_,x)| x as f64).sum::<f64>() / length;
-    let mean_y = p.iter().map(|&(y,_)| y).sum::<f64>() / length;
+    let mean_x = p.iter().map(|&(_, x)| x as f64).sum::<f64>() / length;
+    let mean_y = p.iter().map(|&(y, _)| y).sum::<f64>() / length;
 
     let (num, den) = p.iter().fold((0.0, 0.0), |(num, den), &(y, x)| {
         let x = x as f64;
@@ -242,11 +284,12 @@ pub fn valley_trend(prices: &[f64], period: usize) -> (f64, f64) {
 /// assert_eq!((-0.1, 101.4), overall_trend);
 /// ```
 pub fn overall_trend(prices: &[f64]) -> (f64, f64) {
-    let indexed_prices: Vec<(f64, usize)> = prices.iter().enumerate().map(|(i, &y)| (y, i)).collect();
+    let indexed_prices: Vec<(f64, usize)> =
+        prices.iter().enumerate().map(|(i, &y)| (y, i)).collect();
     return get_trend_line(&indexed_prices);
 }
 
-/// Calculates price trends and their slopes and intercepts. 
+/// Calculates price trends and their slopes and intercepts.
 ///
 /// # Arguments
 ///
@@ -294,9 +337,9 @@ pub fn overall_trend(prices: &[f64]) -> (f64, f64) {
 /// );
 /// assert_eq!(
 ///     vec![
-///         (0, 2, 1.5, 100.16666666666667), 
+///         (0, 2, 1.5, 100.16666666666667),
 ///         (2, 4, -2.0, 107.0),
-///         (4, 9, 1.7714285714285714, 91.15238095238095), 
+///         (4, 9, 1.7714285714285714, 91.15238095238095),
 ///         (9, 11, -1.5, 120.33333333333333),
 ///         (11, 13, -3.5, 142.66666666666669)
 ///     ], trend_break_down);
@@ -326,7 +369,6 @@ pub fn break_down_trends(
     let mut indexed_points: Vec<(f64, usize)> = Vec::new();
     let mut previous_standard_error = 10000.0;
     let mut previous_reduced_chi_squared = 10000.0;
-    
 
     for (index, &price) in prices.iter().enumerate() {
         indexed_points.push((price, index));
@@ -339,15 +381,17 @@ pub fn break_down_trends(
             let (standard_error, r_squared, reduced_chi_squared) =
                 goodness_of_fit(&indexed_points, &current_trend);
 
-            let soft_break = standard_error > soft_standard_error_multiplier * previous_standard_error
+            let soft_break = standard_error
+                > soft_standard_error_multiplier * previous_standard_error
                 && (r_squared < soft_r_squared_minimum || r_squared > soft_r_squared_maximum)
-                && reduced_chi_squared > soft_reduced_chi_squared_multiplier * previous_reduced_chi_squared;
+                && reduced_chi_squared
+                    > soft_reduced_chi_squared_multiplier * previous_reduced_chi_squared;
 
             let hard_break = r_squared < hard_r_squared_minimum
                 || r_squared > hard_r_squared_maximum
                 || standard_error > hard_standard_error_multiplier * previous_standard_error
-                || reduced_chi_squared > hard_reduced_chi_squared_multiplier * previous_reduced_chi_squared;
-
+                || reduced_chi_squared
+                    > hard_reduced_chi_squared_multiplier * previous_reduced_chi_squared;
 
             if soft_break || hard_break {
                 if outliers.len() < max_outliers {
@@ -386,7 +430,10 @@ pub fn break_down_trends(
 }
 
 fn goodness_of_fit(indexed_points: &[(f64, usize)], trend: &(f64, f64)) -> (f64, f64, f64) {
-    let trend_line: Vec<f64> = indexed_points.iter().map(|&(_, x)| trend.1 + trend.0 * x as f64).collect();
+    let trend_line: Vec<f64> = indexed_points
+        .iter()
+        .map(|&(_, x)| trend.1 + trend.0 * x as f64)
+        .collect();
     let observed_prices: Vec<f64> = indexed_points.iter().map(|&(y, _)| y).collect();
 
     let trend_length = trend_line.len();
@@ -399,11 +446,12 @@ fn goodness_of_fit(indexed_points: &[(f64, usize)], trend: &(f64, f64)) -> (f64,
     };
 
     let observed_mean = mean(&observed_prices);
-    let (sum_sq_residuals, total_squares): (f64, f64) = (0..trend_length).fold((0.0, 0.0), |(ssr, tss), i| {
-        let resid = observed_prices[i] - trend_line[i];
-        let total = observed_prices[i] - observed_mean;
-        (ssr + resid.powi(2), tss + total.powi(2))
-    });
+    let (sum_sq_residuals, total_squares): (f64, f64) =
+        (0..trend_length).fold((0.0, 0.0), |(ssr, tss), i| {
+            let resid = observed_prices[i] - trend_line[i];
+            let total = observed_prices[i] - observed_mean;
+            (ssr + resid.powi(2), tss + total.powi(2))
+        });
 
     let standard_error = (sum_sq_residuals / trend_length as f64).sqrt();
     let r_squared = 1.0 - (sum_sq_residuals / total_squares);

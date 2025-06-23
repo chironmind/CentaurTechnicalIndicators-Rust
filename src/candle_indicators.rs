@@ -1303,11 +1303,7 @@ mod tests {
     #[should_panic]
     fn test_single_moving_constant_envelope_panic() {
         let prices = Vec::new();
-        single::moving_constant_envelopes(
-            &prices,
-            crate::ConstantModelType::SimpleMovingMode,
-            3.0,
-        );
+        single::moving_constant_envelopes(&prices, crate::ConstantModelType::SimpleMovingMode, 3.0);
     }
 
     #[test]
@@ -1664,12 +1660,7 @@ mod tests {
     #[should_panic]
     fn test_sinlge_mcginley_bands_panic() {
         let prices = Vec::new();
-        single::mcginley_dynamic_bands(
-            &prices,
-            crate::DeviationModel::StandardDeviation,
-            2.0,
-            0.0,
-        );
+        single::mcginley_dynamic_bands(&prices, crate::DeviationModel::StandardDeviation, 2.0, 0.0);
     }
 
     #[test]

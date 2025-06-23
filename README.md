@@ -1,5 +1,13 @@
 ![alt text](./assets/banner.webp)
 
+# 🦀 Meet RusTI
+
+Say hello to RusTI, the clawed crusader of candlesticks and the battle-hardened cousin of Ferris! 🦀📈
+
+Forged from rusted metal and born in the depths of the financial abyss, RusTI doesn't just ride sideways markets — he lives for them. With a stack of notebooks, a thousand-yard stare, and more indicators on his screen than legs on his body, RusTI is the ultimate trading bro. He reads charts, calculates MACD in his sleep, and isn’t afraid to pinch your code into shape.
+
+Welcome to RustTI — powered by precision, performance, and one extremely serious crustacean.
+
 # RustTI
 
 A configurable technical indicators library written in pure Rust for all of your technical analysis needs.

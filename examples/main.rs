@@ -469,12 +469,7 @@ fn main() {
 
     for model in available_models.iter() {
         let supertrend = rust_ti::candle_indicators::bulk::supertrend(
-            &high,
-            &low,
-            &close,
-            *model,
-            multiplier,
-            period,
+            &high, &low, &close, *model, multiplier, period,
         );
         println!("Supertrend {:?}: {:?}", model, supertrend);
     }
