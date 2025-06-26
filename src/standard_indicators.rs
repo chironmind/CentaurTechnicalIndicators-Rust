@@ -211,9 +211,9 @@ pub mod single {
         let mut macds = Vec::new();
         let model = crate::ConstantModelType::ExponentialMovingAverage;
         for i in 0..9 {
-            macds.push(macd_line(&prices[i..i + 26], &12_usize, &model, &model));
+            macds.push(macd_line(&prices[i..i + 26], 12_usize, model, model));
         }
-        let signal = signal_line(&macds, &model);
+        let signal = signal_line(&macds, model);
         return (macds[8], signal, macds[8] - signal);
     }
 
@@ -244,7 +244,7 @@ pub mod single {
         if prices.len() != 14 {
             panic!("RSI must have a period of 14 not {}", prices.len())
         };
-        return relative_strength_index(prices, &ConstantModelType::SmoothedMovingAverage);
+        return relative_strength_index(prices, ConstantModelType::SmoothedMovingAverage);
     }
 }
 

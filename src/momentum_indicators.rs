@@ -68,42 +68,47 @@ pub mod single {
     use crate::moving_average::single::{mcginley_dynamic, moving_average};
     use crate::strength_indicators::single::accumulation_distribution;
     use crate::volatility_indicators::single::ulcer_index;
-    use crate::{ConstantModelType, DeviationModel, MovingAverageType};
+    use crate::{ConstantModelType, DeviationModel, MovingAverageType, CentralPoint};
     use std::cmp::Ordering;
-    /// The `relative_strenght_index` measures the speed and magnitude of price changes
-    ///
-    /// The period is determined based on length of `prices`. Based on the 7 day work week when the
-    /// RSI was developed the default length is 14 (2 weeks) but the caller can determine their own
-    /// period.
+
+    /// Calculates the Relative Strength Index (RSI)
     ///
     /// # Arguments
     ///
     /// * `prices` - Slice of prices
-    /// * `constant_model_type` - Variant of the [`ConstantModelType`] enum. The default model for
-    /// the RSI is the `ConstantModelType::SmoothedMovingAverage`
+    /// * `constant_model_type` - Variant of [`ConstantModelType`]
     ///
     /// # Panics
     ///
-    /// `relative_strenght_index` will panic if `prices` is empty
+    /// Panics if `prices.is_empty()`
     ///
     /// # Examples
     ///
     /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
     ///
-    /// let defaut_rsi = rust_ti::momentum_indicators::single::relative_strength_index(&prices, &rust_ti::ConstantModelType::SmoothedMovingAverage);
+    /// let defaut_rsi =
+    ///     rust_ti::momentum_indicators::single::relative_strength_index(
+    ///         &prices,
+    ///         rust_ti::ConstantModelType::SmoothedMovingAverage
+    ///     );
     /// assert_eq!(39.99999999999999, defaut_rsi);
     ///
-    /// let ema_rsi = rust_ti::momentum_indicators::single::relative_strength_index(&prices, &rust_ti::ConstantModelType::ExponentialMovingAverage);
+    /// let ema_rsi =
+    ///     rust_ti::momentum_indicators::single::relative_strength_index(
+    ///         &prices,
+    ///         rust_ti::ConstantModelType::ExponentialMovingAverage
+    ///     );
     /// assert_eq!(38.46153846153846, ema_rsi);
     ///
-    /// let moving_median_rsi = rust_ti::momentum_indicators::single::relative_strength_index(&prices, &rust_ti::ConstantModelType::SimpleMovingMedian);
+    /// let moving_median_rsi =
+    ///     rust_ti::momentum_indicators::single::relative_strength_index(
+    ///         &prices,
+    ///         rust_ti::ConstantModelType::SimpleMovingMedian
+    ///     );
     /// assert_eq!(42.857142857142854, moving_median_rsi);
     /// ```
-    pub fn relative_strength_index(
-        prices: &[f64],
-        constant_model_type: &crate::ConstantModelType,
-    ) -> f64 {
+    pub fn relative_strength_index(prices: &[f64], constant_model_type: ConstantModelType) -> f64 {
         let (previous_gains, previous_loss) = previous_gains_loss(prices);
         if previous_gains.is_empty() {
             return 0.0;
@@ -111,7 +116,7 @@ pub mod single {
         if previous_loss.is_empty() {
             return 100.0;
         }
-
+        println!("{:?} {:?}", previous_gains,previous_loss);
         let (previous_average_gains, previous_average_loss) = match constant_model_type {
             ConstantModelType::SimpleMovingAverage => (
                 moving_average(&previous_gains, &MovingAverageType::Simple),
@@ -141,15 +146,15 @@ pub mod single {
             ConstantModelType::SimpleMovingMode => (mode(&previous_gains), mode(&previous_loss)),
             _ => panic!("Unsupported ConstantModelType"),
         };
-        return rsi(&previous_average_gains, &previous_average_loss);
+        println!("{} {}", previous_average_gains, previous_average_loss);
+        if previous_average_loss == 0.0 {
+            0.0
+        } else {
+            100.0 - (100.0 / (1.0 + (previous_average_gains / previous_average_loss)))
+        }
     }
 
-    /// The `stochastic_oscillator` is a momentum indicator calculated using support and
-    /// resistance levels
-    ///
-    /// When developed by George Lane the stochastic oscillator looked at a period of 14 days as
-    /// the work week had 7 days back then, however this implementation allows for prices of any
-    /// length to be used
+    /// Calculates the stochastic oscillator
     ///
     /// # Arguments
     ///
@@ -157,13 +162,14 @@ pub mod single {
     ///
     /// # Panics
     ///
-    /// `stochastic_oscillator` will panic if `prices` is empty
+    /// Panics if `prices.is_empty()`
     ///
     /// # Examples
     ///
     /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
-    /// let stochastic_oscillator = rust_ti::momentum_indicators::single::stochastic_oscillator(&prices);
+    /// let stochastic_oscillator =
+    ///     rust_ti::momentum_indicators::single::stochastic_oscillator(&prices);
     /// assert_eq!(0.0, stochastic_oscillator);
     /// ```
     pub fn stochastic_oscillator(prices: &[f64]) -> f64 {
@@ -180,10 +186,7 @@ pub mod single {
         return 100.0 * ((prices.last().unwrap() - min) / (max - min));
     }
 
-    /// The `slow_stochastic` is a momentum indicator that takes the moving average of passed in
-    /// stochastic oscillators
-    ///
-    /// The standard length of stochastic oscillators is 3, and the constant model is a simple moving average
+    /// Calculates the slow stochastic
     ///
     /// # Arguments
     ///
@@ -192,33 +195,40 @@ pub mod single {
     ///
     /// # Panics
     ///
-    /// `slow_stochastic` will panic if `stochastics` is empty
+    /// Panics if `stochastics.is_empty()`
     ///
     /// # Examples
     ///
     /// ```rust
     /// let stochstic_oscillators = [0.0, 50.0, 100.0];
     ///
-    /// let simple_ma_slow_stochastic = rust_ti::momentum_indicators::single::slow_stochastic(&stochstic_oscillators, &rust_ti::ConstantModelType::SimpleMovingAverage);
+    /// let simple_ma_slow_stochastic =
+    ///     rust_ti::momentum_indicators::single::slow_stochastic(
+    ///         &stochstic_oscillators,
+    ///         rust_ti::ConstantModelType::SimpleMovingAverage
+    ///     );
     /// assert_eq!(50.0, simple_ma_slow_stochastic);
     ///
     /// let sma_slow_stochastic =
-    /// rust_ti::momentum_indicators::single::slow_stochastic(&stochstic_oscillators,
-    /// &rust_ti::ConstantModelType::SmoothedMovingAverage);
+    ///     rust_ti::momentum_indicators::single::slow_stochastic(
+    ///         &stochstic_oscillators,
+    ///         rust_ti::ConstantModelType::SmoothedMovingAverage
+    ///     );
     /// assert_eq!(63.15789473684211, sma_slow_stochastic);
     ///
-    /// let median_slow_stochastic = rust_ti::momentum_indicators::single::slow_stochastic(&stochstic_oscillators, &rust_ti::ConstantModelType::SimpleMovingMedian);
+    /// let median_slow_stochastic =
+    ///     rust_ti::momentum_indicators::single::slow_stochastic(
+    ///         &stochstic_oscillators,
+    ///         rust_ti::ConstantModelType::SimpleMovingMedian
+    ///     );
     /// assert_eq!(50.0, median_slow_stochastic);
     /// ```
-    pub fn slow_stochastic(
-        stochastics: &[f64],
-        constant_model_type: &crate::ConstantModelType,
-    ) -> f64 {
+    pub fn slow_stochastic(stochastics: &[f64], constant_model_type: ConstantModelType) -> f64 {
         if stochastics.is_empty() {
             panic!("stochastics cannot be empty");
         };
 
-        let slow_stochastic = match constant_model_type {
+        match constant_model_type {
             ConstantModelType::SimpleMovingAverage => {
                 moving_average(&stochastics, &MovingAverageType::Simple)
             }
@@ -237,14 +247,10 @@ pub mod single {
             ConstantModelType::SimpleMovingMedian => median(&stochastics),
             ConstantModelType::SimpleMovingMode => mode(&stochastics),
             _ => panic!("Unsupported ConstantModelType"),
-        };
-        return slow_stochastic;
+        }
     }
 
-    /// The `slowest_stochastic` is a momentum indicator that takes the moving average of passed in
-    /// slow stochastic oscillators
-    ///
-    /// The standard length of slowest stochastics is 3, and the constant model is a simple moving average
+    /// Calculates the slowest stochastic
     ///
     /// # Arguments
     ///
@@ -253,33 +259,43 @@ pub mod single {
     ///
     /// # Panics
     ///
-    /// `slowest_stochastic` will panic if `slow_stochastics` is empty
+    /// Panics if `slow_stochastics.is_empty()`
     ///
     /// # Examples
     ///
     /// ```rust
     /// let slow_stochstic = [30.0, 20.0, 10.0];
     ///
-    /// let simple_ma_slowest_stochastic = rust_ti::momentum_indicators::single::slowest_stochastic(&slow_stochstic, &rust_ti::ConstantModelType::SimpleMovingAverage);
+    /// let simple_ma_slowest_stochastic =
+    ///     rust_ti::momentum_indicators::single::slowest_stochastic(
+    ///         &slow_stochstic,
+    ///         rust_ti::ConstantModelType::SimpleMovingAverage
+    ///     );
     /// assert_eq!(20.0, simple_ma_slowest_stochastic);
     ///
     /// let sma_slowest_stochastic =
-    /// rust_ti::momentum_indicators::single::slowest_stochastic(&slow_stochstic,
-    /// &rust_ti::ConstantModelType::SmoothedMovingAverage);
+    ///     rust_ti::momentum_indicators::single::slowest_stochastic(
+    ///         &slow_stochstic,
+    ///         rust_ti::ConstantModelType::SmoothedMovingAverage
+    ///     );
     /// assert_eq!(17.368421052631582, sma_slowest_stochastic);
     ///
-    /// let median_slowest_stochastic = rust_ti::momentum_indicators::single::slowest_stochastic(&slow_stochstic, &rust_ti::ConstantModelType::SimpleMovingMedian);
+    /// let median_slowest_stochastic =
+    ///     rust_ti::momentum_indicators::single::slowest_stochastic(
+    ///         &slow_stochstic,
+    ///         rust_ti::ConstantModelType::SimpleMovingMedian
+    ///     );
     /// assert_eq!(20.0, median_slowest_stochastic);
     /// ```
     pub fn slowest_stochastic(
         slow_stochastics: &[f64],
-        constant_model_type: &crate::ConstantModelType,
+        constant_model_type: ConstantModelType,
     ) -> f64 {
         if slow_stochastics.is_empty() {
-            panic!("stochastics cannot be empty");
+            panic!("slow stochastics cannot be empty");
         };
 
-        let slowest_stochastic = match constant_model_type {
+        match constant_model_type {
             ConstantModelType::SimpleMovingAverage => {
                 moving_average(&slow_stochastics, &MovingAverageType::Simple)
             }
@@ -298,13 +314,10 @@ pub mod single {
             ConstantModelType::SimpleMovingMedian => median(&slow_stochastics),
             ConstantModelType::SimpleMovingMode => mode(&slow_stochastics),
             _ => panic!("Unsupported ConstantModelType"),
-        };
-        return slowest_stochastic;
+        }
     }
 
-    /// `williams_percent_r` is a momentum that tracks overbought and oversold levels.
-    ///
-    /// The standard period used is 14 days. The high would be the maximum price over the past 14 days, and the low the minimum price over the past 14 days.
+    /// Calculates the Williams %R
     ///
     /// # Arguments
     ///
@@ -312,51 +325,70 @@ pub mod single {
     /// * `low` - Slice of lows
     /// * `close` - Close price for the observed period
     ///
+    /// # Panics
+    ///
+    /// Panics if:
+    ///     * `high.is_empty()` or `low.is_empty()`
+    ///     * `high.len()` != `low.len()`
+    ///
     /// # Examples
     ///
     /// ```rust
     /// let high = [200.0, 215.0, 206.0];
     /// let low = [175.0, 189.0, 182.0];
     /// let close = 192.0;
-    /// let williams_percent_r = rust_ti::momentum_indicators::single::williams_percent_r(&high, &low,
-    /// &close);
+    /// let williams_percent_r =
+    ///     rust_ti::momentum_indicators::single::williams_percent_r(
+    ///         &high,
+    ///         &low,
+    ///         close
+    ///     );
     /// assert_eq!(-57.49999999999999, williams_percent_r);
     /// ```
-    pub fn williams_percent_r(high: &[f64], low: &[f64], close: &f64) -> f64 {
+    pub fn williams_percent_r(high: &[f64], low: &[f64], close: f64) -> f64 {
+        if high.is_empty() || low.is_empty() {
+            panic!("high and low cannot be empty")
+        };
+        if high.len() != low.len() {
+            panic!(
+                "Length of high ({}) and low ({}) must match",
+                high.len(),
+                low.len()
+            )
+        };
         let max_high = max(high);
         let min_low = min(low);
-        return -100.0_f64 * ((max_high - close) / (max_high - min_low));
+        -100.0_f64 * ((max_high - close) / (max_high - min_low))
     }
 
-    /// The `money_flow_index` is a momentum indicator that shows the volume of money (a.k.a money
-    /// flow) going in and out of the asset.
-    ///
-    /// The standard money flow index uses the typical price (high+low+close/3) as the observed
-    /// price and a period of 14 days.
+    /// Calculates the Money Flow Index (MFI)
     ///
     /// # Arguments
     ///
-    /// * `prices` - An `f64` slice of prices
-    /// * `volume` - Volume of transactions
+    /// * `prices` - Slice of prices
+    /// * `volume` - Slice of transaction volumes
     ///
     /// # Panics
     ///
-    /// `money_flow_index` will panic if:
-    /// * `prices` is empty
-    /// * length of `prices` and `volume` don't match
+    /// Panics if:
+    ///     * `prices.is_empty()` or `volume.is_empty()`
+    ///     * `prices.len()` != `volume.len()`
     ///
     /// # Examples
     ///
     /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
     /// let volume = vec![1000.0, 1500.0, 1200.0, 900.0, 1300.0];
-    /// let money_flow_index = rust_ti::momentum_indicators::single::money_flow_index(&prices,
-    /// &volume);
+    /// let money_flow_index =
+    ///     rust_ti::momentum_indicators::single::money_flow_index(
+    ///         &prices,
+    ///         &volume
+    ///     );
     /// assert_eq!(56.771463119709786, money_flow_index);
     /// ```
     pub fn money_flow_index(prices: &[f64], volume: &[f64]) -> f64 {
-        if prices.is_empty() {
-            panic!("Prices cannot be empty");
+        if prices.is_empty() || volume.is_empty() {
+            panic!("Prices and volume cannot be empty");
         }
         let length = prices.len();
         if length != volume.len() {
@@ -367,69 +399,71 @@ pub mod single {
             );
         };
 
-        let mut raw_money_flow = Vec::new();
+        let mut raw_money_flow = Vec::with_capacity(length);
         for i in 0..length {
             raw_money_flow.push(prices[i] * volume[i]);
         }
 
         let mut positive_money_flow = 0.0;
         let mut negative_money_flow = 0.0;
-        for (i, value) in raw_money_flow.iter().enumerate() {
-            if i == 0 {
-                continue;
-            };
-            if value > &raw_money_flow[i - 1] {
-                positive_money_flow = positive_money_flow + value;
-            } else if value < &raw_money_flow[i - 1] {
-                negative_money_flow = negative_money_flow + value;
-            };
+
+        for i in 1..length {
+            if raw_money_flow[i] > raw_money_flow[i - 1] {
+                positive_money_flow += raw_money_flow[i];
+            } else if raw_money_flow[i] < raw_money_flow[i - 1] {
+                negative_money_flow += raw_money_flow[i];
+            }
         }
 
         if negative_money_flow == 0.0 {
-            return 100.0;
-        };
-        return 100.0 - (100.0 / (1.0 + (positive_money_flow / negative_money_flow)));
+            100.0
+        } else {
+            100.0 - (100.0 / (1.0 + (positive_money_flow / negative_money_flow)))
+        }
     }
 
-    /// The `rate_of_change` is a momentum indicator that shows how quickly the price of an asset
-    /// is changing.
-    ///
-    /// The standard is to use the closing price.
+    /// Calculates the rate of change (RoC)
     ///
     /// # Arguments
     ///
-    /// * `current_price` - Price at t
-    /// * `previous_price` - Price at t-n
+    /// * `current_price` - Current price
+    /// * `previous_price` - Previous price
     ///
     /// # Examples
     ///
     /// ```rust
     /// let current_price = 120.0;
     /// let previous_price = 100.0;
-    /// let rate_of_change = rust_ti::momentum_indicators::single::rate_of_change(&current_price,
-    /// &previous_price);
+    /// let rate_of_change =
+    ///     rust_ti::momentum_indicators::single::rate_of_change(
+    ///         current_price,
+    ///         previous_price
+    ///     );
     /// assert_eq!(20.0, rate_of_change);
     ///
     /// let current_price = 100.0;
     /// let previous_price = 120.0;
-    /// let rate_of_change = rust_ti::momentum_indicators::single::rate_of_change(&current_price,
-    /// &previous_price);
+    /// let rate_of_change =
+    ///     rust_ti::momentum_indicators::single::rate_of_change(
+    ///         current_price,
+    ///         previous_price
+    ///     );
     /// assert_eq!(-16.666666666666664, rate_of_change);
     /// ```
-    pub fn rate_of_change(current_price: &f64, previous_price: &f64) -> f64 {
-        return ((current_price - previous_price) / previous_price) * 100.0;
+    pub fn rate_of_change(current_price: f64, previous_price: f64) -> f64 {
+        ((current_price - previous_price) / previous_price) * 100.0
     }
 
-    /// The `on_balance_volume` is a momentum indicator that uses volume
+    /// Calculates the on balance volume (OBV)
     ///
     /// The standard price to use it the closing price. If there is no previous on balance volume
     /// pass in 0.
     ///
     /// # Arguments
     ///
-    /// * `current_price` - Price a t
-    /// * `previous_price` - Price at t-n
-    /// * `current_volume` - Volume at t
+    /// * `current_price` - Current price
+    /// * `previous_price` - Previous price
+    /// * `current_volume` - Current volume
     /// * `previous_on_balance_volume` - Previous on balance volume. Use 0.0 if no previous OBV.
     ///
     /// # Examples
@@ -439,52 +473,52 @@ pub mod single {
     /// let previous_price = 100.0;
     /// let current_volume = 1500.0;
     /// let on_balance_volume =
-    /// rust_ti::momentum_indicators::single::on_balance_volume(&current_price, &previous_price,
-    /// &current_volume, &0.0);
+    ///     rust_ti::momentum_indicators::single::on_balance_volume(
+    ///         current_price,
+    ///         previous_price,
+    ///         current_volume,
+    ///         0.0
+    ///     );
     /// assert_eq!(1500.0 ,on_balance_volume);
     ///
     /// let current_price = 100.0;
     /// let previous_price = 120.0;
     /// let current_volume = 1000.0;
     /// let on_balance_volume =
-    /// rust_ti::momentum_indicators::single::on_balance_volume(&current_price, &previous_price,
-    /// &current_volume, &1500.0);
+    ///     rust_ti::momentum_indicators::single::on_balance_volume(
+    ///         current_price,
+    ///         previous_price,
+    ///         current_volume,
+    ///         1500.0);
     /// assert_eq!(500.0, on_balance_volume);
     /// ```
     pub fn on_balance_volume(
-        current_price: &f64,
-        previous_price: &f64,
-        current_volume: &f64,
-        previous_on_balance_volume: &f64,
+        current_price: f64,
+        previous_price: f64,
+        current_volume: f64,
+        previous_on_balance_volume: f64,
     ) -> f64 {
         let mut volume = 0.0;
         if current_price > previous_price {
-            volume = volume + current_volume;
+            volume += current_volume;
         } else if current_price < previous_price {
-            volume = volume - current_volume;
+            volume -= current_volume;
         };
-        return previous_on_balance_volume + volume;
+        previous_on_balance_volume + volume
     }
 
-    /// The `commodity_channel_index` is a momentum indicator flagging overbought and oversold
-    /// conditions.
-    ///
-    /// The standard commodity channel index uses the typical price, a simple moving average model,
-    /// and a mean absolute deviation model. The `constant_multiplier` is a scale factor used to
-    /// provide more readable numbers. It is recommended to use 0.015 as the default as changing it
-    /// will impact how the numbers are distributed and the standard -100/100 flags may no longer
-    /// apply.
+    /// Calculates the Commodity Channel Index (CCI)
     ///
     /// # Arguments
     ///
     /// * `prices` - Slice of prices
     /// * `constant_model_type` - Variant of [`ConstantModelType`]
     /// * `deviation_model` - Variant of [`DeviationModel`]
-    /// * `constant_multiplier` - Scale factor. Standard is 0.015
+    /// * `constant_multiplier` - Scale factor (Usually 0.015)
     ///
     /// # Panics
     ///
-    /// `commodity_channel_index` will panic if `prices` is empty
+    /// Panics if `prices.is_empty()`
     ///
     /// # Examples
     ///
@@ -492,24 +526,38 @@ pub mod single {
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
     /// let constant_multiplier = 0.015;
     ///
-    /// let default_cci = rust_ti::momentum_indicators::single::commodity_channel_index(&prices, &rust_ti::ConstantModelType::SimpleMovingAverage, &rust_ti::DeviationModel::MeanAbsoluteDeviation, &constant_multiplier);
+    /// let default_cci =
+    ///     rust_ti::momentum_indicators::single::commodity_channel_index(
+    ///         &prices,
+    ///         rust_ti::ConstantModelType::SimpleMovingAverage,
+    ///         rust_ti::DeviationModel::MeanAbsoluteDeviation,
+    ///         constant_multiplier
+    ///     );
     /// assert_eq!(-111.11111111111111, default_cci);
     ///
-    /// let ema_sd_cci = rust_ti::momentum_indicators::single::commodity_channel_index(&prices,
-    /// &rust_ti::ConstantModelType::ExponentialMovingAverage,
-    /// &rust_ti::DeviationModel::StandardDeviation, &constant_multiplier);
+    /// let ema_sd_cci =
+    ///     rust_ti::momentum_indicators::single::commodity_channel_index(
+    ///         &prices,
+    ///         rust_ti::ConstantModelType::ExponentialMovingAverage,
+    ///         rust_ti::DeviationModel::StandardDeviation,
+    ///         constant_multiplier
+    ///     );
     /// assert_eq!(-75.96091804215764, ema_sd_cci);
     ///
-    /// let median_mad_cci = rust_ti::momentum_indicators::single::commodity_channel_index(&prices,
-    /// &rust_ti::ConstantModelType::SimpleMovingMedian,
-    /// &rust_ti::DeviationModel::MedianAbsoluteDeviation, &constant_multiplier);  
+    /// let median_mad_cci =
+    ///     rust_ti::momentum_indicators::single::commodity_channel_index(
+    ///         &prices,
+    ///         rust_ti::ConstantModelType::SimpleMovingMedian,
+    ///         rust_ti::DeviationModel::MedianAbsoluteDeviation,
+    ///         constant_multiplier
+    ///     );  
     /// assert_eq!(-111.11111111111111, median_mad_cci);
     /// ```
     pub fn commodity_channel_index(
         prices: &[f64],
-        constant_model_type: &crate::ConstantModelType,
-        deviation_model: &crate::DeviationModel,
-        constant_multiplier: &f64,
+        constant_model_type: ConstantModelType,
+        deviation_model: DeviationModel,
+        constant_multiplier: f64,
     ) -> f64 {
         if prices.is_empty() {
             panic!("Prices cannot be empty");
@@ -539,40 +587,36 @@ pub mod single {
         let deviation = match deviation_model {
             DeviationModel::StandardDeviation => standard_deviation(&prices),
             DeviationModel::MeanAbsoluteDeviation => {
-                absolute_deviation(&prices, crate::CentralPoint::Mean)
+                absolute_deviation(&prices, CentralPoint::Mean)
             }
             DeviationModel::MedianAbsoluteDeviation => {
-                absolute_deviation(&prices, crate::CentralPoint::Median)
+                absolute_deviation(&prices, CentralPoint::Median)
             }
             DeviationModel::ModeAbsoluteDeviation => {
-                absolute_deviation(&prices, crate::CentralPoint::Mode)
+                absolute_deviation(&prices, CentralPoint::Mode)
             }
             DeviationModel::UlcerIndex => ulcer_index(&prices),
             _ => panic!("Unsupported DeviationModel"),
         };
         if deviation == 0.0 {
-            return 0.0;
-        };
-        return (prices.last().unwrap() - moving_constant) / (constant_multiplier * deviation);
+            0.0
+        } else {
+            (prices.last().unwrap() - moving_constant) / (constant_multiplier * deviation)
+        }
     }
 
-    /// The `mcginley_dynamic_commodity_channel_index` is a momentum indicator flagging overbought and oversold
-    /// conditions.
-    ///
-    /// The McGinley dynamic commodity channel index uses the McGinley dynamic rather than a moving average model, and returns the CCI as well as the McGinley dynamic.
-    /// The caller still needs to determine the absolute deviation model.
+    /// Calculates the McGinley dynamic commodity channel index
     ///
     /// # Arguments
     ///
-    /// * `prices` - An `f64` slice of prices
-    /// * `previous_mcginley_dynamic` - The previous value of the McGinley dynamic. 0.0 if no
-    /// previous.
-    /// * `deviation_model` - A variant of [`DeviationModel`]
+    /// * `prices` - Slice of prices
+    /// * `previous_mcginley_dynamic` - Previous McGinley dynamic. 0.0 if none
+    /// * `deviation_model` - Variant of [`DeviationModel`]
     /// * `constant_multiplier` - Scale factor. Normally 0.015
     ///
     /// # Panics
     ///
-    /// `mcginley_dynamic_commodity_channel_index` will panic if `prices` is empty
+    /// Panics if `prices.is_empty()`
     ///
     /// # Examples
     ///
@@ -580,65 +624,65 @@ pub mod single {
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
     /// let constant_multiplier = 0.015;
     ///
-    /// let mcginley_cci = rust_ti::momentum_indicators::single::mcginley_dynamic_commodity_channel_index(
-    /// &prices, &0.0, &rust_ti::DeviationModel::MeanAbsoluteDeviation, &constant_multiplier);
+    /// let mcginley_cci =
+    ///     rust_ti::momentum_indicators::single::mcginley_dynamic_commodity_channel_index(
+    ///         &prices,
+    ///         0.0,
+    ///         rust_ti::DeviationModel::MeanAbsoluteDeviation,
+    ///         constant_multiplier
+    ///     );
     /// assert_eq!((0.0, 99.0), mcginley_cci);
     ///
     /// let prices = vec![102.0, 103.0, 101.0, 99.0, 102.0];
-    /// let mcginley_cci = rust_ti::momentum_indicators::single::mcginley_dynamic_commodity_channel_index(
-    /// &prices, &mcginley_cci.1, &rust_ti::DeviationModel::MeanAbsoluteDeviation, &constant_multiplier);
+    /// let mcginley_cci =
+    ///     rust_ti::momentum_indicators::single::mcginley_dynamic_commodity_channel_index(
+    ///         &prices,
+    ///         mcginley_cci.1,
+    ///         rust_ti::DeviationModel::MeanAbsoluteDeviation,
+    ///         constant_multiplier
+    ///     );
     /// assert_eq!((146.8770632107927, 99.53246533805869), mcginley_cci);
     /// ```
     pub fn mcginley_dynamic_commodity_channel_index(
         prices: &[f64],
-        previous_mcginley_dynamic: &f64,
-        deviation_model: &crate::DeviationModel,
-        constant_multiplier: &f64,
+        previous_mcginley_dynamic: f64,
+        deviation_model: DeviationModel,
+        constant_multiplier: f64,
     ) -> (f64, f64) {
         if prices.is_empty() {
             panic!("Prices cannot be empty");
         };
 
-        let last_price = prices.last().unwrap();
+        let last_price = prices.last().copied().unwrap();
 
         let mcginley_dynamic =
-            mcginley_dynamic(&last_price, previous_mcginley_dynamic, &prices.len());
+            mcginley_dynamic(&last_price, &previous_mcginley_dynamic, &prices.len());
 
         let deviation = match deviation_model {
             DeviationModel::StandardDeviation => standard_deviation(&prices),
             DeviationModel::MeanAbsoluteDeviation => {
-                absolute_deviation(&prices, crate::CentralPoint::Mean)
+                absolute_deviation(&prices, CentralPoint::Mean)
             }
             DeviationModel::MedianAbsoluteDeviation => {
-                absolute_deviation(&prices, crate::CentralPoint::Median)
+                absolute_deviation(&prices, CentralPoint::Median)
             }
             DeviationModel::ModeAbsoluteDeviation => {
-                absolute_deviation(&prices, crate::CentralPoint::Mode)
+                absolute_deviation(&prices, CentralPoint::Mode)
             }
             DeviationModel::UlcerIndex => ulcer_index(&prices),
             _ => panic!("Unsupported DeviationModel"),
         };
         if deviation == 0.0 {
-            return (0.0, mcginley_dynamic);
-        };
-        return (
-            (last_price - mcginley_dynamic) / (constant_multiplier * deviation),
-            mcginley_dynamic,
-        );
+            (0.0, mcginley_dynamic)
+        } else {
+            (
+                (last_price - mcginley_dynamic) / (constant_multiplier * deviation),
+                mcginley_dynamic,
+            )
+        }
     }
 
-    /// The `macd_line` is a momentum indicator that also shows price
-    /// strength, direction, and general trend.
-    ///
-    /// The indicator was developer back when there was a 6 day trading week so the standard short
-    /// term to use is 12, and 26 for the long term. However the caller can determine the period.
-    /// Both tyically use an exponential moving average model, but this is also determined by the
-    /// caller.
-    ///
-    /// The long period is determined by the length of the `prices` slice.
-    ///
-    /// This function *only* calculates the MACD line not the signal line, `signal_line` should be
-    /// called for the signal line.
+    /// Calculates the Moving Average Convergence Divergence (MACD) line
     ///
     /// # Arguments
     ///
@@ -650,164 +694,164 @@ pub mod single {
     /// # Panics
     ///
     /// `macd_line` will panic if:
-    /// * `prices` is empty
-    /// * `short_period` is greater than length of `prices`
+    /// * `prices.is_empty()`
+    /// * `short_period` >= `prices.len()`
     ///
     /// # Examples
     ///
     /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
     ///
-    /// let macd = rust_ti::momentum_indicators::single::macd_line(&prices, &3_usize,
-    /// &rust_ti::ConstantModelType::ExponentialMovingAverage,
-    /// &rust_ti::ConstantModelType::ExponentialMovingAverage);
+    /// let macd =
+    ///     rust_ti::momentum_indicators::single::macd_line(
+    ///         &prices,
+    ///         3_usize,
+    ///         rust_ti::ConstantModelType::ExponentialMovingAverage,
+    ///         rust_ti::ConstantModelType::ExponentialMovingAverage
+    ///     );
     /// assert_eq!(-0.46851726472581845, macd);
     ///
-    /// let macd = rust_ti::momentum_indicators::single::macd_line(&prices, &3_usize,
-    /// &rust_ti::ConstantModelType::SimpleMovingAverage,
-    /// &rust_ti::ConstantModelType::SimpleMovingMedian);
+    /// let macd =
+    ///     rust_ti::momentum_indicators::single::macd_line(
+    ///         &prices,
+    ///         3_usize,
+    ///         rust_ti::ConstantModelType::SimpleMovingAverage,
+    ///         rust_ti::ConstantModelType::SimpleMovingMedian
+    ///     );
     /// assert_eq!(0.0, macd);
     /// ```
     pub fn macd_line(
         prices: &[f64],
-        short_period: &usize,
-        short_period_model: &crate::ConstantModelType,
-        long_period_model: &crate::ConstantModelType,
+        short_period: usize,
+        short_period_model: ConstantModelType,
+        long_period_model: ConstantModelType,
     ) -> f64 {
         if prices.is_empty() {
             panic!("Prices cannot be empty");
         };
         let length = prices.len();
-        if short_period >= &length {
+        if short_period >= length {
             panic!(
                 "Short period ({}) cannot be greater or equal to long period ({})",
                 short_period, length
             );
         };
 
-        let short_period_index = length - short_period;
+        let short_period_slice = &prices[length - short_period..];
         let short_period_average = match short_period_model {
             ConstantModelType::SimpleMovingAverage => {
-                moving_average(&prices[short_period_index..], &MovingAverageType::Simple)
+                moving_average(short_period_slice, &MovingAverageType::Simple)
             }
             ConstantModelType::SmoothedMovingAverage => {
-                moving_average(&prices[short_period_index..], &MovingAverageType::Smoothed)
+                moving_average(short_period_slice, &MovingAverageType::Smoothed)
             }
-            ConstantModelType::ExponentialMovingAverage => moving_average(
-                &prices[short_period_index..],
-                &MovingAverageType::Exponential,
-            ),
+            ConstantModelType::ExponentialMovingAverage => {
+                moving_average(short_period_slice, &MovingAverageType::Exponential)
+            }
             ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => {
                 moving_average(
-                    &prices[short_period_index..],
+                    short_period_slice,
                     &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
                 )
             }
-            ConstantModelType::SimpleMovingMedian => median(&prices[short_period_index..]),
-            ConstantModelType::SimpleMovingMode => mode(&prices[short_period_index..]),
+            ConstantModelType::SimpleMovingMedian => median(short_period_slice),
+            ConstantModelType::SimpleMovingMode => mode(short_period_slice),
             _ => panic!("Unsupported ConstantModelType"),
         };
 
         let long_period_average = match long_period_model {
             ConstantModelType::SimpleMovingAverage => {
-                moving_average(&prices, &MovingAverageType::Simple)
+                moving_average(prices, &MovingAverageType::Simple)
             }
             ConstantModelType::SmoothedMovingAverage => {
-                moving_average(&prices, &MovingAverageType::Smoothed)
+                moving_average(prices, &MovingAverageType::Smoothed)
             }
             ConstantModelType::ExponentialMovingAverage => {
-                moving_average(&prices, &MovingAverageType::Exponential)
+                moving_average(prices, &MovingAverageType::Exponential)
             }
             ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => {
                 moving_average(
-                    &prices,
+                    prices,
                     &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
                 )
             }
-            ConstantModelType::SimpleMovingMedian => median(&prices),
-            ConstantModelType::SimpleMovingMode => mode(&prices),
+            ConstantModelType::SimpleMovingMedian => median(prices),
+            ConstantModelType::SimpleMovingMode => mode(prices),
             _ => panic!("Unsupported ConstantModelType"),
         };
-        return short_period_average - long_period_average;
+        short_period_average - long_period_average
     }
 
-    /// The `signal_line` is used with the `macd_line` to produce the moving average convergence
-    /// divergence.
-    ///
-    /// The standard period for the signal line is 9, and it normally uses an exponential moving
-    /// average model.
+    /// Calculates the MACD signal line
     ///
     /// # Arguments
     ///
-    /// * `macds` - An `f64` slice of MACDs
-    /// * `constant_model_type` - A variant of [`ConstantModelType`]
+    /// * `macds` - Slice of MACDs
+    /// * `constant_model_type` - Variant of [`ConstantModelType`]
     ///
     /// # Panics
     ///
-    /// `signal_line` will panic if `macds` is empty
+    /// Panics if `macds.is_empty()`
     ///
     /// # Examples
     ///
     /// ```rust
     /// let macds = vec![-0.0606702775897219, -0.0224170616113781, 0.0057887610020515];
     ///
-    /// let ema_signal_line = rust_ti::momentum_indicators::single::signal_line(&macds,
-    /// &rust_ti::ConstantModelType::ExponentialMovingAverage);
+    /// let ema_signal_line =
+    ///     rust_ti::momentum_indicators::single::signal_line(
+    ///         &macds,
+    ///         rust_ti::ConstantModelType::ExponentialMovingAverage
+    ///     );
     /// assert_eq!(-0.011764193829181728, ema_signal_line);
     ///
-    /// let median_signal_line = rust_ti::momentum_indicators::single::signal_line(&macds,
-    /// &rust_ti::ConstantModelType::SimpleMovingMedian);
+    /// let median_signal_line =
+    ///     rust_ti::momentum_indicators::single::signal_line(
+    ///         &macds,
+    ///         rust_ti::ConstantModelType::SimpleMovingMedian
+    ///     );
     /// assert_eq!(-0.0224170616113781, median_signal_line);
     /// ```
-    pub fn signal_line(macds: &[f64], constant_model_type: &crate::ConstantModelType) -> f64 {
+    pub fn signal_line(macds: &[f64], constant_model_type: ConstantModelType) -> f64 {
         if macds.is_empty() {
-            panic!("macds cannot be empty");
+            panic!("MACDs cannot be empty");
         };
         match constant_model_type {
             ConstantModelType::SimpleMovingAverage => {
-                return moving_average(&macds, &MovingAverageType::Simple)
+                moving_average(&macds, &MovingAverageType::Simple)
             }
             ConstantModelType::SmoothedMovingAverage => {
-                return moving_average(&macds, &MovingAverageType::Smoothed)
+                moving_average(&macds, &MovingAverageType::Smoothed)
             }
             ConstantModelType::ExponentialMovingAverage => {
-                return moving_average(&macds, &MovingAverageType::Exponential)
+                moving_average(&macds, &MovingAverageType::Exponential)
             }
             ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => {
-                return moving_average(
+                moving_average(
                     &macds,
                     &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
                 )
             }
-            ConstantModelType::SimpleMovingMedian => return median(&macds),
-            ConstantModelType::SimpleMovingMode => return mode(&macds),
+            ConstantModelType::SimpleMovingMedian => median(&macds),
+            ConstantModelType::SimpleMovingMode => mode(&macds),
             _ => panic!("Unsupported ConstantModelType"),
         }
     }
 
-    /// The `mcginley_dynamic_macd_line` is an alternative to `macd_line` that uses and returns the
-    /// McGinley Dynamic as well as the MACD.
-    ///
-    /// The function returns a tuple with the MACD value first, short period McGinley dynamic second, and the long period third.
-    ///
-    /// The is no McGinley dynamic just for the signal line as the singal line merely take a moving
-    /// average of the MACDs, for a McGinley dynamic version just call
-    /// `mcginley_dynamic` from `moving_averages.rs`
+    /// Calculates the McGinley dynamic MACD line
     ///
     /// # Arguments
     ///
     /// * `prices` - Slice of prices
     /// * `short_period` - The length of the short period
-    /// * `previous_short_mcginley` - Previous McGinley dynamic for the short model. If no
-    /// previous use 0.0.
-    /// * `previous_long_mcginley` - Previous McGinley dynamic for the long model. If no
-    /// previous use 0.0.
+    /// * `previous_short_mcginley` - Previous McGinley dynamic for the short model.
+    /// * `previous_long_mcginley` - Previous McGinley dynamic for the long model.
     ///
     /// # Panics
     ///
-    /// `mcginley_dynamic_macd_line` will panic if:
-    /// * `prices` is empty
-    /// * `short_period` is greater than length of `prices`
+    /// Panics if:
+    ///     * `prices.is_empty()`
+    ///     * `short_period` >= `prices.len()`
     ///
     /// # Examples
     ///
@@ -815,26 +859,35 @@ pub mod single {
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
     /// let short_period: usize = 3;
     ///
-    /// let mcginley_dynamic_macd = rust_ti::momentum_indicators::single::mcginley_dynamic_macd_line(&prices, &short_period,
-    /// &0.0, &0.0);
+    /// let mcginley_dynamic_macd =
+    ///     rust_ti::momentum_indicators::single::mcginley_dynamic_macd_line(
+    ///         &prices,
+    ///         short_period,
+    ///         0.0,
+    ///         0.0
+    ///     );
     /// assert_eq!((0.0, 99.0, 99.0), mcginley_dynamic_macd);
     ///
     /// let prices = vec![102.0, 103.0, 101.0, 99.0, 102.0];
-    /// let mcginley_dynamic_macd = rust_ti::momentum_indicators::single::mcginley_dynamic_macd_line(&prices, &short_period,
-    /// &mcginley_dynamic_macd.1, &mcginley_dynamic_macd.2);
+    /// let mcginley_dynamic_macd =
+    ///     rust_ti::momentum_indicators::single::mcginley_dynamic_macd_line(
+    ///         &prices,
+    ///         short_period,
+    ///         mcginley_dynamic_macd.1,
+    ///         mcginley_dynamic_macd.2);
     /// assert_eq!((0.35497689203913296, 99.88744223009782, 99.53246533805869), mcginley_dynamic_macd);
     /// ```
     pub fn mcginley_dynamic_macd_line(
         prices: &[f64],
-        short_period: &usize,
-        previous_short_mcginley: &f64,
-        previous_long_mcginley: &f64,
+        short_period: usize,
+        previous_short_mcginley: f64,
+        previous_long_mcginley: f64,
     ) -> (f64, f64, f64) {
         if prices.is_empty() {
             panic!("Prices cannot be empty");
         };
 
-        if short_period >= &prices.len() {
+        if short_period >= prices.len() {
             panic!(
                 "Short period ({}) cannot be longer or equal to length of prices ({})",
                 short_period,
@@ -842,26 +895,18 @@ pub mod single {
             );
         };
 
-        let latest_price = prices.last().unwrap();
-        if previous_short_mcginley == &0.0 && previous_long_mcginley == &0.0 {
-            return (0.0, *latest_price, *latest_price);
+        let latest_price = *prices.last().unwrap();
+        if previous_short_mcginley == 0.0 && previous_long_mcginley == 0.0 {
+            return (0.0, latest_price, latest_price);
         };
 
-        let long_mcginley = mcginley_dynamic(&latest_price, previous_long_mcginley, &prices.len());
-        let short_mcginley = mcginley_dynamic(&latest_price, previous_short_mcginley, short_period);
+        let long_mcginley = mcginley_dynamic(&latest_price, &previous_long_mcginley, &prices.len());
+        let short_mcginley = mcginley_dynamic(&latest_price, &previous_short_mcginley, &short_period);
         let macd = short_mcginley - long_mcginley;
-        return (macd, short_mcginley, long_mcginley);
+        (macd, short_mcginley, long_mcginley)
     }
 
-    /// The `chaikin_oscillator` measures momentum by taking the difference a short period and long
-    /// period Accumulation Distribution line.
-    ///
-    /// The standard is to use the same short and long periods used in the MACD to track the
-    /// accumulation distribution of the MACD, but as for the MACD the periods are determined by
-    /// the caller. The standard moving average model is an Exponential Moving Average.
-    ///
-    /// Returns a tuple with the Chaikin Oscillator and the first Accumulation Distribution, so
-    /// that it can be used in future calculations .
+    /// Calculates the Chaikin Oscillator
     ///
     /// # Arguments
     ///
@@ -869,17 +914,16 @@ pub mod single {
     /// * `lows` - Slice of price lows
     /// * `close` - Slice of closing prices
     /// * `volume` - Slice of transction volumes
-    /// * `short_period` - Short period over which to calculate the Accumulation Distribution
-    /// * `previous_accumulation_distribution` - Previous accumulation distribution value. If none
-    /// use 0.0
-    /// * `short_period_model` - A variant of [`ConstantModelType`]
-    /// * `long_period_model` - A variant of [`ConstantModelType`]  
+    /// * `short_period` - Short period for the Accumulation Distribution
+    /// * `previous_accumulation_distribution` - Previous accumulation distribution
+    /// * `short_period_model` - Variant of [`ConstantModelType`]
+    /// * `long_period_model` - Variant of [`ConstantModelType`]  
     ///
     /// # Panics
     ///
-    /// `chaikin_oscillator` will panic if:
-    /// * Length of `highs`, `lows`, `close`, and `volume` don't match
-    /// * If the lengths are less than the `short_period`
+    /// Panics if:
+    ///     * `highs.len()` != `lows.len()` != `close.len()` != `volume.len()`
+    ///     * If lengths <= `short_period`
     ///
     /// # Examples
     ///
@@ -891,28 +935,30 @@ pub mod single {
     /// let short_period: usize = 3;
     /// let previous = 0.0;
     ///
-    /// let chaikin_oscillator = rust_ti::momentum_indicators::single::chaikin_oscillator(
-    ///     &high,
-    ///     &low,
-    ///     &close,
-    ///     &volume,
-    ///     &short_period,
-    ///     &previous,
-    ///     &rust_ti::ConstantModelType::ExponentialMovingAverage,
-    ///     &rust_ti::ConstantModelType::ExponentialMovingAverage
+    /// let chaikin_oscillator =
+    ///     rust_ti::momentum_indicators::single::chaikin_oscillator(
+    ///         &high,
+    ///         &low,
+    ///         &close,
+    ///         &volume,
+    ///         short_period,
+    ///         previous,
+    ///         rust_ti::ConstantModelType::ExponentialMovingAverage,
+    ///         rust_ti::ConstantModelType::ExponentialMovingAverage
     ///     );
     /// assert_eq!((-179.95937711577525, 500.0), chaikin_oscillator);
     ///
     /// let previous = 500.0;
-    /// let chaikin_oscillator = rust_ti::momentum_indicators::single::chaikin_oscillator(
-    ///     &high,
-    ///     &low,
-    ///     &close,
-    ///     &volume,
-    ///     &short_period,
-    ///     &previous,
-    ///     &rust_ti::ConstantModelType::SimpleMovingAverage,
-    ///     &rust_ti::ConstantModelType::SimpleMovingMedian
+    /// let chaikin_oscillator =
+    ///     rust_ti::momentum_indicators::single::chaikin_oscillator(
+    ///         &high,
+    ///         &low,
+    ///         &close,
+    ///         &volume,
+    ///         short_period,
+    ///         previous,
+    ///         rust_ti::ConstantModelType::SimpleMovingAverage,
+    ///         rust_ti::ConstantModelType::SimpleMovingMedian
     ///     );
     /// assert_eq!((-333.3333333333333, 1000.0), chaikin_oscillator);
     /// ```
@@ -921,10 +967,10 @@ pub mod single {
         lows: &[f64],
         close: &[f64],
         volume: &[f64],
-        short_period: &usize,
-        previous_accumulation_distribution: &f64,
-        short_period_model: &crate::ConstantModelType,
-        long_period_model: &crate::ConstantModelType,
+        short_period: usize,
+        previous_accumulation_distribution: f64,
+        short_period_model: ConstantModelType,
+        long_period_model: ConstantModelType,
     ) -> (f64, f64) {
         let long_period = highs.len();
         if long_period != lows.len() || long_period != close.len() || long_period != volume.len() {
@@ -937,20 +983,21 @@ pub mod single {
             )
         };
 
-        if &long_period <= short_period {
+        if long_period <= short_period {
             panic!(
                 "Long period ({}) cannot be smaller or equal to short period ({})",
                 long_period, short_period
             )
         };
 
-        let mut ad = vec![accumulation_distribution(
+        let mut ad = Vec::with_capacity(long_period);
+        ad.push(accumulation_distribution(
             &highs[0],
             &lows[0],
             &close[0],
             &volume[0],
             &previous_accumulation_distribution,
-        )];
+        ));
         for i in 1..long_period {
             ad.push(accumulation_distribution(
                 &highs[i],
@@ -960,25 +1007,26 @@ pub mod single {
                 &ad[i - 1],
             ));
         }
-        let short_period_index: usize = &long_period - short_period;
+        let short_period_slice = &ad[long_period - short_period..];
+
         let short_period_average = match short_period_model {
             ConstantModelType::SimpleMovingAverage => {
-                moving_average(&ad[short_period_index..], &MovingAverageType::Simple)
+                moving_average(short_period_slice, &MovingAverageType::Simple)
             }
             ConstantModelType::SmoothedMovingAverage => {
-                moving_average(&ad[short_period_index..], &MovingAverageType::Smoothed)
+                moving_average(short_period_slice, &MovingAverageType::Smoothed)
             }
             ConstantModelType::ExponentialMovingAverage => {
-                moving_average(&ad[short_period_index..], &MovingAverageType::Exponential)
+                moving_average(short_period_slice, &MovingAverageType::Exponential)
             }
             ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => {
                 moving_average(
-                    &ad[short_period_index..],
+                    short_period_slice,
                     &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
                 )
             }
-            ConstantModelType::SimpleMovingMedian => median(&ad[short_period_index..]),
-            ConstantModelType::SimpleMovingMode => mode(&ad[short_period_index..]),
+            ConstantModelType::SimpleMovingMedian => median(short_period_slice),
+            ConstantModelType::SimpleMovingMode => mode(short_period_slice),
             _ => panic!("Unsupported ConstantModelType"),
         };
 
@@ -1003,25 +1051,22 @@ pub mod single {
             _ => panic!("Unsupported ConstantModelType"),
         };
 
-        return (short_period_average - long_period_average, ad[0]);
+        (short_period_average - long_period_average, ad[0])
     }
 
-    /// The `percentage_price_oscillator` shows the relationship between two moving averages.
-    ///
-    /// Standard periods used are 26 and 12, and a exponential moving average.
-    ///
-    /// The long period will be assumed to be the legnth of prices.
+    /// Calculates the Percentage Price Oscillator (PPO)
     ///
     /// # Arguments
     ///
     /// * `prices` - Slice of prices
-    /// * `short_period` - Length of short period, standard is 12.
-    /// * `constant_model_type` Variant of [`ConstantModelType`]
+    /// * `short_period` - Length of short period
+    /// * `constant_model_type` - Variant of [`ConstantModelType`]
     ///
     /// # Panics
     ///
-    /// `percentage_price_oscillator` will panic if length of `prices` is less or equal to
-    /// `short_period`
+    /// Panics if:
+    ///     *  `prices.is_empty()`
+    ///     * `prices.len()` <= `short_period`
     ///
     /// # Examples
     ///
@@ -1030,50 +1075,47 @@ pub mod single {
     /// let short_period: usize = 3;
     ///
     /// let percentage_price_oscillator =
-    /// rust_ti::momentum_indicators::single::percentage_price_oscillator(
-    ///     &prices,
-    ///     &short_period,
-    ///     &rust_ti::ConstantModelType::ExponentialMovingAverage
-    /// );
+    ///     rust_ti::momentum_indicators::single::percentage_price_oscillator(
+    ///         &prices,
+    ///         short_period,
+    ///         rust_ti::ConstantModelType::ExponentialMovingAverage
+    ///     );
     ///
     /// assert_eq!(-1.0681349863189704 , percentage_price_oscillator);
     /// ```
     pub fn percentage_price_oscillator(
         prices: &[f64],
-        short_period: &usize,
-        constant_model_type: &ConstantModelType,
+        short_period: usize,
+        constant_model_type: ConstantModelType,
     ) -> f64 {
+        if prices.is_empty() {
+            panic!("Prices cannot be empty")
+        };
         let long_period = prices.len();
-        if short_period > &long_period {
+        if short_period > long_period {
             panic!(
                 "Length of prices ({}) must be longer than short period ({})",
                 long_period, short_period
             )
         };
-        if prices.is_empty() {
-            panic!("Prices cannot be empty")
-        };
 
-        let short_period_index: usize = long_period - short_period;
+        let short_period_slice = &prices[long_period - short_period..];
         let (short_period, long_period) = match constant_model_type {
             ConstantModelType::SimpleMovingAverage => (
-                moving_average(&prices[short_period_index..], &MovingAverageType::Simple),
+                moving_average(short_period_slice, &MovingAverageType::Simple),
                 moving_average(prices, &MovingAverageType::Simple),
             ),
             ConstantModelType::SmoothedMovingAverage => (
-                moving_average(&prices[short_period_index..], &MovingAverageType::Smoothed),
+                moving_average(short_period_slice, &MovingAverageType::Smoothed),
                 moving_average(prices, &MovingAverageType::Smoothed),
             ),
             ConstantModelType::ExponentialMovingAverage => (
-                moving_average(
-                    &prices[short_period_index..],
-                    &MovingAverageType::Exponential,
-                ),
+                moving_average(short_period_slice, &MovingAverageType::Exponential),
                 moving_average(&prices, &MovingAverageType::Exponential),
             ),
             ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => (
                 moving_average(
-                    &prices[short_period_index..],
+                    short_period_slice,
                     &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
                 ),
                 moving_average(
@@ -1081,20 +1123,15 @@ pub mod single {
                     &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
                 ),
             ),
-            ConstantModelType::SimpleMovingMedian => {
-                (median(&prices[short_period_index..]), median(prices))
-            }
-            ConstantModelType::SimpleMovingMode => {
-                (mode(&prices[short_period_index..]), mode(prices))
-            }
+            ConstantModelType::SimpleMovingMedian => (median(short_period_slice), median(prices)),
+            ConstantModelType::SimpleMovingMode => (mode(short_period_slice), mode(prices)),
             _ => panic!("Unsupported ConstantModelType"),
         };
 
-        return ((short_period - long_period) / long_period) * 100.0;
+        ((short_period - long_period) / long_period) * 100.0
     }
 
-    /// The `chande_momentum_oscillator` by comparing the sum of recent gains to the sum of recent
-    /// losses.
+    /// Calculates the Chande Momentum Oscillator
     ///
     /// # Arguments
     ///
@@ -1102,7 +1139,7 @@ pub mod single {
     ///
     /// # Panics
     ///
-    /// `chande_momentum_oscillator` will panic if `prices` is empty
+    /// Panics if `prices.is_empty()`
     ///
     /// # Examples
     ///
@@ -1113,10 +1150,6 @@ pub mod single {
     /// assert_eq!(-20.0, chande_momentum_oscillator)
     /// ```
     pub fn chande_momentum_oscillator(prices: &[f64]) -> f64 {
-        if prices.is_empty() {
-            panic!("Prices cannot be empty")
-        };
-
         let (previous_gains, previous_loss) = previous_gains_loss(prices);
         if previous_gains.is_empty() {
             return -100.0;
@@ -1127,117 +1160,121 @@ pub mod single {
 
         let gains_sum: f64 = previous_gains.iter().sum();
         let loss_sum: f64 = previous_loss.iter().sum();
-        return ((gains_sum - loss_sum) / (gains_sum + loss_sum)) * 100.0;
+        ((gains_sum - loss_sum) / (gains_sum + loss_sum)) * 100.0
     }
 
+    #[inline]
     fn previous_gains_loss(prices: &[f64]) -> (Vec<f64>, Vec<f64>) {
         if prices.is_empty() {
             panic!("Prices is empty");
         };
-        let mut previous_gains = Vec::new();
-        let mut previous_loss = Vec::new();
-        for (i, value) in prices.iter().enumerate() {
-            // TODO: must be a better way to do this
-            if i == 0 {
-                continue;
-            };
-            if value > &prices[i - 1] {
-                previous_gains.push(value - prices[i - 1]);
-            } else if value < &prices[i - 1] {
-                previous_loss.push(prices[i - 1] - value);
+        let len = prices.len();
+        let mut previous_gains = Vec::with_capacity(len - 1);
+        let mut previous_loss = Vec::with_capacity(len - 1);
+        for i in 1..len {
+            let diff = prices[i] - prices[i - 1];
+            if diff > 0.0 {
+                previous_gains.push(diff);
+            } else if diff < 0.0 {
+                previous_loss.push(prices[i - 1] - prices[i]);
             };
         }
-        return (previous_gains, previous_loss);
-    }
-
-    fn rsi(previous_average_gains: &f64, previous_average_loss: &f64) -> f64 {
-        if previous_average_loss == &0.0_f64 {
-            return 0.0;
-        };
-        return 100.0_f64
-            - (100.0_f64 / (1.0_f64 + (previous_average_gains / previous_average_loss)));
+        (previous_gains, previous_loss)
     }
 
     fn cmp_f64(a: &f64, b: &f64) -> Ordering {
         if a < b {
-            return Ordering::Less;
+            Ordering::Less
         } else if a > b {
-            return Ordering::Greater;
+            Ordering::Greater
+        } else {
+            Ordering::Equal
         }
-        return Ordering::Equal;
     }
 }
 
 /// `bulk` module holds functions that return multiple valus for `momentum_indicators`
 pub mod bulk {
     use crate::momentum_indicators::single;
-    /// The `relative_strenght_index` measures the speed and magnitude of price changes
-    ///
-    /// Based on the 7 day work week when the RSI was developed the default length is 14 (2 weeks) but the caller can determine their own
-    /// period.
+    use crate::{ConstantModelType, DeviationModel};
+
+    /// Calculates the Relative strength index (RSI)
     ///
     /// # Arguments
     ///
     /// * `prices` - Slice of prices
-    /// * `constant_model_type` - Variant of the [`ConstantModelType`](crate::ConstantModelType) enum.
-    /// The default model for the RSI is the `ConstantModelType::SmoothedMovingAverage`
+    /// * `constant_model_type` - Variant of [`ConstantModelType`]
     /// * `period` - Period over which to calculate the RSI
     ///
     /// # Panics
     ///
-    /// `relative_strenght_index` will panic if period is greater than the length of `prices`
+    /// Panics `period` > `prices.len()`
     ///
     /// # Examples
     ///
     /// ```
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
     /// let period: usize = 3;
-    /// let defaut_rsi = rust_ti::momentum_indicators::bulk::relative_strength_index(&prices, &rust_ti::ConstantModelType::SmoothedMovingAverage, &period);
+    /// let defaut_rsi =
+    ///     rust_ti::momentum_indicators::bulk::relative_strength_index(
+    ///         &prices,
+    ///         rust_ti::ConstantModelType::SmoothedMovingAverage,
+    ///         period
+    ///     );
     /// assert_eq!(vec![100.0, 33.33333333333333, 0.0], defaut_rsi);
     ///
-    /// let ema_rsi = rust_ti::momentum_indicators::bulk::relative_strength_index(&prices, &rust_ti::ConstantModelType::ExponentialMovingAverage, &period);
+    /// let ema_rsi =
+    ///     rust_ti::momentum_indicators::bulk::relative_strength_index(
+    ///         &prices,
+    ///         rust_ti::ConstantModelType::ExponentialMovingAverage,
+    ///         period
+    ///     );
     /// assert_eq!(vec![100.0, 33.33333333333333, 0.0], ema_rsi);
     ///
-    /// let moving_median_rsi = rust_ti::momentum_indicators::bulk::relative_strength_index(&prices, &rust_ti::ConstantModelType::SimpleMovingMedian, &period);
+    /// let moving_median_rsi =
+    ///     rust_ti::momentum_indicators::bulk::relative_strength_index(
+    ///         &prices,
+    ///         rust_ti::ConstantModelType::SimpleMovingMedian,
+    ///         period
+    ///     );
     /// assert_eq!(vec![100.0, 33.33333333333333, 0.0], moving_median_rsi);
     ///
-    /// // Long example
     /// let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
     /// let period: usize = 5;
     ///
-    /// let personalised_rsi = rust_ti::momentum_indicators::bulk::relative_strength_index(&prices, &rust_ti::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0), &period);
-    /// assert_eq!(vec![34.51776649746324, 12.837837837836929, 34.51776649746182, 61.26126126126377], personalised_rsi);
+    /// let personalised_rsi =
+    ///     rust_ti::momentum_indicators::bulk::relative_strength_index(
+    ///         &prices,
+    ///         rust_ti::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0),
+    ///         period
+    ///     );
+    /// assert_eq!(
+    ///     vec![34.51776649746324, 12.837837837836929, 34.51776649746182, 61.26126126126377],
+    ///     personalised_rsi
+    /// );
     /// ```
+    #[inline]
     pub fn relative_strength_index(
         prices: &[f64],
-        constant_model_type: &crate::ConstantModelType,
-        period: &usize,
+        constant_model_type: ConstantModelType,
+        period: usize,
     ) -> Vec<f64> {
         let length = prices.len();
-        if period > &length {
+        if period > length {
             panic!(
                 "Period ({}) is longer than length of prices ({})",
                 period, length
             );
         };
 
-        let mut rsis = Vec::new();
-        let loop_max = length - period + 1;
-        for i in 0..loop_max {
-            rsis.push(single::relative_strength_index(
-                &prices[i..i + period],
-                constant_model_type,
-            ));
+        let mut rsis = Vec::with_capacity(length - period + 1);
+        for window in prices.windows(period) {
+            rsis.push(single::relative_strength_index(window, constant_model_type));
         }
-        return rsis;
+        rsis
     }
 
-    /// The `stochastic_oscillator` is a momentum indicator that is calculated by using support and
-    /// resistance levels
-    ///
-    /// When developed by George Lane the stochastic oscillator looked at a period of 14 days as
-    /// the work week had 7 days back then, however this implementation allows for prices of any
-    /// length to be used
+    /// Calculates the Stochastic Oscillator
     ///
     /// # Arguments
     ///
@@ -1246,47 +1283,45 @@ pub mod bulk {
     ///
     /// # Panics
     ///
-    /// `stochastic_oscillator` will panic if the `period` is greater than the length of `prices`
+    /// Panics if the `period` > `prices.len()`
     ///
     /// # Examples
     ///
     /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
     /// let period: usize = 3;
-    /// let stochastic_oscillator = rust_ti::momentum_indicators::bulk::stochastic_oscillator(&prices, &period);
+    /// let stochastic_oscillator =
+    ///     rust_ti::momentum_indicators::bulk::stochastic_oscillator(&prices, period);
     /// assert_eq!(vec![100.0, 0.0, 0.0], stochastic_oscillator);
     /// ```
-    pub fn stochastic_oscillator(prices: &[f64], period: &usize) -> Vec<f64> {
+    #[inline]
+    pub fn stochastic_oscillator(prices: &[f64], period: usize) -> Vec<f64> {
         let length = prices.len();
-        if period > &length {
+        if period > length {
             panic!(
                 "Period ({}) cannot be greater than length ({}) of prices",
                 period, length
             );
         };
 
-        let mut so = Vec::new();
-        let loop_max = length - period + 1;
-        for i in 0..loop_max {
-            so.push(single::stochastic_oscillator(&prices[i..i + period]));
+        let mut so = Vec::with_capacity(length - period + 1);
+        for window in prices.windows(period) {
+            so.push(single::stochastic_oscillator(window));
         }
-        return so;
+        so
     }
 
-    /// The `slow_stochastic` is a momentum indicator that takes the moving average of passed in
-    /// stochastic oscillators
-    ///
-    /// The standard length of prices is 3, and the constant model is a simple moving average
+    /// Calculates the slow Stochastic
     ///
     /// # Arguments
     ///
-    /// * `stochastics` - Slice of prices
-    /// * `constant_model_type` - Variant of [`ConstantModelType`](crate::ConstantModelType)
-    /// * `period` - Period over which to calculate the stochastic oscillator
+    /// * `stochastics` - Slice of Stochastic Oscillators
+    /// * `constant_model_type` - Variant of [`ConstantModelType`]
+    /// * `period` - Period over which to calculate the slow stochastic
     ///
     /// # Panics
     ///
-    /// `slow_stochastic` will panic `period` is greater than length of `stochastics`
+    /// Panics if `period` > `stochastics.len()`
     ///
     /// # Examples
     ///
@@ -1294,54 +1329,64 @@ pub mod bulk {
     /// let stochstic_oscillators = [0.0, 25.0, 50.0, 33.0, 73.0];
     /// let period: usize = 3;
     ///
-    /// let simple_ma_slow_stochastic = rust_ti::momentum_indicators::bulk::slow_stochastic(&stochstic_oscillators, &rust_ti::ConstantModelType::SimpleMovingAverage, &period);
+    /// let simple_ma_slow_stochastic =
+    ///     rust_ti::momentum_indicators::bulk::slow_stochastic(
+    ///         &stochstic_oscillators,
+    ///         rust_ti::ConstantModelType::SimpleMovingAverage,
+    ///         period
+    ///     );
     /// assert_eq!(vec![25.0, 36.0, 52.0], simple_ma_slow_stochastic);
     ///
     /// let sma_slow_stochastic =
-    /// rust_ti::momentum_indicators::bulk::slow_stochastic(&stochstic_oscillators,
-    /// &rust_ti::ConstantModelType::SmoothedMovingAverage, &period);
-    /// assert_eq!(vec![31.578947368421055, 36.684210526315795, 55.526315789473685], sma_slow_stochastic);
+    /// rust_ti::momentum_indicators::bulk::slow_stochastic(
+    ///     &stochstic_oscillators,
+    ///     rust_ti::ConstantModelType::SmoothedMovingAverage,
+    ///     period
+    /// );
+    /// assert_eq!(
+    ///     vec![31.578947368421055, 36.684210526315795, 55.526315789473685],
+    ///     sma_slow_stochastic
+    /// );
     ///
-    /// let median_slow_stochastic = rust_ti::momentum_indicators::bulk::slow_stochastic(&stochstic_oscillators, &rust_ti::ConstantModelType::SimpleMovingMedian, &period);
+    /// let median_slow_stochastic =
+    ///     rust_ti::momentum_indicators::bulk::slow_stochastic(
+    ///         &stochstic_oscillators,
+    ///         rust_ti::ConstantModelType::SimpleMovingMedian,
+    ///         period
+    ///     );
     /// assert_eq!(vec![25.0, 33.0, 50.0], median_slow_stochastic);
     /// ```
+    #[inline]
     pub fn slow_stochastic(
         stochastics: &[f64],
-        constant_model_type: &crate::ConstantModelType,
-        period: &usize,
+        constant_model_type: ConstantModelType,
+        period: usize,
     ) -> Vec<f64> {
         let length = stochastics.len();
-        if period > &length {
+        if period > length {
             panic!(
                 "Period ({}) cannot be greater than length ({}) of stochastics",
                 period, length
             );
         };
-        let mut sso = Vec::new();
-        let loop_max = length - period + 1;
-        for i in 0..loop_max {
-            sso.push(single::slow_stochastic(
-                &stochastics[i..i + period],
-                constant_model_type,
-            ));
+        let mut sso = Vec::with_capacity(length - period + 1);
+        for window in stochastics.windows(period) {
+            sso.push(single::slow_stochastic(window, constant_model_type));
         }
-        return sso;
+        sso
     }
 
-    /// The `slowest_stochastic` is a momentum indicator that takes the moving average of passed in
-    /// slow stochastics
-    ///
-    /// The standard length of prices is 3, and the constant model is a simple moving average
+    /// Calculates the slowest Stochastic
     ///
     /// # Arguments
     ///
-    /// * `slow_stochastics` - Slice of prices
-    /// * `constant_model_type` - Variant of [`ConstantModelType`](crate::ConstantModelType)
-    /// * `period` - Period over which to calculate the stochastic oscillator
+    /// * `slow_stochastics` - Slice of slow stochastics
+    /// * `constant_model_type` - Variant of [`ConstantModelType`]
+    /// * `period` - Period over which to calculate the slowest stochastic oscillator
     ///
     /// # Panics
     ///
-    /// `slowest_stochastic` panics if `period` is greater than the length of `slow_stochastics`
+    /// Panics if `period` > `slow_stochastics.len()`
     ///
     /// # Examples
     ///
@@ -1349,46 +1394,51 @@ pub mod bulk {
     /// let slow_stochstics = [75.0, 60.0, 73.0, 58.0];
     /// let period: usize = 3;
     ///
-    /// let ma_slowest_stochastic = rust_ti::momentum_indicators::bulk::slowest_stochastic(&slow_stochstics, &rust_ti::ConstantModelType::SimpleMovingAverage, &period);
+    /// let ma_slowest_stochastic =
+    ///     rust_ti::momentum_indicators::bulk::slowest_stochastic(
+    ///         &slow_stochstics,
+    ///         rust_ti::ConstantModelType::SimpleMovingAverage,
+    ///         period
+    ///     );
     /// assert_eq!(vec![69.33333333333333, 63.666666666666664], ma_slowest_stochastic);
     ///
     /// let sma_slowest_stochastic =
-    /// rust_ti::momentum_indicators::bulk::slow_stochastic(&slow_stochstics,
-    /// &rust_ti::ConstantModelType::SmoothedMovingAverage, &period);
+    ///     rust_ti::momentum_indicators::bulk::slow_stochastic(
+    ///         &slow_stochstics,
+    ///         rust_ti::ConstantModelType::SmoothedMovingAverage,
+    ///         period
+    ///     );
     /// assert_eq!(vec![69.31578947368422, 63.15789473684211], sma_slowest_stochastic);
     ///
-    /// let median_slowest_stochastic = rust_ti::momentum_indicators::bulk::slow_stochastic(&slow_stochstics, &rust_ti::ConstantModelType::SimpleMovingMedian, &period);
+    /// let median_slowest_stochastic =
+    ///     rust_ti::momentum_indicators::bulk::slow_stochastic(
+    ///         &slow_stochstics,
+    ///         rust_ti::ConstantModelType::SimpleMovingMedian,
+    ///         period
+    ///     );
     /// assert_eq!(vec![73.0, 60.0], median_slowest_stochastic);
     /// ```
+    #[inline]
     pub fn slowest_stochastic(
         slow_stochastics: &[f64],
-        constant_model_type: &crate::ConstantModelType,
-        period: &usize,
+        constant_model_type: ConstantModelType,
+        period: usize,
     ) -> Vec<f64> {
         let length = slow_stochastics.len();
-        if period > &length {
+        if period > length {
             panic!(
                 "Period ({}) cannot be greater than length ({}) of stochastics",
                 period, length
             );
         };
-        let mut sso = Vec::new();
-        let loop_max = length - period + 1;
-        for i in 0..loop_max {
-            sso.push(single::slowest_stochastic(
-                &slow_stochastics[i..i + period],
-                constant_model_type,
-            ));
+        let mut sso = Vec::with_capacity(length - period + 1);
+        for window in slow_stochastics.windows(period) {
+            sso.push(single::slowest_stochastic(window, constant_model_type));
         }
-        return sso;
+        sso
     }
 
-    /// The `williams_percent_r` is a momentum that tracks overbought and oversold levels.
-    ///
-    /// The standard period used is 14 days. The high would be the maximum price over the past 14 days, and the low the minimum price over the past 14 days.
-    ///
-    /// The function doesn't have any logic to determine period highs and lows, it is up to the
-    /// caller to ensure that the highs, lows, close, are for the same period.
+    /// Calculates the Williams %R
     ///
     /// # Arguments
     ///
@@ -1399,7 +1449,9 @@ pub mod bulk {
     ///
     /// # Panics
     ///
-    /// `williams_percent_r` will panic if lengths of `high`, `low`, and `close` aren't equal
+    /// Panics if:
+    ///     * `high.len()` != `low.len()` != `close.len()`
+    ///     * `period` > lengths
     ///
     /// # Examples
     ///
@@ -1408,61 +1460,58 @@ pub mod bulk {
     /// let low = vec![175.0, 192.0, 200.0, 174.0];
     /// let close = vec![192.0, 200.0, 201.0, 187.0];
     /// let period: usize = 3;
-    /// let williams_percent_r = rust_ti::momentum_indicators::bulk::williams_percent_r(&high, &low,
-    /// &close, &period);
+    /// let williams_percent_r =
+    ///     rust_ti::momentum_indicators::bulk::williams_percent_r(
+    ///         &high,
+    ///         &low,
+    ///         &close,
+    ///         period
+    ///     );
     /// assert_eq!(vec![-25.71428571428571, -63.888888888888886], williams_percent_r);
     /// ```
-    pub fn williams_percent_r(
-        high: &[f64],
-        low: &[f64],
-        close: &[f64],
-        period: &usize,
-    ) -> Vec<f64> {
+    #[inline]
+    pub fn williams_percent_r(high: &[f64], low: &[f64], close: &[f64], period: usize) -> Vec<f64> {
         let length = close.len();
         if length != high.len() || length != low.len() {
             panic!(
                 "Length of close ({}) needs to match length of high ({}), and length of close ({})",
                 length,
                 high.len(),
-                close.len()
+                low.len()
             );
         };
-        if period > &length {
+        if period > length {
             panic!(
                 "Length of price ({}) must be greater or equal to period ({})",
                 length, period
             )
         };
 
-        let mut wprs = Vec::new();
         let loop_max = length - period + 1;
+        let mut wprs = Vec::with_capacity(loop_max);
         for i in 0..loop_max {
             wprs.push(single::williams_percent_r(
                 &high[i..i + period],
                 &low[i..i + period],
-                &close[i + period - 1],
+                close[i + period - 1],
             ));
         }
-        return wprs;
+        wprs
     }
 
-    /// The `money_flow_index` is a momentum indicator that shows the volume of money (a.k.a money
-    /// flow) going in and out of the asset.
-    ///
-    /// The standard money flow index uses the typical price (high+low+close/3) as the observed
-    /// price and a period of 14 days.
+    /// Calculates the Money Flow Index (MFI)
     ///
     /// # Arguments
     ///
     /// * `prices` - Slice of prices
-    /// * `volume` - Slice of Volume of transactions
-    /// * `period` - Period over which to calculate the money flow index
+    /// * `volume` - Slice of volumes
+    /// * `period` - Period over which to calculate the MFI
     ///
     /// # Panics
     ///
-    /// `money_flow_index` will panic if:
-    /// * `period` is greater than length of `prices`
-    /// * length of `prices` and `volume` aren't equal
+    /// Panics if:
+    ///     * `period` > `prices.len()`
+    ///     * `prices.len()` != `volume.len()`
     ///
     /// # Examples
     ///
@@ -1470,13 +1519,18 @@ pub mod bulk {
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
     /// let volume = vec![1000.0, 1500.0, 1200.0, 900.0, 1300.0];
     /// let period: usize = 3;
-    /// let money_flow_index = rust_ti::momentum_indicators::bulk::money_flow_index(&prices,
-    /// &volume, &period);
+    /// let money_flow_index =
+    ///     rust_ti::momentum_indicators::bulk::money_flow_index(
+    ///         &prices,
+    ///         &volume,
+    ///         period
+    ///     );
     /// assert_eq!(vec![55.314533622559644, 0.0, 58.60655737704918], money_flow_index);
     /// ```
-    pub fn money_flow_index(prices: &[f64], volume: &[f64], period: &usize) -> Vec<f64> {
+    #[inline]
+    pub fn money_flow_index(prices: &[f64], volume: &[f64], period: usize) -> Vec<f64> {
         let length = prices.len();
-        if period > &length {
+        if period > length {
             panic!(
                 "Period ({}) cannot be longer than length of prices ({})",
                 period, length
@@ -1490,25 +1544,19 @@ pub mod bulk {
             );
         };
 
-        let mut mfis = Vec::new();
         let loop_max = length - period + 1;
+        let mut mfis = Vec::with_capacity(loop_max);
+
         for i in 0..loop_max {
             mfis.push(single::money_flow_index(
                 &prices[i..i + period],
                 &volume[i..i + period],
             ));
         }
-        return mfis;
+        mfis
     }
 
-    /// The `rate_of_change` is a momentum indicator that shows how quickly the price of an asset
-    /// is changing.
-    ///
-    /// The standard is to use the closing price.
-    ///
-    /// The bulk function only takes in a price and will loop through the slice and assume the
-    /// prices\[0\] is the first previous price, and prices\[1\] is the first current price, and keep
-    /// incrementing from there.
+    /// Calculates the Rate of Change (RoC)
     ///
     /// # Arguments
     ///
@@ -1516,7 +1564,7 @@ pub mod bulk {
     ///
     /// # Panics
     ///
-    /// `rate_of_change` will panic if `prices` is empty
+    /// Panics if `prices.is_empty()`
     ///
     /// # Examples
     ///
@@ -1525,33 +1573,31 @@ pub mod bulk {
     /// let rate_of_change = rust_ti::momentum_indicators::bulk::rate_of_change(&prices);
     /// assert_eq!(vec![20.0, -16.666666666666664], rate_of_change);
     /// ```
+    #[inline]
     pub fn rate_of_change(prices: &[f64]) -> Vec<f64> {
         if prices.is_empty() {
             panic!("Prices cannot be empty");
         }
-        let mut rocs = Vec::new();
-        for i in 1..prices.len() {
-            rocs.push(single::rate_of_change(&prices[i], &prices[i - 1]));
+        let mut rocs = Vec::with_capacity(prices.len() - 1);
+        for pair in prices.windows(2) {
+            rocs.push(single::rate_of_change(pair[1], pair[0]));
         }
-        return rocs;
+        rocs
     }
 
-    /// The `on_balance_volume` is a momentum indicator that uses volume
-    ///
-    /// The standard price to use it the closing price. If there is no previous on balance volume
-    /// pass in 0.
+    /// Calculates the On Balance Volume (OBV)
     ///
     /// # Arguments
     ///
-    /// * `prices` - An `f64` slice of prices
-    /// * `volume` - An `i64` slice of volumes
-    /// * `previous_on_balance_volume` - Previous on balance volume. Use 0.0 if no previous OBV.
+    /// * `prices` - Slice of prices
+    /// * `volume` - Slice of volumes
+    /// * `previous_on_balance_volume` - Previous OBV (use 0.0 if none)
     ///
     /// # Panics
     ///
-    /// `on_balance_volume` will panic if:
-    /// * `prices` is empty
-    /// * length of `prices` and `volume` aren't equal
+    /// Panics if:
+    ///     * `prices.is_empty()`
+    ///     * `prices.len()` != `volume.len()`
     ///
     /// # Examples
     ///
@@ -1559,13 +1605,18 @@ pub mod bulk {
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0, 99.0];
     /// let volume = vec![1000.0, 1500.0, 1200.0, 900.0, 1300.0, 1400.0];
     /// let on_balance_volume =
-    /// rust_ti::momentum_indicators::bulk::on_balance_volume(&prices, &volume, &0.0);
+    ///     rust_ti::momentum_indicators::bulk::on_balance_volume(
+    ///         &prices,
+    ///         &volume,
+    ///         0.0
+    ///     );
     /// assert_eq!(vec![1500.0, 2700.0, 1800.0, 500.0, 500.0], on_balance_volume);
     /// ```
+    #[inline]
     pub fn on_balance_volume(
         prices: &[f64],
         volume: &[f64],
-        previous_on_balance_volume: &f64,
+        previous_on_balance_volume: f64,
     ) -> Vec<f64> {
         if prices.is_empty() {
             panic!("Prices cannot be empty");
@@ -1578,44 +1629,30 @@ pub mod bulk {
                 volume.len()
             );
         };
-
-        let mut obvs = vec![single::on_balance_volume(
-            &prices[1],
-            &prices[0],
-            &volume[1],
-            previous_on_balance_volume,
-        )];
+        let mut obvs = Vec::with_capacity(length - 1);
+        let mut obv =
+            single::on_balance_volume(prices[1], prices[0], volume[1], previous_on_balance_volume);
+        obvs.push(obv);
         for i in 2..length {
-            obvs.push(single::on_balance_volume(
-                &prices[i],
-                &prices[i - 1],
-                &volume[i],
-                &obvs.last().unwrap(),
-            ));
+            obv = single::on_balance_volume(prices[i], prices[i - 1], volume[i], obv);
+            obvs.push(obv);
         }
-        return obvs;
+        obvs
     }
 
-    /// The `commodity_channel_index` is a momentum indicator flagging overbought and oversold
-    /// conditions.
-    ///
-    /// The standard commodity channel index uses the typical price, a simple moving average model,
-    /// and a mean absolute deviation model. The `constant_multiplier` is a scale factor used to
-    /// provide more readable numbers. It is recommended to use 0.015 as the default as changing it
-    /// will impact how the numbers are distributed and the standard -100/100 flags may no longer
-    /// apply.
+    /// Calculates the Commodity Channel Index (CCI)
     ///
     /// # Arguments
     ///
     /// * `prices` - Slice of prices
-    /// * `constant_model_type` - Variant of [`ConstantModelType`](crate::ConstantModelType)
-    /// * `deviation_model` - Variant of [`DeviationModel`](crate::DeviationModel)
-    /// * `constant_multiplier` - Scale factor. Normally 0.015
-    /// * `period` - Period over which to calculate the commodity channel index
+    /// * `constant_model_type` - Variant of [`ConstantModelType`]
+    /// * `deviation_model` - Variant of [`DeviationModel`]
+    /// * `constant_multiplier` - Scale factor (normally 0.015)
+    /// * `period` - Period over which to calculate the CCI
     ///
     /// # Panics
     ///
-    /// `commodity_channel_index` will panic if `period` is greater than length `prices`
+    /// Panics if `period` > `prices.len()`
     ///
     /// # Examples
     ///
@@ -1624,66 +1661,86 @@ pub mod bulk {
     /// let constant_multiplier = 0.015;
     /// let period: usize = 3;
     ///
-    /// let default_cci = rust_ti::momentum_indicators::bulk::commodity_channel_index(&prices, &rust_ti::ConstantModelType::SimpleMovingAverage, &rust_ti::DeviationModel::MeanAbsoluteDeviation, &constant_multiplier, &period);
-    /// assert_eq!(vec![79.99999999999983, -100.00000000000001, -100.00000000000001], default_cci);
+    /// let default_cci =
+    ///     rust_ti::momentum_indicators::bulk::commodity_channel_index(
+    ///         &prices,
+    ///         rust_ti::ConstantModelType::SimpleMovingAverage,
+    ///         rust_ti::DeviationModel::MeanAbsoluteDeviation,
+    ///         constant_multiplier,
+    ///         period
+    ///     );
+    /// assert_eq!(
+    ///     vec![79.99999999999983, -100.00000000000001, -100.00000000000001],
+    ///     default_cci
+    /// );
     ///
-    /// let ema_sd_cci = rust_ti::momentum_indicators::bulk::commodity_channel_index(&prices,
-    /// &rust_ti::ConstantModelType::ExponentialMovingAverage,
-    /// &rust_ti::DeviationModel::StandardDeviation, &constant_multiplier, &period);
-    /// assert_eq!(vec![38.1801774160603, -58.32118435197994, -46.65694748158418], ema_sd_cci);
+    /// let ema_sd_cci =
+    ///     rust_ti::momentum_indicators::bulk::commodity_channel_index(
+    ///         &prices,
+    ///         rust_ti::ConstantModelType::ExponentialMovingAverage,
+    ///         rust_ti::DeviationModel::StandardDeviation,
+    ///         constant_multiplier,
+    ///         period
+    ///     );
+    /// assert_eq!(
+    ///     vec![38.1801774160603, -58.32118435197994, -46.65694748158418],
+    ///     ema_sd_cci
+    /// );
     ///
-    /// let median_mad_cci = rust_ti::momentum_indicators::bulk::commodity_channel_index(&prices,
-    /// &rust_ti::ConstantModelType::SimpleMovingMedian,
-    /// &rust_ti::DeviationModel::MedianAbsoluteDeviation, &constant_multiplier, &period);  
-    /// assert_eq!(vec![66.66666666666667, -100.00000000000001, -100.00000000000001], median_mad_cci);
+    /// let median_mad_cci =
+    ///     rust_ti::momentum_indicators::bulk::commodity_channel_index(
+    ///         &prices,
+    ///         rust_ti::ConstantModelType::SimpleMovingMedian,
+    ///         rust_ti::DeviationModel::MedianAbsoluteDeviation,
+    ///         constant_multiplier,
+    ///         period
+    ///     );  
+    /// assert_eq!(
+    ///     vec![66.66666666666667, -100.00000000000001, -100.00000000000001],
+    ///     median_mad_cci
+    /// );
     /// ```
+    #[inline]
     pub fn commodity_channel_index(
         prices: &[f64],
-        constant_model_type: &crate::ConstantModelType,
-        deviation_model: &crate::DeviationModel,
-        constant_multiplier: &f64,
-        period: &usize,
+        constant_model_type: ConstantModelType,
+        deviation_model: DeviationModel,
+        constant_multiplier: f64,
+        period: usize,
     ) -> Vec<f64> {
         let length = prices.len();
-        if period > &length {
+        if period > length {
             panic!(
                 "Period ({}) cannot be longer than lenght ({}) of prices",
                 period, length
             );
         };
 
-        let mut ccis = Vec::new();
-        let loop_max = length - period + 1;
-        for i in 0..loop_max {
+        let mut ccis = Vec::with_capacity(length - period + 1);
+        for window in prices.windows(period) {
             ccis.push(single::commodity_channel_index(
-                &prices[i..i + period],
+                window,
                 constant_model_type,
                 deviation_model,
                 constant_multiplier,
             ));
         }
-        return ccis;
+        ccis
     }
 
-    /// The `mcginley_dynamic_commodity_channel_index` is a momentum indicator flagging overbought and oversold
-    /// conditions.
-    ///
-    /// The McGinley dynamic commodity channel index uses the McGinley dynamic rather than a moving average model, and returns the CCI as well as the McGinley dynamic.
-    /// The caller still needs to determine the absolute deviation model.
+    /// Calculates the McGinley dynamic Commodity Channel Index
     ///
     /// # Arguments
     ///
     /// * `prices` - Slice of prices
-    /// * `previous_mcginley_dynamic` - The previous value of the McGinley dynamic. 0.0 if no
-    /// previous.
-    /// * `deviation_model` - Variant of [`DeviationModel`](crate::DeviationModel)
-    /// * `constant_multiplier` - Scale factor. Normally 0.015
-    /// * `period` - The period over which to calculate the commodity channel index
+    /// * `previous_mcginley_dynamic` - Previous McGinley dynamic (0.0 if none)
+    /// * `deviation_model` - Variant of [`DeviationModel`]
+    /// * `constant_multiplier` - Scale factor (normally 0.015)
+    /// * `period` - The period over which to calculate the CCI
     ///
     /// # Panics
     ///
-    /// `mcginley_dynamic_commodity_channel_index` will panic if `period` is greater than length of
-    /// `prices`
+    /// Panics if `period` > `prices.len()`
     ///
     /// # Examples
     ///
@@ -1691,71 +1748,67 @@ pub mod bulk {
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0, 102.0];
     /// let constant_multiplier = 0.015;
     ///
-    /// let mcginley_cci = rust_ti::momentum_indicators::bulk::mcginley_dynamic_commodity_channel_index(
-    /// &prices, &0.0, &rust_ti::DeviationModel::MeanAbsoluteDeviation, &constant_multiplier,
-    /// &5_usize);
+    /// let mcginley_cci =
+    ///     rust_ti::momentum_indicators::bulk::mcginley_dynamic_commodity_channel_index(
+    ///         &prices,
+    ///         0.0,
+    ///         rust_ti::DeviationModel::MeanAbsoluteDeviation,
+    ///         constant_multiplier,
+    ///         5_usize
+    ///     );
     /// assert_eq!(vec![(0.0, 99.0), (146.8770632107927, 99.53246533805869)], mcginley_cci);
     /// ```
+    #[inline]
     pub fn mcginley_dynamic_commodity_channel_index(
         prices: &[f64],
-        previous_mcginley_dynamic: &f64,
-        deviation_model: &crate::DeviationModel,
-        constant_multiplier: &f64,
-        period: &usize,
+        previous_mcginley_dynamic: f64,
+        deviation_model: DeviationModel,
+        constant_multiplier: f64,
+        period: usize,
     ) -> Vec<(f64, f64)> {
         let length = prices.len();
-        if period > &length {
+        if period > length {
             panic!(
                 "Period ({}) cannot be longer the length of prices ({})",
                 period, length
             );
         };
 
-        let mut ccis = vec![single::mcginley_dynamic_commodity_channel_index(
-            &prices[..*period],
+        let mut ccis = Vec::with_capacity(length - period + 1);
+        let mut cci = single::mcginley_dynamic_commodity_channel_index(
+            &prices[..period],
             previous_mcginley_dynamic,
             deviation_model,
             constant_multiplier,
-        )];
-        let loop_max = length - period + 1;
-        for i in 1..loop_max {
-            let previous_dynamic = ccis[i - 1].1;
-            ccis.push(single::mcginley_dynamic_commodity_channel_index(
+        );
+        ccis.push(cci);
+        for i in 1..=length - period {
+            cci = single::mcginley_dynamic_commodity_channel_index(
                 &prices[i..i + period],
-                &previous_dynamic,
+                cci.1,
                 deviation_model,
                 constant_multiplier,
-            ));
+            );
+            ccis.push(cci);
         }
-        return ccis;
+        ccis
     }
 
-    /// The `macd_line` is a momentum indicator that also shows price
-    /// strength, direction, and general trend.
-    ///
-    /// The indicator was developer back when there was a 6 day trading week so the standard short
-    /// term to use is 12, and 26 for the long term. However the caller can determine the period.
-    /// Both tyically use an exponential moving average model, but this is also determined by the
-    /// caller.
-    ///
-    /// The long period is determined by the length of the `prices` slice.
-    ///
-    /// This function *only* calculates the MACD line not the signal line, `signal_line` should be
-    /// called for the signal line.
+    /// Calculates the Moving Average Convergence Divergence (MACD) line
     ///
     /// # Arguments
     ///
     /// * `prices` - Slice of prices
     /// * `short_period` - The length of the short period
-    /// * `short_period_model` - Variant of [`ConstantModelType`](crate::ConstantModelType)
+    /// * `short_period_model` - Variant of [`ConstantModelType`]
     /// * `long_period` - The length of the long period
-    /// * `long_period_model` - Variant of [`ConstantModelType`](crate::ConstantModelType)
+    /// * `long_period_model` - Variant of [`ConstantModelType`]
     ///
     /// # Panics
     ///
-    /// `macd_line` will panic if:
-    /// * `short_period` is greater than `long_period`
-    /// * `long_period` is greater than length of `prices`
+    /// Panics if:
+    /// * `short_period` > `long_period`
+    /// * `long_period` > `prices.len()`
     ///
     /// # Examples
     ///
@@ -1764,22 +1817,34 @@ pub mod bulk {
     /// let short_period: usize = 3;
     /// let long_period: usize = 5;
     ///
-    /// let macd = rust_ti::momentum_indicators::bulk::macd_line(&prices, &short_period,
-    /// &rust_ti::ConstantModelType::ExponentialMovingAverage, &long_period,
-    /// &rust_ti::ConstantModelType::ExponentialMovingAverage);
-    /// assert_eq!(vec![-0.46851726472581845, -0.7379823967501835, 0.031821259309410266], macd);
+    /// let macd =
+    ///     rust_ti::momentum_indicators::bulk::macd_line(
+    ///         &prices,
+    ///         short_period,
+    ///         rust_ti::ConstantModelType::ExponentialMovingAverage,
+    ///         long_period,
+    ///         rust_ti::ConstantModelType::ExponentialMovingAverage
+    ///     );
+    /// assert_eq!(
+    ///     vec![-0.46851726472581845, -0.7379823967501835, 0.031821259309410266],
+    ///     macd
+    /// );
     ///
-    /// let macd = rust_ti::momentum_indicators::bulk::macd_line(&prices, &short_period,
-    /// &rust_ti::ConstantModelType::SimpleMovingAverage, &long_period,
-    /// &rust_ti::ConstantModelType::SimpleMovingMedian);
+    /// let macd =
+    ///     rust_ti::momentum_indicators::bulk::macd_line(
+    ///         &prices,
+    ///         short_period,
+    ///         rust_ti::ConstantModelType::SimpleMovingAverage,
+    ///         long_period,
+    ///         rust_ti::ConstantModelType::SimpleMovingMedian);
     /// assert_eq!(vec![0.0, -1.3333333333333286, -1.0], macd);
     /// ```
     pub fn macd_line(
         prices: &[f64],
-        short_period: &usize,
-        short_period_model: &crate::ConstantModelType,
-        long_period: &usize,
-        long_period_model: &crate::ConstantModelType,
+        short_period: usize,
+        short_period_model: ConstantModelType,
+        long_period: usize,
+        long_period_model: ConstantModelType,
     ) -> Vec<f64> {
         if short_period > long_period {
             panic!(
@@ -1789,106 +1854,105 @@ pub mod bulk {
         };
 
         let length = prices.len();
-        if long_period > &length {
+        if long_period > length {
             panic!(
                 "Long period ({}) cannot be shorter than length of prices ({})",
                 long_period, length
             );
         };
 
-        let mut macds = Vec::new();
-        let loop_max = length - long_period + 1;
-        for i in 0..loop_max {
+        let mut macds = Vec::with_capacity(length - long_period + 1);
+        for window in prices.windows(long_period) {
             macds.push(single::macd_line(
-                &prices[i..i + long_period],
+                window,
                 short_period,
                 short_period_model,
                 long_period_model,
             ));
         }
-        return macds;
+        macds
     }
 
-    /// The `signal_line` is used with the `macd_line` to produce the moving average convergence
+    /// Calculates the MACD signal line
     /// divergence.
-    ///
-    /// The standard period for the signal line is 9, and it normally uses an exponential moving
-    /// average model.
     ///
     /// # Arguments
     ///
     /// * `macds` - Slice of MACDs
-    /// * `constant_model_type` - Variant of [`ConstantModelType`](crate::ConstantModelType)
+    /// * `constant_model_type` - Variant of [`ConstantModelType`]
     /// * `period` - Period over which to calculate the signal line
     ///
     /// # Panics
     ///
-    /// `signal_line` will panic if `period` is greater than length of `prices`
+    /// Panics if `period` > `prices.len()`
     ///
     /// # Examples
     ///
     /// ```rust
-    /// let macds = vec![-0.0606702775897219, -0.0224170616113781, 0.0057887610020515,
-    /// 0.0318212593094103, -0.737982396750169];
+    /// let macds = vec![
+    ///     -0.0606702775897219, -0.0224170616113781, 0.0057887610020515,
+    ///     0.0318212593094103, -0.737982396750169
+    /// ];
     /// let period: usize = 3;
     ///
-    /// let ema_signal_line = rust_ti::momentum_indicators::bulk::signal_line(&macds,
-    /// &rust_ti::ConstantModelType::ExponentialMovingAverage, &period);
-    /// assert_eq!(vec![-0.011764193829181728, 0.0166350710900523, -0.4117854724828291], ema_signal_line);
+    /// let ema_signal_line =
+    ///     rust_ti::momentum_indicators::bulk::signal_line(
+    ///         &macds,
+    ///         rust_ti::ConstantModelType::ExponentialMovingAverage,
+    ///         period
+    ///     );
+    /// assert_eq!(
+    ///     vec![-0.011764193829181728, 0.0166350710900523, -0.4117854724828291],
+    ///     ema_signal_line
+    /// );
     ///
-    /// let median_signal_line = rust_ti::momentum_indicators::bulk::signal_line(&macds,
-    /// &rust_ti::ConstantModelType::SimpleMovingMedian, &period);
-    /// assert_eq!(vec![-0.0224170616113781, 0.0057887610020515, 0.0057887610020515], median_signal_line);
+    /// let median_signal_line =
+    ///     rust_ti::momentum_indicators::bulk::signal_line(
+    ///         &macds,
+    ///         rust_ti::ConstantModelType::SimpleMovingMedian,
+    ///         period
+    ///     );
+    /// assert_eq!(
+    ///     vec![-0.0224170616113781, 0.0057887610020515, 0.0057887610020515],
+    ///     median_signal_line
+    /// );
     /// ```
     pub fn signal_line(
         macds: &[f64],
-        constant_model_type: &crate::ConstantModelType,
-        period: &usize,
+        constant_model_type: ConstantModelType,
+        period: usize,
     ) -> Vec<f64> {
         let length = macds.len();
-        if period > &length {
+        if period > length {
             panic!(
                 "Period ({}) cannot be longer than length ({}) of prices",
                 period, length
             )
         };
 
-        let mut signals = Vec::new();
-        let loop_max = length - period + 1;
-        for i in 0..loop_max {
-            signals.push(single::signal_line(
-                &macds[i..i + period],
-                constant_model_type,
-            ));
+        let mut signals = Vec::with_capacity(length - period + 1);
+        for window in macds.windows(period) {
+            signals.push(single::signal_line(window, constant_model_type));
         }
-        return signals;
+        signals
     }
 
-    /// The `mcginley_dynamic_macd_line` is an alternative to `macd_line` that uses and returns the
-    /// McGinley Dynamic as well as the MACD line.
-    ///
-    /// The function returns a tuple with the MACD value first, short period McGinley dynamic second, and the long period third.
-    ///
-    /// The is no McGinley dynamic just for the signal line as the singal line merely takes a moving
-    /// average of the MACDs, for a McGinley dynamic version just call
-    /// `mcginley_dynamic` from `moving_averages.rs`
+    /// Calculates the McGinley dynamic MACD line
     ///
     /// # Arguments
     ///
     /// * `prices` - Slice of prices
     /// * `short_period` - The length of the short period
-    /// * `previous_short_mcginley` - Previous McGinley dynamic for the short model. If no
-    /// previous use 0.0.
+    /// * `previous_short_mcginley` - Previous short model McGinley dynamic (if none use 0.0)
     /// * `long_period` - The length of the long period
-    /// * `previous_long_mcginley` - Previous McGinley dynamic for the long model. If no
-    /// previous use 0.0.
+    /// * `previous_long_mcginley` - Previous long model McGinley dynamic (if none use 0.0)
     ///
     /// # Panics
     ///
-    /// `mcginley_dynamic_macd_line` will panic if:
-    /// * `prices` is empty
-    /// * `long_period` is greater than length of `prices`
-    /// * `short_period` is greater or equal to `long_period`
+    /// Panics if:
+    ///     * `prices.is_empty()`
+    ///     * `long_period` > `prices.len()`
+    ///     * `short_period` >= `long_period`
     ///
     /// # Examples
     ///
@@ -1896,24 +1960,36 @@ pub mod bulk {
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0, 99.0, 102.0];
     /// let short_period: usize = 3;
     /// let long_period: usize = 5;
-    /// let mcginley_dynamic_macd = rust_ti::momentum_indicators::bulk::mcginley_dynamic_macd_line(
-    /// &prices, &short_period, &0.0, &long_period, &0.0);
-    /// assert_eq!(vec![(0.0, 99.0, 99.0), (0.0, 99.0, 99.0), (0.35497689203913296,
-    /// 99.88744223009782, 99.53246533805869)], mcginley_dynamic_macd);
+    /// let mcginley_dynamic_macd =
+    ///     rust_ti::momentum_indicators::bulk::mcginley_dynamic_macd_line(
+    ///         &prices,
+    ///         short_period,
+    ///         0.0,
+    ///         long_period,
+    ///         0.0
+    ///     );
+    /// assert_eq!(
+    ///     vec![
+    ///         (0.0, 99.0, 99.0),
+    ///         (0.0, 99.0, 99.0),
+    ///         (0.35497689203913296, 99.88744223009782, 99.53246533805869)
+    ///     ], mcginley_dynamic_macd
+    /// );
     /// ```
+    #[inline]
     pub fn mcginley_dynamic_macd_line(
         prices: &[f64],
-        short_period: &usize,
-        previous_short_mcginley: &f64,
-        long_period: &usize,
-        previous_long_mcginley: &f64,
+        short_period: usize,
+        previous_short_mcginley: f64,
+        long_period: usize,
+        previous_long_mcginley: f64,
     ) -> Vec<(f64, f64, f64)> {
         if prices.is_empty() {
             panic!("Prices cannot be empty");
         };
 
         let length = prices.len();
-        if long_period > &length {
+        if long_period > length {
             panic!(
                 "Long period ({}) cannot be longer than length ({}) of prices",
                 long_period, length
@@ -1927,54 +2003,43 @@ pub mod bulk {
             );
         };
 
-        let mut macds = vec![single::mcginley_dynamic_macd_line(
-            &prices[..*long_period],
+        let loop_max = length - long_period + 1;
+        let mut macds = Vec::with_capacity(loop_max);
+        let mut macd = single::mcginley_dynamic_macd_line(
+            &prices[..long_period],
             short_period,
             previous_short_mcginley,
             previous_long_mcginley,
-        )];
-        let loop_max = length - long_period + 1;
+        );
+        macds.push(macd);
+
         for i in 1..loop_max {
-            let previous_macd = macds[i - 1];
-            macds.push(single::mcginley_dynamic_macd_line(
-                &prices[i..i + long_period],
-                short_period,
-                &previous_macd.1,
-                &previous_macd.2,
-            ));
+            macd = single::mcginley_dynamic_macd_line(&prices[i..long_period + i], short_period, macd.1, macd.2);
+            macds.push(macd);
         }
-        return macds;
+        macds
     }
 
-    /// The `chaikin_oscillator` measures momentum by taking the difference a short period and long
-    /// period Accumulation Distribution line.
-    ///
-    /// the standard is to use the same short and long periods used in the MACD to track the
-    /// accumulation distribution of the MACD, but as for the MACD the periods are determined by
-    /// the caller. The standard moving average model is an Exponential Moving Average.
-    ///
-    /// Returns a vector of tuples with the Chaikin Oscillator and the first Accumulation
-    /// Distribution so that it can be used in further calculations.
+    /// Calculates the  Chaikin Oscillator (CO)
     ///
     /// # Arguments
     ///
-    /// * `highs` - Slice of price highs
-    /// * `lows` - Slice of price lows
+    /// * `highs` - Slice of highs
+    /// * `lows` - Slice of lows
     /// * `close` - Slice of closing prices
-    /// * `volume` - Slice of transction volumes
-    /// * `short_period` - Short period over which to calculate the Accumulation Distribution
-    /// * `long_period` - Long period over which to calculate the Accumulation Distribution
-    /// * `previous_accumulation_distribution` - Previous accumulation distribution value. If none
-    /// use 0.0
-    /// * `short_period_model` - A variant of [`ConstantModelType`](crate::ConstantModelType)
-    /// * `long_period_model` - A variant of [`ConstantModelType`](crate::ConstantModelType)
+    /// * `volume` - Slice of volumes
+    /// * `short_period` - Short period over which to calculate the AD
+    /// * `long_period` - Long period over which to calculate the AD
+    /// * `previous_accumulation_distribution` - Previous AD value (if none use 0.0)
+    /// * `short_period_model` - Variant of [`ConstantModelType`]
+    /// * `long_period_model` - Variant of [`ConstantModelType`]
     ///
     /// # Panics
     ///
-    /// `chaikin_oscillator` will panic if:
-    /// * Length of `highs`, `lows`, `close`, and `volume` aren't equal
-    /// * `long_period` is greater than the length of prices
-    /// * `short_period` is greater or equal to `long_period`
+    /// Panics if:
+    /// * `highs.len()` != `lows.len()` != `close.len()` != `volume.len()`
+    /// * `long_period` > lengths
+    /// * `short_period` >= `long_period`
     ///
     /// # Examples
     ///
@@ -1992,13 +2057,16 @@ pub mod bulk {
     ///     &low,
     ///     &close,
     ///     &volume,
-    ///     &short_period,
-    ///     &long_period,
-    ///     &previous,
-    ///     &rust_ti::ConstantModelType::ExponentialMovingAverage,
-    ///     &rust_ti::ConstantModelType::ExponentialMovingAverage
-    ///     );
-    /// assert_eq!(vec![(-179.95937711577525, 500.0), (-339.790115098172, 0.0), (-203.39139533452317, 240.0)], chaikin_oscillator);
+    ///     short_period,
+    ///     long_period,
+    ///     previous,
+    ///     rust_ti::ConstantModelType::ExponentialMovingAverage,
+    ///     rust_ti::ConstantModelType::ExponentialMovingAverage
+    /// );
+    /// assert_eq!(
+    ///     vec![(-179.95937711577525, 500.0), (-339.790115098172, 0.0), (-203.39139533452317, 240.0)],
+    ///     chaikin_oscillator
+    /// );
     ///
     /// let previous = 500.0;
     /// let chaikin_oscillator = rust_ti::momentum_indicators::bulk::chaikin_oscillator(
@@ -2006,25 +2074,28 @@ pub mod bulk {
     ///     &low,
     ///     &close,
     ///     &volume,
-    ///     &short_period,
-    ///     &long_period,
-    ///     &previous,
-    ///     &rust_ti::ConstantModelType::SimpleMovingAverage,
-    ///     &rust_ti::ConstantModelType::SimpleMovingMedian
+    ///     short_period,
+    ///     long_period,
+    ///     previous,
+    ///     rust_ti::ConstantModelType::SimpleMovingAverage,
+    ///     rust_ti::ConstantModelType::SimpleMovingMedian
     ///     );
-    /// assert_eq!(vec![(-333.3333333333333, 1000.0), (-676.6666666666666, 500.0),
-    /// (-280.3030303030303, 740.0)], chaikin_oscillator);
+    /// assert_eq!(
+    ///     vec![(-333.3333333333333, 1000.0), (-676.6666666666666, 500.0),(-280.3030303030303, 740.0)],
+    ///     chaikin_oscillator
+    /// );
     /// ```
+    #[inline]
     pub fn chaikin_oscillator(
         highs: &[f64],
         lows: &[f64],
         close: &[f64],
         volume: &[f64],
-        short_period: &usize,
-        long_period: &usize,
-        previous_accumulation_distribution: &f64,
-        short_period_model: &crate::ConstantModelType,
-        long_period_model: &crate::ConstantModelType,
+        short_period: usize,
+        long_period: usize,
+        previous_accumulation_distribution: f64,
+        short_period_model: ConstantModelType,
+        long_period_model: ConstantModelType,
     ) -> Vec<(f64, f64)> {
         let length = highs.len();
         if length != lows.len() || length != close.len() || length != volume.len() {
@@ -2037,7 +2108,7 @@ pub mod bulk {
             )
         };
 
-        if &length < long_period {
+        if length < long_period {
             panic!(
                 "Length of prices ({}) must me greater or equal to long period ({})",
                 length, long_period
@@ -2051,49 +2122,51 @@ pub mod bulk {
             );
         };
 
-        let mut cos = vec![single::chaikin_oscillator(
-            &highs[..*long_period],
-            &lows[..*long_period],
-            &close[..*long_period],
-            &volume[..*long_period],
+        let loop_max = length - long_period + 1;
+        let mut cos = Vec::with_capacity(loop_max);
+        let mut co = single::chaikin_oscillator(
+            &highs[..long_period],
+            &lows[..long_period],
+            &close[..long_period],
+            &volume[..long_period],
             short_period,
             previous_accumulation_distribution,
             short_period_model,
             long_period_model,
-        )];
-        let loop_max = length - long_period + 1;
+        );
+        cos.push(co);
+
         for i in 1..loop_max {
-            cos.push(single::chaikin_oscillator(
+            co = single::chaikin_oscillator(
                 &highs[i..i + long_period],
                 &lows[i..i + long_period],
                 &close[i..i + long_period],
                 &volume[i..i + long_period],
                 short_period,
-                &cos[i - 1].1,
+                co.1,
                 short_period_model,
                 long_period_model,
-            ));
+            );
+            cos.push(co);
         }
-        return cos;
+        cos
     }
 
-    /// The `percentage_price_oscillator` shows the relationship between two moving averages.
-    ///
-    /// Standard periods used are 26 and 12, and a exponential moving average.
+    /// Calculates the Percentage Price Oscillator (PPO)
     ///
     /// # Arguments
     ///
     /// * `prices` - Slice of prices
-    /// * `short_period` - Length of short period, standard is 12.
-    /// * `long_period` - Length of long period, standard is 26.
-    /// * `constant_model_type` Variant of [`ConstantModelType`](crate::ConstantModelType)
+    /// * `short_period` - Length of short period.
+    /// * `long_period` - Length of long period
+    /// * `constant_model_type` Variant of [`ConstantModelType`]
     ///
     /// # Panics
     ///
-    /// `percentage_price_oscillator` will panic if:
-    ///     * `short_period` is greater or equal to `long_period`
-    ///     * `prices` is empty
-    ///     * 'long_period` is greater than length of `prices`
+    /// Panics if:
+    ///     * `short_period` >= `long_period`
+    ///     * `prices.is_empty()`
+    ///     * 'long_period` > `prices.len()`
     ///
     /// # Examples
     ///
@@ -2103,23 +2176,24 @@ pub mod bulk {
     /// let long_period: usize = 5;
     ///
     /// let percentage_price_oscillator =
-    /// rust_ti::momentum_indicators::bulk::percentage_price_oscillator(
-    ///     &prices,
-    ///     &short_period,
-    ///     &long_period,
-    ///     &rust_ti::ConstantModelType::ExponentialMovingAverage
-    /// );
+    ///     rust_ti::momentum_indicators::bulk::percentage_price_oscillator(
+    ///         &prices,
+    ///         short_period,
+    ///         long_period,
+    ///         rust_ti::ConstantModelType::ExponentialMovingAverage
+    ///     );
     ///
     /// assert_eq!(
     ///     vec![-1.0681349863189704, -0.06036684467148623, 0.14936271906531415],
     ///     percentage_price_oscillator
     /// );
     /// ```
+    #[inline]
     pub fn percentage_price_oscillator(
         prices: &[f64],
-        short_period: &usize,
-        long_period: &usize,
-        constant_model_type: &crate::ConstantModelType,
+        short_period: usize,
+        long_period: usize,
+        constant_model_type: ConstantModelType,
     ) -> Vec<f64> {
         let length = prices.len();
         if short_period >= long_period {
@@ -2131,65 +2205,67 @@ pub mod bulk {
         if prices.is_empty() {
             panic!("Prices cannot be empty")
         };
-        if long_period > &length {
+        if long_period > length {
             panic!(
                 "Long period ({}) cannot be greater than length of prices ({})",
                 long_period, length
             )
         };
 
-        let mut ppos = Vec::new();
-        let loop_max = length - long_period + 1;
-        for i in 0..loop_max {
+        let mut ppos = Vec::with_capacity(length - long_period + 1);
+
+        for window in prices.windows(long_period) {
             ppos.push(single::percentage_price_oscillator(
-                &prices[i..i + long_period],
+                window,
                 short_period,
                 constant_model_type,
             ));
         }
-        return ppos;
+        ppos
     }
 
-    /// The `chande_momentum_oscillator` by comparing the sum of recent gains to the sum of recent
-    /// losses.
+    /// Calculates the Chande Momentum Oscillator (CMO)
     ///
     /// # Arguments
     ///
     /// * `prices` - Slice of prices
-    /// * `period` - Period over which to calculate the Chande Momentum Oscillator
+    /// * `period` - Period over which to calculate the CMO
     ///
     /// # Panics
     ///
-    /// `chande_momentum_oscillator` will panic if:
-    ///     * `prices` is empty
-    ///     * `period` is greater than length of `prices`
+    /// Panics if:
+    ///     * `prices.is_empty()`
+    ///     * `period` > `prices.len()`
     ///
     /// # Examples
     ///
     /// ```rust
     /// let prices = vec![100.0, 103.0, 106.0, 100.0, 97.0, 105.0, 102.0];
     /// let chande_momentum_oscillator =
-    ///     rust_ti::momentum_indicators::bulk::chande_momentum_oscillator(&prices, &5_usize);
+    ///     rust_ti::momentum_indicators::bulk::chande_momentum_oscillator(
+    ///         &prices,
+    ///         5_usize
+    ///     );
     /// assert_eq!(vec![-20.0, 10.0, -20.0], chande_momentum_oscillator)
     /// ```
-    pub fn chande_momentum_oscillator(prices: &[f64], period: &usize) -> Vec<f64> {
+    #[inline]
+    pub fn chande_momentum_oscillator(prices: &[f64], period: usize) -> Vec<f64> {
         let length = prices.len();
         if prices.is_empty() {
             panic!("Prices cannot be empty")
         };
-        if period > &length {
+        if period > length {
             panic!(
                 "Period ({}) cannot be greater than length of prices ({})",
                 period, length
             )
         };
 
-        let mut cmos = Vec::new();
-        let loop_max = length - period + 1;
-        for i in 0..loop_max {
-            cmos.push(single::chande_momentum_oscillator(&prices[i..i + period]));
+        let mut cmos = Vec::with_capacity(length - period + 1);
+        for window in prices.windows(period) {
+            cmos.push(single::chande_momentum_oscillator(window));
         }
-        return cmos;
+        cmos
     }
 }
 
@@ -2204,7 +2280,7 @@ mod tests {
             49.2537313432832,
             single::relative_strength_index(
                 &prices,
-                &crate::ConstantModelType::SimpleMovingAverage
+                crate::ConstantModelType::SimpleMovingAverage
             )
         );
     }
@@ -2215,7 +2291,7 @@ mod tests {
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
         assert_eq!(
             49.2537313432832,
-            single::relative_strength_index(&prices, &crate::ConstantModelType::SimpleMovingMedian)
+            single::relative_strength_index(&prices, crate::ConstantModelType::SimpleMovingMedian)
         );
     }
 
@@ -2226,7 +2302,7 @@ mod tests {
         ];
         assert_eq!(
             37.5,
-            single::relative_strength_index(&prices, &crate::ConstantModelType::SimpleMovingMedian)
+            single::relative_strength_index(&prices, crate::ConstantModelType::SimpleMovingMedian)
         );
     }
 
@@ -2236,7 +2312,7 @@ mod tests {
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
         assert_eq!(
             0.0,
-            single::relative_strength_index(&prices, &crate::ConstantModelType::SimpleMovingMode)
+            single::relative_strength_index(&prices, crate::ConstantModelType::SimpleMovingMode)
         );
     }
 
@@ -2245,7 +2321,7 @@ mod tests {
         let prices = vec![100.0, 103.0, 106.0, 107.0, 108.0, 105.0, 102.0];
         assert_eq!(
             39.99999999999999,
-            single::relative_strength_index(&prices, &crate::ConstantModelType::SimpleMovingMode)
+            single::relative_strength_index(&prices, crate::ConstantModelType::SimpleMovingMode)
         );
     }
 
@@ -2256,7 +2332,7 @@ mod tests {
             43.01075268817234,
             single::relative_strength_index(
                 &prices,
-                &crate::ConstantModelType::SmoothedMovingAverage
+                crate::ConstantModelType::SmoothedMovingAverage
             )
         );
     }
@@ -2268,7 +2344,7 @@ mod tests {
             39.495798319328436,
             single::relative_strength_index(
                 &prices,
-                &crate::ConstantModelType::ExponentialMovingAverage
+                crate::ConstantModelType::ExponentialMovingAverage
             )
         );
     }
@@ -2280,7 +2356,7 @@ mod tests {
             35.6725146198842,
             single::relative_strength_index(
                 &prices,
-                &crate::ConstantModelType::PersonalisedMovingAverage(&4.0, &3.0)
+                crate::ConstantModelType::PersonalisedMovingAverage(&4.0, &3.0)
             )
         );
     }
@@ -2292,7 +2368,7 @@ mod tests {
             100.0,
             single::relative_strength_index(
                 &prices,
-                &crate::ConstantModelType::SimpleMovingAverage
+                crate::ConstantModelType::SimpleMovingAverage
             )
         );
     }
@@ -2304,7 +2380,7 @@ mod tests {
             0.0,
             single::relative_strength_index(
                 &prices,
-                &crate::ConstantModelType::SimpleMovingAverage
+                crate::ConstantModelType::SimpleMovingAverage
             )
         );
     }
@@ -2313,7 +2389,7 @@ mod tests {
     #[should_panic]
     fn test_single_rsi_panic() {
         let prices = Vec::new();
-        single::relative_strength_index(&prices, &crate::ConstantModelType::SimpleMovingAverage);
+        single::relative_strength_index(&prices, crate::ConstantModelType::SimpleMovingAverage);
     }
 
     #[test]
@@ -2331,8 +2407,8 @@ mod tests {
             ],
             bulk::relative_strength_index(
                 &prices,
-                &crate::ConstantModelType::SimpleMovingAverage,
-                &period
+                crate::ConstantModelType::SimpleMovingAverage,
+                period
             )
         );
     }
@@ -2352,8 +2428,8 @@ mod tests {
             ],
             bulk::relative_strength_index(
                 &prices,
-                &crate::ConstantModelType::SmoothedMovingAverage,
-                &period
+                crate::ConstantModelType::SmoothedMovingAverage,
+                period
             )
         );
     }
@@ -2373,8 +2449,8 @@ mod tests {
             ],
             bulk::relative_strength_index(
                 &prices,
-                &crate::ConstantModelType::ExponentialMovingAverage,
-                &period
+                crate::ConstantModelType::ExponentialMovingAverage,
+                period
             )
         );
     }
@@ -2394,8 +2470,8 @@ mod tests {
             ],
             bulk::relative_strength_index(
                 &prices,
-                &crate::ConstantModelType::PersonalisedMovingAverage(&4.0, &3.0),
-                &period
+                crate::ConstantModelType::PersonalisedMovingAverage(&4.0, &3.0),
+                period
             )
         );
     }
@@ -2415,8 +2491,8 @@ mod tests {
             ],
             bulk::relative_strength_index(
                 &prices,
-                &crate::ConstantModelType::SimpleMovingMedian,
-                &period
+                crate::ConstantModelType::SimpleMovingMedian,
+                period
             )
         );
     }
@@ -2431,8 +2507,8 @@ mod tests {
             vec![0.0, 0.0, 0.0, 0.0],
             bulk::relative_strength_index(
                 &prices,
-                &crate::ConstantModelType::SimpleMovingMode,
-                &period
+                crate::ConstantModelType::SimpleMovingMode,
+                period
             )
         );
     }
@@ -2446,8 +2522,8 @@ mod tests {
         let period: usize = 50;
         bulk::relative_strength_index(
             &prices,
-            &crate::ConstantModelType::SimpleMovingAverage,
-            &period,
+            crate::ConstantModelType::SimpleMovingAverage,
+            period,
         );
     }
 
@@ -2484,7 +2560,7 @@ mod tests {
         let period: usize = 5;
         assert_eq!(
             vec![0.0, 5.882352941175241, 38.23529411764534, 47.36842105263394],
-            bulk::stochastic_oscillator(&prices, &period)
+            bulk::stochastic_oscillator(&prices, period)
         );
     }
 
@@ -2495,7 +2571,7 @@ mod tests {
             100.2, 100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28,
         ];
         let period: usize = 50;
-        bulk::stochastic_oscillator(&prices, &period);
+        bulk::stochastic_oscillator(&prices, period);
     }
 
     #[test]
@@ -2503,7 +2579,7 @@ mod tests {
         let stochastics = vec![0.0, 5.882352941175241, 38.23529411764534, 47.36842105263394];
         assert_eq!(
             22.871517027863632,
-            single::slow_stochastic(&stochastics, &crate::ConstantModelType::SimpleMovingAverage)
+            single::slow_stochastic(&stochastics, crate::ConstantModelType::SimpleMovingAverage)
         );
     }
 
@@ -2514,7 +2590,7 @@ mod tests {
             29.02078726227347,
             single::slow_stochastic(
                 &stochastics,
-                &crate::ConstantModelType::SmoothedMovingAverage
+                crate::ConstantModelType::SmoothedMovingAverage
             )
         );
     }
@@ -2526,7 +2602,7 @@ mod tests {
             33.284579311601206,
             single::slow_stochastic(
                 &stochastics,
-                &crate::ConstantModelType::ExponentialMovingAverage
+                crate::ConstantModelType::ExponentialMovingAverage
             )
         );
     }
@@ -2538,7 +2614,7 @@ mod tests {
             39.872151259403616,
             single::slow_stochastic(
                 &stochastics,
-                &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0)
+                crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0)
             )
         );
     }
@@ -2548,7 +2624,7 @@ mod tests {
         let stochastics = vec![0.0, 5.882352941175241, 38.23529411764534, 47.36842105263394];
         assert_eq!(
             22.05882352941029,
-            single::slow_stochastic(&stochastics, &crate::ConstantModelType::SimpleMovingMedian)
+            single::slow_stochastic(&stochastics, crate::ConstantModelType::SimpleMovingMedian)
         );
     }
 
@@ -2557,7 +2633,7 @@ mod tests {
         let stochastics = vec![0.0, 5.882352941175241, 38.23529411764534, 47.36842105263394];
         assert_eq!(
             22.75,
-            single::slow_stochastic(&stochastics, &crate::ConstantModelType::SimpleMovingMode)
+            single::slow_stochastic(&stochastics, crate::ConstantModelType::SimpleMovingMode)
         );
     }
 
@@ -2565,7 +2641,7 @@ mod tests {
     #[should_panic]
     fn test_single_slow_stochastic_panic() {
         let stochastics = Vec::new();
-        single::slow_stochastic(&stochastics, &crate::ConstantModelType::SimpleMovingMode);
+        single::slow_stochastic(&stochastics, crate::ConstantModelType::SimpleMovingMode);
     }
 
     #[test]
@@ -2576,8 +2652,8 @@ mod tests {
             vec![14.705882352940193, 30.49535603715151],
             bulk::slow_stochastic(
                 &stochastics,
-                &crate::ConstantModelType::SimpleMovingAverage,
-                &period
+                crate::ConstantModelType::SimpleMovingAverage,
+                period
             )
         );
     }
@@ -2590,8 +2666,8 @@ mod tests {
             vec![19.969040247676816, 35.75036662864623],
             bulk::slow_stochastic(
                 &stochastics,
-                &crate::ConstantModelType::SmoothedMovingAverage,
-                &period
+                crate::ConstantModelType::SmoothedMovingAverage,
+                period
             )
         );
     }
@@ -2604,8 +2680,8 @@ mod tests {
             vec![23.529411764704548, 38.832375055285944],
             bulk::slow_stochastic(
                 &stochastics,
-                &crate::ConstantModelType::ExponentialMovingAverage,
-                &period
+                crate::ConstantModelType::ExponentialMovingAverage,
+                period
             )
         );
     }
@@ -2618,8 +2694,8 @@ mod tests {
             vec![29.192273924493655, 42.98322628344476],
             bulk::slow_stochastic(
                 &stochastics,
-                &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0),
-                &period
+                crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0),
+                period
             )
         );
     }
@@ -2632,8 +2708,8 @@ mod tests {
             vec![5.882352941175241, 38.23529411764534],
             bulk::slow_stochastic(
                 &stochastics,
-                &crate::ConstantModelType::SimpleMovingMedian,
-                &period
+                crate::ConstantModelType::SimpleMovingMedian,
+                period
             )
         );
     }
@@ -2646,8 +2722,8 @@ mod tests {
             vec![14.666666666666666, 30.3333333333333332],
             bulk::slow_stochastic(
                 &stochastics,
-                &crate::ConstantModelType::SimpleMovingMode,
-                &period
+                crate::ConstantModelType::SimpleMovingMode,
+                period
             )
         );
     }
@@ -2659,8 +2735,8 @@ mod tests {
         let period: usize = 30;
         bulk::slow_stochastic(
             &stochastics,
-            &crate::ConstantModelType::SimpleMovingMode,
-            &period,
+            crate::ConstantModelType::SimpleMovingMode,
+            period,
         );
     }
 
@@ -2671,7 +2747,7 @@ mod tests {
             22.871517027863632,
             single::slowest_stochastic(
                 &stochastics,
-                &crate::ConstantModelType::SimpleMovingAverage
+                crate::ConstantModelType::SimpleMovingAverage
             )
         );
     }
@@ -2683,7 +2759,7 @@ mod tests {
             29.02078726227347,
             single::slowest_stochastic(
                 &stochastics,
-                &crate::ConstantModelType::SmoothedMovingAverage
+                crate::ConstantModelType::SmoothedMovingAverage
             )
         );
     }
@@ -2695,7 +2771,7 @@ mod tests {
             33.284579311601206,
             single::slowest_stochastic(
                 &stochastics,
-                &crate::ConstantModelType::ExponentialMovingAverage
+                crate::ConstantModelType::ExponentialMovingAverage
             )
         );
     }
@@ -2707,7 +2783,7 @@ mod tests {
             39.872151259403616,
             single::slowest_stochastic(
                 &stochastics,
-                &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0)
+                crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0)
             )
         );
     }
@@ -2717,7 +2793,7 @@ mod tests {
         let stochastics = vec![0.0, 5.882352941175241, 38.23529411764534, 47.36842105263394];
         assert_eq!(
             22.05882352941029,
-            single::slowest_stochastic(&stochastics, &crate::ConstantModelType::SimpleMovingMedian)
+            single::slowest_stochastic(&stochastics, crate::ConstantModelType::SimpleMovingMedian)
         );
     }
 
@@ -2726,7 +2802,7 @@ mod tests {
         let stochastics = vec![0.0, 5.882352941175241, 38.23529411764534, 47.36842105263394];
         assert_eq!(
             22.75,
-            single::slowest_stochastic(&stochastics, &crate::ConstantModelType::SimpleMovingMode)
+            single::slowest_stochastic(&stochastics, crate::ConstantModelType::SimpleMovingMode)
         );
     }
 
@@ -2734,7 +2810,7 @@ mod tests {
     #[should_panic]
     fn test_single_slowest_stochastic_panic() {
         let stochastics = Vec::new();
-        single::slowest_stochastic(&stochastics, &crate::ConstantModelType::SimpleMovingMode);
+        single::slowest_stochastic(&stochastics, crate::ConstantModelType::SimpleMovingMode);
     }
 
     #[test]
@@ -2745,8 +2821,8 @@ mod tests {
             vec![14.705882352940193, 30.49535603715151],
             bulk::slowest_stochastic(
                 &stochastics,
-                &crate::ConstantModelType::SimpleMovingAverage,
-                &period
+                crate::ConstantModelType::SimpleMovingAverage,
+                period
             )
         );
     }
@@ -2759,8 +2835,8 @@ mod tests {
             vec![19.969040247676816, 35.75036662864623],
             bulk::slowest_stochastic(
                 &stochastics,
-                &crate::ConstantModelType::SmoothedMovingAverage,
-                &period
+                crate::ConstantModelType::SmoothedMovingAverage,
+                period
             )
         );
     }
@@ -2773,8 +2849,8 @@ mod tests {
             vec![23.529411764704548, 38.832375055285944],
             bulk::slowest_stochastic(
                 &stochastics,
-                &crate::ConstantModelType::ExponentialMovingAverage,
-                &period
+                crate::ConstantModelType::ExponentialMovingAverage,
+                period
             )
         );
     }
@@ -2787,8 +2863,8 @@ mod tests {
             vec![29.192273924493655, 42.98322628344476],
             bulk::slowest_stochastic(
                 &stochastics,
-                &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0),
-                &period
+                crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0),
+                period
             )
         );
     }
@@ -2801,8 +2877,8 @@ mod tests {
             vec![5.882352941175241, 38.23529411764534],
             bulk::slowest_stochastic(
                 &stochastics,
-                &crate::ConstantModelType::SimpleMovingMedian,
-                &period
+                crate::ConstantModelType::SimpleMovingMedian,
+                period
             )
         );
     }
@@ -2815,8 +2891,8 @@ mod tests {
             vec![14.666666666666666, 30.3333333333333332],
             bulk::slowest_stochastic(
                 &stochastics,
-                &crate::ConstantModelType::SimpleMovingMode,
-                &period
+                crate::ConstantModelType::SimpleMovingMode,
+                period
             )
         );
     }
@@ -2828,8 +2904,8 @@ mod tests {
         let period: usize = 30;
         bulk::slowest_stochastic(
             &stochastics,
-            &crate::ConstantModelType::SimpleMovingMode,
-            &period,
+            crate::ConstantModelType::SimpleMovingMode,
+            period,
         );
     }
 
@@ -2840,7 +2916,7 @@ mod tests {
         let close = 101.13;
         assert_eq!(
             -37.190082644628525,
-            single::williams_percent_r(&high, &low, &close)
+            single::williams_percent_r(&high, &low, close)
         );
     }
 
@@ -2851,7 +2927,7 @@ mod tests {
         let close = vec![100.49, 101.06, 101.13, 100.95];
         assert_eq!(
             vec![-37.190082644628525, -66.95652173912976],
-            bulk::williams_percent_r(&high, &low, &close, &3_usize)
+            bulk::williams_percent_r(&high, &low, &close, 3_usize)
         );
     }
 
@@ -2861,7 +2937,7 @@ mod tests {
         let high = vec![101.58, 101.25];
         let low = vec![100.37, 100.57, 100.94];
         let close = vec![100.49, 101.06, 101.13];
-        bulk::williams_percent_r(&high, &low, &close, &3_usize);
+        bulk::williams_percent_r(&high, &low, &close, 3_usize);
     }
 
     #[test]
@@ -2870,7 +2946,7 @@ mod tests {
         let high = vec![100.93, 101.58, 101.25];
         let low = vec![100.37, 100.57, 100.94, 100.59];
         let close = vec![100.49, 101.06, 101.13];
-        bulk::williams_percent_r(&high, &low, &close, &3_usize);
+        bulk::williams_percent_r(&high, &low, &close, 3_usize);
     }
 
     #[test]
@@ -2879,7 +2955,7 @@ mod tests {
         let high = vec![100.93, 101.58, 101.25];
         let low = vec![100.57, 100.94, 100.59];
         let close = vec![101.06, 101.13];
-        bulk::williams_percent_r(&high, &low, &close, &3_usize);
+        bulk::williams_percent_r(&high, &low, &close, 3_usize);
     }
 
     #[test]
@@ -2888,7 +2964,7 @@ mod tests {
         let high = vec![101.58, 101.25, 100.93];
         let low = vec![100.37, 100.57, 100.94];
         let close = vec![100.49, 101.06, 101.13];
-        bulk::williams_percent_r(&high, &low, &close, &30_usize);
+        bulk::williams_percent_r(&high, &low, &close, 30_usize);
     }
 
     #[test]
@@ -2955,7 +3031,7 @@ mod tests {
                 26.291946512503486,
                 54.5117755343317
             ],
-            bulk::money_flow_index(&prices, &volume, &period)
+            bulk::money_flow_index(&prices, &volume, period)
         );
     }
 
@@ -2967,7 +3043,7 @@ mod tests {
         ];
         let volume = vec![1400.0, 1450.0, 1100.0, 900.0, 875.0, 1025.0, 1100.0];
         let period: usize = 5;
-        bulk::money_flow_index(&prices, &volume, &period);
+        bulk::money_flow_index(&prices, &volume, period);
     }
 
     #[test]
@@ -2978,7 +3054,7 @@ mod tests {
         ];
         let volume = vec![1200.0, 1400.0, 1450.0, 1100.0, 900.0, 875.0, 1025.0, 1100.0];
         let period: usize = 50;
-        bulk::money_flow_index(&prices, &volume, &period);
+        bulk::money_flow_index(&prices, &volume, period);
     }
 
     #[test]
@@ -2987,7 +3063,7 @@ mod tests {
         let previous_price = 100.2;
         assert_eq!(
             0.25948103792414257,
-            single::rate_of_change(&current_price, &previous_price)
+            single::rate_of_change(current_price, previous_price)
         );
     }
 
@@ -2997,7 +3073,7 @@ mod tests {
         let previous_price = 100.38;
         assert_eq!(
             -0.18928073321378536,
-            single::rate_of_change(&current_price, &previous_price)
+            single::rate_of_change(current_price, previous_price)
         );
     }
 
@@ -3005,7 +3081,7 @@ mod tests {
     fn test_single_rate_of_change_equal() {
         let current_price = 100.32;
         let previous_price = 100.32;
-        assert_eq!(0.0, single::rate_of_change(&current_price, &previous_price));
+        assert_eq!(0.0, single::rate_of_change(current_price, previous_price));
     }
 
     #[test]
@@ -3038,7 +3114,7 @@ mod tests {
         let previous_obv = 0.0;
         assert_eq!(
             1500.0,
-            single::on_balance_volume(&current_price, &previous_price, &volume, &previous_obv)
+            single::on_balance_volume(current_price, previous_price, volume, previous_obv)
         );
     }
 
@@ -3050,7 +3126,7 @@ mod tests {
         let previous_obv = 500.0;
         assert_eq!(
             2000.0,
-            single::on_balance_volume(&current_price, &previous_price, &volume, &previous_obv)
+            single::on_balance_volume(current_price, previous_price, volume, previous_obv)
         );
     }
 
@@ -3062,7 +3138,7 @@ mod tests {
         let previous_obv = 0.0;
         assert_eq!(
             -1500.0,
-            single::on_balance_volume(&current_price, &previous_price, &volume, &previous_obv)
+            single::on_balance_volume(current_price, previous_price, volume, previous_obv)
         );
     }
 
@@ -3074,7 +3150,7 @@ mod tests {
         let previous_obv = 500.0;
         assert_eq!(
             -1000.0,
-            single::on_balance_volume(&current_price, &previous_price, &volume, &previous_obv)
+            single::on_balance_volume(current_price, previous_price, volume, previous_obv)
         );
     }
 
@@ -3086,7 +3162,7 @@ mod tests {
         let previous_obv = 0.0;
         assert_eq!(
             0.0,
-            single::on_balance_volume(&current_price, &previous_price, &volume, &previous_obv)
+            single::on_balance_volume(current_price, previous_price, volume, previous_obv)
         );
     }
 
@@ -3098,7 +3174,7 @@ mod tests {
         let previous_obv = 500.0;
         assert_eq!(
             500.0,
-            single::on_balance_volume(&current_price, &previous_price, &volume, &previous_obv)
+            single::on_balance_volume(current_price, previous_price, volume, previous_obv)
         );
     }
 
@@ -3108,7 +3184,7 @@ mod tests {
         let volume = vec![1400.0, 1450.0, 1100.0, 900.0, 875.0];
         assert_eq!(
             vec![1450.0, 350.0, -550.0, 325.0],
-            bulk::on_balance_volume(&prices, &volume, &0.0)
+            bulk::on_balance_volume(&prices, &volume, 0.0)
         );
     }
 
@@ -3118,7 +3194,7 @@ mod tests {
         let volume = vec![1450.0, 1100.0, 900.0, 875.0];
         assert_eq!(
             vec![350.0, -550.0, 325.0],
-            bulk::on_balance_volume(&prices, &volume, &1450.0)
+            bulk::on_balance_volume(&prices, &volume, 1450.0)
         );
     }
 
@@ -3127,7 +3203,7 @@ mod tests {
     fn test_bulk_on_balance_volume_no_price_panic() {
         let prices = Vec::new();
         let volume = vec![1400.0, 1450.0, 1100.0, 900.0, 875.0];
-        bulk::on_balance_volume(&prices, &volume, &0.0);
+        bulk::on_balance_volume(&prices, &volume, 0.0);
     }
 
     #[test]
@@ -3135,7 +3211,7 @@ mod tests {
     fn test_bulk_on_balance_volume_no_volume_panic() {
         let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
         let volume = Vec::new();
-        bulk::on_balance_volume(&prices, &volume, &0.0);
+        bulk::on_balance_volume(&prices, &volume, 0.0);
     }
 
     #[test]
@@ -3144,9 +3220,9 @@ mod tests {
         let prices = Vec::new();
         single::commodity_channel_index(
             &prices,
-            &crate::ConstantModelType::SimpleMovingAverage,
-            &crate::DeviationModel::MeanAbsoluteDeviation,
-            &0.015,
+            crate::ConstantModelType::SimpleMovingAverage,
+            crate::DeviationModel::MeanAbsoluteDeviation,
+            0.015,
         );
     }
 
@@ -3157,9 +3233,9 @@ mod tests {
             -77.92207792208092,
             single::commodity_channel_index(
                 &prices,
-                &crate::ConstantModelType::SimpleMovingAverage,
-                &crate::DeviationModel::MeanAbsoluteDeviation,
-                &0.015
+                crate::ConstantModelType::SimpleMovingAverage,
+                crate::DeviationModel::MeanAbsoluteDeviation,
+                0.015
             )
         );
     }
@@ -3171,9 +3247,9 @@ mod tests {
             -81.35593220339244,
             single::commodity_channel_index(
                 &prices,
-                &crate::ConstantModelType::SimpleMovingAverage,
-                &crate::DeviationModel::MedianAbsoluteDeviation,
-                &0.015
+                crate::ConstantModelType::SimpleMovingAverage,
+                crate::DeviationModel::MedianAbsoluteDeviation,
+                0.015
             )
         );
     }
@@ -3185,9 +3261,9 @@ mod tests {
             -27.11864406779792,
             single::commodity_channel_index(
                 &prices,
-                &crate::ConstantModelType::SimpleMovingAverage,
-                &crate::DeviationModel::ModeAbsoluteDeviation,
-                &0.015
+                crate::ConstantModelType::SimpleMovingAverage,
+                crate::DeviationModel::ModeAbsoluteDeviation,
+                0.015
             )
         );
     }
@@ -3199,9 +3275,9 @@ mod tests {
             -71.3483546791537,
             single::commodity_channel_index(
                 &prices,
-                &crate::ConstantModelType::SimpleMovingAverage,
-                &crate::DeviationModel::StandardDeviation,
-                &0.015
+                crate::ConstantModelType::SimpleMovingAverage,
+                crate::DeviationModel::StandardDeviation,
+                0.015
             )
         );
     }
@@ -3213,9 +3289,9 @@ mod tests {
             -44.00422507932252,
             single::commodity_channel_index(
                 &prices,
-                &crate::ConstantModelType::SimpleMovingAverage,
-                &crate::DeviationModel::UlcerIndex,
-                &0.015
+                crate::ConstantModelType::SimpleMovingAverage,
+                crate::DeviationModel::UlcerIndex,
+                0.015
             )
         );
     }
@@ -3226,9 +3302,9 @@ mod tests {
             -57.79560753382917,
             single::commodity_channel_index(
                 &prices,
-                &crate::ConstantModelType::SmoothedMovingAverage,
-                &crate::DeviationModel::MeanAbsoluteDeviation,
-                &0.015
+                crate::ConstantModelType::SmoothedMovingAverage,
+                crate::DeviationModel::MeanAbsoluteDeviation,
+                0.015
             )
         );
     }
@@ -3240,9 +3316,9 @@ mod tests {
             -42.87971112616663,
             single::commodity_channel_index(
                 &prices,
-                &crate::ConstantModelType::ExponentialMovingAverage,
-                &crate::DeviationModel::MeanAbsoluteDeviation,
-                &0.015
+                crate::ConstantModelType::ExponentialMovingAverage,
+                crate::DeviationModel::MeanAbsoluteDeviation,
+                0.015
             )
         );
     }
@@ -3254,9 +3330,9 @@ mod tests {
             -19.132669714320674,
             single::commodity_channel_index(
                 &prices,
-                &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0),
-                &crate::DeviationModel::MeanAbsoluteDeviation,
-                &0.015
+                crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0),
+                crate::DeviationModel::MeanAbsoluteDeviation,
+                0.015
             )
         );
     }
@@ -3268,9 +3344,9 @@ mod tests {
             -91.99134199134296,
             single::commodity_channel_index(
                 &prices,
-                &crate::ConstantModelType::SimpleMovingMedian,
-                &crate::DeviationModel::MeanAbsoluteDeviation,
-                &0.015
+                crate::ConstantModelType::SimpleMovingMedian,
+                crate::DeviationModel::MeanAbsoluteDeviation,
+                0.015
             )
         );
     }
@@ -3282,9 +3358,9 @@ mod tests {
             113.63636363636031,
             single::commodity_channel_index(
                 &prices,
-                &crate::ConstantModelType::SimpleMovingMode,
-                &crate::DeviationModel::MeanAbsoluteDeviation,
-                &0.015
+                crate::ConstantModelType::SimpleMovingMode,
+                crate::DeviationModel::MeanAbsoluteDeviation,
+                0.015
             )
         );
     }
@@ -3296,10 +3372,10 @@ mod tests {
             vec![-100.0, -100.00000000000804, -41.66666666666519],
             bulk::commodity_channel_index(
                 &prices,
-                &crate::ConstantModelType::SimpleMovingAverage,
-                &crate::DeviationModel::MeanAbsoluteDeviation,
-                &0.015,
-                &3_usize
+                crate::ConstantModelType::SimpleMovingAverage,
+                crate::DeviationModel::MeanAbsoluteDeviation,
+                0.015,
+                3_usize
             )
         );
     }
@@ -3312,10 +3388,10 @@ mod tests {
             vec![-100.0, -100.00000000000804, -41.66666666666519],
             bulk::commodity_channel_index(
                 &prices,
-                &crate::ConstantModelType::SimpleMovingAverage,
-                &crate::DeviationModel::MeanAbsoluteDeviation,
-                &0.015,
-                &30_usize
+                crate::ConstantModelType::SimpleMovingAverage,
+                crate::DeviationModel::MeanAbsoluteDeviation,
+                0.015,
+                30_usize
             )
         );
     }
@@ -3327,9 +3403,9 @@ mod tests {
             (0.0, 100.21),
             single::mcginley_dynamic_commodity_channel_index(
                 &prices,
-                &0.0,
-                &crate::DeviationModel::MeanAbsoluteDeviation,
-                &0.015
+                0.0,
+                crate::DeviationModel::MeanAbsoluteDeviation,
+                0.015
             )
         );
     }
@@ -3341,9 +3417,9 @@ mod tests {
             (56.90977560811997, 100.23190366735862),
             single::mcginley_dynamic_commodity_channel_index(
                 &prices,
-                &100.21,
-                &crate::DeviationModel::MeanAbsoluteDeviation,
-                &0.015
+                100.21,
+                crate::DeviationModel::MeanAbsoluteDeviation,
+                0.015
             )
         );
     }
@@ -3355,9 +3431,9 @@ mod tests {
             (57.57930237998023, 100.23190366735862),
             single::mcginley_dynamic_commodity_channel_index(
                 &prices,
-                &100.21,
-                &crate::DeviationModel::MedianAbsoluteDeviation,
-                &0.015
+                100.21,
+                crate::DeviationModel::MedianAbsoluteDeviation,
+                0.015
             )
         );
     }
@@ -3369,9 +3445,9 @@ mod tests {
             (18.015609947110768, 100.23190366735862),
             single::mcginley_dynamic_commodity_channel_index(
                 &prices,
-                &100.21,
-                &crate::DeviationModel::ModeAbsoluteDeviation,
-                &0.015
+                100.21,
+                crate::DeviationModel::ModeAbsoluteDeviation,
+                0.015
             )
         );
     }
@@ -3383,9 +3459,9 @@ mod tests {
             (47.47490364820863, 100.23190366735862),
             single::mcginley_dynamic_commodity_channel_index(
                 &prices,
-                &100.21,
-                &crate::DeviationModel::StandardDeviation,
-                &0.015
+                100.21,
+                crate::DeviationModel::StandardDeviation,
+                0.015
             )
         );
     }
@@ -3397,9 +3473,9 @@ mod tests {
             (24.747413068246022, 100.23190366735862),
             single::mcginley_dynamic_commodity_channel_index(
                 &prices,
-                &100.21,
-                &crate::DeviationModel::UlcerIndex,
-                &0.015
+                100.21,
+                crate::DeviationModel::UlcerIndex,
+                0.015
             )
         );
     }
@@ -3410,9 +3486,9 @@ mod tests {
         let prices = Vec::new();
         single::mcginley_dynamic_commodity_channel_index(
             &prices,
-            &100.21,
-            &crate::DeviationModel::MedianAbsoluteDeviation,
-            &0.015,
+            100.21,
+            crate::DeviationModel::MedianAbsoluteDeviation,
+            0.015,
         );
     }
 
@@ -3427,10 +3503,10 @@ mod tests {
             ],
             bulk::mcginley_dynamic_commodity_channel_index(
                 &prices,
-                &0.0,
-                &crate::DeviationModel::MeanAbsoluteDeviation,
-                &0.015,
-                &5_usize
+                0.0,
+                crate::DeviationModel::MeanAbsoluteDeviation,
+                0.015,
+                5_usize
             )
         );
     }
@@ -3445,10 +3521,10 @@ mod tests {
             ],
             bulk::mcginley_dynamic_commodity_channel_index(
                 &prices,
-                &100.21,
-                &crate::DeviationModel::MeanAbsoluteDeviation,
-                &0.015,
-                &5_usize
+                100.21,
+                crate::DeviationModel::MeanAbsoluteDeviation,
+                0.015,
+                5_usize
             )
         );
     }
@@ -3459,10 +3535,10 @@ mod tests {
         let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
         bulk::mcginley_dynamic_commodity_channel_index(
             &prices,
-            &0.0,
-            &crate::DeviationModel::MeanAbsoluteDeviation,
-            &0.015,
-            &50_usize,
+            0.0,
+            crate::DeviationModel::MeanAbsoluteDeviation,
+            0.015,
+            50_usize,
         );
     }
 
@@ -3473,9 +3549,9 @@ mod tests {
             -0.06067027758972188,
             single::macd_line(
                 &prices,
-                &3_usize,
-                &crate::ConstantModelType::ExponentialMovingAverage,
-                &crate::ConstantModelType::ExponentialMovingAverage
+                3_usize,
+                crate::ConstantModelType::ExponentialMovingAverage,
+                crate::ConstantModelType::ExponentialMovingAverage
             )
         );
     }
@@ -3487,9 +3563,9 @@ mod tests {
             -0.07733259851198682,
             single::macd_line(
                 &prices,
-                &3_usize,
-                &crate::ConstantModelType::SmoothedMovingAverage,
-                &crate::ConstantModelType::SmoothedMovingAverage
+                3_usize,
+                crate::ConstantModelType::SmoothedMovingAverage,
+                crate::ConstantModelType::SmoothedMovingAverage
             )
         );
     }
@@ -3501,9 +3577,9 @@ mod tests {
             -0.02938702437832319,
             single::macd_line(
                 &prices,
-                &3_usize,
-                &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0),
-                &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0)
+                3_usize,
+                crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0),
+                crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0)
             )
         );
     }
@@ -3515,9 +3591,9 @@ mod tests {
             -0.0940000000000083,
             single::macd_line(
                 &prices,
-                &3_usize,
-                &crate::ConstantModelType::SimpleMovingAverage,
-                &crate::ConstantModelType::SimpleMovingAverage
+                3_usize,
+                crate::ConstantModelType::SimpleMovingAverage,
+                crate::ConstantModelType::SimpleMovingAverage
             )
         );
     }
@@ -3529,9 +3605,9 @@ mod tests {
             -0.1700000000000017,
             single::macd_line(
                 &prices,
-                &3_usize,
-                &crate::ConstantModelType::SimpleMovingMedian,
-                &crate::ConstantModelType::SimpleMovingMedian
+                3_usize,
+                crate::ConstantModelType::SimpleMovingMedian,
+                crate::ConstantModelType::SimpleMovingMedian
             )
         );
     }
@@ -3543,9 +3619,9 @@ mod tests {
             0.0,
             single::macd_line(
                 &prices,
-                &3_usize,
-                &crate::ConstantModelType::SimpleMovingMode,
-                &crate::ConstantModelType::SimpleMovingMode
+                3_usize,
+                crate::ConstantModelType::SimpleMovingMode,
+                crate::ConstantModelType::SimpleMovingMode
             )
         );
     }
@@ -3556,9 +3632,9 @@ mod tests {
         let prices = Vec::new();
         single::macd_line(
             &prices,
-            &3_usize,
-            &crate::ConstantModelType::ExponentialMovingAverage,
-            &crate::ConstantModelType::ExponentialMovingAverage,
+            3_usize,
+            crate::ConstantModelType::ExponentialMovingAverage,
+            crate::ConstantModelType::ExponentialMovingAverage,
         );
     }
 
@@ -3568,9 +3644,9 @@ mod tests {
         let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
         single::macd_line(
             &prices,
-            &30_usize,
-            &crate::ConstantModelType::ExponentialMovingAverage,
-            &crate::ConstantModelType::ExponentialMovingAverage,
+            30_usize,
+            crate::ConstantModelType::ExponentialMovingAverage,
+            crate::ConstantModelType::ExponentialMovingAverage,
         );
     }
 
@@ -3585,10 +3661,10 @@ mod tests {
             ],
             bulk::macd_line(
                 &prices,
-                &3_usize,
-                &crate::ConstantModelType::ExponentialMovingAverage,
-                &5_usize,
-                &crate::ConstantModelType::ExponentialMovingAverage
+                3_usize,
+                crate::ConstantModelType::ExponentialMovingAverage,
+                5_usize,
+                crate::ConstantModelType::ExponentialMovingAverage
             )
         );
     }
@@ -3599,10 +3675,10 @@ mod tests {
         let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
         bulk::macd_line(
             &prices,
-            &30_usize,
-            &crate::ConstantModelType::ExponentialMovingAverage,
-            &5_usize,
-            &crate::ConstantModelType::ExponentialMovingAverage,
+            30_usize,
+            crate::ConstantModelType::ExponentialMovingAverage,
+            5_usize,
+            crate::ConstantModelType::ExponentialMovingAverage,
         );
     }
 
@@ -3612,10 +3688,10 @@ mod tests {
         let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
         bulk::macd_line(
             &prices,
-            &3_usize,
-            &crate::ConstantModelType::ExponentialMovingAverage,
-            &50_usize,
-            &crate::ConstantModelType::ExponentialMovingAverage,
+            3_usize,
+            crate::ConstantModelType::ExponentialMovingAverage,
+            50_usize,
+            crate::ConstantModelType::ExponentialMovingAverage,
         );
     }
 
@@ -3628,7 +3704,7 @@ mod tests {
         ];
         assert_eq!(
             -0.011764193829214216,
-            single::signal_line(&macds, &crate::ConstantModelType::ExponentialMovingAverage)
+            single::signal_line(&macds, crate::ConstantModelType::ExponentialMovingAverage)
         );
     }
 
@@ -3641,7 +3717,7 @@ mod tests {
         ];
         assert_eq!(
             -0.01710971742153932,
-            single::signal_line(&macds, &crate::ConstantModelType::SmoothedMovingAverage)
+            single::signal_line(&macds, crate::ConstantModelType::SmoothedMovingAverage)
         );
     }
 
@@ -3656,7 +3732,7 @@ mod tests {
             -0.004072696773434995,
             single::signal_line(
                 &macds,
-                &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0)
+                crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0)
             )
         );
     }
@@ -3670,7 +3746,7 @@ mod tests {
         ];
         assert_eq!(
             -0.025766192733039855,
-            single::signal_line(&macds, &crate::ConstantModelType::SimpleMovingAverage)
+            single::signal_line(&macds, crate::ConstantModelType::SimpleMovingAverage)
         );
     }
 
@@ -3683,7 +3759,7 @@ mod tests {
         ];
         assert_eq!(
             -0.022417061611406552,
-            single::signal_line(&macds, &crate::ConstantModelType::SimpleMovingMedian)
+            single::signal_line(&macds, crate::ConstantModelType::SimpleMovingMedian)
         );
     }
 
@@ -3696,7 +3772,7 @@ mod tests {
         ];
         assert_eq!(
             0.0,
-            single::signal_line(&macds, &crate::ConstantModelType::SimpleMovingMode)
+            single::signal_line(&macds, crate::ConstantModelType::SimpleMovingMode)
         );
     }
 
@@ -3704,7 +3780,7 @@ mod tests {
     #[should_panic]
     fn test_single_signal_panic() {
         let macds = Vec::new();
-        single::signal_line(&macds, &crate::ConstantModelType::ExponentialMovingAverage);
+        single::signal_line(&macds, crate::ConstantModelType::ExponentialMovingAverage);
     }
 
     #[test]
@@ -3717,8 +3793,8 @@ mod tests {
         ];
         bulk::signal_line(
             &macds,
-            &crate::ConstantModelType::ExponentialMovingAverage,
-            &30_usize,
+            crate::ConstantModelType::ExponentialMovingAverage,
+            30_usize,
         );
     }
 
@@ -3727,7 +3803,7 @@ mod tests {
         let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
         assert_eq!(
             (0.0, 100.21, 100.21),
-            single::mcginley_dynamic_macd_line(&prices, &3_usize, &0.0, &0.0)
+            single::mcginley_dynamic_macd_line(&prices, 3_usize, 0.0, 0.0)
         );
     }
 
@@ -3736,7 +3812,7 @@ mod tests {
         let prices = vec![100.53, 100.38, 100.19, 100.21, 100.32];
         assert_eq!(
             (0.014602444905747802, 100.24650611226437, 100.23190366735862),
-            single::mcginley_dynamic_macd_line(&prices, &3_usize, &100.21, &100.21)
+            single::mcginley_dynamic_macd_line(&prices, 3_usize, 100.21, 100.21)
         );
     }
 
@@ -3744,14 +3820,14 @@ mod tests {
     #[should_panic]
     fn test_single_mcginley_macd_panic_short_period() {
         let prices = vec![100.46, 100.53, 100.38, 100.19, 100.21];
-        single::mcginley_dynamic_macd_line(&prices, &30_usize, &0.0, &0.0);
+        single::mcginley_dynamic_macd_line(&prices, 30_usize, 0.0, 0.0);
     }
 
     #[test]
     #[should_panic]
     fn test_single_mcginley_macd_panic_no_prices() {
         let prices = Vec::new();
-        single::mcginley_dynamic_macd_line(&prices, &3_usize, &0.0, &0.0);
+        single::mcginley_dynamic_macd_line(&prices, 3_usize, 0.0, 0.0);
     }
 
     #[test]
@@ -3763,7 +3839,7 @@ mod tests {
                 (0.014602444905747802, 100.24650611226437, 100.23190366735862),
                 (0.01615134009865926, 100.25765583287253, 100.24150449277387)
             ],
-            bulk::mcginley_dynamic_macd_line(&prices, &3_usize, &0.0, &5_usize, &0.0)
+            bulk::mcginley_dynamic_macd_line(&prices, 3_usize, 0.0, 5_usize, 0.0)
         );
     }
 
@@ -3775,7 +3851,7 @@ mod tests {
                 (0.014602444905747802, 100.24650611226437, 100.23190366735862),
                 (0.01615134009865926, 100.25765583287253, 100.24150449277387)
             ],
-            bulk::mcginley_dynamic_macd_line(&prices, &3_usize, &100.21, &5_usize, &100.21)
+            bulk::mcginley_dynamic_macd_line(&prices, 3_usize, 100.21, 5_usize, 100.21)
         );
     }
 
@@ -3783,21 +3859,21 @@ mod tests {
     #[should_panic]
     fn test_bulk_mcginley_macd_panic_long_period() {
         let prices = vec![100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
-        bulk::mcginley_dynamic_macd_line(&prices, &3_usize, &100.21, &50_usize, &100.21);
+        bulk::mcginley_dynamic_macd_line(&prices, 3_usize, 100.21, 50_usize, 100.21);
     }
 
     #[test]
     #[should_panic]
     fn test_bulk_mcginley_macd_panic_short_period() {
         let prices = vec![100.53, 100.38, 100.19, 100.21, 100.32, 100.28];
-        bulk::mcginley_dynamic_macd_line(&prices, &30_usize, &100.21, &5_usize, &100.21);
+        bulk::mcginley_dynamic_macd_line(&prices, 30_usize, 100.21, 5_usize, 100.21);
     }
 
     #[test]
     #[should_panic]
     fn test_bulk_mcginley_macd_panic_no_prices() {
         let prices = Vec::new();
-        bulk::mcginley_dynamic_macd_line(&prices, &3_usize, &100.21, &5_usize, &100.21);
+        bulk::mcginley_dynamic_macd_line(&prices, 3_usize, 100.21, 5_usize, 100.21);
     }
 
     #[test]
@@ -3813,10 +3889,10 @@ mod tests {
                 &lows,
                 &close,
                 &volume,
-                &3_usize,
-                &0.0,
-                &crate::ConstantModelType::SimpleMovingAverage,
-                &crate::ConstantModelType::SimpleMovingAverage
+                3_usize,
+                0.0,
+                crate::ConstantModelType::SimpleMovingAverage,
+                crate::ConstantModelType::SimpleMovingAverage
             )
         );
     }
@@ -3834,10 +3910,10 @@ mod tests {
                 &lows,
                 &close,
                 &volume,
-                &3_usize,
-                &0.0,
-                &crate::ConstantModelType::SmoothedMovingAverage,
-                &crate::ConstantModelType::SmoothedMovingAverage
+                3_usize,
+                0.0,
+                crate::ConstantModelType::SmoothedMovingAverage,
+                crate::ConstantModelType::SmoothedMovingAverage
             )
         );
     }
@@ -3855,10 +3931,10 @@ mod tests {
                 &lows,
                 &close,
                 &volume,
-                &3_usize,
-                &0.0,
-                &crate::ConstantModelType::ExponentialMovingAverage,
-                &crate::ConstantModelType::ExponentialMovingAverage
+                3_usize,
+                0.0,
+                crate::ConstantModelType::ExponentialMovingAverage,
+                crate::ConstantModelType::ExponentialMovingAverage
             )
         );
     }
@@ -3876,10 +3952,10 @@ mod tests {
                 &lows,
                 &close,
                 &volume,
-                &3_usize,
-                &0.0,
-                &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0),
-                &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0)
+                3_usize,
+                0.0,
+                crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0),
+                crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0)
             )
         );
     }
@@ -3897,10 +3973,10 @@ mod tests {
                 &lows,
                 &close,
                 &volume,
-                &3_usize,
-                &0.0,
-                &crate::ConstantModelType::SimpleMovingMedian,
-                &crate::ConstantModelType::SimpleMovingMedian
+                3_usize,
+                0.0,
+                crate::ConstantModelType::SimpleMovingMedian,
+                crate::ConstantModelType::SimpleMovingMedian
             )
         );
     }
@@ -3918,10 +3994,10 @@ mod tests {
                 &lows,
                 &close,
                 &volume,
-                &3_usize,
-                &0.0,
-                &crate::ConstantModelType::SimpleMovingMode,
-                &crate::ConstantModelType::SimpleMovingMode
+                3_usize,
+                0.0,
+                crate::ConstantModelType::SimpleMovingMode,
+                crate::ConstantModelType::SimpleMovingMode
             )
         );
     }
@@ -3939,10 +4015,10 @@ mod tests {
                 &lows,
                 &close,
                 &volume,
-                &3_usize,
-                &93.76,
-                &crate::ConstantModelType::SimpleMovingAverage,
-                &crate::ConstantModelType::SimpleMovingAverage
+                3_usize,
+                93.76,
+                crate::ConstantModelType::SimpleMovingAverage,
+                crate::ConstantModelType::SimpleMovingAverage
             )
         );
     }
@@ -3960,10 +4036,10 @@ mod tests {
                 &lows,
                 &close,
                 &volume,
-                &3_usize,
-                &0.0,
-                &crate::ConstantModelType::SimpleMovingAverage,
-                &crate::ConstantModelType::SimpleMovingMedian
+                3_usize,
+                0.0,
+                crate::ConstantModelType::SimpleMovingAverage,
+                crate::ConstantModelType::SimpleMovingMedian
             )
         );
     }
@@ -3980,10 +4056,10 @@ mod tests {
             &lows,
             &close,
             &volume,
-            &30_usize,
-            &0.0,
-            &crate::ConstantModelType::SimpleMovingAverage,
-            &crate::ConstantModelType::SimpleMovingMedian,
+            30_usize,
+            0.0,
+            crate::ConstantModelType::SimpleMovingAverage,
+            crate::ConstantModelType::SimpleMovingMedian,
         );
     }
 
@@ -3999,10 +4075,10 @@ mod tests {
             &lows,
             &close,
             &volume,
-            &3_usize,
-            &0.0,
-            &crate::ConstantModelType::SimpleMovingAverage,
-            &crate::ConstantModelType::SimpleMovingMedian,
+            3_usize,
+            0.0,
+            crate::ConstantModelType::SimpleMovingAverage,
+            crate::ConstantModelType::SimpleMovingMedian,
         );
     }
 
@@ -4018,10 +4094,10 @@ mod tests {
             &lows,
             &close,
             &volume,
-            &3_usize,
-            &0.0,
-            &crate::ConstantModelType::SimpleMovingAverage,
-            &crate::ConstantModelType::SimpleMovingMedian,
+            3_usize,
+            0.0,
+            crate::ConstantModelType::SimpleMovingAverage,
+            crate::ConstantModelType::SimpleMovingMedian,
         );
     }
 
@@ -4037,10 +4113,10 @@ mod tests {
             &lows,
             &close,
             &volume,
-            &3_usize,
-            &0.0,
-            &crate::ConstantModelType::SimpleMovingAverage,
-            &crate::ConstantModelType::SimpleMovingMedian,
+            3_usize,
+            0.0,
+            crate::ConstantModelType::SimpleMovingAverage,
+            crate::ConstantModelType::SimpleMovingMedian,
         );
     }
 
@@ -4056,10 +4132,10 @@ mod tests {
             &lows,
             &close,
             &volume,
-            &3_usize,
-            &0.0,
-            &crate::ConstantModelType::SimpleMovingAverage,
-            &crate::ConstantModelType::SimpleMovingMedian,
+            3_usize,
+            0.0,
+            crate::ConstantModelType::SimpleMovingAverage,
+            crate::ConstantModelType::SimpleMovingMedian,
         );
     }
 
@@ -4080,11 +4156,11 @@ mod tests {
                 &lows,
                 &close,
                 &volume,
-                &3_usize,
-                &5_usize,
-                &0.0,
-                &crate::ConstantModelType::SimpleMovingAverage,
-                &crate::ConstantModelType::SimpleMovingMedian
+                3_usize,
+                5_usize,
+                0.0,
+                crate::ConstantModelType::SimpleMovingAverage,
+                crate::ConstantModelType::SimpleMovingMedian
             )
         );
     }
@@ -4106,11 +4182,11 @@ mod tests {
                 &lows,
                 &close,
                 &volume,
-                &3_usize,
-                &5_usize,
-                &100.0,
-                &crate::ConstantModelType::SimpleMovingAverage,
-                &crate::ConstantModelType::SimpleMovingMedian
+                3_usize,
+                5_usize,
+                100.0,
+                crate::ConstantModelType::SimpleMovingAverage,
+                crate::ConstantModelType::SimpleMovingMedian
             )
         );
     }
@@ -4127,11 +4203,11 @@ mod tests {
             &lows,
             &close,
             &volume,
-            &3_usize,
-            &50_usize,
-            &0.0,
-            &crate::ConstantModelType::SimpleMovingAverage,
-            &crate::ConstantModelType::SimpleMovingMedian,
+            3_usize,
+            50_usize,
+            0.0,
+            crate::ConstantModelType::SimpleMovingAverage,
+            crate::ConstantModelType::SimpleMovingMedian,
         );
     }
 
@@ -4147,11 +4223,11 @@ mod tests {
             &lows,
             &close,
             &volume,
-            &30_usize,
-            &5_usize,
-            &0.0,
-            &crate::ConstantModelType::SimpleMovingAverage,
-            &crate::ConstantModelType::SimpleMovingMedian,
+            30_usize,
+            5_usize,
+            0.0,
+            crate::ConstantModelType::SimpleMovingAverage,
+            crate::ConstantModelType::SimpleMovingMedian,
         );
     }
     #[test]
@@ -4166,11 +4242,11 @@ mod tests {
             &lows,
             &close,
             &volume,
-            &3_usize,
-            &5_usize,
-            &0.0,
-            &crate::ConstantModelType::SimpleMovingAverage,
-            &crate::ConstantModelType::SimpleMovingMedian,
+            3_usize,
+            5_usize,
+            0.0,
+            crate::ConstantModelType::SimpleMovingAverage,
+            crate::ConstantModelType::SimpleMovingMedian,
         );
     }
 
@@ -4186,11 +4262,11 @@ mod tests {
             &lows,
             &close,
             &volume,
-            &3_usize,
-            &5_usize,
-            &0.0,
-            &crate::ConstantModelType::SimpleMovingAverage,
-            &crate::ConstantModelType::SimpleMovingMedian,
+            3_usize,
+            5_usize,
+            0.0,
+            crate::ConstantModelType::SimpleMovingAverage,
+            crate::ConstantModelType::SimpleMovingMedian,
         );
     }
 
@@ -4206,11 +4282,11 @@ mod tests {
             &lows,
             &close,
             &volume,
-            &3_usize,
-            &5_usize,
-            &0.0,
-            &crate::ConstantModelType::SimpleMovingAverage,
-            &crate::ConstantModelType::SimpleMovingMedian,
+            3_usize,
+            5_usize,
+            0.0,
+            crate::ConstantModelType::SimpleMovingAverage,
+            crate::ConstantModelType::SimpleMovingMedian,
         );
     }
 
@@ -4226,11 +4302,11 @@ mod tests {
             &lows,
             &close,
             &volume,
-            &3_usize,
-            &5_usize,
-            &0.0,
-            &crate::ConstantModelType::SimpleMovingAverage,
-            &crate::ConstantModelType::SimpleMovingMedian,
+            3_usize,
+            5_usize,
+            0.0,
+            crate::ConstantModelType::SimpleMovingAverage,
+            crate::ConstantModelType::SimpleMovingMedian,
         );
     }
 
@@ -4241,8 +4317,8 @@ mod tests {
             0.1400560224089579,
             single::percentage_price_oscillator(
                 &prices,
-                &3_usize,
-                &crate::ConstantModelType::SimpleMovingAverage
+                3_usize,
+                crate::ConstantModelType::SimpleMovingAverage
             )
         );
     }
@@ -4254,8 +4330,8 @@ mod tests {
             0.1131763552115475,
             single::percentage_price_oscillator(
                 &prices,
-                &3_usize,
-                &crate::ConstantModelType::SmoothedMovingAverage
+                3_usize,
+                crate::ConstantModelType::SmoothedMovingAverage
             )
         );
     }
@@ -4267,8 +4343,8 @@ mod tests {
             0.08979623002617415,
             single::percentage_price_oscillator(
                 &prices,
-                &3_usize,
-                &crate::ConstantModelType::ExponentialMovingAverage
+                3_usize,
+                crate::ConstantModelType::ExponentialMovingAverage
             )
         );
     }
@@ -4280,8 +4356,8 @@ mod tests {
             0.0485562141788203,
             single::percentage_price_oscillator(
                 &prices,
-                &3_usize,
-                &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0)
+                3_usize,
+                crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0)
             )
         );
     }
@@ -4293,8 +4369,8 @@ mod tests {
             0.1891676622859396,
             single::percentage_price_oscillator(
                 &prices,
-                &3_usize,
-                &crate::ConstantModelType::SimpleMovingMedian
+                3_usize,
+                crate::ConstantModelType::SimpleMovingMedian
             )
         );
     }
@@ -4306,8 +4382,8 @@ mod tests {
             1.0,
             single::percentage_price_oscillator(
                 &prices,
-                &3_usize,
-                &crate::ConstantModelType::SimpleMovingMode
+                3_usize,
+                crate::ConstantModelType::SimpleMovingMode
             )
         );
     }
@@ -4318,8 +4394,8 @@ mod tests {
         let prices = vec![100.01, 100.44, 100.39, 100.63, 100.71];
         single::percentage_price_oscillator(
             &prices,
-            &30_usize,
-            &crate::ConstantModelType::SimpleMovingMode,
+            30_usize,
+            crate::ConstantModelType::SimpleMovingMode,
         );
     }
 
@@ -4329,8 +4405,8 @@ mod tests {
         let prices = Vec::new();
         single::percentage_price_oscillator(
             &prices,
-            &0_usize,
-            &crate::ConstantModelType::SimpleMovingMode,
+            0_usize,
+            crate::ConstantModelType::SimpleMovingMode,
         );
     }
 
@@ -4345,9 +4421,9 @@ mod tests {
             ],
             bulk::percentage_price_oscillator(
                 &prices,
-                &3_usize,
-                &5_usize,
-                &crate::ConstantModelType::ExponentialMovingAverage
+                3_usize,
+                5_usize,
+                crate::ConstantModelType::ExponentialMovingAverage
             )
         );
     }
@@ -4358,9 +4434,9 @@ mod tests {
         let prices = vec![100.01, 100.44, 100.39, 100.63, 100.71, 100.35, 100.12];
         bulk::percentage_price_oscillator(
             &prices,
-            &30_usize,
-            &5_usize,
-            &crate::ConstantModelType::ExponentialMovingAverage,
+            30_usize,
+            5_usize,
+            crate::ConstantModelType::ExponentialMovingAverage,
         );
     }
 
@@ -4370,9 +4446,9 @@ mod tests {
         let prices = vec![100.01, 100.44, 100.39, 100.63, 100.71, 100.35, 100.12];
         bulk::percentage_price_oscillator(
             &prices,
-            &3_usize,
-            &50_usize,
-            &crate::ConstantModelType::ExponentialMovingAverage,
+            3_usize,
+            50_usize,
+            crate::ConstantModelType::ExponentialMovingAverage,
         );
     }
 
@@ -4382,9 +4458,9 @@ mod tests {
         let prices = Vec::new();
         bulk::percentage_price_oscillator(
             &prices,
-            &3_usize,
-            &5_usize,
-            &crate::ConstantModelType::ExponentialMovingAverage,
+            3_usize,
+            5_usize,
+            crate::ConstantModelType::ExponentialMovingAverage,
         );
     }
 
@@ -4414,7 +4490,7 @@ mod tests {
         let prices = vec![100.01, 100.44, 100.39, 100.63, 100.71, 100.35, 100.12];
         assert_eq!(
             vec![87.50000000000044, -12.328767123288312, -29.67032967032981],
-            bulk::chande_momentum_oscillator(&prices, &5_usize)
+            bulk::chande_momentum_oscillator(&prices, 5_usize)
         );
     }
 
@@ -4422,13 +4498,13 @@ mod tests {
     #[should_panic]
     fn bulk_chande_momentum_oscillator_panic_period() {
         let prices = vec![100.01, 100.44, 100.39, 100.63, 100.71, 100.35, 100.12];
-        bulk::chande_momentum_oscillator(&prices, &50_usize);
+        bulk::chande_momentum_oscillator(&prices, 50_usize);
     }
 
     #[test]
     #[should_panic]
     fn bulk_chande_momentum_oscillator_panic_empty() {
         let prices = Vec::new();
-        bulk::chande_momentum_oscillator(&prices, &5_usize);
+        bulk::chande_momentum_oscillator(&prices, 5_usize);
     }
 }

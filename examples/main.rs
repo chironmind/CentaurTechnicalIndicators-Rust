@@ -481,8 +481,8 @@ fn main() {
     for model in &available_models {
         let rsi = rust_ti::momentum_indicators::bulk::relative_strength_index(
             &typical_price,
-            &model,
-            &period,
+            *model,
+            period,
         );
         println!("{:?} RSI: {:?}", model, rsi);
     }
@@ -490,7 +490,7 @@ fn main() {
     // Stochastic Oscillator
 
     let stochastic_oscillator =
-        rust_ti::momentum_indicators::bulk::stochastic_oscillator(&typical_price, &period);
+        rust_ti::momentum_indicators::bulk::stochastic_oscillator(&typical_price, period);
     println!("Stochastic Oscillator: {:?}", stochastic_oscillator);
 
     // Slow stochastic and slowest stochastic
@@ -500,16 +500,16 @@ fn main() {
     for model in &available_models {
         let slow_so = rust_ti::momentum_indicators::bulk::slow_stochastic(
             &stochastic_oscillator,
-            &model,
-            &period,
+            *model,
+            period,
         );
         println!("Slow Stochastic {:?}: {:?}", model, slow_so);
 
         for slowest_model in &available_models {
             let slowest_so = rust_ti::momentum_indicators::bulk::slowest_stochastic(
                 &slow_so,
-                &slowest_model,
-                &period,
+                *slowest_model,
+                period,
             );
             println!("Slowest Stochastic {:?}: {:?}", slowest_model, slowest_so);
         }
@@ -518,7 +518,7 @@ fn main() {
     // Money Flow Index
 
     let mfi =
-        rust_ti::momentum_indicators::bulk::money_flow_index(&typical_price, &volume, &period);
+        rust_ti::momentum_indicators::bulk::money_flow_index(&typical_price, &volume, period);
     println!("Money Flow Index: {:?}", mfi);
 
     // Rate of Change
@@ -532,7 +532,7 @@ fn main() {
     let obv = rust_ti::momentum_indicators::bulk::on_balance_volume(
         &typical_price,
         &volume,
-        &previous_obv,
+        previous_obv,
     );
     println!("On Balance Volume: {:?}", obv);
 
@@ -543,10 +543,10 @@ fn main() {
         for deviation_model in &available_deviations {
             let cci = rust_ti::momentum_indicators::bulk::commodity_channel_index(
                 &typical_price,
-                &model,
-                &deviation_model,
-                &constant_multiplier,
-                &period,
+                *model,
+                *deviation_model,
+                constant_multiplier,
+                period,
             );
             println!(
                 "Commoditiy Channel Index {:?} {:?}: {:?}",
@@ -560,10 +560,10 @@ fn main() {
     for deviation_model in &available_deviations {
         let md_cci = rust_ti::momentum_indicators::bulk::mcginley_dynamic_commodity_channel_index(
             &typical_price,
-            &previous_mcginley_dynamic,
-            &deviation_model,
-            &constant_multiplier,
-            &period,
+            previous_mcginley_dynamic,
+            *deviation_model,
+            constant_multiplier,
+            period,
         );
         println!(
             "McGinley Dynamic Commoditiy Channel Index {:?}: {:?}",
@@ -577,16 +577,16 @@ fn main() {
         for long_model in &available_models {
             let macd = rust_ti::momentum_indicators::bulk::macd_line(
                 &typical_price,
-                &period,
-                &short_model,
-                &long_period,
-                &long_model,
+                period,
+                *short_model,
+                long_period,
+                *long_model,
             );
             println!("MACD {:?} {:?}: {:?}", short_model, long_model, macd);
 
             for signal_model in &available_models {
                 let signal =
-                    rust_ti::momentum_indicators::bulk::signal_line(&macd, &signal_model, &period);
+                    rust_ti::momentum_indicators::bulk::signal_line(&macd, *signal_model, period);
                 println!("Signal line {:?}: {:?}", signal_model, signal);
             }
         }
@@ -596,10 +596,10 @@ fn main() {
 
     let md_macd = rust_ti::momentum_indicators::bulk::mcginley_dynamic_macd_line(
         &typical_price,
-        &period,
-        &previous_mcginley_dynamic,
-        &long_period,
-        &previous_mcginley_dynamic,
+        period,
+        previous_mcginley_dynamic,
+        long_period,
+        previous_mcginley_dynamic,
     );
     println!("McGinley Dynamic MACD: {:?}", md_macd);
 
@@ -613,11 +613,11 @@ fn main() {
                 &low,
                 &close,
                 &volume,
-                &period,
-                &long_period,
-                &previous_ad,
-                &short_model,
-                &long_model,
+                period,
+                long_period,
+                previous_ad,
+                *short_model,
+                *long_model,
             );
             println!(
                 "Chaikin Oscillator {:?} {:?}: {:?}",
@@ -631,9 +631,9 @@ fn main() {
     for model in &available_models {
         let ppo = rust_ti::momentum_indicators::bulk::percentage_price_oscillator(
             &typical_price,
-            &period,
-            &long_period,
-            &model,
+            period,
+            long_period,
+            *model,
         );
         println!("Percentage Price Oscillator {:?}: {:?}", model, ppo);
         for moving_average in &available_moving_averages {
@@ -645,7 +645,7 @@ fn main() {
 
     // Chande Momentum Oscillator
     let cmo =
-        rust_ti::momentum_indicators::bulk::chande_momentum_oscillator(&typical_price, &period);
+        rust_ti::momentum_indicators::bulk::chande_momentum_oscillator(&typical_price, period);
     println!("Chande Momentum Oscillator: {:?}", cmo);
 
     // moving_average.rs
