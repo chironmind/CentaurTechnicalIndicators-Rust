@@ -26,6 +26,7 @@ pub mod single {
     /// let mean = rust_ti::basic_indicators::single::mean(&prices);
     /// assert_eq!(101.5, mean);
     /// ```
+    #[inline]
     pub fn mean(prices: &[f64]) -> f64 {
         if prices.is_empty() {
             panic!("Prices ({:?}) is empty", prices);
@@ -58,23 +59,12 @@ pub mod single {
     /// let median = rust_ti::basic_indicators::single::median(&prices);
     /// assert_eq!(101.5, median);
     /// ```
+    #[inline]
     pub fn median(prices: &[f64]) -> f64 {
         if prices.is_empty() {
             panic!("Prices ({:?}) is empty", prices);
         };
 
-        /*let mut ordered_prices = prices
-            .iter()
-            .filter_map(|f| if f.is_nan() { None } else { Some(*f) })
-            .collect::<Vec<f64>>();
-        ordered_prices.sort_by(cmp_f64);
-        let middle: usize = prices.len() / 2;
-        if prices.len() % 2 == 0 {
-            return mean(&ordered_prices[middle - 1..middle + 1]);
-        };
-
-        return ordered_prices[middle];
-        */
         let mut values: Vec<f64> = prices.iter().copied().filter(|f| !f.is_nan()).collect();
         values.sort_by(|a, b| a.partial_cmp(b).unwrap_or(Ordering::Equal));
         let mid = values.len() / 2;
@@ -110,14 +100,11 @@ pub mod single {
     /// let mode = rust_ti::basic_indicators::single::mode(&prices);
     /// assert_eq!(100.0, mode); // 100.0 occurs most often
     /// ```
+    #[inline]
     pub fn mode(prices: &[f64]) -> f64 {
         if prices.is_empty() {
             panic!("Prices ({:?}) is empty", prices);
         };
-        /*
-        let rounded_prices = prices.iter().map(|x| x.round() as i64).collect();
-        return most_frequent(rounded_prices);
-        */
         let mut frequency: HashMap<i64, usize> = HashMap::new();
         for &price in prices {
             *frequency.entry(price.round() as i64).or_insert(0) += 1;
@@ -155,6 +142,7 @@ pub mod single {
     /// let log_difference = rust_ti::basic_indicators::single::log_difference(prices[3], prices[2]);
     /// assert_eq!(-0.01960847138837618, log_difference);
     /// ```
+    #[inline]
     pub fn log_difference(price_t: f64, price_t_1: f64) -> f64 {
         if price_t <= 0.0 || price_t_1 <= 0.0 {
             panic!(
@@ -184,6 +172,7 @@ pub mod single {
     /// let variance = rust_ti::basic_indicators::single::variance(&prices);
     /// assert_eq!(1.25, variance);
     /// ```
+    #[inline]
     pub fn variance(prices: &[f64]) -> f64 {
         if prices.is_empty() {
             panic!("Prices ({:?}) is empty", prices);
@@ -212,6 +201,7 @@ pub mod single {
     /// let standard_deviation = rust_ti::basic_indicators::single::standard_deviation(&prices);
     /// assert_eq!(1.118033988749895, standard_deviation);
     /// ```
+    #[inline]
     pub fn standard_deviation(prices: &[f64]) -> f64 {
         variance(prices).sqrt()
     }
@@ -244,6 +234,7 @@ pub mod single {
     ///     rust_ti::basic_indicators::single::absolute_deviation(&prices, rust_ti::CentralPoint::Mode);
     /// assert_eq!(1.2, mode_absolute_deviation);
     /// ```
+    #[inline]
     pub fn absolute_deviation(prices: &[f64], central_point: CentralPoint) -> f64 {
         if prices.is_empty() {
             panic!("Prices is empty")
@@ -274,6 +265,7 @@ pub mod single {
     /// let max = rust_ti::basic_indicators::single::max(&prices);
     /// assert_eq!(103.0, max);
     /// ```
+    #[inline]
     pub fn max(prices: &[f64]) -> f64 {
         if prices.is_empty() {
             panic!("Prices is empty")
@@ -302,6 +294,7 @@ pub mod single {
     /// let min = rust_ti::basic_indicators::single::min(&prices);
     /// assert_eq!(100.0, min);
     /// ```
+    #[inline]
     pub fn min(prices: &[f64]) -> f64 {
         if prices.is_empty() {
             panic!("Prices is empty")
@@ -337,6 +330,7 @@ pub mod bulk {
     /// let mean = rust_ti::basic_indicators::bulk::mean(&prices, 3);
     /// assert_eq!(vec![102.0, 102.0], mean);
     /// ```
+    #[inline]
     pub fn mean(prices: &[f64], period: usize) -> Vec<f64> {
         if period <= 0 {
             panic!("Period ({}) must be greater than 0", period);
@@ -372,6 +366,7 @@ pub mod bulk {
     /// let median = rust_ti::basic_indicators::bulk::median(&prices, 3);
     /// assert_eq!(vec![102.0, 102.0], median);
     /// ```
+    #[inline]
     pub fn median(prices: &[f64], period: usize) -> Vec<f64> {
         if period <= 0 {
             panic!("Period ({}) must be greater than 0", period);
@@ -409,6 +404,7 @@ pub mod bulk {
     /// let mode = rust_ti::basic_indicators::bulk::mode(&prices, 3);
     /// assert_eq!(vec![101.0, 102.0], mode);
     /// ```
+    #[inline]
     pub fn mode(prices: &[f64], period: usize) -> Vec<f64> {
         if period <= 0 {
             panic!("Period ({}) must be greater than 0", period);
@@ -440,6 +436,7 @@ pub mod bulk {
     /// let log = rust_ti::basic_indicators::bulk::log(&prices);
     /// assert_eq!(vec![4.61512051684126, 4.624972813284271, 4.634728988229636, 4.61512051684126], log);
     /// ```
+    #[inline]
     pub fn log(prices: &[f64]) -> Vec<f64> {
         if prices.is_empty() {
             panic!("Prices ({:?}) is empty", prices);
@@ -464,6 +461,7 @@ pub mod bulk {
     /// let log_difference = rust_ti::basic_indicators::bulk::log_difference(&prices);
     /// assert_eq!(vec![0.019802627296178876, 0.009756174945365181, -0.01960847138837618], log_difference);
     /// ```
+    #[inline]
     pub fn log_difference(prices: &[f64]) -> Vec<f64> {
         if prices.is_empty() {
             panic!("Prices ({:?}) is empty", prices);
@@ -495,6 +493,7 @@ pub mod bulk {
     /// let variance = rust_ti::basic_indicators::bulk::variance(&prices, period);
     /// assert_eq!(vec![1.5555555555555556, 0.6666666666666666], variance);
     /// ```
+    #[inline]
     pub fn variance(prices: &[f64], period: usize) -> Vec<f64> {
         if period <= 0 {
             panic!("Period ({}) must be greater than 0", period)
@@ -534,6 +533,7 @@ pub mod bulk {
     /// assert_eq!(vec![1.247219128924647, 0.816496580927726], standard_deviation);
     /// ```
     // TODO: Allow for distributions other than normal distributions
+    #[inline]
     pub fn standard_deviation(prices: &[f64], period: usize) -> Vec<f64> {
         if period <= 0 {
             panic!("Period ({}) must be greater than 0", period)
@@ -581,6 +581,7 @@ pub mod bulk {
     ///     rust_ti::basic_indicators::bulk::absolute_deviation(&prices, period, rust_ti::CentralPoint::Mode);
     /// assert_eq!(vec![1.1111111111111096, 0.6666666666666666, 1.1111111111111096], mode_absolute_deviation);
     /// ```
+    #[inline]
     pub fn absolute_deviation(
         prices: &[f64],
         period: usize,

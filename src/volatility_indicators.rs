@@ -228,7 +228,7 @@ pub mod bulk {
         let mut previous_period = *period;
 
         let trend = overall_trend(&typical_price[..previous_period]);
-        let atr = average_true_range(&close, &high, &low, &constant_model_type, &period);
+        let atr = average_true_range(&close, &high, &low, *constant_model_type, *period);
         let arc: Vec<f64> = atr.iter().map(|x| x * constant_multiplier).collect();
 
         if trend.0 < 0.0 {

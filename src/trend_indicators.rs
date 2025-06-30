@@ -359,18 +359,18 @@ pub mod single {
     /// let prices = vec![100.0, 115.0, 118.0, 120.0, 125.0, 117.0, 113.0, 115.0];
     /// let true_strength_index = rust_ti::trend_indicators::single::true_strength_index(
     ///     &prices,
-    ///     &rust_ti::ConstantModelType::ExponentialMovingAverage,
+    ///     rust_ti::ConstantModelType::ExponentialMovingAverage,
     ///     5_usize,
-    ///     &rust_ti::ConstantModelType::ExponentialMovingAverage,
+    ///     rust_ti::ConstantModelType::ExponentialMovingAverage,
     /// );
     ///
     /// assert_eq!(-0.25821030430852665, true_strength_index);
     /// ```
     pub fn true_strength_index(
         prices: &[f64],
-        first_constant_model: &ConstantModelType,
+        first_constant_model: ConstantModelType,
         first_period: usize,
-        second_constant_model: &ConstantModelType,
+        second_constant_model: ConstantModelType,
     ) -> f64 {
         if prices.is_empty() {
             panic!("Prices cannot be empty")
@@ -392,43 +392,48 @@ pub mod single {
 
         let (initial_smoothing, abs_initial_smoothing) = match first_constant_model {
             ConstantModelType::SimpleMovingAverage => (
-                bulk_ma(&price_momentum, &MovingAverageType::Simple, &first_period),
-                bulk_ma(
-                    &abs_price_momentum,
-                    &MovingAverageType::Simple,
-                    &first_period,
-                ),
+                bulk_ma(&price_momentum, MovingAverageType::Simple, first_period),
+                bulk_ma(&abs_price_momentum, MovingAverageType::Simple, first_period),
             ),
             ConstantModelType::SmoothedMovingAverage => (
-                bulk_ma(&price_momentum, &MovingAverageType::Smoothed, &first_period),
+                bulk_ma(&price_momentum, MovingAverageType::Smoothed, first_period),
                 bulk_ma(
                     &abs_price_momentum,
-                    &MovingAverageType::Smoothed,
-                    &first_period,
+                    MovingAverageType::Smoothed,
+                    first_period,
                 ),
             ),
             ConstantModelType::ExponentialMovingAverage => (
                 bulk_ma(
                     &price_momentum,
-                    &MovingAverageType::Exponential,
-                    &first_period,
+                    MovingAverageType::Exponential,
+                    first_period,
                 ),
                 bulk_ma(
                     &abs_price_momentum,
-                    &MovingAverageType::Exponential,
-                    &first_period,
+                    MovingAverageType::Exponential,
+                    first_period,
                 ),
             ),
-            ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => (
+            ConstantModelType::PersonalisedMovingAverage {
+                alpha_num,
+                alpha_den,
+            } => (
                 bulk_ma(
                     &price_momentum,
-                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
-                    &first_period,
+                    MovingAverageType::Personalised {
+                        alpha_num,
+                        alpha_den,
+                    },
+                    first_period,
                 ),
                 bulk_ma(
                     &abs_price_momentum,
-                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
-                    &first_period,
+                    MovingAverageType::Personalised {
+                        alpha_num,
+                        alpha_den,
+                    },
+                    first_period,
                 ),
             ),
             ConstantModelType::SimpleMovingMedian => (
@@ -444,25 +449,34 @@ pub mod single {
 
         let (second_smoothing, abs_second_smoothing) = match second_constant_model {
             ConstantModelType::SimpleMovingAverage => (
-                single_ma(&initial_smoothing, &MovingAverageType::Simple),
-                single_ma(&abs_initial_smoothing, &MovingAverageType::Simple),
+                single_ma(&initial_smoothing, MovingAverageType::Simple),
+                single_ma(&abs_initial_smoothing, MovingAverageType::Simple),
             ),
             ConstantModelType::SmoothedMovingAverage => (
-                single_ma(&initial_smoothing, &MovingAverageType::Smoothed),
-                single_ma(&abs_initial_smoothing, &MovingAverageType::Smoothed),
+                single_ma(&initial_smoothing, MovingAverageType::Smoothed),
+                single_ma(&abs_initial_smoothing, MovingAverageType::Smoothed),
             ),
             ConstantModelType::ExponentialMovingAverage => (
-                single_ma(&initial_smoothing, &MovingAverageType::Exponential),
-                single_ma(&abs_initial_smoothing, &MovingAverageType::Exponential),
+                single_ma(&initial_smoothing, MovingAverageType::Exponential),
+                single_ma(&abs_initial_smoothing, MovingAverageType::Exponential),
             ),
-            ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => (
+            ConstantModelType::PersonalisedMovingAverage {
+                alpha_num,
+                alpha_den,
+            } => (
                 single_ma(
                     &initial_smoothing,
-                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
+                    MovingAverageType::Personalised {
+                        alpha_num,
+                        alpha_den,
+                    },
                 ),
                 single_ma(
                     &abs_initial_smoothing,
-                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
+                    MovingAverageType::Personalised {
+                        alpha_num,
+                        alpha_den,
+                    },
                 ),
             ),
             ConstantModelType::SimpleMovingMedian => (
@@ -945,7 +959,7 @@ pub mod bulk {
     ///     &low,
     ///     &close,
     ///     period,
-    ///     &rust_ti::ConstantModelType::SimpleMovingAverage
+    ///     rust_ti::ConstantModelType::SimpleMovingAverage
     /// );
     ///
     /// assert_eq!(
@@ -975,7 +989,7 @@ pub mod bulk {
         low: &[f64],
         close: &[f64],
         period: usize,
-        constant_model_type: &ConstantModelType,
+        constant_model_type: ConstantModelType,
     ) -> Vec<(f64, f64, f64, f64)> {
         let length = high.len();
         if length != low.len() || length != close.len() {
@@ -1038,21 +1052,25 @@ pub mod bulk {
 
         let adx = match constant_model_type {
             ConstantModelType::SimpleMovingAverage => {
-                moving_average(&dx, &MovingAverageType::Simple, &period)
+                moving_average(&dx, MovingAverageType::Simple, period)
             }
             ConstantModelType::SmoothedMovingAverage => {
-                moving_average(&dx, &MovingAverageType::Smoothed, &period)
+                moving_average(&dx, MovingAverageType::Smoothed, period)
             }
             ConstantModelType::ExponentialMovingAverage => {
-                moving_average(&dx, &MovingAverageType::Exponential, &period)
+                moving_average(&dx, MovingAverageType::Exponential, period)
             }
-            ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => {
-                moving_average(
-                    &dx,
-                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
-                    &period,
-                )
-            }
+            ConstantModelType::PersonalisedMovingAverage {
+                alpha_num,
+                alpha_den,
+            } => moving_average(
+                &dx,
+                MovingAverageType::Personalised {
+                    alpha_num,
+                    alpha_den,
+                },
+                period,
+            ),
             ConstantModelType::SimpleMovingMedian => median(&dx, period),
             ConstantModelType::SimpleMovingMode => mode(&dx, period),
             _ => panic!("Not a supported constant model type"),
@@ -1222,9 +1240,9 @@ pub mod bulk {
         for i in 0..loop_max {
             tsis.push(single::true_strength_index(
                 &prices[i..i + period_sum],
-                first_constant_model,
+                *first_constant_model,
                 first_period,
-                second_constant_model,
+                *second_constant_model,
             ));
         }
         return tsis;
@@ -1670,7 +1688,7 @@ mod tests {
                 &lows,
                 &close,
                 3_usize,
-                &crate::ConstantModelType::SimpleMovingAverage
+                crate::ConstantModelType::SimpleMovingAverage
             )
         );
     }
@@ -1702,7 +1720,7 @@ mod tests {
                 &lows,
                 &close,
                 3_usize,
-                &crate::ConstantModelType::SmoothedMovingAverage
+                crate::ConstantModelType::SmoothedMovingAverage
             )
         );
     }
@@ -1734,7 +1752,7 @@ mod tests {
                 &lows,
                 &close,
                 3_usize,
-                &crate::ConstantModelType::ExponentialMovingAverage
+                crate::ConstantModelType::ExponentialMovingAverage
             )
         );
     }
@@ -1771,7 +1789,10 @@ mod tests {
                 &lows,
                 &close,
                 3_usize,
-                &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0)
+                crate::ConstantModelType::PersonalisedMovingAverage {
+                    alpha_num: 5.0,
+                    alpha_den: 4.0
+                }
             )
         );
     }
@@ -1808,7 +1829,7 @@ mod tests {
                 &lows,
                 &close,
                 3_usize,
-                &crate::ConstantModelType::SimpleMovingMedian
+                crate::ConstantModelType::SimpleMovingMedian
             )
         );
     }
@@ -1840,7 +1861,7 @@ mod tests {
                 &lows,
                 &close,
                 3_usize,
-                &crate::ConstantModelType::SimpleMovingMode
+                crate::ConstantModelType::SimpleMovingMode
             )
         );
     }
@@ -1863,7 +1884,7 @@ mod tests {
             &lows,
             &close,
             3_usize,
-            &crate::ConstantModelType::SimpleMovingMode,
+            crate::ConstantModelType::SimpleMovingMode,
         );
     }
 
@@ -1885,7 +1906,7 @@ mod tests {
             &lows,
             &close,
             3_usize,
-            &crate::ConstantModelType::SimpleMovingMode,
+            crate::ConstantModelType::SimpleMovingMode,
         );
     }
 
@@ -1907,7 +1928,7 @@ mod tests {
             &lows,
             &close,
             3_usize,
-            &crate::ConstantModelType::SimpleMovingMode,
+            crate::ConstantModelType::SimpleMovingMode,
         );
     }
 
@@ -1923,7 +1944,7 @@ mod tests {
             &lows,
             &close,
             3_usize,
-            &crate::ConstantModelType::SimpleMovingMode,
+            crate::ConstantModelType::SimpleMovingMode,
         );
     }
 
@@ -1945,7 +1966,7 @@ mod tests {
             &lows,
             &close,
             3_usize,
-            &crate::ConstantModelType::SimpleMovingMode,
+            crate::ConstantModelType::SimpleMovingMode,
         );
     }
 
@@ -2026,9 +2047,9 @@ mod tests {
             0.3688989784336005,
             single::true_strength_index(
                 &prices,
-                &crate::ConstantModelType::SimpleMovingAverage,
+                crate::ConstantModelType::SimpleMovingAverage,
                 5_usize,
-                &crate::ConstantModelType::SimpleMovingAverage
+                crate::ConstantModelType::SimpleMovingAverage
             )
         );
     }
@@ -2040,9 +2061,9 @@ mod tests {
             0.5156567622865983,
             single::true_strength_index(
                 &prices,
-                &crate::ConstantModelType::SmoothedMovingAverage,
+                crate::ConstantModelType::SmoothedMovingAverage,
                 5_usize,
-                &crate::ConstantModelType::SmoothedMovingAverage
+                crate::ConstantModelType::SmoothedMovingAverage
             )
         );
     }
@@ -2054,9 +2075,9 @@ mod tests {
             0.6031084483806584,
             single::true_strength_index(
                 &prices,
-                &crate::ConstantModelType::ExponentialMovingAverage,
+                crate::ConstantModelType::ExponentialMovingAverage,
                 5_usize,
-                &crate::ConstantModelType::ExponentialMovingAverage
+                crate::ConstantModelType::ExponentialMovingAverage
             )
         );
     }
@@ -2068,9 +2089,15 @@ mod tests {
             0.7550056326977878,
             single::true_strength_index(
                 &prices,
-                &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0),
+                crate::ConstantModelType::PersonalisedMovingAverage {
+                    alpha_num: 5.0,
+                    alpha_den: 4.0
+                },
                 5_usize,
-                &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0)
+                crate::ConstantModelType::PersonalisedMovingAverage {
+                    alpha_num: 5.0,
+                    alpha_den: 4.0
+                }
             )
         );
     }
@@ -2082,9 +2109,9 @@ mod tests {
             0.2249999999999778,
             single::true_strength_index(
                 &prices,
-                &crate::ConstantModelType::SimpleMovingMedian,
+                crate::ConstantModelType::SimpleMovingMedian,
                 5_usize,
-                &crate::ConstantModelType::SimpleMovingMedian
+                crate::ConstantModelType::SimpleMovingMedian
             )
         );
     }
@@ -2096,9 +2123,9 @@ mod tests {
             0.0,
             single::true_strength_index(
                 &prices,
-                &crate::ConstantModelType::SimpleMovingMode,
+                crate::ConstantModelType::SimpleMovingMode,
                 5_usize,
-                &crate::ConstantModelType::SimpleMovingMode
+                crate::ConstantModelType::SimpleMovingMode
             )
         );
     }
@@ -2109,9 +2136,9 @@ mod tests {
         let prices = vec![100.14, 98.98, 99.07, 100.1, 99.96];
         single::true_strength_index(
             &prices,
-            &crate::ConstantModelType::SimpleMovingMode,
+            crate::ConstantModelType::SimpleMovingMode,
             5_usize,
-            &crate::ConstantModelType::SimpleMovingMode,
+            crate::ConstantModelType::SimpleMovingMode,
         );
     }
 
@@ -2121,9 +2148,9 @@ mod tests {
         let prices = Vec::new();
         single::true_strength_index(
             &prices,
-            &crate::ConstantModelType::SimpleMovingMode,
+            crate::ConstantModelType::SimpleMovingMode,
             5_usize,
-            &crate::ConstantModelType::SimpleMovingMode,
+            crate::ConstantModelType::SimpleMovingMode,
         );
     }
 

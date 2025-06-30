@@ -68,7 +68,7 @@ pub mod single {
     use crate::moving_average::single::{mcginley_dynamic, moving_average};
     use crate::strength_indicators::single::accumulation_distribution;
     use crate::volatility_indicators::single::ulcer_index;
-    use crate::{ConstantModelType, DeviationModel, MovingAverageType, CentralPoint};
+    use crate::{CentralPoint, ConstantModelType, DeviationModel, MovingAverageType};
     use std::cmp::Ordering;
 
     /// Calculates the Relative Strength Index (RSI)
@@ -108,6 +108,7 @@ pub mod single {
     ///     );
     /// assert_eq!(42.857142857142854, moving_median_rsi);
     /// ```
+    #[inline]
     pub fn relative_strength_index(prices: &[f64], constant_model_type: ConstantModelType) -> f64 {
         let (previous_gains, previous_loss) = previous_gains_loss(prices);
         if previous_gains.is_empty() {
@@ -116,28 +117,37 @@ pub mod single {
         if previous_loss.is_empty() {
             return 100.0;
         }
-        println!("{:?} {:?}", previous_gains,previous_loss);
+
         let (previous_average_gains, previous_average_loss) = match constant_model_type {
             ConstantModelType::SimpleMovingAverage => (
-                moving_average(&previous_gains, &MovingAverageType::Simple),
-                moving_average(&previous_loss, &MovingAverageType::Simple),
+                moving_average(&previous_gains, MovingAverageType::Simple),
+                moving_average(&previous_loss, MovingAverageType::Simple),
             ),
             ConstantModelType::SmoothedMovingAverage => (
-                moving_average(&previous_gains, &MovingAverageType::Smoothed),
-                moving_average(&previous_loss, &MovingAverageType::Smoothed),
+                moving_average(&previous_gains, MovingAverageType::Smoothed),
+                moving_average(&previous_loss, MovingAverageType::Smoothed),
             ),
             ConstantModelType::ExponentialMovingAverage => (
-                moving_average(&previous_gains, &MovingAverageType::Exponential),
-                moving_average(&previous_loss, &MovingAverageType::Exponential),
+                moving_average(&previous_gains, MovingAverageType::Exponential),
+                moving_average(&previous_loss, MovingAverageType::Exponential),
             ),
-            ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => (
+            ConstantModelType::PersonalisedMovingAverage {
+                alpha_num,
+                alpha_den,
+            } => (
                 moving_average(
                     &previous_gains,
-                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
+                    MovingAverageType::Personalised {
+                        alpha_num,
+                        alpha_den,
+                    },
                 ),
                 moving_average(
                     &previous_loss,
-                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
+                    MovingAverageType::Personalised {
+                        alpha_num,
+                        alpha_den,
+                    },
                 ),
             ),
             ConstantModelType::SimpleMovingMedian => {
@@ -146,7 +156,7 @@ pub mod single {
             ConstantModelType::SimpleMovingMode => (mode(&previous_gains), mode(&previous_loss)),
             _ => panic!("Unsupported ConstantModelType"),
         };
-        println!("{} {}", previous_average_gains, previous_average_loss);
+
         if previous_average_loss == 0.0 {
             0.0
         } else {
@@ -172,6 +182,7 @@ pub mod single {
     ///     rust_ti::momentum_indicators::single::stochastic_oscillator(&prices);
     /// assert_eq!(0.0, stochastic_oscillator);
     /// ```
+    #[inline]
     pub fn stochastic_oscillator(prices: &[f64]) -> f64 {
         if prices.is_empty() {
             panic!("Prices is empty");
@@ -223,6 +234,7 @@ pub mod single {
     ///     );
     /// assert_eq!(50.0, median_slow_stochastic);
     /// ```
+    #[inline]
     pub fn slow_stochastic(stochastics: &[f64], constant_model_type: ConstantModelType) -> f64 {
         if stochastics.is_empty() {
             panic!("stochastics cannot be empty");
@@ -230,20 +242,24 @@ pub mod single {
 
         match constant_model_type {
             ConstantModelType::SimpleMovingAverage => {
-                moving_average(&stochastics, &MovingAverageType::Simple)
+                moving_average(&stochastics, MovingAverageType::Simple)
             }
             ConstantModelType::SmoothedMovingAverage => {
-                moving_average(&stochastics, &MovingAverageType::Smoothed)
+                moving_average(&stochastics, MovingAverageType::Smoothed)
             }
             ConstantModelType::ExponentialMovingAverage => {
-                moving_average(&stochastics, &MovingAverageType::Exponential)
+                moving_average(&stochastics, MovingAverageType::Exponential)
             }
-            ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => {
-                moving_average(
-                    &stochastics,
-                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
-                )
-            }
+            ConstantModelType::PersonalisedMovingAverage {
+                alpha_num,
+                alpha_den,
+            } => moving_average(
+                &stochastics,
+                MovingAverageType::Personalised {
+                    alpha_num,
+                    alpha_den,
+                },
+            ),
             ConstantModelType::SimpleMovingMedian => median(&stochastics),
             ConstantModelType::SimpleMovingMode => mode(&stochastics),
             _ => panic!("Unsupported ConstantModelType"),
@@ -287,6 +303,7 @@ pub mod single {
     ///     );
     /// assert_eq!(20.0, median_slowest_stochastic);
     /// ```
+    #[inline]
     pub fn slowest_stochastic(
         slow_stochastics: &[f64],
         constant_model_type: ConstantModelType,
@@ -297,20 +314,24 @@ pub mod single {
 
         match constant_model_type {
             ConstantModelType::SimpleMovingAverage => {
-                moving_average(&slow_stochastics, &MovingAverageType::Simple)
+                moving_average(&slow_stochastics, MovingAverageType::Simple)
             }
             ConstantModelType::SmoothedMovingAverage => {
-                moving_average(&slow_stochastics, &MovingAverageType::Smoothed)
+                moving_average(&slow_stochastics, MovingAverageType::Smoothed)
             }
             ConstantModelType::ExponentialMovingAverage => {
-                moving_average(&slow_stochastics, &MovingAverageType::Exponential)
+                moving_average(&slow_stochastics, MovingAverageType::Exponential)
             }
-            ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => {
-                moving_average(
-                    &slow_stochastics,
-                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
-                )
-            }
+            ConstantModelType::PersonalisedMovingAverage {
+                alpha_num,
+                alpha_den,
+            } => moving_average(
+                &slow_stochastics,
+                MovingAverageType::Personalised {
+                    alpha_num,
+                    alpha_den,
+                },
+            ),
             ConstantModelType::SimpleMovingMedian => median(&slow_stochastics),
             ConstantModelType::SimpleMovingMode => mode(&slow_stochastics),
             _ => panic!("Unsupported ConstantModelType"),
@@ -345,6 +366,7 @@ pub mod single {
     ///     );
     /// assert_eq!(-57.49999999999999, williams_percent_r);
     /// ```
+    #[inline]
     pub fn williams_percent_r(high: &[f64], low: &[f64], close: f64) -> f64 {
         if high.is_empty() || low.is_empty() {
             panic!("high and low cannot be empty")
@@ -386,6 +408,7 @@ pub mod single {
     ///     );
     /// assert_eq!(56.771463119709786, money_flow_index);
     /// ```
+    #[inline]
     pub fn money_flow_index(prices: &[f64], volume: &[f64]) -> f64 {
         if prices.is_empty() || volume.is_empty() {
             panic!("Prices and volume cannot be empty");
@@ -450,6 +473,7 @@ pub mod single {
     ///     );
     /// assert_eq!(-16.666666666666664, rate_of_change);
     /// ```
+    #[inline]
     pub fn rate_of_change(current_price: f64, previous_price: f64) -> f64 {
         ((current_price - previous_price) / previous_price) * 100.0
     }
@@ -492,6 +516,7 @@ pub mod single {
     ///         1500.0);
     /// assert_eq!(500.0, on_balance_volume);
     /// ```
+    #[inline]
     pub fn on_balance_volume(
         current_price: f64,
         previous_price: f64,
@@ -553,6 +578,7 @@ pub mod single {
     ///     );  
     /// assert_eq!(-111.11111111111111, median_mad_cci);
     /// ```
+    #[inline]
     pub fn commodity_channel_index(
         prices: &[f64],
         constant_model_type: ConstantModelType,
@@ -565,20 +591,24 @@ pub mod single {
 
         let moving_constant = match constant_model_type {
             ConstantModelType::SimpleMovingAverage => {
-                moving_average(&prices, &MovingAverageType::Simple)
+                moving_average(&prices, MovingAverageType::Simple)
             }
             ConstantModelType::SmoothedMovingAverage => {
-                moving_average(&prices, &MovingAverageType::Smoothed)
+                moving_average(&prices, MovingAverageType::Smoothed)
             }
             ConstantModelType::ExponentialMovingAverage => {
-                moving_average(&prices, &MovingAverageType::Exponential)
+                moving_average(&prices, MovingAverageType::Exponential)
             }
-            ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => {
-                moving_average(
-                    &prices,
-                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
-                )
-            }
+            ConstantModelType::PersonalisedMovingAverage {
+                alpha_num,
+                alpha_den,
+            } => moving_average(
+                &prices,
+                MovingAverageType::Personalised {
+                    alpha_num,
+                    alpha_den,
+                },
+            ),
             ConstantModelType::SimpleMovingMedian => median(&prices),
             ConstantModelType::SimpleMovingMode => mode(&prices),
             _ => panic!("Unsupported ConstantModelType"),
@@ -643,6 +673,7 @@ pub mod single {
     ///     );
     /// assert_eq!((146.8770632107927, 99.53246533805869), mcginley_cci);
     /// ```
+    #[inline]
     pub fn mcginley_dynamic_commodity_channel_index(
         prices: &[f64],
         previous_mcginley_dynamic: f64,
@@ -656,7 +687,7 @@ pub mod single {
         let last_price = prices.last().copied().unwrap();
 
         let mcginley_dynamic =
-            mcginley_dynamic(&last_price, &previous_mcginley_dynamic, &prices.len());
+            mcginley_dynamic(last_price, previous_mcginley_dynamic, prices.len());
 
         let deviation = match deviation_model {
             DeviationModel::StandardDeviation => standard_deviation(&prices),
@@ -720,6 +751,7 @@ pub mod single {
     ///     );
     /// assert_eq!(0.0, macd);
     /// ```
+    #[inline]
     pub fn macd_line(
         prices: &[f64],
         short_period: usize,
@@ -740,20 +772,24 @@ pub mod single {
         let short_period_slice = &prices[length - short_period..];
         let short_period_average = match short_period_model {
             ConstantModelType::SimpleMovingAverage => {
-                moving_average(short_period_slice, &MovingAverageType::Simple)
+                moving_average(short_period_slice, MovingAverageType::Simple)
             }
             ConstantModelType::SmoothedMovingAverage => {
-                moving_average(short_period_slice, &MovingAverageType::Smoothed)
+                moving_average(short_period_slice, MovingAverageType::Smoothed)
             }
             ConstantModelType::ExponentialMovingAverage => {
-                moving_average(short_period_slice, &MovingAverageType::Exponential)
+                moving_average(short_period_slice, MovingAverageType::Exponential)
             }
-            ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => {
-                moving_average(
-                    short_period_slice,
-                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
-                )
-            }
+            ConstantModelType::PersonalisedMovingAverage {
+                alpha_num,
+                alpha_den,
+            } => moving_average(
+                short_period_slice,
+                MovingAverageType::Personalised {
+                    alpha_num,
+                    alpha_den,
+                },
+            ),
             ConstantModelType::SimpleMovingMedian => median(short_period_slice),
             ConstantModelType::SimpleMovingMode => mode(short_period_slice),
             _ => panic!("Unsupported ConstantModelType"),
@@ -761,20 +797,24 @@ pub mod single {
 
         let long_period_average = match long_period_model {
             ConstantModelType::SimpleMovingAverage => {
-                moving_average(prices, &MovingAverageType::Simple)
+                moving_average(prices, MovingAverageType::Simple)
             }
             ConstantModelType::SmoothedMovingAverage => {
-                moving_average(prices, &MovingAverageType::Smoothed)
+                moving_average(prices, MovingAverageType::Smoothed)
             }
             ConstantModelType::ExponentialMovingAverage => {
-                moving_average(prices, &MovingAverageType::Exponential)
+                moving_average(prices, MovingAverageType::Exponential)
             }
-            ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => {
-                moving_average(
-                    prices,
-                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
-                )
-            }
+            ConstantModelType::PersonalisedMovingAverage {
+                alpha_num,
+                alpha_den,
+            } => moving_average(
+                prices,
+                MovingAverageType::Personalised {
+                    alpha_num,
+                    alpha_den,
+                },
+            ),
             ConstantModelType::SimpleMovingMedian => median(prices),
             ConstantModelType::SimpleMovingMode => mode(prices),
             _ => panic!("Unsupported ConstantModelType"),
@@ -812,26 +852,31 @@ pub mod single {
     ///     );
     /// assert_eq!(-0.0224170616113781, median_signal_line);
     /// ```
+    #[inline]
     pub fn signal_line(macds: &[f64], constant_model_type: ConstantModelType) -> f64 {
         if macds.is_empty() {
             panic!("MACDs cannot be empty");
         };
         match constant_model_type {
             ConstantModelType::SimpleMovingAverage => {
-                moving_average(&macds, &MovingAverageType::Simple)
+                moving_average(&macds, MovingAverageType::Simple)
             }
             ConstantModelType::SmoothedMovingAverage => {
-                moving_average(&macds, &MovingAverageType::Smoothed)
+                moving_average(&macds, MovingAverageType::Smoothed)
             }
             ConstantModelType::ExponentialMovingAverage => {
-                moving_average(&macds, &MovingAverageType::Exponential)
+                moving_average(&macds, MovingAverageType::Exponential)
             }
-            ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => {
-                moving_average(
-                    &macds,
-                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
-                )
-            }
+            ConstantModelType::PersonalisedMovingAverage {
+                alpha_num,
+                alpha_den,
+            } => moving_average(
+                &macds,
+                MovingAverageType::Personalised {
+                    alpha_num,
+                    alpha_den,
+                },
+            ),
             ConstantModelType::SimpleMovingMedian => median(&macds),
             ConstantModelType::SimpleMovingMode => mode(&macds),
             _ => panic!("Unsupported ConstantModelType"),
@@ -877,6 +922,7 @@ pub mod single {
     ///         mcginley_dynamic_macd.2);
     /// assert_eq!((0.35497689203913296, 99.88744223009782, 99.53246533805869), mcginley_dynamic_macd);
     /// ```
+    #[inline]
     pub fn mcginley_dynamic_macd_line(
         prices: &[f64],
         short_period: usize,
@@ -900,8 +946,8 @@ pub mod single {
             return (0.0, latest_price, latest_price);
         };
 
-        let long_mcginley = mcginley_dynamic(&latest_price, &previous_long_mcginley, &prices.len());
-        let short_mcginley = mcginley_dynamic(&latest_price, &previous_short_mcginley, &short_period);
+        let long_mcginley = mcginley_dynamic(latest_price, previous_long_mcginley, prices.len());
+        let short_mcginley = mcginley_dynamic(latest_price, previous_short_mcginley, short_period);
         let macd = short_mcginley - long_mcginley;
         (macd, short_mcginley, long_mcginley)
     }
@@ -992,39 +1038,43 @@ pub mod single {
 
         let mut ad = Vec::with_capacity(long_period);
         ad.push(accumulation_distribution(
-            &highs[0],
-            &lows[0],
-            &close[0],
-            &volume[0],
-            &previous_accumulation_distribution,
+            highs[0],
+            lows[0],
+            close[0],
+            volume[0],
+            previous_accumulation_distribution,
         ));
         for i in 1..long_period {
             ad.push(accumulation_distribution(
-                &highs[i],
-                &lows[i],
-                &close[i],
-                &volume[i],
-                &ad[i - 1],
+                highs[i],
+                lows[i],
+                close[i],
+                volume[i],
+                ad[i - 1],
             ));
         }
         let short_period_slice = &ad[long_period - short_period..];
 
         let short_period_average = match short_period_model {
             ConstantModelType::SimpleMovingAverage => {
-                moving_average(short_period_slice, &MovingAverageType::Simple)
+                moving_average(short_period_slice, MovingAverageType::Simple)
             }
             ConstantModelType::SmoothedMovingAverage => {
-                moving_average(short_period_slice, &MovingAverageType::Smoothed)
+                moving_average(short_period_slice, MovingAverageType::Smoothed)
             }
             ConstantModelType::ExponentialMovingAverage => {
-                moving_average(short_period_slice, &MovingAverageType::Exponential)
+                moving_average(short_period_slice, MovingAverageType::Exponential)
             }
-            ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => {
-                moving_average(
-                    short_period_slice,
-                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
-                )
-            }
+            ConstantModelType::PersonalisedMovingAverage {
+                alpha_num,
+                alpha_den,
+            } => moving_average(
+                short_period_slice,
+                MovingAverageType::Personalised {
+                    alpha_num,
+                    alpha_den,
+                },
+            ),
             ConstantModelType::SimpleMovingMedian => median(short_period_slice),
             ConstantModelType::SimpleMovingMode => mode(short_period_slice),
             _ => panic!("Unsupported ConstantModelType"),
@@ -1032,20 +1082,24 @@ pub mod single {
 
         let long_period_average = match long_period_model {
             ConstantModelType::SimpleMovingAverage => {
-                moving_average(&ad, &MovingAverageType::Simple)
+                moving_average(&ad, MovingAverageType::Simple)
             }
             ConstantModelType::SmoothedMovingAverage => {
-                moving_average(&ad, &MovingAverageType::Smoothed)
+                moving_average(&ad, MovingAverageType::Smoothed)
             }
             ConstantModelType::ExponentialMovingAverage => {
-                moving_average(&ad, &MovingAverageType::Exponential)
+                moving_average(&ad, MovingAverageType::Exponential)
             }
-            ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => {
-                moving_average(
-                    &ad,
-                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
-                )
-            }
+            ConstantModelType::PersonalisedMovingAverage {
+                alpha_num,
+                alpha_den,
+            } => moving_average(
+                &ad,
+                MovingAverageType::Personalised {
+                    alpha_num,
+                    alpha_den,
+                },
+            ),
             ConstantModelType::SimpleMovingMedian => median(&ad),
             ConstantModelType::SimpleMovingMode => mode(&ad),
             _ => panic!("Unsupported ConstantModelType"),
@@ -1083,6 +1137,7 @@ pub mod single {
     ///
     /// assert_eq!(-1.0681349863189704 , percentage_price_oscillator);
     /// ```
+    #[inline]
     pub fn percentage_price_oscillator(
         prices: &[f64],
         short_period: usize,
@@ -1102,25 +1157,34 @@ pub mod single {
         let short_period_slice = &prices[long_period - short_period..];
         let (short_period, long_period) = match constant_model_type {
             ConstantModelType::SimpleMovingAverage => (
-                moving_average(short_period_slice, &MovingAverageType::Simple),
-                moving_average(prices, &MovingAverageType::Simple),
+                moving_average(short_period_slice, MovingAverageType::Simple),
+                moving_average(prices, MovingAverageType::Simple),
             ),
             ConstantModelType::SmoothedMovingAverage => (
-                moving_average(short_period_slice, &MovingAverageType::Smoothed),
-                moving_average(prices, &MovingAverageType::Smoothed),
+                moving_average(short_period_slice, MovingAverageType::Smoothed),
+                moving_average(prices, MovingAverageType::Smoothed),
             ),
             ConstantModelType::ExponentialMovingAverage => (
-                moving_average(short_period_slice, &MovingAverageType::Exponential),
-                moving_average(&prices, &MovingAverageType::Exponential),
+                moving_average(short_period_slice, MovingAverageType::Exponential),
+                moving_average(prices, MovingAverageType::Exponential),
             ),
-            ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => (
+            ConstantModelType::PersonalisedMovingAverage {
+                alpha_num,
+                alpha_den,
+            } => (
                 moving_average(
                     short_period_slice,
-                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
+                    MovingAverageType::Personalised {
+                        alpha_num,
+                        alpha_den,
+                    },
                 ),
                 moving_average(
-                    &prices,
-                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
+                    prices,
+                    MovingAverageType::Personalised {
+                        alpha_num,
+                        alpha_den,
+                    },
                 ),
             ),
             ConstantModelType::SimpleMovingMedian => (median(short_period_slice), median(prices)),
@@ -1149,6 +1213,7 @@ pub mod single {
     ///     rust_ti::momentum_indicators::single::chande_momentum_oscillator(&prices);
     /// assert_eq!(-20.0, chande_momentum_oscillator)
     /// ```
+    #[inline]
     pub fn chande_momentum_oscillator(prices: &[f64]) -> f64 {
         let (previous_gains, previous_loss) = previous_gains_loss(prices);
         if previous_gains.is_empty() {
@@ -1182,6 +1247,7 @@ pub mod single {
         (previous_gains, previous_loss)
     }
 
+    #[inline]
     fn cmp_f64(a: &f64, b: &f64) -> Ordering {
         if a < b {
             Ordering::Less
@@ -1245,7 +1311,8 @@ pub mod bulk {
     /// let personalised_rsi =
     ///     rust_ti::momentum_indicators::bulk::relative_strength_index(
     ///         &prices,
-    ///         rust_ti::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0),
+    ///         rust_ti::ConstantModelType::PersonalisedMovingAverage{alpha_num: 5.0, alpha_den:
+    ///         4.0},
     ///         period
     ///     );
     /// assert_eq!(
@@ -2014,7 +2081,12 @@ pub mod bulk {
         macds.push(macd);
 
         for i in 1..loop_max {
-            macd = single::mcginley_dynamic_macd_line(&prices[i..long_period + i], short_period, macd.1, macd.2);
+            macd = single::mcginley_dynamic_macd_line(
+                &prices[i..long_period + i],
+                short_period,
+                macd.1,
+                macd.2,
+            );
             macds.push(macd);
         }
         macds
@@ -2278,10 +2350,7 @@ mod tests {
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
         assert_eq!(
             49.2537313432832,
-            single::relative_strength_index(
-                &prices,
-                crate::ConstantModelType::SimpleMovingAverage
-            )
+            single::relative_strength_index(&prices, crate::ConstantModelType::SimpleMovingAverage)
         );
     }
 
@@ -2356,7 +2425,10 @@ mod tests {
             35.6725146198842,
             single::relative_strength_index(
                 &prices,
-                crate::ConstantModelType::PersonalisedMovingAverage(&4.0, &3.0)
+                crate::ConstantModelType::PersonalisedMovingAverage {
+                    alpha_num: 4.0,
+                    alpha_den: 3.0
+                }
             )
         );
     }
@@ -2366,10 +2438,7 @@ mod tests {
         let prices = vec![100.0, 101.0, 102.0, 103.0];
         assert_eq!(
             100.0,
-            single::relative_strength_index(
-                &prices,
-                crate::ConstantModelType::SimpleMovingAverage
-            )
+            single::relative_strength_index(&prices, crate::ConstantModelType::SimpleMovingAverage)
         );
     }
 
@@ -2378,10 +2447,7 @@ mod tests {
         let prices = vec![103.0, 102.0, 101.0, 100.0];
         assert_eq!(
             0.0,
-            single::relative_strength_index(
-                &prices,
-                crate::ConstantModelType::SimpleMovingAverage
-            )
+            single::relative_strength_index(&prices, crate::ConstantModelType::SimpleMovingAverage)
         );
     }
 
@@ -2470,7 +2536,10 @@ mod tests {
             ],
             bulk::relative_strength_index(
                 &prices,
-                crate::ConstantModelType::PersonalisedMovingAverage(&4.0, &3.0),
+                crate::ConstantModelType::PersonalisedMovingAverage {
+                    alpha_num: 4.0,
+                    alpha_den: 3.0
+                },
                 period
             )
         );
@@ -2614,7 +2683,10 @@ mod tests {
             39.872151259403616,
             single::slow_stochastic(
                 &stochastics,
-                crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0)
+                crate::ConstantModelType::PersonalisedMovingAverage {
+                    alpha_num: 5.0,
+                    alpha_den: 4.0
+                }
             )
         );
     }
@@ -2694,7 +2766,10 @@ mod tests {
             vec![29.192273924493655, 42.98322628344476],
             bulk::slow_stochastic(
                 &stochastics,
-                crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0),
+                crate::ConstantModelType::PersonalisedMovingAverage {
+                    alpha_num: 5.0,
+                    alpha_den: 4.0
+                },
                 period
             )
         );
@@ -2745,10 +2820,7 @@ mod tests {
         let stochastics = vec![0.0, 5.882352941175241, 38.23529411764534, 47.36842105263394];
         assert_eq!(
             22.871517027863632,
-            single::slowest_stochastic(
-                &stochastics,
-                crate::ConstantModelType::SimpleMovingAverage
-            )
+            single::slowest_stochastic(&stochastics, crate::ConstantModelType::SimpleMovingAverage)
         );
     }
 
@@ -2783,7 +2855,10 @@ mod tests {
             39.872151259403616,
             single::slowest_stochastic(
                 &stochastics,
-                crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0)
+                crate::ConstantModelType::PersonalisedMovingAverage {
+                    alpha_num: 5.0,
+                    alpha_den: 4.0
+                }
             )
         );
     }
@@ -2863,7 +2938,10 @@ mod tests {
             vec![29.192273924493655, 42.98322628344476],
             bulk::slowest_stochastic(
                 &stochastics,
-                crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0),
+                crate::ConstantModelType::PersonalisedMovingAverage {
+                    alpha_num: 5.0,
+                    alpha_den: 4.0
+                },
                 period
             )
         );
@@ -3330,7 +3408,10 @@ mod tests {
             -19.132669714320674,
             single::commodity_channel_index(
                 &prices,
-                crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0),
+                crate::ConstantModelType::PersonalisedMovingAverage {
+                    alpha_num: 5.0,
+                    alpha_den: 4.0
+                },
                 crate::DeviationModel::MeanAbsoluteDeviation,
                 0.015
             )
@@ -3578,8 +3659,14 @@ mod tests {
             single::macd_line(
                 &prices,
                 3_usize,
-                crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0),
-                crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0)
+                crate::ConstantModelType::PersonalisedMovingAverage {
+                    alpha_num: 5.0,
+                    alpha_den: 4.0
+                },
+                crate::ConstantModelType::PersonalisedMovingAverage {
+                    alpha_num: 5.0,
+                    alpha_den: 4.0
+                }
             )
         );
     }
@@ -3732,7 +3819,10 @@ mod tests {
             -0.004072696773434995,
             single::signal_line(
                 &macds,
-                crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0)
+                crate::ConstantModelType::PersonalisedMovingAverage {
+                    alpha_num: 5.0,
+                    alpha_den: 4.0
+                }
             )
         );
     }
@@ -3954,8 +4044,14 @@ mod tests {
                 &volume,
                 3_usize,
                 0.0,
-                crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0),
-                crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0)
+                crate::ConstantModelType::PersonalisedMovingAverage {
+                    alpha_num: 5.0,
+                    alpha_den: 4.0
+                },
+                crate::ConstantModelType::PersonalisedMovingAverage {
+                    alpha_num: 5.0,
+                    alpha_den: 4.0
+                }
             )
         );
     }
@@ -4357,7 +4453,10 @@ mod tests {
             single::percentage_price_oscillator(
                 &prices,
                 3_usize,
-                crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0)
+                crate::ConstantModelType::PersonalisedMovingAverage {
+                    alpha_num: 5.0,
+                    alpha_den: 4.0
+                }
             )
         );
     }

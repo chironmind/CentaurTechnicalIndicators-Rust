@@ -22,17 +22,16 @@ pub mod single {
     use crate::basic_indicators::single::{median, mode};
     use crate::moving_average::single::moving_average;
     use crate::{ConstantModelType, MovingAverageType};
-    /// The `accumulation_distribution` shows whether the stock is being accumulated or
-    /// distributed.
+
+    /// Calculates the accumulation distribution
     ///
     /// # Arguments
     ///
-    /// * `high` - High for the period
-    /// * `low` - Low for the period
-    /// * `close` - Closing price for the period
-    /// * `volume` - Volume of transaction for the period
-    /// * `previous_accumulation_distribution` - Previous value of accumulation distribution. If no
-    /// previous use 0.0
+    /// * `high` - High
+    /// * `low` - Low 
+    /// * `close` - Close
+    /// * `volume` - Volume 
+    /// * `previous_accumulation_distribution` - Previous AD (0.0 if none)
     ///
     /// # Examples
     ///
@@ -42,9 +41,15 @@ pub mod single {
     /// let close = 102.0;
     /// let volume = 1000.0;
     /// let previous = 0.0;
+    ///
     /// let accumulation_distribution =
-    /// rust_ti::strength_indicators::single::accumulation_distribution(&high, &low, &close,
-    /// &volume, &previous);
+    ///     rust_ti::strength_indicators::single::accumulation_distribution(
+    ///         high, 
+    ///         low, 
+    ///         close,
+    ///         volume, 
+    ///         previous
+    ///     );
     /// assert_eq!(500.0, accumulation_distribution);
     ///
     /// let high = 102.0;
@@ -52,36 +57,35 @@ pub mod single {
     /// let close = 100.0;
     /// let volume = 1500.0;
     /// let accumulation_distribution =
-    /// rust_ti::strength_indicators::single::accumulation_distribution(&high, &low, &close,
-    /// &volume, &accumulation_distribution);
+    ///     rust_ti::strength_indicators::single::accumulation_distribution(
+    ///         high,
+    ///         low,
+    ///         close,
+    ///         volume, 
+    ///         accumulation_distribution
+    ///     );
     /// assert_eq!(0.0, accumulation_distribution);
     /// ```
+    #[inline]
     pub fn accumulation_distribution(
-        high: &f64,
-        low: &f64,
-        close: &f64,
-        volume: &f64,
-        previous_accumulation_distribution: &f64,
+        high: f64,
+        low: f64,
+        close: f64,
+        volume: f64,
+        previous_accumulation_distribution: f64,
     ) -> f64 {
         let money_flow_multiplier = ((close - low) - (high - close)) / (high - low);
         let money_flow_volume = money_flow_multiplier * volume;
-        return previous_accumulation_distribution + money_flow_volume;
+        previous_accumulation_distribution + money_flow_volume
     }
 
-    /// The `volume_index` measures volume trend strength.
-    ///
-    /// The `volume_index` is a variation of the Postive Volumne Index (PVI) and the Negative
-    /// Volumne Index (NVI). As the underlying calculationis are the same for both PVI and NVI, the
-    /// single function is made generic so the caller can call the same function whether the difference between
-    /// volume today is positive or negative.
-    ///
-    /// If there is no `previous_volume_index` use 0.0.
+    /// Calculates a generic volume_index used in Positive and Negative Volume Index
     ///
     /// # Arguments
     ///
-    /// * `current_close` - Value of current close price
-    /// * `previous_close` - Value of previous close price
-    /// * `previous_volume_index` - Previous PVI/NVI value, if none use 0.0
+    /// * `current_close` - Current close
+    /// * `previous_close` - Previous close
+    /// * `previous_volume_index` - Previous PVI/NVI value (0.0 if none)
     ///
     /// # Examples
     ///
@@ -90,41 +94,37 @@ pub mod single {
     /// let previous_close = 100.0;
     ///
     /// let volume_index = rust_ti::strength_indicators::single::volume_index(
-    ///     &current_close,
-    ///     &previous_close,
-    ///     &0.0
+    ///     current_close,
+    ///     previous_close,
+    ///     0.0
     /// );
     ///
     /// assert_eq!(0.052500000000000005, volume_index);
     ///
     /// let next_close = 103.0;
     /// let volume_index = rust_ti::strength_indicators::single::volume_index(
-    ///     &next_close,
-    ///     &current_close,
-    ///     &volume_index
+    ///     next_close,
+    ///     current_close,
+    ///     volume_index
     /// );
     ///
     /// assert_eq!(0.051500000000000004, volume_index);
     /// ```
+    #[inline]
     pub fn volume_index(
-        current_close: &f64,
-        previous_close: &f64,
-        previous_volume_index: &f64,
+        current_close: f64,
+        previous_close: f64,
+        previous_volume_index: f64,
     ) -> f64 {
-        let division = (current_close - previous_close) / previous_close;
-        if previous_volume_index == &0.0 {
-            return division + (division * division);
-        };
-        return previous_volume_index + (division * previous_volume_index);
+        let change = (current_close - previous_close) / previous_close;
+        if previous_volume_index == 0.0 {
+            change + change * change
+        } else {
+            previous_volume_index + (change * previous_volume_index)
+        }
     }
 
-    /// The `relative_vigor_index` measures the strength of an asset by looking at previous prices.
-    ///
-    /// The standard model to use is a simple moving average.
-    ///
-    /// The function assumes that the correct length of prices is passed in. The function needs 4
-    /// previous prices to do the base calculation, extra prices passed will be used to calculate
-    /// the average.
+    /// Calculates the Relative Vigor Index (RVI)
     ///
     /// # Arguments
     ///
@@ -136,10 +136,10 @@ pub mod single {
     ///
     /// # Panics
     ///
-    /// `relative_vigor_index` will panic if:
-    ///     * If lengths of `open`, `high`, `low`, and `close` aren't equal
-    ///     * If prices are empty
-    ///     * If length of prices is less than 4
+    /// Panics if:
+    ///     * `open.len()` != `high.len()` != `low,len()` != `close.len()`
+    ///     * `open.is_empty()`
+    ///     * `open.len()` < 4
     ///
     /// # Examples
     ///
@@ -149,13 +149,14 @@ pub mod single {
     /// let low = vec![90.0, 110.0, 105.0, 110.0, 120.0, 105.0, 95.0, 85.0];
     /// let close = vec![100.0, 115.0, 115.0, 120.0, 125.0, 110.0, 100.0, 90.0];
     ///
-    /// let relative_vigor_index = rust_ti::strength_indicators::single::relative_vigor_index(
-    ///     &open,
-    ///     &high,
-    ///     &low,
-    ///     &close,
-    ///     &rust_ti::ConstantModelType::SimpleMovingAverage
-    /// );
+    /// let relative_vigor_index = 
+    ///     rust_ti::strength_indicators::single::relative_vigor_index(
+    ///         &open,
+    ///         &high,
+    ///         &low,
+    ///         &close,
+    ///         rust_ti::ConstantModelType::SimpleMovingAverage
+    ///     );
     ///
     /// assert_eq!(0.10185185185185186, relative_vigor_index);
     /// ```
@@ -164,7 +165,7 @@ pub mod single {
         high: &[f64],
         low: &[f64],
         close: &[f64],
-        constant_model_type: &ConstantModelType,
+        constant_model_type: ConstantModelType,
     ) -> f64 {
         let length = open.len();
         if length != high.len() || length != low.len() || length != close.len() {
@@ -183,18 +184,18 @@ pub mod single {
             panic!("Prices must be at least 4 in length")
         };
 
-        let mut close_open_diff = Vec::new();
-        let mut high_low_diff = Vec::new();
+        let mut close_open_diff = Vec::with_capacity(length);
+        let mut high_low_diff = Vec::with_capacity(length);
 
         for i in 0..length {
             close_open_diff.push(close[i] - open[i]);
             high_low_diff.push(high[i] - low[i]);
         }
 
-        let mut numerator = Vec::new();
-        let mut denominator = Vec::new();
+        let mut numerator = Vec::with_capacity(length - 3);
+        let mut denominator = Vec::with_capacity(length - 3);
 
-        for i in 3..close_open_diff.len() {
+        for i in 3..length {
             numerator.push(
                 (close_open_diff[i]
                     + (2.0 * close_open_diff[i - 1])
@@ -211,27 +212,36 @@ pub mod single {
             );
         }
 
-        let (smoothed_nominator, smoothed_denominator) = match constant_model_type {
+        let (smoothed_numerator, smoothed_denominator) = match constant_model_type {
             ConstantModelType::SimpleMovingAverage => (
-                moving_average(&numerator, &MovingAverageType::Simple),
-                moving_average(&denominator, &MovingAverageType::Simple),
+                moving_average(&numerator, MovingAverageType::Simple),
+                moving_average(&denominator, MovingAverageType::Simple),
             ),
             ConstantModelType::SmoothedMovingAverage => (
-                moving_average(&numerator, &MovingAverageType::Smoothed),
-                moving_average(&denominator, &MovingAverageType::Smoothed),
+                moving_average(&numerator, MovingAverageType::Smoothed),
+                moving_average(&denominator, MovingAverageType::Smoothed),
             ),
             ConstantModelType::ExponentialMovingAverage => (
-                moving_average(&numerator, &MovingAverageType::Exponential),
-                moving_average(&denominator, &MovingAverageType::Exponential),
+                moving_average(&numerator, MovingAverageType::Exponential),
+                moving_average(&denominator, MovingAverageType::Exponential),
             ),
-            ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => (
+            ConstantModelType::PersonalisedMovingAverage {
+                alpha_num,
+                alpha_den,
+            } => (
                 moving_average(
                     &numerator,
-                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
+                    MovingAverageType::Personalised {
+                        alpha_num,
+                        alpha_den,
+                    },
                 ),
                 moving_average(
                     &denominator,
-                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
+                    MovingAverageType::Personalised {
+                        alpha_num,
+                        alpha_den,
+                    },
                 ),
             ),
             ConstantModelType::SimpleMovingMedian => (median(&numerator), median(&denominator)),
@@ -239,28 +249,28 @@ pub mod single {
             _ => panic!("Unsupported ConstantModelType"),
         };
 
-        return smoothed_nominator / smoothed_denominator;
+        smoothed_numerator / smoothed_denominator
     }
 }
 
 /// `bulk` module holds functions that return multiple values
 pub mod bulk {
     use crate::strength_indicators::single;
-    /// The `accumulation_distribution` shows whether the stock is being accumulated or
-    /// distributed.
+    use crate::ConstantModelType;
+
+    /// Calculates the accumulation distribution
     ///
     /// # Arguments
+    ///
     /// * `high` - Slice of highs
     /// * `low` - Slice of lows
     /// * `close` - Slice of closing prices
     /// * `volumes` - Slice of volumes
-    /// * `previous_accumulation_distribution` - Previous value of accumulation distribution. If no
-    /// previous use 0.0
+    /// * `previous_accumulation_distribution` - Previous AD (0.0 if none)
     ///
     /// # Panics
     ///
-    /// `accumulation_distribution` will panic if lengths of `high`, `low`, `close`, and `volumes`
-    /// aren't equal
+    /// Panics if `high.len()` != `low.len()` != `close.len()` != `volumes.len()`
     ///
     /// # Examples
     ///
@@ -270,57 +280,64 @@ pub mod bulk {
     /// let close = vec![102.0, 100.0, 103.0];
     /// let volume = vec![1000.0, 1500.0, 1200.0];
     /// let previous = 0.0;
+    ///
     /// let accumulation_distribution =
-    /// rust_ti::strength_indicators::bulk::accumulation_distribution(&high, &low, &close,
-    /// &volume, &previous);
+    ///     rust_ti::strength_indicators::bulk::accumulation_distribution(
+    ///         &high, 
+    ///         &low, 
+    ///         &close,
+    ///         &volume, 
+    ///         previous
+    ///     );
     /// assert_eq!(vec![500.0, 0.0, 240.0], accumulation_distribution);
     /// ```
+    #[inline]
     pub fn accumulation_distribution(
         high: &[f64],
         low: &[f64],
         close: &[f64],
         volume: &[f64],
-        previous_accumulation_distribution: &f64,
+        previous_accumulation_distribution: f64,
     ) -> Vec<f64> {
         let length = close.len();
         if length != high.len() || length != close.len() || length != volume.len() {
             panic!("Length of close prices ({}) must match length of high ({}), low ({}), and volume ({})", length, high.len(), close.len(), volume.len());
         };
-        let mut ads = vec![single::accumulation_distribution(
-            &high[0],
-            &low[0],
-            &close[0],
-            &volume[0],
-            &previous_accumulation_distribution,
-        )];
+        let mut ads = Vec::with_capacity(length);
+        let mut ad = single::accumulation_distribution(
+            high[0],
+            low[0],
+            close[0],
+            volume[0],
+            previous_accumulation_distribution,
+        );
+        ads.push(ad);
         for i in 1..length {
-            ads.push(single::accumulation_distribution(
-                &high[i],
-                &low[i],
-                &close[i],
-                &volume[i],
-                &ads[i - 1],
-            ));
+            ad = single::accumulation_distribution(
+                high[i],
+                low[i],
+                close[i],
+                volume[i],
+                ad,
+            );
+            ads.push(ad);
         }
-        return ads;
+        ads
     }
 
-    /// The `positive_volume_index` measure the volume trend strength when the volume today is
-    /// greater than the volume yesterday.
-    ///
-    /// The function takes in a `previous_positive_volume_index` if not available use 0.0
+    /// Calculates the Positive Volume Index (PVI)
     ///
     /// # Arguments
     ///
     /// * `close` - Slice of closing prices
     /// * `volume` - Slice of volumes
-    /// * `previous_positive_volume_index` - Previous PVI value
+    /// * `previous_positive_volume_index` - Previous PVI (0.0 if none)
     ///
     /// # Panics
     ///
-    /// `positive_volume_index` will panic if:
-    ///     * length of `close` and `volume` aren't equal
-    ///     * `close` or `volume` are empty
+    /// Panics if:
+    ///     * `close.len()` != `volume.len()`
+    ///     * `close.is_empty()`
     ///
     /// # Examples
     ///
@@ -328,30 +345,32 @@ pub mod bulk {
     /// let close = vec![100.0, 115.0, 118.0, 120.0, 125.0];
     /// let volume = vec![1000.0, 1200.0, 1300.0, 1100.0, 1100.0];
     ///
-    /// let positive_volume_index = rust_ti::strength_indicators::bulk::positive_volume_index(
-    ///     &close,
-    ///     &volume,
-    ///     &0.0
-    /// );
+    /// let positive_volume_index = 
+    ///     rust_ti::strength_indicators::bulk::positive_volume_index(
+    ///         &close,
+    ///         &volume,
+    ///         0.0
+    ///     );
     ///
     /// assert_eq!(vec![0.1725, 0.177, 0.177, 0.177], positive_volume_index);
     ///
-    /// // Note that the last value from close and volume are the first values here
     /// let next_close = vec![125.0, 122.0, 115.0, 120.0];
     /// let next_volume = vec![1100.0, 1000.0, 1500.0, 1600.0];
     ///
-    /// let positive_volume_index = rust_ti::strength_indicators::bulk::positive_volume_index(
-    ///     &next_close,
-    ///     &next_volume,
-    ///     &positive_volume_index.last().unwrap()
-    /// );
+    /// let positive_volume_index = 
+    ///     rust_ti::strength_indicators::bulk::positive_volume_index(
+    ///         &next_close,
+    ///         &next_volume,
+    ///         *positive_volume_index.last().unwrap()
+    ///     );
     ///
     /// assert_eq!(vec![0.177, 0.16684426229508195, 0.1740983606557377], positive_volume_index);
     /// ```
+    #[inline]
     pub fn positive_volume_index(
         close: &[f64],
         volume: &[f64],
-        previous_positive_volume_index: &f64,
+        previous_positive_volume_index: f64,
     ) -> Vec<f64> {
         let length = close.len();
         if length != volume.len() {
@@ -365,45 +384,31 @@ pub mod bulk {
             panic!("Prices cannot be empty")
         };
 
-        let mut pvis = Vec::new();
-        if volume[1] > volume[0] {
-            pvis.push(single::volume_index(
-                &close[1],
-                &close[0],
-                previous_positive_volume_index,
-            ));
-        } else {
-            pvis.push(*previous_positive_volume_index);
-        };
+        let mut pvis = Vec::with_capacity(length-1);
+        let mut prev = previous_positive_volume_index;
 
-        for i in 2..length {
-            let ppvi = pvis[i - 2];
+        for i in 1..length {
             if volume[i] > volume[i - 1] {
-                pvis.push(single::volume_index(&close[i], &close[i - 1], &ppvi));
-            } else {
-                pvis.push(ppvi);
-            };
+                prev = single::volume_index(close[i], close[i - 1], prev);
+            }
+            pvis.push(prev);
         }
-
-        return pvis;
+        pvis
     }
 
-    /// The `negative_volume_index` measure the volume trend strength when the volume today is
-    /// less than the volume yesterday.
-    ///
-    /// The function takes in a `previous_negative_volume_index` if not available use 0.0
+    /// Calculates the Negative Volume Index (NVI)
     ///
     /// # Arguments
     ///
     /// * `close` - Slice of closing prices
     /// * `volume` - Slice of volumes
-    /// * `previous_negative_volume_index` - Previous NVI value
+    /// * `previous_negative_volume_index` - Previous NVI (0.0 if none)
     ///
     /// # Panics
     ///
-    /// `negative_volume_index` will panic if:
-    ///     * length of `close` and `volume` aren't equal
-    ///     * `close` or `volume` are empty
+    /// Panics if:
+    ///     * `close.len()` != `volume.len()`
+    ///     * `close.is_empty()`
     ///
     /// # Examples
     ///
@@ -411,31 +416,39 @@ pub mod bulk {
     /// let close = vec![100.0, 115.0, 118.0, 120.0, 125.0];
     /// let volume = vec![1000.0, 1200.0, 1300.0, 1100.0, 1100.0];
     ///
-    /// let negative_volume_index = rust_ti::strength_indicators::bulk::negative_volume_index(
-    ///     &close,
-    ///     &volume,
-    ///     &0.0
+    /// let negative_volume_index = 
+    ///     rust_ti::strength_indicators::bulk::negative_volume_index(
+    ///         &close,
+    ///         &volume,
+    ///         0.0
+    ///     );
+    ///
+    /// assert_eq!(
+    ///     vec![0.0, 0.0, 0.017236426314277506, 0.017236426314277506], 
+    ///     negative_volume_index
     /// );
     ///
-    /// assert_eq!(vec![0.0, 0.0, 0.017236426314277506, 0.017236426314277506], negative_volume_index);
     ///
-    ///
-    /// // Note that the last value from close and volume are the first values here
     /// let next_close = vec![125.0, 122.0, 115.0, 120.0];
     /// let next_volume = vec![1100.0, 1000.0, 1500.0, 1600.0];
     ///
-    /// let negative_volume_index = rust_ti::strength_indicators::bulk::negative_volume_index(
-    ///     &next_close,
-    ///     &next_volume,
-    ///     &negative_volume_index.last().unwrap()
-    /// );
+    /// let negative_volume_index = 
+    ///     rust_ti::strength_indicators::bulk::negative_volume_index(
+    ///         &next_close,
+    ///         &next_volume,
+    ///         *negative_volume_index.last().unwrap()
+    ///     );
     ///
-    /// assert_eq!(vec![0.016822752082734847, 0.016822752082734847, 0.016822752082734847], negative_volume_index);
+    /// assert_eq!(
+    ///     vec![0.016822752082734847, 0.016822752082734847, 0.016822752082734847], 
+    ///     negative_volume_index
+    /// );
     /// ```
+    #[inline]
     pub fn negative_volume_index(
         close: &[f64],
         volume: &[f64],
-        previous_negative_volume_index: &f64,
+        previous_negative_volume_index: f64,
     ) -> Vec<f64> {
         let length = close.len();
         if length != volume.len() {
@@ -449,34 +462,19 @@ pub mod bulk {
             panic!("Prices cannot be empty")
         };
 
-        let mut nvis = Vec::new();
-        if volume[1] < volume[0] {
-            nvis.push(single::volume_index(
-                &close[1],
-                &close[0],
-                previous_negative_volume_index,
-            ));
-        } else {
-            nvis.push(*previous_negative_volume_index);
-        };
+        let mut nvis = Vec::with_capacity(length - 1);
+        let mut prev = previous_negative_volume_index;
 
-        for i in 2..length {
-            let pnvi = nvis[i - 2];
+        for i in 1..length {
             if volume[i] < volume[i - 1] {
-                nvis.push(single::volume_index(&close[i], &close[i - 1], &pnvi));
-            } else {
-                nvis.push(pnvi);
-            };
+                prev = single::volume_index(close[i], close[i - 1], prev);
+            } 
+            nvis.push(prev);
         }
-
-        return nvis;
+        nvis
     }
 
-    /// The `relative_vigor_index` measures the strength of an asset by looking at previous prices.
-    ///
-    /// The standard model to use is a simple moving average.
-    ///
-    /// Period needs to be at least 4 to perform the calculations.
+    /// Calculates the Relative Vigor Index (RVI)
     ///
     /// # Arguments
     ///
@@ -484,16 +482,16 @@ pub mod bulk {
     /// * `high` - Slice of highs
     /// * `low` - Slice of lows
     /// * `close` - Slice of closing prices
-    /// * `constant_model_type` - Variant of [`ConstantModelType`](crate::ConstantModelType)
+    /// * `constant_model_type` - Variant of [`ConstantModelType`]
     /// * `period` - Period over which to calculate the RVI
     ///
     /// # Panics
     ///
-    /// `relative_vigor_index` will panic if:
-    ///     * Lengths of `open`, `high`, `low`, and `close` aren't equal
-    ///     * Prices are empty
-    ///     * `period` is greater than length of prices
-    ///     * `period` is less than 4
+    /// Panics if:
+    ///     * `open.len()` != `high.len()` != `low.len()` != `close.len()`
+    ///     * `open.is_empty()`
+    ///     * `period` > lengths
+    ///     * `period` < 4
     ///
     /// # Examples
     ///
@@ -509,8 +507,8 @@ pub mod bulk {
     ///     &high,
     ///     &low,
     ///     &close,
-    ///     &rust_ti::ConstantModelType::SimpleMovingAverage,
-    ///     &period
+    ///     rust_ti::ConstantModelType::SimpleMovingAverage,
+    ///     period
     /// );
     ///
     /// assert_eq!(vec![0.10185185185185186, -0.06611570247933886, -0.17037037037037037], relative_vigor_index);
@@ -520,8 +518,8 @@ pub mod bulk {
         high: &[f64],
         low: &[f64],
         close: &[f64],
-        constant_model_type: &crate::ConstantModelType,
-        period: &usize,
+        constant_model_type: ConstantModelType,
+        period: usize,
     ) -> Vec<f64> {
         let length = open.len();
         if length != high.len() || length != low.len() || length != close.len() {
@@ -536,18 +534,18 @@ pub mod bulk {
         if open.is_empty() {
             panic!("Prices cannot be empty")
         };
-        if &length < period {
+        if length < period {
             panic!(
                 "Period ({}) less than or equal to length of prices ({})",
                 period, length
             )
         };
-        if period < &4 {
+        if period < 4 {
             panic!("Period ({}) needs to be greater or equal to 4", period)
         };
 
-        let mut rvis = Vec::new();
         let loop_max = length - period + 1;
+        let mut rvis = Vec::with_capacity(loop_max);
         for i in 0..loop_max {
             rvis.push(single::relative_vigor_index(
                 &open[i..i + period],
@@ -557,7 +555,7 @@ pub mod bulk {
                 constant_model_type,
             ));
         }
-        return rvis;
+        rvis
     }
 }
 
@@ -569,7 +567,7 @@ mod tests {
     fn single_accumulation_distribution_no_previous() {
         assert_eq!(
             -38.28571428571309,
-            single::accumulation_distribution(&100.53, &99.62, &100.01, &268.0, &0.0)
+            single::accumulation_distribution(100.53, 99.62, 100.01, 268.0, 0.0)
         )
     }
 
@@ -577,7 +575,7 @@ mod tests {
     fn single_accumulation_distribution_previous() {
         assert_eq!(
             0.6342857142869107,
-            single::accumulation_distribution(&100.53, &99.62, &100.01, &268.0, &38.92)
+            single::accumulation_distribution(100.53, 99.62, 100.01, 268.0, 38.92)
         )
     }
 
@@ -589,7 +587,7 @@ mod tests {
         let volume = vec![268.0, 319.0];
         assert_eq!(
             vec![-38.28571428571309, 65.05231388329526],
-            bulk::accumulation_distribution(&highs, &lows, &close, &volume, &0.0)
+            bulk::accumulation_distribution(&highs, &lows, &close, &volume, 0.0)
         );
     }
 
@@ -601,7 +599,7 @@ mod tests {
         let volume = vec![268.0, 319.0];
         assert_eq!(
             vec![0.6342857142869107, 103.97231388329524],
-            bulk::accumulation_distribution(&highs, &lows, &close, &volume, &38.92)
+            bulk::accumulation_distribution(&highs, &lows, &close, &volume, 38.92)
         );
     }
 
@@ -612,7 +610,7 @@ mod tests {
         let lows = vec![99.62, 99.97];
         let close = vec![100.01, 100.44];
         let volume = vec![268.0, 319.0];
-        bulk::accumulation_distribution(&highs, &lows, &close, &volume, &0.0);
+        bulk::accumulation_distribution(&highs, &lows, &close, &volume, 0.0);
     }
 
     #[test]
@@ -622,7 +620,7 @@ mod tests {
         let lows = vec![99.62];
         let close = vec![100.01, 100.44];
         let volume = vec![268.0, 319.0];
-        bulk::accumulation_distribution(&highs, &lows, &close, &volume, &0.0);
+        bulk::accumulation_distribution(&highs, &lows, &close, &volume, 0.0);
     }
 
     #[test]
@@ -632,7 +630,7 @@ mod tests {
         let lows = vec![99.62, 99.97];
         let close = vec![100.01];
         let volume = vec![268.0, 319.0];
-        bulk::accumulation_distribution(&highs, &lows, &close, &volume, &0.0);
+        bulk::accumulation_distribution(&highs, &lows, &close, &volume, 0.0);
     }
 
     #[test]
@@ -642,14 +640,14 @@ mod tests {
         let lows = vec![99.62, 99.97];
         let close = vec![100.01, 100.44];
         let volume = vec![268.0];
-        bulk::accumulation_distribution(&highs, &lows, &close, &volume, &0.0);
+        bulk::accumulation_distribution(&highs, &lows, &close, &volume, 0.0);
     }
 
     #[test]
     fn single_volume_index_no_previous() {
         assert_eq!(
             0.004318056345550251,
-            single::volume_index(&100.44, &100.01, &0.0)
+            single::volume_index(100.44, 100.01, 0.0)
         );
     }
 
@@ -657,7 +655,7 @@ mod tests {
     fn single_volume_index_previous() {
         assert_eq!(
             0.004324075141730827,
-            single::volume_index(&100.58, &100.44, &0.004318056345550251)
+            single::volume_index(100.58, 100.44, 0.004318056345550251)
         );
     }
 
@@ -671,7 +669,7 @@ mod tests {
                 -0.011460009511748427,
                 -0.011460009511748427
             ],
-            bulk::positive_volume_index(&close, &volume, &0.0)
+            bulk::positive_volume_index(&close, &volume, 0.0)
         );
     }
 
@@ -686,7 +684,7 @@ mod tests {
                 -0.011593533125987359,
                 -0.011644180014146955
             ],
-            bulk::positive_volume_index(&close, &volume, &-0.011460009511748427)
+            bulk::positive_volume_index(&close, &volume, -0.011460009511748427)
         );
     }
 
@@ -700,7 +698,7 @@ mod tests {
                 -0.011460009511748427,
                 -0.011579155668981706
             ],
-            bulk::positive_volume_index(&close, &volume, &0.0)
+            bulk::positive_volume_index(&close, &volume, 0.0)
         );
     }
 
@@ -710,7 +708,7 @@ mod tests {
         let volume = vec![1000.0, 900.0, 800.0, 700.0];
         assert_eq!(
             vec![0.0, 0.0, 0.0],
-            bulk::positive_volume_index(&close, &volume, &0.0)
+            bulk::positive_volume_index(&close, &volume, 0.0)
         );
     }
 
@@ -719,7 +717,7 @@ mod tests {
     fn bulk_positive_volume_index_panic_length() {
         let close = vec![100.14, 98.98, 100.1];
         let volume = vec![1000.0, 900.0, 800.0, 700.0];
-        bulk::positive_volume_index(&close, &volume, &0.0);
+        bulk::positive_volume_index(&close, &volume, 0.0);
     }
 
     #[test]
@@ -727,7 +725,7 @@ mod tests {
     fn bulk_positive_volume_index_panic_empty() {
         let close = Vec::new();
         let volume = Vec::new();
-        bulk::positive_volume_index(&close, &volume, &0.0);
+        bulk::positive_volume_index(&close, &volume, 0.0);
     }
 
     #[test]
@@ -736,7 +734,7 @@ mod tests {
         let volume = vec![1000.0, 1200.0, 1300.0, 1100.0];
         assert_eq!(
             vec![0.0, 0.0, 0.010504780356171802],
-            bulk::negative_volume_index(&close, &volume, &0.0)
+            bulk::negative_volume_index(&close, &volume, 0.0)
         );
     }
 
@@ -751,7 +749,7 @@ mod tests {
                 0.010462744420372797,
                 0.010462744420372797
             ],
-            bulk::negative_volume_index(&close, &volume, &0.010504780356171802)
+            bulk::negative_volume_index(&close, &volume, 0.010504780356171802)
         );
     }
 
@@ -761,7 +759,7 @@ mod tests {
         let volume = vec![1000.0, 1200.0, 1300.0, 1400.0];
         assert_eq!(
             vec![0.0, 0.0, 0.0],
-            bulk::negative_volume_index(&close, &volume, &0.0)
+            bulk::negative_volume_index(&close, &volume, 0.0)
         );
     }
 
@@ -775,7 +773,7 @@ mod tests {
                 -0.011460009511748427,
                 -0.011579155668981706
             ],
-            bulk::negative_volume_index(&close, &volume, &0.0)
+            bulk::negative_volume_index(&close, &volume, 0.0)
         );
     }
 
@@ -784,7 +782,7 @@ mod tests {
     fn bulk_negative_volume_index_panic_length() {
         let close = vec![100.14, 98.98, 100.1];
         let volume = vec![1000.0, 900.0, 800.0, 700.0];
-        bulk::negative_volume_index(&close, &volume, &0.0);
+        bulk::negative_volume_index(&close, &volume, 0.0);
     }
 
     #[test]
@@ -792,7 +790,7 @@ mod tests {
     fn bulk_negative_volume_index_panic_empty() {
         let close = Vec::new();
         let volume = Vec::new();
-        bulk::negative_volume_index(&close, &volume, &0.0);
+        bulk::negative_volume_index(&close, &volume, 0.0);
     }
 
     #[test]
@@ -808,7 +806,7 @@ mod tests {
                 &high,
                 &low,
                 &close,
-                &crate::ConstantModelType::SimpleMovingAverage
+                crate::ConstantModelType::SimpleMovingAverage
             )
         );
     }
@@ -826,7 +824,7 @@ mod tests {
                 &high,
                 &low,
                 &close,
-                &crate::ConstantModelType::SmoothedMovingAverage
+                crate::ConstantModelType::SmoothedMovingAverage
             )
         );
     }
@@ -844,7 +842,7 @@ mod tests {
                 &high,
                 &low,
                 &close,
-                &crate::ConstantModelType::ExponentialMovingAverage
+                crate::ConstantModelType::ExponentialMovingAverage
             )
         );
     }
@@ -862,7 +860,10 @@ mod tests {
                 &high,
                 &low,
                 &close,
-                &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0)
+                crate::ConstantModelType::PersonalisedMovingAverage {
+                    alpha_num: 5.0,
+                    alpha_den: 4.0
+                }
             )
         );
     }
@@ -880,7 +881,7 @@ mod tests {
                 &high,
                 &low,
                 &close,
-                &crate::ConstantModelType::SimpleMovingMedian
+                crate::ConstantModelType::SimpleMovingMedian
             )
         );
     }
@@ -898,7 +899,7 @@ mod tests {
                 &high,
                 &low,
                 &close,
-                &crate::ConstantModelType::SimpleMovingMode
+                crate::ConstantModelType::SimpleMovingMode
             )
         );
     }
@@ -916,7 +917,7 @@ mod tests {
                 &high,
                 &low,
                 &close,
-                &crate::ConstantModelType::SimpleMovingAverage
+                crate::ConstantModelType::SimpleMovingAverage
             )
         );
     }
@@ -933,7 +934,7 @@ mod tests {
             &high,
             &low,
             &close,
-            &crate::ConstantModelType::SimpleMovingAverage,
+            crate::ConstantModelType::SimpleMovingAverage,
         );
     }
 
@@ -949,7 +950,7 @@ mod tests {
             &high,
             &low,
             &close,
-            &crate::ConstantModelType::SimpleMovingAverage,
+            crate::ConstantModelType::SimpleMovingAverage,
         );
     }
 
@@ -965,7 +966,7 @@ mod tests {
             &high,
             &low,
             &close,
-            &crate::ConstantModelType::SimpleMovingAverage,
+            crate::ConstantModelType::SimpleMovingAverage,
         );
     }
 
@@ -981,7 +982,7 @@ mod tests {
             &high,
             &low,
             &close,
-            &crate::ConstantModelType::SimpleMovingAverage,
+            crate::ConstantModelType::SimpleMovingAverage,
         );
     }
 
@@ -997,7 +998,7 @@ mod tests {
             &high,
             &low,
             &close,
-            &crate::ConstantModelType::SimpleMovingAverage,
+            crate::ConstantModelType::SimpleMovingAverage,
         );
     }
 
@@ -1013,7 +1014,7 @@ mod tests {
             &high,
             &low,
             &close,
-            &crate::ConstantModelType::SimpleMovingAverage,
+            crate::ConstantModelType::SimpleMovingAverage,
         );
     }
 
@@ -1030,8 +1031,8 @@ mod tests {
                 &high,
                 &low,
                 &close,
-                &crate::ConstantModelType::SimpleMovingAverage,
-                &6_usize
+                crate::ConstantModelType::SimpleMovingAverage,
+                6_usize
             )
         );
     }
@@ -1051,8 +1052,8 @@ mod tests {
                 &high,
                 &low,
                 &close,
-                &crate::ConstantModelType::SimpleMovingAverage,
-                &6_usize
+                crate::ConstantModelType::SimpleMovingAverage,
+                6_usize
             )
         );
     }
@@ -1071,8 +1072,8 @@ mod tests {
             &high,
             &low,
             &close,
-            &crate::ConstantModelType::SimpleMovingAverage,
-            &6_usize,
+            crate::ConstantModelType::SimpleMovingAverage,
+            6_usize,
         );
     }
 
@@ -1088,8 +1089,8 @@ mod tests {
             &high,
             &low,
             &close,
-            &crate::ConstantModelType::SimpleMovingAverage,
-            &6_usize,
+            crate::ConstantModelType::SimpleMovingAverage,
+            6_usize,
         );
     }
 
@@ -1107,8 +1108,8 @@ mod tests {
             &high,
             &low,
             &close,
-            &crate::ConstantModelType::SimpleMovingAverage,
-            &6_usize,
+            crate::ConstantModelType::SimpleMovingAverage,
+            6_usize,
         );
     }
 
@@ -1126,8 +1127,8 @@ mod tests {
             &high,
             &low,
             &close,
-            &crate::ConstantModelType::SimpleMovingAverage,
-            &6_usize,
+            crate::ConstantModelType::SimpleMovingAverage,
+            6_usize,
         );
     }
 
@@ -1145,8 +1146,8 @@ mod tests {
             &high,
             &low,
             &close,
-            &crate::ConstantModelType::SimpleMovingAverage,
-            &60_usize,
+            crate::ConstantModelType::SimpleMovingAverage,
+            60_usize,
         );
     }
 
@@ -1164,8 +1165,8 @@ mod tests {
             &high,
             &low,
             &close,
-            &crate::ConstantModelType::SimpleMovingAverage,
-            &3_usize,
+            crate::ConstantModelType::SimpleMovingAverage,
+            3_usize,
         );
     }
 
@@ -1181,8 +1182,8 @@ mod tests {
             &high,
             &low,
             &close,
-            &crate::ConstantModelType::SimpleMovingAverage,
-            &6_usize,
+            crate::ConstantModelType::SimpleMovingAverage,
+            6_usize,
         );
     }
 }

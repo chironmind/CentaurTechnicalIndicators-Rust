@@ -6,27 +6,22 @@ pub enum CentralPoint {
     Mode,
 }
 
-// TODO: These comments will need to be reversed
 /// Type of moving average.
 #[derive(Debug, Copy, Clone, PartialEq)]
-//pub enum MovingAverageType {
-pub enum MovingAverageType<'a> {
+pub enum MovingAverageType {
     Simple,
     Smoothed,
     Exponential,
-    //Personalised { alpha_num: f64, alpha_den: f64 },
-    Personalised(&'a f64, &'a f64),
+    Personalised { alpha_num: f64, alpha_den: f64 },
 }
 
 /// Determines which constant model to use for a center point.
 #[derive(Debug, Copy, Clone, PartialEq)]
-//pub enum ConstantModelType {
-pub enum ConstantModelType<'a> {
+pub enum ConstantModelType {
     SimpleMovingAverage,
     SmoothedMovingAverage,
     ExponentialMovingAverage,
-    //PersonalisedMovingAverage { alpha_num: f64, alpha_den: f64 },
-    PersonalisedMovingAverage(&'a f64, &'a f64),
+    PersonalisedMovingAverage { alpha_num: f64, alpha_den: f64 },
     SimpleMovingMedian,
     SimpleMovingMode,
 }

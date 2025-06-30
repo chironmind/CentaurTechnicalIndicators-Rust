@@ -282,7 +282,10 @@ fn main() {
         rust_ti::ConstantModelType::SimpleMovingAverage,
         rust_ti::ConstantModelType::SmoothedMovingAverage,
         rust_ti::ConstantModelType::ExponentialMovingAverage,
-        rust_ti::ConstantModelType::PersonalisedMovingAverage(&nominator, &denominator),
+        rust_ti::ConstantModelType::PersonalisedMovingAverage {
+            alpha_num: nominator,
+            alpha_den: denominator,
+        },
         rust_ti::ConstantModelType::SimpleMovingMedian,
         rust_ti::ConstantModelType::SimpleMovingMode,
     ];
@@ -298,7 +301,10 @@ fn main() {
         rust_ti::MovingAverageType::Simple,
         rust_ti::MovingAverageType::Smoothed,
         rust_ti::MovingAverageType::Exponential,
-        rust_ti::MovingAverageType::Personalised(&nominator, &denominator),
+        rust_ti::MovingAverageType::Personalised {
+            alpha_num: nominator,
+            alpha_den: denominator,
+        },
     ];
 
     let period: usize = 5;
@@ -517,8 +523,7 @@ fn main() {
 
     // Money Flow Index
 
-    let mfi =
-        rust_ti::momentum_indicators::bulk::money_flow_index(&typical_price, &volume, period);
+    let mfi = rust_ti::momentum_indicators::bulk::money_flow_index(&typical_price, &volume, period);
     println!("Money Flow Index: {:?}", mfi);
 
     // Rate of Change
@@ -638,7 +643,7 @@ fn main() {
         println!("Percentage Price Oscillator {:?}: {:?}", model, ppo);
         for moving_average in &available_moving_averages {
             let signal =
-                rust_ti::moving_average::bulk::moving_average(&ppo, &moving_average, &period);
+                rust_ti::moving_average::bulk::moving_average(&ppo, *moving_average, period);
             println!("{:?} Signal Line: {:?}", moving_average, signal);
         }
     }
@@ -654,14 +659,14 @@ fn main() {
 
     for moving_average in &available_moving_averages {
         let ma =
-            rust_ti::moving_average::bulk::moving_average(&typical_price, &moving_average, &period);
+            rust_ti::moving_average::bulk::moving_average(&typical_price, *moving_average, period);
         println!("{:?} Moving Average: {:?}", moving_average, ma);
     }
 
     // McGinley Dynamic
 
     let mcginley_dynamic =
-        rust_ti::moving_average::bulk::mcginley_dynamic(&typical_price, &0.0, &period);
+        rust_ti::moving_average::bulk::mcginley_dynamic(&typical_price, 0.0, period);
     println!("McGinley Dynamic vs Typical Price:  {:?}", mcginley_dynamic);
 
     // other_indicators.rs
@@ -675,7 +680,7 @@ fn main() {
 
     for model in &available_models {
         let average_true_range = rust_ti::other_indicators::bulk::average_true_range(
-            &close, &high, &low, &model, &period,
+            &close, &high, &low, *model, period,
         );
         println!("{:?} Average True Range: {:?}", model, average_true_range);
     }
@@ -692,7 +697,7 @@ fn main() {
             &open[1..],
             &close[..length - 1],
             period,
-            &model,
+            *model,
         );
         println!("{:?} Positivity Index: {:?}", model, pi);
     }
@@ -702,30 +707,29 @@ fn main() {
     // Accumulation Distribution
 
     let ad = rust_ti::strength_indicators::bulk::accumulation_distribution(
-        &high, &low, &close, &volume, &0.0,
+        &high, &low, &close, &volume, 0.0,
     );
     println!("Accumulation Distribution: {:?}", ad);
 
     // Positive Volume Index
 
-    let pvi = rust_ti::strength_indicators::bulk::positive_volume_index(&close, &volume, &0.0);
+    let pvi = rust_ti::strength_indicators::bulk::positive_volume_index(&close, &volume, 0.0);
     println!("Positive Volume Index: {:?}", pvi);
 
     // Negative Volume Index
 
-    let nvi = rust_ti::strength_indicators::bulk::negative_volume_index(&close, &volume, &0.0);
+    let nvi = rust_ti::strength_indicators::bulk::negative_volume_index(&close, &volume, 0.0);
     println!("Negative Volume Index: {:?}", nvi);
 
     // Relative Vigor Index
 
     for model in &available_models {
         let rvi = rust_ti::strength_indicators::bulk::relative_vigor_index(
-            &open, &high, &low, &close, &model, &period,
+            &open, &high, &low, &close, *model, period,
         );
         println!("{:?} Relative Vigor Index: {:?}", model, rvi);
         for signal_model in &available_moving_averages {
-            let signal =
-                rust_ti::moving_average::bulk::moving_average(&rvi, &signal_model, &period);
+            let signal = rust_ti::moving_average::bulk::moving_average(&rvi, *signal_model, period);
             println!("{:?} Signal Line: {:?}", signal_model, signal);
         }
     }
@@ -754,7 +758,7 @@ fn main() {
 
     for model in &available_models {
         let dms = rust_ti::trend_indicators::bulk::directional_movement_system(
-            &high, &low, &close, period, &model,
+            &high, &low, &close, period, *model,
         );
         println!("{:?} Directional Movement System: {:?}", model, dms);
     }
@@ -782,7 +786,7 @@ fn main() {
             );
             for signal_model in &available_moving_averages {
                 let signal =
-                    rust_ti::moving_average::bulk::moving_average(&tsi, &signal_model, &period);
+                    rust_ti::moving_average::bulk::moving_average(&tsi, *signal_model, period);
                 println!("{:?} Signal Line: {:?}", signal_model, signal);
             }
         }

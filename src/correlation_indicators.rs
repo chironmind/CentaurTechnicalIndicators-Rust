@@ -69,20 +69,24 @@ pub mod single {
 
         let asset_a_average = match constant_model_type {
             ConstantModelType::SimpleMovingAverage => {
-                moving_average(prices_asset_a, &MovingAverageType::Simple)
+                moving_average(prices_asset_a, MovingAverageType::Simple)
             }
             ConstantModelType::SmoothedMovingAverage => {
-                moving_average(prices_asset_a, &MovingAverageType::Smoothed)
+                moving_average(prices_asset_a, MovingAverageType::Smoothed)
             }
             ConstantModelType::ExponentialMovingAverage => {
-                moving_average(prices_asset_a, &MovingAverageType::Exponential)
+                moving_average(prices_asset_a, MovingAverageType::Exponential)
             }
-            ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => {
-                moving_average(
-                    prices_asset_a,
-                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
-                )
-            }
+            ConstantModelType::PersonalisedMovingAverage {
+                alpha_num,
+                alpha_den,
+            } => moving_average(
+                prices_asset_a,
+                MovingAverageType::Personalised {
+                    alpha_num,
+                    alpha_den,
+                },
+            ),
             ConstantModelType::SimpleMovingMedian => median(prices_asset_a),
             ConstantModelType::SimpleMovingMode => mode(prices_asset_a),
             _ => panic!("Unsupported ConstantModelType"),
@@ -90,20 +94,24 @@ pub mod single {
 
         let asset_b_average = match constant_model_type {
             ConstantModelType::SimpleMovingAverage => {
-                moving_average(prices_asset_b, &MovingAverageType::Simple)
+                moving_average(prices_asset_b, MovingAverageType::Simple)
             }
             ConstantModelType::SmoothedMovingAverage => {
-                moving_average(prices_asset_b, &MovingAverageType::Smoothed)
+                moving_average(prices_asset_b, MovingAverageType::Smoothed)
             }
             ConstantModelType::ExponentialMovingAverage => {
-                moving_average(prices_asset_b, &MovingAverageType::Exponential)
+                moving_average(prices_asset_b, MovingAverageType::Exponential)
             }
-            ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => {
-                moving_average(
-                    prices_asset_b,
-                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
-                )
-            }
+            ConstantModelType::PersonalisedMovingAverage {
+                alpha_num,
+                alpha_den,
+            } => moving_average(
+                prices_asset_b,
+                MovingAverageType::Personalised {
+                    alpha_num,
+                    alpha_den,
+                },
+            ),
             ConstantModelType::SimpleMovingMedian => median(prices_asset_b),
             ConstantModelType::SimpleMovingMode => mode(prices_asset_b),
             _ => panic!("Unsupported ConstantModelType"),
@@ -291,7 +299,10 @@ mod tests {
             single::correlate_asset_prices(
                 &prices_a,
                 &prices_b,
-                crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0),
+                crate::ConstantModelType::PersonalisedMovingAverage {
+                    alpha_num: 5.0,
+                    alpha_den: 4.0
+                },
                 crate::DeviationModel::StandardDeviation
             )
         );
