@@ -738,7 +738,7 @@ fn main() {
 
     // Aroon Indicator
 
-    let aroon_indicator = rust_ti::trend_indicators::bulk::aroon_indicator(&high, &low, &period);
+    let aroon_indicator = rust_ti::trend_indicators::bulk::aroon_indicator(&high, &low, period);
     println!("Aroon Indicator: {:?}", aroon_indicator);
 
     // Parabolic Time Price System
@@ -746,11 +746,11 @@ fn main() {
     let ptps = rust_ti::trend_indicators::bulk::parabolic_time_price_system(
         &high,
         &low,
-        &0.02,
-        &0.2,
-        &0.02,
-        &rust_ti::Position::Long,
-        &0.0,
+        0.02,
+        0.2,
+        0.02,
+        rust_ti::Position::Long,
+        0.0,
     );
     println!("Parabolic Time Price System: {:?}", ptps);
 
@@ -766,7 +766,7 @@ fn main() {
     // Volume Price Trend
 
     let vpt =
-        rust_ti::trend_indicators::bulk::volume_price_trend(&typical_price, &volume[1..], &0.0);
+        rust_ti::trend_indicators::bulk::volume_price_trend(&typical_price, &volume[1..], 0.0);
     println!("Volume Price Trend: {:?}", vpt);
 
     // True Strength Index
@@ -775,9 +775,9 @@ fn main() {
         for second_model in &available_models {
             let tsi = rust_ti::trend_indicators::bulk::true_strength_index(
                 &typical_price,
-                &first_model,
+                *first_model,
                 period,
-                &second_model,
+                *second_model,
                 period,
             );
             println!(
