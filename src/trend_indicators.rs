@@ -1,35 +1,49 @@
 //! # Trend Indicators
 //!
-//! Trend indicators show the trend direction of an asset
+//! This module provides functions to analyze the direction and persistence of price movements in financial time series.
 //!
-//! ## Bulk
+//! ## When to Use
+//! Use these indicators when you want to:
+//! - Identify or confirm the direction (uptrend, downtrend, sideways) of a market or asset
+//! - Detect trend reversals or continuations
+//! - Quantify the strength or consistency of a trend for strategy design or signal filtering
+//! - Calculate trend-following stop-and-reverse systems (e.g., Parabolic SAR)
+//! - Explore relationships between price and volume for trend confirmation
 //!
-//! * [`aroon_down`](bulk::aroon_down) - Calculates the Aroon down
-//! * [`aroon_indicator`](bulk::aroon_indicator) - Calculates the Aroon indicator
-//! * [`aroon_oscillator`](bulk::aroon_oscillator) - Calculates the Aroon Oscillator
-//! * [`aroon_up`](bulk::aroon_up) - Calculates the Aroon up
-//! * [`parabolic_time_price_system`](bulk::parabolic_time_price_system) - Calculates the parabolic
-//! time price system
-//! * [`directional_movement_system`](bulk::directional_movement_system) - Calculates Welles positive/negative
-//! Directional Index, Directional Movement, Directional Movement Index, Average Directional
-//! Movement Index, Average Directional Movement Index Rating.
-//! * [`volume_price_trend`](bulk::volume_price_trend)
-//! * [`true_strength_index`](bulk::true_strength_index)
+//! ## Structure
+//! - **single**: Functions that return a single value for a slice of prices.
+//! - **bulk**: Functions that compute values of a slice of prices over a period and return a vector.
 //!
-//! ## Single
+//! ## Included Indicators
+//! 
+//! ### Bulk
 //!
-//! * [`aroon_down`](single::aroon_down) - Calculates the Aroon down
-//! * [`aroon_indicator`](single::aroon_indicator) - Calculates the Aroon indicator
-//! * [`aroon_oscillator`](single::aroon_oscillator) - Calculates the Aroon Oscillator
-//! * [`aroon_up`](single::aroon_up) - Calculates the Aroon up
-//! * [`long_parabolic_time_price_system`](single::long_parabolic_time_price_system) - Calculates the parabolic
-//! time price system for long positions
-//! * [`short_parabolic_time_price_system`](single::short_parabolic_time_price_system) - Calculates the
-//! parabolic time price system for short positions
-//! * [`volume_price_trend`](single::volume_price_trend)
-//! * [`true_strength_index`](single::true_strength_index)
+//! - [`aroon_down`](bulk::aroon_down): Calculates the Aroon Down
+//! - [`aroon_indicator`](bulk::aroon_indicator): Calculates Aroon Up, Down, and Oscillator
+//! - [`aroon_oscillator`](bulk::aroon_oscillator): Calculates the Aroon Oscillator
+//! - [`aroon_up`](bulk::aroon_up): Calculates the Aroon Up
+//! - [`parabolic_time_price_system`](bulk::parabolic_time_price_system): Computes the Parabolic Time Price System (Welles Wilder's SAR variant)
+//! - [`directional_movement_system`](bulk::directional_movement_system): Computes Directional Movement (+DI, -DI, ADX, ADXR)
+//! - [`volume_price_trend`](bulk::volume_price_trend): Computes the Volume Price Trend 
+//! - [`true_strength_index`](bulk::true_strength_index): Computes the True Strength Index (TSI) 
+//!
+//! ### Single
+//!
+//! - [`aroon_down`](single::aroon_down): Calculates the Aroon Down
+//! - [`aroon_indicator`](single::aroon_indicator): Calculates Aroon Up, Down, and Oscillator
+//! - [`aroon_oscillator`](single::aroon_oscillator): Calculates the Aroon Oscillator
+//! - [`aroon_up`](single::aroon_up): Calculates the Aroon Up
+//! - [`long_parabolic_time_price_system`](single::long_parabolic_time_price_system): Computes Parabolic SAR for long positions
+//! - [`short_parabolic_time_price_system`](single::short_parabolic_time_price_system): Computes Parabolic SAR for short positions
+//! - [`volume_price_trend`](single::volume_price_trend): Computes the Volume Price Trend
+//! - [`true_strength_index`](single::true_strength_index): Computes the True Strength Index (TSI)
+//!
+//! ## API Details
+//! - See function-level documentation for arguments, panics, and usage examples.
+//!
+//! ---
 
-/// `single` module holds functions that return a singular values
+/// **single**: Functions that return a single value for a slice of prices.
 pub mod single {
     use crate::basic_indicators::bulk::median as bulk_median;
     use crate::basic_indicators::bulk::mode as bulk_mode;
@@ -38,7 +52,7 @@ pub mod single {
     use crate::basic_indicators::single::{max, min};
     use crate::moving_average::bulk::moving_average as bulk_ma;
     use crate::moving_average::single::moving_average as single_ma;
-    use crate::{ConstantModelType, MovingAverageType, Position};
+    use crate::{ConstantModelType, MovingAverageType};
 
     /// Calculates the Aroon up
     ///
@@ -151,8 +165,8 @@ pub mod single {
             )
         };
 
-        let aroon_up = aroon_up(&highs);
-        let aroon_down = aroon_down(&lows);
+        let aroon_up = aroon_up(highs);
+        let aroon_down = aroon_down(lows);
         let aroon_oscillaor = aroon_oscillator(aroon_up, aroon_down);
         (aroon_up, aroon_down, aroon_oscillaor)
     }
@@ -456,7 +470,7 @@ pub mod single {
     }
 }
 
-/// `bulk` module holds functions that return multiple vaues
+/// **bulk**: Functions that compute values of a slice of prices over a period and return a vector.
 pub mod bulk {
     use crate::basic_indicators::bulk::{median, mode};
     use crate::basic_indicators::single::{max, min};

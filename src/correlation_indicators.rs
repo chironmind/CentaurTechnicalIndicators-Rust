@@ -1,8 +1,33 @@
-//! # Correlation indicators
+//! # Correlation Indicators
 //!
-//! Correlation indicators show how closely the prices of two different assets move together.
+//! The `correlation_indicators` module provides functions to measure the co-movement 
+//! and statistical relationship between two different price series or assets.
+//!
+//! ## When to Use
+//! Use correlation indicators when you want to:
+//! - Quantify how closely two assets move together
+//! - Assess diversification or hedging effectiveness
+//! - Explore relationships between assets
+//!
+//! ## Structure
+//! - **single**: Functions that return a single value for a slice of prices.
+//! - **bulk**: Functions that compute values of a slice of prices over a period and return a vector.
+//!
+//! ## Included Indicators
+//!
+//! ### Bulk 
+//! - [`correlate_asset_prices`](bulk::correlate_asset_prices): Correlation between two price series
+//!
+//! ### Single
+//! - [`correlate_asset_prices`](single::correlate_asset_prices): Correlation between two price series
+//!
+//! ## API Details
+//! - All functions require two slices of `f64` prices (for the two assets).
+//! - See each function for further details, panics, and usage examples.
+//!
+//! ---
 
-/// `single` module holds functions that return a singular values
+/// **single**: Functions that return a single value for a slice of prices
 pub mod single {
     use crate::basic_indicators::single::{absolute_deviation, median, mode, standard_deviation};
     use crate::moving_average::single::moving_average;
@@ -149,15 +174,15 @@ pub mod single {
             DeviationModel::ModeAbsoluteDeviation => {
                 absolute_deviation(prices_asset_b, CentralPoint::Mode)
             }
-            DeviationModel::UlcerIndex => ulcer_index(&prices_asset_b),
+            DeviationModel::UlcerIndex => ulcer_index(prices_asset_b),
             _ => panic!("Unsupported DeviationModel"),
         };
 
-        return covariance / (asset_a_deviation * asset_b_deviation);
+        covariance / (asset_a_deviation * asset_b_deviation)
     }
 }
 
-/// `bulk` module holds functions that return multiple values
+/// **bulk**: Functions that compute values of a slice of prices over a period and return a vector.
 pub mod bulk {
     use crate::correlation_indicators::single;
     use crate::{ConstantModelType, DeviationModel};
@@ -166,16 +191,16 @@ pub mod bulk {
     ///
     /// # Arguments
     ///
-    /// * `prices_asset_a` - An `f64` slice of prices
-    /// * `prices_asset_b` - An `f64` slice of prices
-    /// * `constant_model_type` - A variant of the [`ConstantModelType`](crate::ConstantModelType) enum.
-    /// * `deviation_model` - A variant of the [`DeviationModel`](crate::DeviationModel) enum.
+    /// * `prices_asset_a` - Slice of prices
+    /// * `prices_asset_b` - Slice of prices
+    /// * `constant_model_type` - Variant of [`ConstantModelType`]
+    /// * `deviation_model` - Variant of [`DeviationModel`]
     ///
     /// # Panics
     ///
-    /// `correlate_asset_prices` will panic if:
-    /// * `prices_asset_a` or `prices_asset_b` is empty
-    /// * `prices_asset_a` and `prices_asset_b` aren't of the same length
+    /// Panics if:
+    ///     * `prices_asset_a.len()` != `prices_asset_b.len()`
+    ///     * `period` > `slices.len()`
     ///
     /// # Examples
     ///

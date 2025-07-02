@@ -1,9 +1,41 @@
 //! # Basic Indicators
 //!
-//! `basic_indicators` are simple functions that perform simple calculations on prices.
-//! These functions are intended to be reused by other modules and indicators.
+//! The `basic_indicators` module provides foundational statistical calculations for time series price data.
+//! These are essential building blocks for more advanced technical indicators and can be used directly.
+//!
+//! ## When to Use
+//! Use these functions when you need raw statistics (mean, median, mode, etc.) or want to compose your own indicators.
+//!
+//! ## Structure
+//! - **single**: Functions that return a single value for a slice of prices.
+//! - **bulk**: Functions that compute values of a slice of prices over a period and return a vector.
+//!
+//! ## Included Indicators
+//!
+//! ### Bulk 
+//! - [`absolute_deviation`](bulk::absolute_deviation): Mean/Median/Mode absolute deviation over each period
+//! - [`log`](bulk::log): Natural logarithm of each price
+//! - [`log_difference`](bulk::log_difference): Difference in log(price) at t and t-1
+//! - [`mean`](bulk::mean): Average
+//! - [`median`](bulk::median): Median
+//! - [`mode`](bulk::mode): Mode
+//! - [`standard_deviation`](bulk::standard_deviation): Standard deviation
+//! - [`variance`](bulk::variance): Variance
+//!
+//! ### Single
+//! - [`absolute_deviation`](single::absolute_deviation): Mean/Median/Mode absolute deviation
+//! - [`log_difference`](single::log_difference): Log difference between two prices
+//! - [`max`](single::max): Maximum price
+//! - [`mean`](single::mean): Mean price
+//! - [`median`](single::median): Median price
+//! - [`min`](single::min): Minimum price
+//! - [`mode`](single::mode): Mode price
+//! - [`standard_deviation`](single::standard_deviation): Standard deviation
+//! - [`variance`](single::variance): Variance
+//!
+//! ---
 
-/// `single` module holds functions that return a singular value for a slice of prices.
+/// **single**: Functions that return a single value for a slice of prices
 pub mod single {
     use crate::CentralPoint;
     use std::cmp::Ordering;
@@ -17,7 +49,7 @@ pub mod single {
     ///
     /// # Panics
     ///
-    /// Panics if `prices` is empty
+    /// Panics if `prices.is_empty()`
     ///
     /// # Examples
     ///
@@ -44,7 +76,7 @@ pub mod single {
     ///
     /// # Panics
     ///
-    /// Panics if `prices` is empty
+    /// Panics if `prices.is_empty()`
     ///
     /// # Examples
     ///
@@ -87,7 +119,7 @@ pub mod single {
     ///
     /// # Panics
     ///
-    /// Panics if `prices` is empty
+    /// Panics if `prices.is_empty()`
     ///
     /// # Examples
     ///
@@ -150,7 +182,7 @@ pub mod single {
                 price_t, price_t_1
             );
         }
-        return price_t.ln() - price_t_1.ln();
+        price_t.ln() - price_t_1.ln()
     }
 
     /// Calculates the variance of a slice of prices
@@ -163,7 +195,7 @@ pub mod single {
     ///
     /// # Panics
     ///
-    /// Panics if `prices` is empty
+    /// Panics if `prices.is_empty()`
     ///
     /// # Examples
     ///
@@ -179,7 +211,7 @@ pub mod single {
         }
         let prices_mean = mean(prices);
         let mean_diff_sq: Vec<f64> = prices.iter().map(|x| (x - prices_mean).powi(2)).collect();
-        return mean(&mean_diff_sq);
+        mean(&mean_diff_sq)
     }
 
     /// Calculates the standard deviation of a slice of prices
@@ -192,7 +224,7 @@ pub mod single {
     ///
     /// # Panics
     ///
-    /// Panics if `prices` is empty
+    /// Panics if `prices.is_empty()`
     ///
     /// # Examples
     ///
@@ -211,11 +243,11 @@ pub mod single {
     /// # Arguments
     ///
     /// * `prices` - Slice of prices
-    /// * `central_point` - A variant of the [`CentralPoint`] enum
+    /// * `central_point` - Variant of [`CentralPoint`]
     ///
     /// # Panics
     ///
-    /// Panics if `prices` is empty
+    /// Panics if `prices.is_empty()`
     ///
     /// # Examples
     ///
@@ -256,7 +288,7 @@ pub mod single {
     ///
     /// # Panics
     ///
-    /// Panics if `prices` is empty or only ocntains NaN
+    /// Panics if `prices.is_empty()`
     ///
     /// # Examples
     ///
@@ -285,7 +317,7 @@ pub mod single {
     ///
     /// # Panics
     ///
-    /// Panics if `prices` is empty or only contains NaN
+    /// Panics if `prices.is_empty()`
     ///
     /// # Examples
     ///
@@ -307,7 +339,7 @@ pub mod single {
     }
 }
 
-/// `bulk` module holds functions that return multiple values for a slice of prices
+/// **bulk**: Functions that compute values of a slice of prices over a period and return a vector.
 pub mod bulk {
     use crate::basic_indicators::single;
     use crate::CentralPoint;
@@ -317,11 +349,13 @@ pub mod bulk {
     /// # Arguments
     ///
     /// * `prices` - Slice of prices
-    /// * `period` - Period over which to calculate the mean (must be > 0 and <= prices.len())
+    /// * `period` - Period over which to calculate the mean 
     ///
     /// # Panics
     ///
-    /// Panics if `period` == 0 or `period` > prices.len()
+    /// Panics if:
+    ///     * `period` == 0
+    ///     * `period` > `prices.len()`
     ///
     /// # Examples
     ///
@@ -332,7 +366,7 @@ pub mod bulk {
     /// ```
     #[inline]
     pub fn mean(prices: &[f64], period: usize) -> Vec<f64> {
-        if period <= 0 {
+        if period == 0 {
             panic!("Period ({}) must be greater than 0", period);
         }
         if period > prices.len() {
@@ -342,8 +376,11 @@ pub mod bulk {
                 prices.len()
             );
         };
-
-        prices.windows(period).map(|w| single::mean(w)).collect()
+        let mut result = Vec::with_capacity(prices.len());
+        for window in prices.windows(period) {
+            result.push(single::mean(window))
+        }
+        result
     }
 
     /// Calculates the median (middle value) of a slice of prices over a given periods.
@@ -353,11 +390,13 @@ pub mod bulk {
     /// # Arguments
     ///
     /// * `prices` - Slice of prices
-    /// * `period` - Period over which to calculate the median (must be > 0 and <= prices.len())
+    /// * `period` - Period over which to calculate the median
     ///
     /// # Panics
     ///
-    /// Panics if `period` == 0 or `period` > prices.len()
+    /// Panics if:
+    ///     * `period` == 0 
+    ///     * `period` > `prices.len()`
     ///
     /// # Examples
     ///
@@ -368,7 +407,7 @@ pub mod bulk {
     /// ```
     #[inline]
     pub fn median(prices: &[f64], period: usize) -> Vec<f64> {
-        if period <= 0 {
+        if period == 0 {
             panic!("Period ({}) must be greater than 0", period);
         };
         if period > prices.len() {
@@ -378,12 +417,14 @@ pub mod bulk {
                 prices.len()
             );
         };
-        prices.windows(period).map(|w| single::median(w)).collect()
+        let mut result = Vec::with_capacity(prices.len());
+        for window in prices.windows(period) {
+            result.push(single::median(window))
+        }
+        result
     }
 
     /// Calculates the mode (most common price) of a slice of prices over a given period.
-    ///
-    /// `mode` will round the numbers to get most frequently occuring integer.
     ///
     /// If multiple modes are found it will the average of those
     /// numbers.
@@ -391,11 +432,13 @@ pub mod bulk {
     /// # Arguments
     ///
     /// * `prices` - Slice of prices
-    /// * `period` - Period over which to calculate the mode (must be > 0 and <= prices.len())
+    /// * `period` - Period over which to calculate the mode 
     ///
     /// # Panics
     ///
-    /// Panics if `period` == 0 or `period` > prices.len()
+    /// Panics if:
+    ///     * `period` == 0 
+    ///     * `period` > `prices.len()`
     ///
     /// # Examples
     ///
@@ -406,7 +449,7 @@ pub mod bulk {
     /// ```
     #[inline]
     pub fn mode(prices: &[f64], period: usize) -> Vec<f64> {
-        if period <= 0 {
+        if period == 0 {
             panic!("Period ({}) must be greater than 0", period);
         };
         if period > prices.len() {
@@ -416,7 +459,11 @@ pub mod bulk {
                 prices.len()
             );
         };
-        prices.windows(period).map(|w| single::mode(w)).collect()
+        let mut result = Vec::with_capacity(prices.len());
+        for window in prices.windows(period) {
+            result.push(single::mode(window))
+        }
+        result
     }
 
     /// Calculates the natural logrithm of slice of prices
@@ -427,14 +474,17 @@ pub mod bulk {
     ///
     /// # Panics
     ///
-    /// Panics if `prices` is empty.
+    /// Panics if `prices.is_empty.()`
     ///
     /// # Examples
     ///
     /// ```rust
     /// let prices = vec![101.0, 102.0, 103.0, 101.0];
     /// let log = rust_ti::basic_indicators::bulk::log(&prices);
-    /// assert_eq!(vec![4.61512051684126, 4.624972813284271, 4.634728988229636, 4.61512051684126], log);
+    /// assert_eq!(
+    ///     vec![4.61512051684126, 4.624972813284271, 4.634728988229636, 4.61512051684126], 
+    ///     log
+    /// );
     /// ```
     #[inline]
     pub fn log(prices: &[f64]) -> Vec<f64> {
@@ -452,14 +502,17 @@ pub mod bulk {
     ///
     /// # Panics
     ///
-    /// Panics if `prices` is empty.
+    /// Panics if `prices.is_empty()`
     ///
     /// # Examples
     ///
     /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0];
     /// let log_difference = rust_ti::basic_indicators::bulk::log_difference(&prices);
-    /// assert_eq!(vec![0.019802627296178876, 0.009756174945365181, -0.01960847138837618], log_difference);
+    /// assert_eq!(
+    ///     vec![0.019802627296178876, 0.009756174945365181, -0.01960847138837618], 
+    ///     log_difference
+    /// );
     /// ```
     #[inline]
     pub fn log_difference(prices: &[f64]) -> Vec<f64> {
@@ -479,11 +532,13 @@ pub mod bulk {
     /// # Arguments
     ///
     /// * `prices` - Slice of prices
-    /// * `period` - Period over which to calculate the variance (must be > 0 and <= prices.len())
+    /// * `period` - Period over which to calculate the variance
     ///
     /// # Panics
     ///
-    /// Panics if `period` == 0 or `period` > prices.len().
+    /// Panics if:
+    ///     * `period` == 0 
+    ///     * `period` > `prices.len()`
     ///
     /// # Examples
     ///
@@ -495,7 +550,7 @@ pub mod bulk {
     /// ```
     #[inline]
     pub fn variance(prices: &[f64], period: usize) -> Vec<f64> {
-        if period <= 0 {
+        if period == 0 {
             panic!("Period ({}) must be greater than 0", period)
         };
         if period > prices.len() {
@@ -505,10 +560,11 @@ pub mod bulk {
                 prices.len()
             );
         };
-        prices
-            .windows(period)
-            .map(|w| single::variance(w))
-            .collect()
+        let mut result = Vec::with_capacity(prices.len());
+        for window in prices.windows(period) {
+            result.push(single::variance(window))
+        }
+        result
     }
 
     /// Calculates the standard deviation of a slice of prices over a given period
@@ -518,24 +574,27 @@ pub mod bulk {
     /// # Arguments
     ///
     /// * `prices` - Slice of prices
-    /// * `period` - Period over which to calculate the standard deviation (must be > 0 and <= prices.len())
+    /// * `period` - Period over which to calculate the standard deviation
     ///
     /// # Panics
     ///
-    /// Panics if `period` == 0 or `period` > prices.len().
+    /// Panics if:
+    ///     * `period` == 0 
+    ///     * `period` > `prices.len()`
     ///
     /// # Examples
     ///
     /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0];
     /// let period: usize = 3;
-    /// let standard_deviation = rust_ti::basic_indicators::bulk::standard_deviation(&prices, period);
+    /// let standard_deviation = 
+    ///     rust_ti::basic_indicators::bulk::standard_deviation(&prices, period);
     /// assert_eq!(vec![1.247219128924647, 0.816496580927726], standard_deviation);
     /// ```
     // TODO: Allow for distributions other than normal distributions
     #[inline]
     pub fn standard_deviation(prices: &[f64], period: usize) -> Vec<f64> {
-        if period <= 0 {
+        if period == 0 {
             panic!("Period ({}) must be greater than 0", period)
         };
         if period > prices.len() {
@@ -545,10 +604,11 @@ pub mod bulk {
                 prices.len()
             );
         };
-        prices
-            .windows(period)
-            .map(|w| single::standard_deviation(w))
-            .collect()
+        let mut result = Vec::with_capacity(prices.len());
+        for window in prices.windows(period) {
+            result.push(single::standard_deviation(window));
+        }
+        result
     }
 
     /// Calculates the absolute deviation from the mean, median, or mode over a given period.
@@ -556,12 +616,14 @@ pub mod bulk {
     /// # Arguments
     ///
     /// * `prices` - Slice of prices
-    /// * `period` - Period over which to calculate the standard deviation (must be > 0 and <= prices.len())
-    /// * `central_point` - A variant of the [`CentralPoint`] enum
-    ///
+    /// * `period` - Period over which to calculate the standard deviation
+    /// * `central_point` - Variant of [`CentralPoint`]
+    /// 
     /// # Panics
     ///
-    /// Panics if `period` == 0 or `period` > prices.len().
+    /// Panics if:
+    ///     * `period` == 0 
+    ///     * `period` > `prices.len()`
     ///
     /// # Examples
     ///
@@ -570,16 +632,34 @@ pub mod bulk {
     /// let period: usize = 3;
     ///
     /// let mean_absolute_deviation =
-    ///     rust_ti::basic_indicators::bulk::absolute_deviation(&prices, period, rust_ti::CentralPoint::Mean);
-    /// assert_eq!(vec![1.1111111111111096, 0.6666666666666666, 1.1111111111111096], mean_absolute_deviation);
+    ///     rust_ti::basic_indicators::bulk::absolute_deviation(
+    ///         &prices, 
+    ///         period, 
+    ///         rust_ti::CentralPoint::Mean
+    ///     );
+    /// assert_eq!(
+    ///     vec![1.1111111111111096, 0.6666666666666666, 1.1111111111111096], 
+    ///     mean_absolute_deviation
+    /// );
     ///
     /// let median_absolute_deviation =
-    ///     rust_ti::basic_indicators::bulk::absolute_deviation(&prices, period, rust_ti::CentralPoint::Median);
+    ///     rust_ti::basic_indicators::bulk::absolute_deviation(
+    ///         &prices, 
+    ///         period, 
+    ///         rust_ti::CentralPoint::Median
+    ///     );
     /// assert_eq!(vec![1.0, 0.6666666666666666, 1.0], median_absolute_deviation);
     ///
     /// let mode_absolute_deviation =
-    ///     rust_ti::basic_indicators::bulk::absolute_deviation(&prices, period, rust_ti::CentralPoint::Mode);
-    /// assert_eq!(vec![1.1111111111111096, 0.6666666666666666, 1.1111111111111096], mode_absolute_deviation);
+    ///     rust_ti::basic_indicators::bulk::absolute_deviation(
+    ///         &prices, 
+    ///         period, 
+    ///         rust_ti::CentralPoint::Mode
+    ///     );
+    /// assert_eq!(
+    ///     vec![1.1111111111111096, 0.6666666666666666, 1.1111111111111096], 
+    ///     mode_absolute_deviation
+    /// );
     /// ```
     #[inline]
     pub fn absolute_deviation(
@@ -587,7 +667,7 @@ pub mod bulk {
         period: usize,
         central_point: CentralPoint,
     ) -> Vec<f64> {
-        if period <= 0 {
+        if period == 0 {
             panic!("Period ({}) must be greater than 0", period)
         };
         if period > prices.len() {

@@ -1,30 +1,44 @@
 //! # Standard Indicators
 //!
-//! Standard indicators are a collection of indicators that aren't configurable and use the
-//! standard, industry agreed defaults.
+//! The `standard_indicators` module provides implementations of widely-recognized technical indicators,
+//! following their established formulas and default parameters as commonly found in financial literature and platforms.
 //!
-//! These functions are wrappers for the configurable functions but with the configurations
-//! hardcoded to be the standard defaults
+//! ## When to Use
+//! Use these functions when you need classic, industry-standard indicators for:
+//! - Quick benchmarking
+//! - Reproducing signals used by major charting tools or trading strategies
+//! - Comparing with custom or alternative indicator settings
 //!
-//! ## Bulk
+//! ## Structure
+//! - **single**: Functions that return a single value for a slice of prices.
+//! - **bulk**: Functions that compute values of a slice of prices over a period and return a vector.
 //!
-//! * [`simple_moving_average`](bulk::simple_moving_average)
-//! * [`smoothed_moving_average`](bulk::smoothed_moving_average)
-//! * [`exponential_moving_average`](bulk::exponential_moving_average)
-//! * [`bollinger_bands`](bulk::bollinger_bands)
-//! * [`macd`](bulk::macd)
-//! * [`rsi`](bulk::rsi)
+//! ## Included Indicators
 //!
-//! ## Single
+//! ### Bulk
+//! - [`bollinger_bands`](bulk::bollinger_bands): Standard Bollinger Bands (SMA + 2×StdDev)
+//! - [`exponential_moving_average`](bulk::exponential_moving_average): EMA with default smoothing
+//! - [`macd`](bulk::macd): Standard MACD (12/26 EMA, 9 EMA signal)
+//! - [`rsi`](bulk::rsi): 14-period Relative Strength Index
+//! - [`simple_moving_average`](bulk::simple_moving_average): Basic SMA
+//! - [`smoothed_moving_average`](bulk::smoothed_moving_average): Smoothed MA
 //!
-//! * [`simple_moving_average`](single::simple_moving_average)
-//! * [`smoothed_moving_average`](single::smoothed_moving_average)
-//! * [`exponential_moving_average`](single::exponential_moving_average)
-//! * [`bollinger_bands`](single::bollinger_bands)
-//! * [`macd`](single::macd)
-//! * [`rsi`](single::rsi)
+//! ### Single
+//! - [`bollinger_bands`](single::bollinger_bands): Standard Bollinger Bands 
+//! - [`exponential_moving_average`](single::exponential_moving_average): EMA
+//! - [`macd`](single::macd): MACD
+//! - [`rsi`](single::rsi): RSI 
+//! - [`simple_moving_average`](single::simple_moving_average): SMA 
+//! - [`smoothed_moving_average`](single::smoothed_moving_average): Smoothed MA
+//!
+//! ## API Details
+//! - All indicators use default parameters as described in trading literature (e.g., RSI period=14, MACD=12/26/9).
+//! - Functions accept slices of `f64` prices (and sometimes highs/lows/closes, as needed).
+//! - Full details, panics, and usage examples are in function-level documentation.
+//!
+//! ---
 
-/// `single` module holds functions that return a singular value
+/// **single**: Functions that return a single value for a slice of prices.
 pub mod single {
     use crate::candle_indicators::single::moving_constant_bands;
     use crate::momentum_indicators::single::{macd_line, relative_strength_index, signal_line};
@@ -58,7 +72,7 @@ pub mod single {
             panic!("Prices cannot be empty")
         };
 
-        moving_average(&prices, MovingAverageType::Simple)
+        moving_average(prices, MovingAverageType::Simple)
     }
 
     /// Calculates the smoothed moving average
@@ -88,7 +102,7 @@ pub mod single {
             panic!("Prices cannot be empty")
         };
 
-        moving_average(&prices, MovingAverageType::Smoothed)
+        moving_average(prices, MovingAverageType::Smoothed)
     }
 
     /// Calculates the exponential moving average
@@ -118,7 +132,7 @@ pub mod single {
             panic!("Prices cannot be empty")
         };
 
-        moving_average(&prices, MovingAverageType::Exponential)
+        moving_average(prices, MovingAverageType::Exponential)
     }
 
     /// Calculates the Bollinger bands
@@ -237,7 +251,7 @@ pub mod single {
     }
 }
 
-/// `bulk` module holds functions that return multiple values
+/// **bulk**: Functions that compute values of a slice of prices over a period and return a vector.
 pub mod bulk {
     use crate::standard_indicators::single;
 

@@ -1,21 +1,37 @@
-//! # Moving Averages
+//! # Moving Average Indicators
 //!
-//! The `moving_average` module has functions used to calculate the moving average
+//! The `moving_average` module provides functions for calculating moving averages, a core component of many technical indicators and trading strategies.
+//! A moving average smooths out price data by creating a constantly updated average price, helping to filter out noise and reveal trends.
 //!
-//! The moving average has three different types available (simple, smoothed, exponential) that the
-//! caller can choose from.
+//! ## When to Use
+//! Use these functions when you want to:
+//! - Smooth raw price data
+//! - Identify trends and trend reversals
+//! - Serve as a basis for other indicators (e.g., MACD, Bollinger Bands)
+//! - Experiment with advanced or custom moving average models
 //!
-//! ## Bulk
+//! ## Structure
+//! - **single**: Functions that return a single value for a slice of prices.
+//! - **bulk**: Functions that compute values of a slice of prices over a period and return a vector.
 //!
-//! * [`mcginley_dynamic`](bulk::mcginley_dynamic) - Calculates the McGinley Dynamic
-//! * [`moving_average`](bulk::moving_average) - Calculates different types Moving Averages
+//! ## Included Functions
+//! ### Bulk 
+//! - [`mcginley_dynamic`](bulk::mcginley_dynamic): McGinley Dynamic Moving Average (adaptive smoothing)
+//! - [`moving_average`](bulk::moving_average): Configurable moving average (Simple, Smoothed, Exponential, or Personalized)
 //!
-//! ## Single
+//! ### Single
+//! - [`mcginley_dynamic`](single::mcginley_dynamic): McGinley Dynamic Moving Average
+//! - [`moving_average`](single::moving_average): Configurable moving average (Simple, Smoothed, Exponential, or Personalized)
 //!
-//! * [`mcginley_dynamic`](single::mcginley_dynamic) - Calculates the McGinley Dynamic
-//! * [`moving_average`](single::moving_average) - Calculates different types Moving Averages
+//! ## API Details
+//! - Functions accept slices of `f64` prices and a moving average type or relevant parameters.
+//! - Supported types include: Simple, Smoothed, Exponential, and Personalized (custom alpha).
+//! - The McGinley Dynamic is an adaptive moving average that adjusts automatically to market speed.
+//! - See function-level docs for formulas, panics, and usage examples.
+//!
+//! ---
 
-/// `single` module holds functions that return a singular values
+/// **single**: Functions that return a single value for a slice of prices.
 pub mod single {
     use crate::basic_indicators::single::mean;
     use crate::MovingAverageType;
@@ -140,7 +156,7 @@ pub mod single {
         previous_mcginley_dynamic: f64,
         period: usize,
     ) -> f64 {
-        if period <= 0 {
+        if period == 0 {
             panic!("Cannot have a 0 period");
         };
         if previous_mcginley_dynamic == 0.0 {
@@ -152,7 +168,7 @@ pub mod single {
     }
 }
 
-/// `bulk` module holds functions that return multiple valus for `moving_average`
+/// **bulk**: Functions that compute values of a slice of prices over a period and return a vector.
 pub mod bulk {
     use crate::moving_average::single;
     use crate::MovingAverageType;

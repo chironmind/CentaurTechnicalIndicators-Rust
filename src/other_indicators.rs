@@ -1,23 +1,40 @@
 //! # Other Indicators
 //!
-//! Indicators that don't really fit in anywhere else
+//! The `other_indicators` module provides technical analysis tools that do not fit neatly 
+//! into the main categories like momentum, trend, or volatility. These calculations often 
+//! serve as foundational measures or are used as components of broader strategies.
 //!
-//! ## Bulk
+//! ## When to Use
+//! Use these functions when you need to:
+//! - Calculate foundational metrics for risk, volatility, or bar strength
+//! - Analyze price movement range or return over a period
+//! - Incorporate less common but valuable technical measures into your models
 //!
-//! * [`return_on_investment`](bulk::return_on_investment)
-//! * [`true_range`](bulk::true_range)
-//! * [`average_true_range`](bulk::average_true_range)
-//! * [`internal_bar_strength`](bulk::internal_bar_strength)
-//! * [`positivity_index`](bulk::positivity_index)
+//! ## Structure
+//! - **single**: Functions that return a single value for a slice of prices.
+//! - **bulk**: Functions that compute values of a slice of prices over a period and return a vector.
 //!
-//! ## Single
+//! ## Included Indicators
 //!
-//! * [`return_on_investment`](single::return_on_investment)
-//! * [`true_range`](single::true_range)
-//! * [`average_true_range`](single::average_true_range)
-//! * [`internal_bar_strength`](single::internal_bar_strength)
+//! ### Bulk 
+//! - [`return_on_investment`](bulk::return_on_investment): Calculates ROI over each period
+//! - [`true_range`](bulk::true_range): Computes the True Range for each period
+//! - [`average_true_range`](bulk::average_true_range): Average True Range (ATR)
+//! - [`internal_bar_strength`](bulk::internal_bar_strength): Internal Bar Strength
+//!
+//! ### Single
+//! - [`return_on_investment`](single::return_on_investment): ROI 
+//! - [`true_range`](bulk::true_range): True Range 
+//! - [`average_true_range`](bulk::average_true_range): ATR 
+//! - [`internal_bar_strength`](single::internal_bar_strength): Internal Bar Strength 
+//!
+//! ## API Details
+//! - All functions operate on slices of `f64` prices (and sometimes highs/lows/closes).
+//! - Function-level docs explain arguments, panics, and provide usage examples.
+//!
+//! ---
 
-/// `single` module holds functions that return a singular values
+/// **single**: Functions that return a single value for a slice of prices.
 pub mod single {
     use crate::basic_indicators::single::{median, mode};
     use crate::moving_average::single::moving_average;
@@ -102,12 +119,12 @@ pub mod single {
         let h_c_tr = high - close;
         let c_l_tr = close - low;
         if h_l_tr >= h_c_tr && h_l_tr >= c_l_tr {
-            return h_l_tr;
+            h_l_tr
         } else if h_c_tr >= c_l_tr {
-            return h_c_tr;
+            h_c_tr
         } else {
-            return c_l_tr;
-        };
+            c_l_tr
+        }
     }
 
     /// Calculates the Average True Range (ATR)
@@ -231,7 +248,7 @@ pub mod single {
     }
 }
 
-/// `bulk` module holds functions that return a vector of values
+/// **bulk**: Functions that compute values of a slice of prices over a period and return a vector.
 pub mod bulk {
     use crate::basic_indicators::bulk::{median, mode};
     use crate::moving_average::bulk::moving_average;

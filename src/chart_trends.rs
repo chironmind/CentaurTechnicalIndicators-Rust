@@ -1,10 +1,32 @@
 //! # Chart Trends
 //!
-//! The `chart_trends` module provides functions to reveal and quantify trends
-//! in price data for financial charts.
+//! The `chart_trends` module provides utilities for detecting, analyzing, and breaking down trends in price charts.
+//! These functions help identify overall direction, peaks, valleys, and trend segments in a time series.
 //!
-//! These are designed for use with OHLC data, and offer peak/valley detection
-//! and linear regression-based trend lines.
+//! ## When to Use
+//! Use chart trend indicators when you want to:
+//! - Decompose a price series into upward/downward trends
+//! - Find peaks and valleys for support/resistance analysis
+//! - Quantify the overall or local trend direction of an asset
+//!
+//! ## Structure
+//! Unlike other modules, `chart_trends` does not have `single` or `bulk` submodules. 
+//! All functions operate over slices and return either trend breakdowns or locations of key points.
+//!
+//! ## Included Functions
+//! - [`break_down_trends`]: Segments the chart into distinct up/down trends
+//! - [`overall_trend`]: Returns the overall trend (slope) for all price points
+//! - [`peak_trend`]: Calculates the trend based on local peaks
+//! - [`peaks`]: Finds all local maxima (peaks) in the series
+//! - [`valley_trend`]: Calculates the trend based on local valleys
+//! - [`valleys`]: Finds all local minima (valleys) in the series
+//!
+//! ## API Details
+//! - All functions work on slices of `f64` prices (or equivalent).
+//! - Returns are typically vectors of trend segments or indices/values of peaks/valleys.
+//! - See each function's documentation for examples, panics, and usage tips.
+//! 
+//! ---
 
 use crate::basic_indicators::single::{max, mean, min};
 
@@ -18,7 +40,9 @@ use crate::basic_indicators::single::{max, mean, min};
 ///
 /// # Panics
 ///
-/// Panics if `period` == 0 or `period` > `prices.len()`
+/// Panics if:
+///     * `period` == 0 
+///     * `period` > `prices.len()`
 ///
 /// # Examples
 ///
@@ -51,7 +75,7 @@ use crate::basic_indicators::single::{max, mean, min};
 /// assert_eq!(vec![(107.0, 5)], peaks);
 /// ```
 pub fn peaks(prices: &[f64], period: usize, closest_neighbor: usize) -> Vec<(f64, usize)> {
-    if period <= 0 {
+    if period == 0 {
         panic!("Period ({}) must be greater than 0", period)
     };
     let length = prices.len();
@@ -106,7 +130,9 @@ pub fn peaks(prices: &[f64], period: usize, closest_neighbor: usize) -> Vec<(f64
 ///
 /// # Panics
 ///
-/// Panics if `period` == 0 or `period` > `prices.len()`
+/// Panics if:
+///     * `period` == 0 
+///     * `period` > `prices.len()`
 ///
 /// # Examples
 ///
@@ -138,7 +164,7 @@ pub fn peaks(prices: &[f64], period: usize, closest_neighbor: usize) -> Vec<(f64
 /// assert_eq!(vec![(95.0, 5)], valleys);
 /// ```
 pub fn valleys(prices: &[f64], period: usize, closest_neighbor: usize) -> Vec<(f64, usize)> {
-    if period <= 0 {
+    if period == 0 {
         panic!("Period ({}) must be greater than 0", period)
     };
     let length = prices.len();
@@ -210,7 +236,7 @@ pub fn valleys(prices: &[f64], period: usize, closest_neighbor: usize) -> Vec<(f
             last_valley = valley;
         }
     }
-    return valleys;
+    valleys
 }
 
 /// OLS simple linear regression function
@@ -227,7 +253,7 @@ fn get_trend_line(p: &[(f64, usize)]) -> (f64, f64) {
 
     let slope = num / den;
     let intercept = mean_y - (slope * mean_x);
-    return (slope, intercept);
+    (slope, intercept)
 }
 
 /// Returns the slope and intercept of the trend line fitted to peaks.
@@ -247,7 +273,7 @@ fn get_trend_line(p: &[(f64, usize)]) -> (f64, f64) {
 /// ```
 pub fn peak_trend(prices: &[f64], period: usize) -> (f64, f64) {
     let peaks = peaks(prices, period, 1);
-    return get_trend_line(&peaks);
+    get_trend_line(&peaks)
 }
 
 /// Calculates the slope and intercept of the trend line fitted to valleys.
@@ -267,7 +293,7 @@ pub fn peak_trend(prices: &[f64], period: usize) -> (f64, f64) {
 /// ```
 pub fn valley_trend(prices: &[f64], period: usize) -> (f64, f64) {
     let valleys = valleys(prices, period, 1);
-    return get_trend_line(&valleys);
+    get_trend_line(&valleys)
 }
 
 /// Calculates the slope and intercept of the trend line fitted to all prices.
@@ -286,7 +312,7 @@ pub fn valley_trend(prices: &[f64], period: usize) -> (f64, f64) {
 pub fn overall_trend(prices: &[f64]) -> (f64, f64) {
     let indexed_prices: Vec<(f64, usize)> =
         prices.iter().enumerate().map(|(i, &y)| (y, i)).collect();
-    return get_trend_line(&indexed_prices);
+    get_trend_line(&indexed_prices)
 }
 
 /// Calculates price trends and their slopes and intercepts.

@@ -1,6 +1,8 @@
 //! # RustTI
 //!
-//! **RustTI** is an advanced, highly configurable Technical Indicators library for Rust.
+//! **RustTI** is an comprehensive, highly configurable Technical Indicators library for Rust.
+//! It empowers you to design, compute, and experiment with a wide variety of 
+//! technical indicators for financial data analysis.
 //!
 //! ## Why RustTI?
 //! - **Configurable**: Nearly every parameter (from periods to models) is customizable.
@@ -12,6 +14,12 @@
 //! Prefer customizing your indicators to fit your market and strategy, just like the best quants do.
 //! RustTI gives you the flexibility to do just that.
 //!
+//! ## Library Structure
+//!
+//! - Indicators are grouped into modules by type (e.g., `momentum_indicators`, `trend_indicators`).
+//! - Each module is split into:
+//!   - **single**: Calculate the indicator for a single period or the whole slice.
+//!   - **bulk**: Compute the indicator value over a rolling window or for each element in a series.
 //!
 //! ## Quick Start
 //!
@@ -36,7 +44,9 @@
 //! - [`trend_indicators`] - Trend direction and strength
 //! - [`volatility_indicators`] - Volatility measures
 //!
-//! See each module for detailed documentation and usage examples.
+//! ## API Reference
+//!
+//! See each module for detailed function docs and examples.
 //!
 //! ## Types
 //! All shared enums and types are re-exported at the crate root for convenience.

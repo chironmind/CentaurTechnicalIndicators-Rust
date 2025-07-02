@@ -1,36 +1,46 @@
-//! # Candle indicators
+//! # Candle Indicators
 //!
-//! Candle indicators are indicators that are used with candle charts.
+//! Candle indicators are technical indicators designed for use with candlestick price charts.
+//! They help identify trends, volatility, and price action patterns commonly used in trading and analysis.
 //!
-//! ## Bulk
+//! ## When to Use
+//! 
+//! Use these indicators to analyze support/resistance, volatility bands, 
+//! and price channels on candle charts for both traditional and crypto assets.
 //!
-//! * [`ichimoku_cloud`](bulk::ichimoku_cloud) - Calculates the Ichimoku Cloud
-//! * [`mcginley_dynamic_bands`](bulk::mcginley_dynamic_bands) - The McGinley Dynamic
-//! version of the [`moving_constant_bands`](bulk::moving_constant_bands)
-//! * [`mcginley_dynamic_envelopes`](bulk::mcginley_dynamic_envelopes) - The McGinley Dynamic version of the
-//! [`moving_constant_envelopes`](bulk::moving_constant_envelopes)
-//! * [`moving_constant_bands`](bulk::moving_constant_bands) - Calculates the moving constant bands
-//! * [`moving_constant_envelopes`](bulk::moving_constant_envelopes) - Calculates the moving
-//! constant envelopes
-//! * [`donchian_channels`](bulk::donchian_channels)
-//! * [`keltner_channel`](bulk::keltner_channel)
-//! * [`supertrend`](bulk::supertrend)
+//! ## Structure
+//! 
+//! - **single**: Functions that return a single value for a slice of prices.
+//! - **bulk**: Functions that compute values of a slice of prices over a period and return a vector.
 //!
-//! ## Single
+//! ## Included Indicators
 //!
-//! * [`ichimoku_cloud`](single::ichimoku_cloud) - Calculates the Ichimoku Cloud
-//! * [`mcginley_dynamic_bands`](single::mcginley_dynamic_bands) - The McGinley Dynamic
-//! version of the [`moving_constant_bands`](single::moving_constant_bands)
-//! * [`mcginley_dynamic_envelopes`](single::mcginley_dynamic_envelopes) - The McGinley Dynamic version of the
-//! [`moving_constant_envelopes`](single::moving_constant_envelopes)
-//! * [`moving_constant_bands`](single::moving_constant_bands) - Calculates the moving constant bands
-//! * [`moving_constant_envelopes`](single::moving_constant_envelopes) - Calculates the moving
-//! constant envelopes
-//! * [`donchian_channels`](single::donchian_channels)
-//! * [`keltner_channel`](single::keltner_channel)
-//! * [`supertrend]`(single::supertrend)
+//! ### Bulk 
+//! - [`ichimoku_cloud`](bulk::ichimoku_cloud): Ichimoku Cloud values
+//! - [`mcginley_dynamic_bands`](bulk::mcginley_dynamic_bands): McGinley Dynamic Bands
+//! - [`mcginley_dynamic_envelopes`](bulk::mcginley_dynamic_envelopes): McGinley Dynamic Envelopes
+//! - [`moving_constant_bands`](bulk::moving_constant_bands): Generalized bands (e.g., Bollinger Bands)
+//! - [`moving_constant_envelopes`](bulk::moving_constant_envelopes): Generalized moving envelopes
+//! - [`donchian_channels`](bulk::donchian_channels): Donchian Channels
+//! - [`keltner_channel`](bulk::keltner_channel): Keltner Channels
+//! - [`supertrend`](bulk::supertrend): Supertrend indicator
+//!
+//! ### Single 
+//! - [`ichimoku_cloud`](single::ichimoku_cloud): Ichimoku Cloud 
+//! - [`mcginley_dynamic_bands`](single::mcginley_dynamic_bands): McGinley Dynamic Bands
+//! - [`mcginley_dynamic_envelopes`](single::mcginley_dynamic_envelopes): McGinley Dynamic Envelopes
+//! - [`moving_constant_bands`](single::moving_constant_bands): Customizable bands (Bollinger, etc.)
+//! - [`moving_constant_envelopes`](single::moving_constant_envelopes): Customizable envelopes
+//! - [`donchian_channels`](single::donchian_channels): Donchian Channels
+//! - [`keltner_channel`](single::keltner_channel): Keltner Channel
+//! - [`supertrend`](single::supertrend): Supertrend indicator
+//!
+//! ## API Details
+//! - All indicators are highly configurable: choose your model (SMA, EMA, median, etc.), deviation method, and period.
+//!
+//! ---
 
-/// `single` module holds functions that return a singular values
+/// **single**: Functions that return a single value for a slice of prices
 pub mod single {
     use crate::basic_indicators::single::{
         absolute_deviation, max, median, min, mode, standard_deviation,
@@ -45,12 +55,12 @@ pub mod single {
     /// # Arguments
     ///
     /// * `prices` - Slice of prices
-    /// * `constant_model_type` - Variant of [`ConstantModelType`].
+    /// * `constant_model_type` - Variant of [`ConstantModelType`]
     /// * `difference` - Percent band width (e.g., 3.0 for +-3%)
     ///
     /// # Panics
     ///
-    /// Panics if `prices` is empty
+    /// Panics if `prices.is_empty()`
     ///
     /// # Examples
     ///
@@ -86,32 +96,32 @@ pub mod single {
 
         let moving_constant = match constant_model_type {
             ConstantModelType::SimpleMovingAverage => {
-                moving_average(&prices, MovingAverageType::Simple)
+                moving_average(prices, MovingAverageType::Simple)
             }
             ConstantModelType::SmoothedMovingAverage => {
-                moving_average(&prices, MovingAverageType::Smoothed)
+                moving_average(prices, MovingAverageType::Smoothed)
             }
             ConstantModelType::ExponentialMovingAverage => {
-                moving_average(&prices, MovingAverageType::Exponential)
+                moving_average(prices, MovingAverageType::Exponential)
             }
             ConstantModelType::PersonalisedMovingAverage {
                 alpha_num,
                 alpha_den,
             } => moving_average(
-                &prices,
+                prices,
                 MovingAverageType::Personalised {
                     alpha_num,
                     alpha_den,
                 },
             ),
-            ConstantModelType::SimpleMovingMedian => median(&prices),
-            ConstantModelType::SimpleMovingMode => mode(&prices),
+            ConstantModelType::SimpleMovingMedian => median(prices),
+            ConstantModelType::SimpleMovingMode => mode(prices),
             _ => panic!("Unsupported ConstantModelType"),
         };
 
         let upper_envelope = moving_constant * (1.0 + (difference / 100.0));
         let lower_envelope = moving_constant * (1.0 - (difference / 100.0));
-        return (lower_envelope, moving_constant, upper_envelope);
+        (lower_envelope, moving_constant, upper_envelope)
     }
 
     /// Calculates upper and lower bands around the McGinley dynamic.
@@ -124,7 +134,7 @@ pub mod single {
     ///
     /// # Panics
     ///
-    /// Panics if `prices` is empty.
+    /// Panics if `prices.is_empty()`
     ///
     /// # Examples
     ///
@@ -164,7 +174,7 @@ pub mod single {
             mcginley_dynamic(*last_price, previous_mcginley_dynamic, prices.len());
         let upper_envelope = mcginley_dynamic * (1.0 + (difference / 100.0));
         let lower_envelope = mcginley_dynamic * (1.0 - (difference / 100.0));
-        return (lower_envelope, mcginley_dynamic, upper_envelope);
+        (lower_envelope, mcginley_dynamic, upper_envelope)
     }
 
     /// Inspired from the Bollinger Bands, generalized to use
@@ -180,7 +190,7 @@ pub mod single {
     ///
     /// # Panics
     ///
-    /// Panics if `prices` is empty
+    /// Panics if `prices.is_empty()`
     ///
     /// # Examples
     ///
@@ -193,15 +203,17 @@ pub mod single {
     ///         &prices,
     ///         rust_ti::ConstantModelType::SimpleMovingAverage,
     ///         rust_ti::DeviationModel::StandardDeviation,
-    ///         multiplier);
+    ///         multiplier
+    ///     );
     /// assert_eq!((98.17157287525382, 101.0, 103.82842712474618), bollinger_bands);
     ///
     /// let ema_mad_bands =
     ///     rust_ti::candle_indicators::single::moving_constant_bands(
-    ///     &prices,
-    ///     rust_ti::ConstantModelType::ExponentialMovingAverage,
-    ///     rust_ti::DeviationModel::MeanAbsoluteDeviation,
-    ///     multiplier);
+    ///         &prices,
+    ///         rust_ti::ConstantModelType::ExponentialMovingAverage,
+    ///         rust_ti::DeviationModel::MeanAbsoluteDeviation,
+    ///         multiplier
+    ///     );
     /// assert_eq!((98.21137440758295, 100.61137440758296, 103.01137440758296), ema_mad_bands);
     /// ```
     #[inline]
@@ -217,46 +229,46 @@ pub mod single {
 
         let moving_constant = match constant_model_type {
             ConstantModelType::SimpleMovingAverage => {
-                moving_average(&prices, MovingAverageType::Simple)
+                moving_average(prices, MovingAverageType::Simple)
             }
             ConstantModelType::SmoothedMovingAverage => {
-                moving_average(&prices, MovingAverageType::Smoothed)
+                moving_average(prices, MovingAverageType::Smoothed)
             }
             ConstantModelType::ExponentialMovingAverage => {
-                moving_average(&prices, MovingAverageType::Exponential)
+                moving_average(prices, MovingAverageType::Exponential)
             }
             ConstantModelType::PersonalisedMovingAverage {
                 alpha_num,
                 alpha_den,
             } => moving_average(
-                &prices,
+                prices,
                 MovingAverageType::Personalised {
                     alpha_num,
                     alpha_den,
                 },
             ),
-            ConstantModelType::SimpleMovingMedian => median(&prices),
-            ConstantModelType::SimpleMovingMode => mode(&prices),
+            ConstantModelType::SimpleMovingMedian => median(prices),
+            ConstantModelType::SimpleMovingMode => mode(prices),
             _ => panic!("Unsupported ConstantModelType"),
         };
 
         let deviation = match deviation_model {
-            DeviationModel::StandardDeviation => standard_deviation(&prices),
+            DeviationModel::StandardDeviation => standard_deviation(prices),
             DeviationModel::MeanAbsoluteDeviation => {
-                absolute_deviation(&prices, CentralPoint::Mean)
+                absolute_deviation(prices, CentralPoint::Mean)
             }
             DeviationModel::MedianAbsoluteDeviation => {
-                absolute_deviation(&prices, CentralPoint::Median)
+                absolute_deviation(prices, CentralPoint::Median)
             }
             DeviationModel::ModeAbsoluteDeviation => {
-                absolute_deviation(&prices, CentralPoint::Mode)
+                absolute_deviation(prices, CentralPoint::Mode)
             }
-            DeviationModel::UlcerIndex => ulcer_index(&prices),
+            DeviationModel::UlcerIndex => ulcer_index(prices),
             _ => panic!("Unsupported DeviationModel"),
         };
         let upper_band = moving_constant + (deviation * deviation_multiplier);
         let lower_band = moving_constant - (deviation * deviation_multiplier);
-        return (lower_band, moving_constant, upper_band);
+        (lower_band, moving_constant, upper_band)
     }
 
     /// Calculates bands around the McGinley Dynamic.
@@ -270,7 +282,7 @@ pub mod single {
     ///
     /// # Panics
     ///
-    /// Panics if `prices` is empty
+    /// Panics if `prices.is_empty()`
     ///
     /// # Examples
     ///
@@ -313,22 +325,22 @@ pub mod single {
             mcginley_dynamic(*last_price, previous_mcginley_dynamic, prices.len());
 
         let deviation = match deviation_model {
-            DeviationModel::StandardDeviation => standard_deviation(&prices),
+            DeviationModel::StandardDeviation => standard_deviation(prices),
             DeviationModel::MeanAbsoluteDeviation => {
-                absolute_deviation(&prices, CentralPoint::Mean)
+                absolute_deviation(prices, CentralPoint::Mean)
             }
             DeviationModel::MedianAbsoluteDeviation => {
-                absolute_deviation(&prices, CentralPoint::Median)
+                absolute_deviation(prices, CentralPoint::Median)
             }
             DeviationModel::ModeAbsoluteDeviation => {
-                absolute_deviation(&prices, CentralPoint::Mode)
+                absolute_deviation(prices, CentralPoint::Mode)
             }
-            DeviationModel::UlcerIndex => ulcer_index(&prices),
+            DeviationModel::UlcerIndex => ulcer_index(prices),
             _ => panic!("Unsupported DeviationModel"),
         };
         let upper_band = mcginley_dynamic + (deviation * deviation_multiplier);
         let lower_band = mcginley_dynamic - (deviation * deviation_multiplier);
-        return (lower_band, mcginley_dynamic, upper_band);
+        (lower_band, mcginley_dynamic, upper_band)
     }
 
     /// Calculates the Ichimoku Cloud
@@ -344,10 +356,10 @@ pub mod single {
     ///
     /// # Panics
     ///
-    /// `ichimoku_cloud` will panic if:
-    /// * the length of `highs`, `lows`, and `close` don't match
-    /// * `conversion_period`, `base_period`, or `span_b_period` are greater than the
-    /// length of `highs`, `lows`, and `close`
+    /// Panics if:
+    ///     * `highs.len()` != `lows.len()` != `close.len()`h
+    ///     * `conversion_period`, `base_period`, `span_b_period` >
+    ///         `highs.len()`, `lows.len()`, `close.len()`
     ///
     /// # Examples
     ///
@@ -413,16 +425,16 @@ pub mod single {
             / 2.0;
         let base_line =
             (max(&highs[length - base_period..]) + min(&lows[length - base_period..])) / 2.0;
-        let leading_span_a = (&conversion_line + &base_line) / 2.0;
+        let leading_span_a = (conversion_line + base_line) / 2.0;
         let leading_span_b =
             (max(&highs[length - span_b_period..]) + min(&lows[length - span_b_period..])) / 2.0;
-        return (
+        (
             leading_span_a,
             leading_span_b,
             base_line,
             conversion_line,
             close[length - base_period],
-        );
+        )
     }
 
     /// Calculates the Donchian Channels for given highs and lows.
@@ -434,7 +446,9 @@ pub mod single {
     ///
     /// # Panics
     ///
-    /// Panics if high and low are of different length or are empty
+    /// Panics if:
+    ///     * `high.len()` != `low.len()`
+    ///     * `high.is_empty()`
     ///
     /// # Examples
     ///
@@ -463,7 +477,7 @@ pub mod single {
         };
         let max_price = max(high);
         let min_price = min(low);
-        return (min_price, (max_price + min_price) / 2.0, max_price);
+        (min_price, (max_price + min_price) / 2.0, max_price)
     }
 
     /// Calculates the Keltner Channel.
@@ -472,17 +486,16 @@ pub mod single {
     ///
     /// * `high` - Slice of highs
     /// * `low` - Slice of lows
-    /// * `close` - Slice of previous closing prices. Needs to be the closing prices for t-n to
-    /// t-1. Cannot be the close from the same day of the high and low.
+    /// * `close` - Slice of previous closing prices
     /// * `constant_type_model` - Variant of [`ConstantModelType`] for the function
     /// * `atr_constant_type_model` - Variant of [`ConstantModelType`] for the ATR
     /// * `multiplier` - Multiplier for the ATR
     ///
     /// # Panics
     ///
-    /// `keltner_channel` will panic if:
-    ///     * Lengths of `high`, `low`, and `close` aren't equal
-    ///     * `high`, `low`, or `close` are empty
+    /// Panics if:
+    ///     * `high.len()` != `low.len()` != `close.len()`
+    ///     * `high.is_empty()`
     ///
     /// # Examples
     ///
@@ -523,7 +536,7 @@ pub mod single {
             panic!("Prices cannot be empty")
         };
 
-        let atr = average_true_range(&close, &high, &low, atr_constant_model_type);
+        let atr = average_true_range(close, high, low, atr_constant_model_type);
         let prices: Vec<f64> = (0..length)
             .map(|i| (high[i] + low[i] + close[i]) / 3.0)
             .collect();
@@ -553,7 +566,7 @@ pub mod single {
             _ => panic!("Unsupported ConstantModelType"),
         };
         let constant = atr * multiplier;
-        return (mc - constant, mc, mc + constant);
+        (mc - constant, mc, mc + constant)
     }
 
     /// Calculates the supertrend indicator
@@ -562,14 +575,15 @@ pub mod single {
     ///
     /// * `high` - Slice of highs
     /// * `low` - Slice of lows
-    /// * `close` - Slice of previous closing prices. Needs to be the closing prices for t-n to
-    /// t-1. Cannot be the close from the same day of the high and low.
+    /// * `close` - Slice of previous closing prices
     /// * `constant_type_model` - Variant of [`ConstantModelType`] for the ATR
     /// * `multiplier` - Multiplier for the ATR
     ///
     /// # Panics
     ///
-    /// Panics if `high`, `low`, `close` aren't of same length or are empty.
+    /// Panics if:
+    ///     * `high.len()` != `low.len()` != `close.len()`
+    ///     * `high.is_empty()`
     ///
     /// # Examples
     ///
@@ -608,14 +622,14 @@ pub mod single {
             panic!("Prices cannot be empty")
         };
 
-        let atr = average_true_range(&close, &high, &low, constant_model_type);
+        let atr = average_true_range(close, high, low, constant_model_type);
         let max_high = max(high);
         let min_low = min(low);
-        return ((max_high + min_low) / 2.0) + (multiplier * atr);
+        ((max_high + min_low) / 2.0) + (multiplier * atr)
     }
 }
 
-/// `bulk` holds functions that return multiple values
+/// **bulk** : Functions that compute values of a slice of prices over a period and return a vector
 pub mod bulk {
     use crate::candle_indicators::single;
     use crate::{ConstantModelType, DeviationModel};
@@ -628,11 +642,12 @@ pub mod bulk {
     /// * `constant_model_type` - Variant of [`ConstantModelType`]
     /// * `difference` -  Percent band width (e.g., 3.0 for +-3%)
     /// * `period` - Period over which to calculate the moving constant envelopes
-    ///  (must be > 0 and <= prices.len())
     ///
     /// # Panics
     ///
-    /// Panics if `period` == 0 or `period` > `prices.len()`
+    /// Panics if:
+    ///     * `period` == 0 
+    ///     * `period` > `prices.len()`
     ///
     /// # Examples
     ///
@@ -675,7 +690,7 @@ pub mod bulk {
         difference: f64,
         period: usize,
     ) -> Vec<(f64, f64, f64)> {
-        if period <= 0 {
+        if period == 0 {
             panic!("period ({}) must be greater than 0", period)
         };
         let length = prices.len();
@@ -707,7 +722,9 @@ pub mod bulk {
     ///
     /// # Panics
     ///
-    /// Panics if `period` == 0 or `period` > `prices.len()`
+    /// Panics if:
+    ///     * `period` == 0 
+    ///     * `period` > `prices.len()`
     ///
     /// # Examples
     ///
@@ -736,7 +753,7 @@ pub mod bulk {
         previous_mcginley_dynamic: f64,
         period: usize,
     ) -> Vec<(f64, f64, f64)> {
-        if period <= 0 {
+        if period == 0 {
             panic!("period ({}) must be greater than 0", period)
         };
         let length = prices.len();
@@ -769,7 +786,9 @@ pub mod bulk {
     ///
     /// # Panics
     ///
-    /// Panics if `period` == 0 or `period` > `prices.len()`
+    /// Panics if:
+    ///     * `period` == 0 
+    ///     * `period` > `prices.len()`
     ///
     /// # Examples
     ///
@@ -816,7 +835,7 @@ pub mod bulk {
         deviation_multiplier: f64,
         period: usize,
     ) -> Vec<(f64, f64, f64)> {
-        if period <= 0 {
+        if period == 0 {
             panic!("period ({}) must be greater than 0", period)
         };
         let length = prices.len();
@@ -851,7 +870,9 @@ pub mod bulk {
     /// # Panics
     ///
     ///
-    /// Panics if `period` <= 0 or `period` > `prices.len()`
+    /// Panics if:
+    ///     * `period` <= 0 
+    ///     * `period` > `prices.len()`
     ///
     /// # Examples
     ///
@@ -883,7 +904,7 @@ pub mod bulk {
         previous_mcginley_dynamic: f64,
         period: usize,
     ) -> Vec<(f64, f64, f64)> {
-        if period <= 0 {
+        if period == 0 {
             panic!("period ({}) must be greater than 0", period)
         };
         let length = prices.len();
@@ -916,10 +937,10 @@ pub mod bulk {
     /// * `span_b_period` - Period used to calculate the Span B line
     ///
     /// # Panics
-    /// Panics if
-    ///     * length of `highs`, `lows`, and `close` don't match
-    ///     * `conversion_period`, `base_period`, `span_b_period` greater
-    ///       length of `highs`, `lows`, and `close`
+    ///
+    /// Panics if:
+    ///     * `highs.len()` != `lows.len()` != `close.len()`
+    ///     * `conversion_period`, `base_period`, `span_b_period` > `highs.len()`
     ///
     /// # Examples
     ///
@@ -1012,7 +1033,8 @@ pub mod bulk {
     /// # Panics
     ///
     /// Panics if:
-    ///     * `period` == 0 or `period` > `high.len()` or `low.len()`
+    ///     * `period` == 0 
+    ///     * `period` > `high.len()`
     ///     * `high.len()` != `low.len()`
     ///     * `high.is_empty()` or `low.is_empty()`
     ///
@@ -1048,7 +1070,7 @@ pub mod bulk {
                 low.len()
             )
         };
-        if period <= 0 {
+        if period == 0 {
             panic!("period ({}) must be greater than 0", period)
         };
         if period > length {
@@ -1068,8 +1090,7 @@ pub mod bulk {
     ///
     /// * `high` - Slice of highs
     /// * `low` - Slice of lows
-    /// * `close` - Slice of previous closing prices. Needs to be the closing prices for t-n to
-    /// t-1. Cannot be the close from the same day of the high and low.
+    /// * `close` - Slice of previous closing prices
     /// * `constant_type_model` - Variant of [`ConstantModelType`] for the function
     /// * `atr_constant_type_model` - Variant of [`ConstantModelType`] for the ATR
     /// * `multiplier` - Multiplier for the ATR
@@ -1080,7 +1101,8 @@ pub mod bulk {
     /// Panics if:
     ///     * `high.len()` != `low.len()` != `close.len()`
     ///     * `high.is_empty()`, `low.is_empty()`, or `close.is_empty()`
-    ///     * `period` == 0 or `period` > `slices.len()`
+    ///     * `period` == 0 
+    ///     * `period` > `high.len()`
     ///
     /// # Examples
     ///
@@ -1129,7 +1151,7 @@ pub mod bulk {
         if high.is_empty() {
             panic!("Prices cannot be empty")
         };
-        if period <= 0 {
+        if period == 0 {
             panic!("Period ({}) must be greater than 0", period)
         }
         if period > length {
@@ -1158,8 +1180,7 @@ pub mod bulk {
     ///
     /// * `high` - Slice of highs
     /// * `low` - Slice of lows
-    /// * `close` - Slice of previous closing prices. Needs to be the closing prices for t-n to
-    /// t-1. Cannot be the close from the same day of the high and low.
+    /// * `close` - Slice of previous closing prices
     /// * `constant_type_model` - Variant of [`ConstantModelType`] for the ATR
     /// * `multiplier` - Multiplier for the ATR
     /// * `period` - Period over which to calculate the supertrend
@@ -1169,7 +1190,8 @@ pub mod bulk {
     /// Panics if:
     ///     * `high.len()` != `low.len()` != `close.len()`
     ///     * `high.is_empty()`, `low.is_empty()`, or `close.is_empty()`
-    ///     * `period` == 0 or `period` > `slices.len()`
+    ///     * `period` == 0 
+    ///     * `period` > `slices.len()`
     ///
     /// # Examples
     ///
@@ -1210,7 +1232,7 @@ pub mod bulk {
         if high.is_empty() {
             panic!("Prices cannot be empty")
         };
-        if period <= 0 {
+        if period == 0 {
             panic!("Period ({}) must be greater than 0", period)
         };
         if period > length {

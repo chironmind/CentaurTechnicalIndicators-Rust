@@ -1,66 +1,65 @@
 //! # Momentum Indicators
 //!
-//! Momentum indicators show how much the price is rising or falling
+//! The `momentum_indicators` module provides functions to measure the speed, strength, 
+//! and direction of price movements in time series data.
+//! These indicators are commonly used to identify overbought/oversold conditions, trend continuation, or potential reversals.
 //!
-//! ## Bulk
+//! ## When to Use
+//! Use momentum indicators to:
+//! - Gauge the strength and velocity of price trends
+//! - Identify bullish or bearish momentum
+//! - Spot early signals for possible price reversals or continuations
 //!
-//! * [`chaikin_oscillator`](bulk::chaikin_oscillator) - Calculates the Chaikin Oscillator
-//! * [`commodity_channel_index`](bulk::commodity_channel_index) - Calculate the Commodity Channel
-//! Index
-//! * [`macd_line`](bulk::macd_line) - Calculates the Moving Average Convergence Divergence line
-//! * [`mcginley_dynamic_chaikin_oscillator`](bulk::mcginley_dynamic_chaikin_oscillator) - Calculate
-//! the McGinley dynanic version of the Chaikin Oscillator
-//! * [`mcginley_dynamic_commodity_channel_index`](bulk::mcginley_dynamic_commodity_channel_index) -
-//!  Calculates the McGinley dynamic version of the Commodity Channel Index
-//! * [`mcginley_dynamic_macd_line`](bulk::mcginley_dynamic_macd_line) - Calculates the McGinley
-//! dynamic version of the Moving Average Convergence Divergence line
-//! * [`mcginley_dynamic_rsi`](bulk::mcginley_dynamic_rsi) - Calculates the McGinley dynamic
-//! version of the Relative Strength Index
-//! * [`money_flow_index`](bulk::money_flow_index) - Calculates the Money Flow Index
-//! * [`on_balance_volume`](bulk::on_balance_volume) - Calculates the On-balance Volume
-//! * [`rate_of_change`](bulk::rate_of_change) - Calculates the Rate of Change
-//! * [`relative_strength_index`](bulk::relative_strength_index) - Calculates the Relative Strength
-//! Index
-//! * [`signal_line`](bulk::signal_line) - Calculates the Signal line to be used with the MACD line
-//! * [`slow_stochastic`](bulk::slow_stochastic) - Calculates the slow stochastic to be used with
-//! the stochastic oscillator
-//! * [`slowest_stochastic`](bulk::slowest_stochastic) - Calculates the slowest stochastic to be
-//! used with the stochastic oscillator
-//! * [`stochastic_oscillator`](bulk::stochastic_oscillator) - Calculates the Stochastic Oscillator
-//! * [`williams_percent_r`](bulk::williams_percent_r) - Calcualtes the Williams %R
-//! * [`percentage_price_oscillator`](bulk::percentage_price_oscillator)
-//! * [`chande_momentum_oscillator`](bulk::chande_momentum_oscillator)
+//! ## Structure
+//! - **single**: Functions that return a single value for a slice of prices.
+//! - **bulk**: Functions that compute values of a slice of prices over a period and return a vector.
 //!
-//! ## Single
+//! ## Included Indicators
 //!
-//! * [`chaikin_oscillator`](single::chaikin_oscillator) - Calculates the Chaikin Oscillator
-//! * [`commodity_channel_index`](single::commodity_channel_index) - Calculate the Commodity Channel
-//! Index
-//! * [`macd_line`](single::macd_line) - Calculates the Moving Average Convergence Divergence line
-//! * [`mcginley_dynamic_chaikin_oscillator`](single::mcginley_dynamic_chaikin_oscillator) - Calculate
-//! the McGinley dynanic version of the Chaikin Oscillator
-//! * [`mcginley_dynamic_commodity_channel_index`](single::mcginley_dynamic_commodity_channel_index) -
-//!  Calculates the McGinley dynamic version of the Commodity Channel Index
-//! * [`mcginley_dynamic_macd_line`](single::mcginley_dynamic_macd_line) - Calculates the McGinley
-//! dynamic version of the Moving Average Convergence Divergence line
-//! * [`mcginley_dynamic_rsi`](single::mcginley_dynamic_rsi) - Calculates the McGinley dynamic
-//! version of the Relative Strength Index
-//! * [`money_flow_index`](single::money_flow_index) - Calculates the Money Flow Index
-//! * [`on_balance_volume`](single::on_balance_volume) - Calculates the On-balance Volume
-//! * [`rate_of_change`](single::rate_of_change) - Calculates the Rate of Change
-//! * [`relative_strength_index`](single::relative_strength_index) - Calculates the Relative Strength
-//! Index
-//! * [`signal_line`](single::signal_line) - Calculates the Signal line to be used with the MACD line
-//! * [`slow_stochastic`](single::slow_stochastic) - Calculates the slow stochastic to be used with
-//! the stochastic oscillator
-//! * [`slowest_stochastic`](single::slowest_stochastic) - Calculates the slowest stochastic to be
-//! used with the stochastic oscillator
-//! * [`stochastic_oscillator`](single::stochastic_oscillator) - Calculates the Stochastic Oscillator
-//! * [`williams_percent_r`](single::williams_percent_r) - Calcualtes the Williams %R
-//! * [`percentage_price_oscillator`](single::percentage_price_oscillator)
-//! * [`chande_momentum_oscillator`](single::chande_momentum_oscillator)
+//! ### Bulk 
+//! - [`chaikin_oscillator`](bulk::chaikin_oscillator): Chaikin Oscillator
+//! - [`commodity_channel_index`](bulk::commodity_channel_index): Commodity Channel Index (CCI)
+//! - [`macd_line`](bulk::macd_line): Moving Average Convergence Divergence (MACD) line
+//! - [`mcginley_dynamic_commodity_channel_index`](bulk::mcginley_dynamic_commodity_channel_index): McGinley variant of CCI
+//! - [`mcginley_dynamic_macd_line`](bulk::mcginley_dynamic_macd_line): McGinley variant of MACD
+//! - [`money_flow_index`](bulk::money_flow_index): Money Flow Index (MFI)
+//! - [`on_balance_volume`](bulk::on_balance_volume): On-Balance Volume (OBV)
+//! - [`rate_of_change`](bulk::rate_of_change): Rate of Change (ROC)
+//! - [`relative_strength_index`](bulk::relative_strength_index): Relative Strength Index (RSI)
+//! - [`signal_line`](bulk::signal_line): Signal line for MACD
+//! - [`slow_stochastic`](bulk::slow_stochastic): Slow Stochastic Oscillator
+//! - [`slowest_stochastic`](bulk::slowest_stochastic): Slowest Stochastic Oscillator
+//! - [`stochastic_oscillator`](bulk::stochastic_oscillator): Stochastic Oscillator
+//! - [`williams_percent_r`](bulk::williams_percent_r): Williams %R
+//! - [`percentage_price_oscillator`](bulk::percentage_price_oscillator): Percentage Price Oscillator (PPO)
+//! - [`chande_momentum_oscillator`](bulk::chande_momentum_oscillator): Chande Momentum Oscillator (CMO)
+//!
+//! ### Single 
+//! - [`chaikin_oscillator`](single::chaikin_oscillator): Chaikin Oscillator
+//! - [`commodity_channel_index`](single::commodity_channel_index): Commodity Channel Index (CCI)
+//! - [`macd_line`](single::macd_line): MACD line
+//! - [`mcginley_dynamic_commodity_channel_index`](single::mcginley_dynamic_commodity_channel_index): McGinley variant of CCI
+//! - [`mcginley_dynamic_macd_line`](single::mcginley_dynamic_macd_line): McGinley variant of MACD
+//! - [`money_flow_index`](single::money_flow_index): Money Flow Index (MFI)
+//! - [`on_balance_volume`](single::on_balance_volume): On-Balance Volume (OBV)
+//! - [`rate_of_change`](single::rate_of_change): Rate of Change (ROC)
+//! - [`relative_strength_index`](single::relative_strength_index): Relative Strength Index (RSI)
+//! - [`signal_line`](single::signal_line): Signal line for MACD
+//! - [`slow_stochastic`](single::slow_stochastic): Slow Stochastic Oscillator
+//! - [`slowest_stochastic`](single::slowest_stochastic): Slowest Stochastic Oscillator
+//! - [`stochastic_oscillator`](single::stochastic_oscillator): Stochastic Oscillator
+//! - [`williams_percent_r`](single::williams_percent_r): Williams %R
+//! - [`percentage_price_oscillator`](single::percentage_price_oscillator): Percentage Price Oscillator (PPO)
+//! - [`chande_momentum_oscillator`](single::chande_momentum_oscillator): Chande Momentum Oscillator (CMO)
+//!
+//! ## API Details
+//! - All indicators accept slices of `f64` prices and relevant parameters (periods, multipliers, etc.).
+//! - Returns are vectors (for `bulk`) or scalars (for `single`).
+//! - All edge cases and panics are explained at the function level.
+//!
+//! ---
 
-/// `single` module holds functions that return a singular values
+/// **single**: Functions that return a single value for a slice of prices.
 pub mod single {
     use crate::basic_indicators::single::{
         absolute_deviation, max, median, min, mode, standard_deviation,
@@ -194,7 +193,7 @@ pub mod single {
         ordered_prices.sort_by(cmp_f64);
         let min = ordered_prices[0];
         let max = ordered_prices.last().unwrap();
-        return 100.0 * ((prices.last().unwrap() - min) / (max - min));
+        100.0 * ((prices.last().unwrap() - min) / (max - min))
     }
 
     /// Calculates the slow stochastic
@@ -242,26 +241,26 @@ pub mod single {
 
         match constant_model_type {
             ConstantModelType::SimpleMovingAverage => {
-                moving_average(&stochastics, MovingAverageType::Simple)
+                moving_average(stochastics, MovingAverageType::Simple)
             }
             ConstantModelType::SmoothedMovingAverage => {
-                moving_average(&stochastics, MovingAverageType::Smoothed)
+                moving_average(stochastics, MovingAverageType::Smoothed)
             }
             ConstantModelType::ExponentialMovingAverage => {
-                moving_average(&stochastics, MovingAverageType::Exponential)
+                moving_average(stochastics, MovingAverageType::Exponential)
             }
             ConstantModelType::PersonalisedMovingAverage {
                 alpha_num,
                 alpha_den,
             } => moving_average(
-                &stochastics,
+                stochastics,
                 MovingAverageType::Personalised {
                     alpha_num,
                     alpha_den,
                 },
             ),
-            ConstantModelType::SimpleMovingMedian => median(&stochastics),
-            ConstantModelType::SimpleMovingMode => mode(&stochastics),
+            ConstantModelType::SimpleMovingMedian => median(stochastics),
+            ConstantModelType::SimpleMovingMode => mode(stochastics),
             _ => panic!("Unsupported ConstantModelType"),
         }
     }
@@ -314,26 +313,26 @@ pub mod single {
 
         match constant_model_type {
             ConstantModelType::SimpleMovingAverage => {
-                moving_average(&slow_stochastics, MovingAverageType::Simple)
+                moving_average(slow_stochastics, MovingAverageType::Simple)
             }
             ConstantModelType::SmoothedMovingAverage => {
-                moving_average(&slow_stochastics, MovingAverageType::Smoothed)
+                moving_average(slow_stochastics, MovingAverageType::Smoothed)
             }
             ConstantModelType::ExponentialMovingAverage => {
-                moving_average(&slow_stochastics, MovingAverageType::Exponential)
+                moving_average(slow_stochastics, MovingAverageType::Exponential)
             }
             ConstantModelType::PersonalisedMovingAverage {
                 alpha_num,
                 alpha_den,
             } => moving_average(
-                &slow_stochastics,
+                slow_stochastics,
                 MovingAverageType::Personalised {
                     alpha_num,
                     alpha_den,
                 },
             ),
-            ConstantModelType::SimpleMovingMedian => median(&slow_stochastics),
-            ConstantModelType::SimpleMovingMode => mode(&slow_stochastics),
+            ConstantModelType::SimpleMovingMedian => median(slow_stochastics),
+            ConstantModelType::SimpleMovingMode => mode(slow_stochastics),
             _ => panic!("Unsupported ConstantModelType"),
         }
     }
@@ -591,41 +590,41 @@ pub mod single {
 
         let moving_constant = match constant_model_type {
             ConstantModelType::SimpleMovingAverage => {
-                moving_average(&prices, MovingAverageType::Simple)
+                moving_average(prices, MovingAverageType::Simple)
             }
             ConstantModelType::SmoothedMovingAverage => {
-                moving_average(&prices, MovingAverageType::Smoothed)
+                moving_average(prices, MovingAverageType::Smoothed)
             }
             ConstantModelType::ExponentialMovingAverage => {
-                moving_average(&prices, MovingAverageType::Exponential)
+                moving_average(prices, MovingAverageType::Exponential)
             }
             ConstantModelType::PersonalisedMovingAverage {
                 alpha_num,
                 alpha_den,
             } => moving_average(
-                &prices,
+                prices,
                 MovingAverageType::Personalised {
                     alpha_num,
                     alpha_den,
                 },
             ),
-            ConstantModelType::SimpleMovingMedian => median(&prices),
-            ConstantModelType::SimpleMovingMode => mode(&prices),
+            ConstantModelType::SimpleMovingMedian => median(prices),
+            ConstantModelType::SimpleMovingMode => mode(prices),
             _ => panic!("Unsupported ConstantModelType"),
         };
 
         let deviation = match deviation_model {
-            DeviationModel::StandardDeviation => standard_deviation(&prices),
+            DeviationModel::StandardDeviation => standard_deviation(prices),
             DeviationModel::MeanAbsoluteDeviation => {
-                absolute_deviation(&prices, CentralPoint::Mean)
+                absolute_deviation(prices, CentralPoint::Mean)
             }
             DeviationModel::MedianAbsoluteDeviation => {
-                absolute_deviation(&prices, CentralPoint::Median)
+                absolute_deviation(prices, CentralPoint::Median)
             }
             DeviationModel::ModeAbsoluteDeviation => {
-                absolute_deviation(&prices, CentralPoint::Mode)
+                absolute_deviation(prices, CentralPoint::Mode)
             }
-            DeviationModel::UlcerIndex => ulcer_index(&prices),
+            DeviationModel::UlcerIndex => ulcer_index(prices),
             _ => panic!("Unsupported DeviationModel"),
         };
         if deviation == 0.0 {
@@ -690,17 +689,17 @@ pub mod single {
             mcginley_dynamic(last_price, previous_mcginley_dynamic, prices.len());
 
         let deviation = match deviation_model {
-            DeviationModel::StandardDeviation => standard_deviation(&prices),
+            DeviationModel::StandardDeviation => standard_deviation(prices),
             DeviationModel::MeanAbsoluteDeviation => {
-                absolute_deviation(&prices, CentralPoint::Mean)
+                absolute_deviation(prices, CentralPoint::Mean)
             }
             DeviationModel::MedianAbsoluteDeviation => {
-                absolute_deviation(&prices, CentralPoint::Median)
+                absolute_deviation(prices, CentralPoint::Median)
             }
             DeviationModel::ModeAbsoluteDeviation => {
-                absolute_deviation(&prices, CentralPoint::Mode)
+                absolute_deviation(prices, CentralPoint::Mode)
             }
-            DeviationModel::UlcerIndex => ulcer_index(&prices),
+            DeviationModel::UlcerIndex => ulcer_index(prices),
             _ => panic!("Unsupported DeviationModel"),
         };
         if deviation == 0.0 {
@@ -859,26 +858,26 @@ pub mod single {
         };
         match constant_model_type {
             ConstantModelType::SimpleMovingAverage => {
-                moving_average(&macds, MovingAverageType::Simple)
+                moving_average(macds, MovingAverageType::Simple)
             }
             ConstantModelType::SmoothedMovingAverage => {
-                moving_average(&macds, MovingAverageType::Smoothed)
+                moving_average(macds, MovingAverageType::Smoothed)
             }
             ConstantModelType::ExponentialMovingAverage => {
-                moving_average(&macds, MovingAverageType::Exponential)
+                moving_average(macds, MovingAverageType::Exponential)
             }
             ConstantModelType::PersonalisedMovingAverage {
                 alpha_num,
                 alpha_den,
             } => moving_average(
-                &macds,
+                macds,
                 MovingAverageType::Personalised {
                     alpha_num,
                     alpha_den,
                 },
             ),
-            ConstantModelType::SimpleMovingMedian => median(&macds),
-            ConstantModelType::SimpleMovingMode => mode(&macds),
+            ConstantModelType::SimpleMovingMedian => median(macds),
+            ConstantModelType::SimpleMovingMode => mode(macds),
             _ => panic!("Unsupported ConstantModelType"),
         }
     }
@@ -1259,7 +1258,7 @@ pub mod single {
     }
 }
 
-/// `bulk` module holds functions that return multiple valus for `momentum_indicators`
+/// **bulk**: Functions that compute values of a slice of prices over a period and return a vector.
 pub mod bulk {
     use crate::momentum_indicators::single;
     use crate::{ConstantModelType, DeviationModel};

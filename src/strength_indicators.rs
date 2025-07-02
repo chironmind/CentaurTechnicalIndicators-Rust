@@ -1,23 +1,38 @@
 //! # Strength Indicators
 //!
-//! Strength indicators show the strength of a trend
+//! This module provides functions to assess the strength and conviction of price movements and trends using volume and price-based calculations.
 //!
-//! ## Bulk
+//! ## When to Use
+//! Use these indicators when you want to:
+//! - Compute Relative Vigor Index for market conviction analysis
 //!
-//! * [`accumulation_distribution`](bulk::accumulation_distribution) - Calculates the Accumulation
-//! Distribution
-//! * [`positive_volume_index`](bulk::positive_volume_index)
-//! * [`negative_volume_index`](bulk::negative_volume_index)
-//! * [`relative_vigor_index`](bulk::relative_vigor_index)
+//! ## Structure
+//! - **single**: Functions that return a single value for a slice of prices.
+//! - **bulk**: Functions that compute values of a slice of prices over a period and return a vector.
 //!
-//! ## Single
+//! ## Included Indicators
 //!
-//! * [`accumulation_distribution`](single::accumulation_distribution) - Calculates the Accumulation
-//! Distribution
-//! * [`volume_index`](single::volume_index) - Generic version of PVI and NVI
-//! * [`relative_vigor_index`](single::relative_vigor_index)
+//! ### Bulk
+//!
+//! - [`accumulation_distribution`](bulk::accumulation_distribution): Calculates the Accumulation/Distribution line
+//! - [`positive_volume_index`](bulk::positive_volume_index): Calculates the Positive Volume Index (PVI)
+//! - [`negative_volume_index`](bulk::negative_volume_index): Calculates the Negative Volume Index (NVI)
+//! - [`relative_vigor_index`](bulk::relative_vigor_index): Calculates the Relative Vigor Index (RVI)
+//!
+//! ### Single
+//!
+//! - [`accumulation_distribution`](single::accumulation_distribution): Calculates the Accumulation/Distribution value
+//! - [`volume_index`](single::volume_index): Generic calculation for use in PVI/NVI.
+//! - [`relative_vigor_index`](single::relative_vigor_index): Calculates the Relative Vigor Index (RVI)
+//!
+//! ## API Details
+//! - Functions in `bulk` operate on slices and return vectors of results.
+//! - Functions in `single` operate on single values or slices and return a single value.
+//! - See function-level docs for arguments, panics, and usage examples.
+//!
+//! ---
 
-/// `single` module holds functions that return a singular values
+/// **single**: Functions that return a single value for a slice of prices.
 pub mod single {
     use crate::basic_indicators::single::{median, mode};
     use crate::moving_average::single::moving_average;
@@ -253,7 +268,7 @@ pub mod single {
     }
 }
 
-/// `bulk` module holds functions that return multiple values
+/// **bulk**: Functions that compute values of a slice of prices over a period and return a vector.
 pub mod bulk {
     use crate::strength_indicators::single;
     use crate::ConstantModelType;

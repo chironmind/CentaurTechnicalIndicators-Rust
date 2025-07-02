@@ -21596,7 +21596,7 @@ fn main() {
 
     // Ulcer Index
 
-    let ulcer_index = rust_ti::volatility_indicators::bulk::ulcer_index(&typical_price, &period);
+    let ulcer_index = rust_ti::volatility_indicators::bulk::ulcer_index(&typical_price, period);
     //println!("Ulcer Index: {:?}", ulcer_index);
 
     // Volatility System
@@ -21607,9 +21607,9 @@ fn main() {
             &high,
             &low,
             &close,
-            &period,
-            &constant_multiplier,
-            &model,
+            period,
+            constant_multiplier,
+            *model,
         );
         // println!("{:?} Volatility System: {:?}", model, vs);
     }
