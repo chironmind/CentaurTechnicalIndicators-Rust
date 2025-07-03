@@ -1,37 +1,51 @@
 //! # Standard Indicators
 //!
-//! Standard indicators are a collection of indicators that aren't configurable and use the
-//! standard, industry agreed defaults.
+//! The `standard_indicators` module provides implementations of widely-recognized technical indicators,
+//! following their established formulas and default parameters as commonly found in financial literature and platforms.
 //!
-//! These functions are wrappers for the configurable functions but with the configurations
-//! hardcoded to be the standard defaults
+//! ## When to Use
+//! Use these functions when you need classic, industry-standard indicators for:
+//! - Quick benchmarking
+//! - Reproducing signals used by major charting tools or trading strategies
+//! - Comparing with custom or alternative indicator settings
 //!
-//! ## Bulk
+//! ## Structure
+//! - **single**: Functions that return a single value for a slice of prices.
+//! - **bulk**: Functions that compute values of a slice of prices over a period and return a vector.
 //!
-//! * [`simple_moving_average`](bulk::simple_moving_average)
-//! * [`smoothed_moving_average`](bulk::smoothed_moving_average)
-//! * [`exponential_moving_average`](bulk::exponential_moving_average)
-//! * [`bollinger_bands`](bulk::bollinger_bands)
-//! * [`macd`](bulk::macd)
-//! * [`rsi`](bulk::rsi)
+//! ## Included Indicators
 //!
-//! ## Single
+//! ### Bulk
+//! - [`bollinger_bands`](bulk::bollinger_bands): Standard Bollinger Bands (SMA + 2×StdDev)
+//! - [`exponential_moving_average`](bulk::exponential_moving_average): EMA with default smoothing
+//! - [`macd`](bulk::macd): Standard MACD (12/26 EMA, 9 EMA signal)
+//! - [`rsi`](bulk::rsi): 14-period Relative Strength Index
+//! - [`simple_moving_average`](bulk::simple_moving_average): Basic SMA
+//! - [`smoothed_moving_average`](bulk::smoothed_moving_average): Smoothed MA
 //!
-//! * [`simple_moving_average`](single::simple_moving_average)
-//! * [`smoothed_moving_average`](single::smoothed_moving_average)
-//! * [`exponential_moving_average`](single::exponential_moving_average)
-//! * [`bollinger_bands`](single::bollinger_bands)
-//! * [`macd`](single::macd)
-//! * [`rsi`](single::rsi)
+//! ### Single
+//! - [`bollinger_bands`](single::bollinger_bands): Standard Bollinger Bands
+//! - [`exponential_moving_average`](single::exponential_moving_average): EMA
+//! - [`macd`](single::macd): MACD
+//! - [`rsi`](single::rsi): RSI
+//! - [`simple_moving_average`](single::simple_moving_average): SMA
+//! - [`smoothed_moving_average`](single::smoothed_moving_average): Smoothed MA
+//!
+//! ## API Details
+//! - All indicators use default parameters as described in trading literature (e.g., RSI period=14, MACD=12/26/9).
+//! - Functions accept slices of `f64` prices (and sometimes highs/lows/closes, as needed).
+//! - Full details, panics, and usage examples are in function-level documentation.
+//!
+//! ---
 
-/// `single` module holds functions that return a singular value
+/// **single**: Functions that return a single value for a slice of prices.
 pub mod single {
     use crate::candle_indicators::single::moving_constant_bands;
     use crate::momentum_indicators::single::{macd_line, relative_strength_index, signal_line};
     use crate::moving_average::single::moving_average;
     use crate::{ConstantModelType, DeviationModel, MovingAverageType};
 
-    /// The `simple_moving_average` is essentially just the mean
+    /// Calculates the simple moving average
     ///
     /// # Arguments
     ///
@@ -39,7 +53,7 @@ pub mod single {
     ///
     /// # Panics
     ///
-    /// `simple_moving_average` will panic if prices is empty
+    /// Panics if `prices.is_empty()`
     ///
     /// # Examples
     ///
@@ -47,18 +61,21 @@ pub mod single {
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 100.0];
     ///
     /// let simple_moving_average =
-    /// rust_ti::standard_indicators::single::simple_moving_average(&prices);
+    ///     rust_ti::standard_indicators::single::simple_moving_average(
+    ///         &prices
+    ///     );
     /// assert_eq!(101.2, simple_moving_average);
     /// ```
+    #[inline]
     pub fn simple_moving_average(prices: &[f64]) -> f64 {
         if prices.is_empty() {
             panic!("Prices cannot be empty")
         };
 
-        return moving_average(&prices, &MovingAverageType::Simple);
+        moving_average(prices, MovingAverageType::Simple)
     }
 
-    /// The `smoothed_moving_average` puts more weight on recent prices
+    /// Calculates the smoothed moving average
     ///
     /// # Arguments
     ///
@@ -66,7 +83,7 @@ pub mod single {
     ///
     /// # Panics
     ///
-    /// `smoothed_moving_average` will panic if prices is empty
+    /// Panics if `prices.is_empty()`
     ///
     /// # Examples
     ///
@@ -74,18 +91,21 @@ pub mod single {
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 100.0];
     ///
     /// let smoothed_moving_average =
-    /// rust_ti::standard_indicators::single::smoothed_moving_average(&prices);
+    ///     rust_ti::standard_indicators::single::smoothed_moving_average(
+    ///         &prices
+    ///     );
     /// assert_eq!(101.11375535459305, smoothed_moving_average);
     /// ```
+    #[inline]
     pub fn smoothed_moving_average(prices: &[f64]) -> f64 {
         if prices.is_empty() {
             panic!("Prices cannot be empty")
         };
 
-        return moving_average(&prices, &MovingAverageType::Smoothed);
+        moving_average(prices, MovingAverageType::Smoothed)
     }
 
-    /// The `exponential_moving_average` puts exponentially more weight on recent prices
+    /// Calculates the exponential moving average
     ///
     /// # Arguments
     ///
@@ -93,7 +113,7 @@ pub mod single {
     ///
     /// # Panics
     ///
-    /// `exponential_moving_average` will panic if prices is empty
+    /// Panics if `prices.is_empty()`
     ///
     /// # Examples
     ///
@@ -101,27 +121,21 @@ pub mod single {
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 100.0];
     ///
     /// let exponential_moving_average =
-    /// rust_ti::standard_indicators::single::exponential_moving_average(&prices);
+    ///     rust_ti::standard_indicators::single::exponential_moving_average(
+    ///         &prices
+    ///     );
     /// assert_eq!(100.99526066350714, exponential_moving_average);
     /// ```
+    #[inline]
     pub fn exponential_moving_average(prices: &[f64]) -> f64 {
         if prices.is_empty() {
             panic!("Prices cannot be empty")
         };
 
-        return moving_average(&prices, &MovingAverageType::Exponential);
+        moving_average(prices, MovingAverageType::Exponential)
     }
 
-    /// `bollinger_bands` are an indicator created by John Bollinger in the 80s.
-    ///
-    /// The function returns a tulpe with the lower band, moving average, and upper band in that order.
-    ///
-    /// The `bollinger_bands` function is a wrapper for the
-    /// [`moving_constant_bands`] using a
-    /// simple moving average, standard deviation, and a deviation multiplier of 2.
-    ///
-    /// The standard period for Bollinger Bands is 20 periods, as such the function will panic if
-    /// there aren't exactly 20 periods.
+    /// Calculates the Bollinger bands
     ///
     /// # Arguments
     ///
@@ -129,9 +143,9 @@ pub mod single {
     ///
     /// # Panics
     ///
-    /// `bollinger_bands` will panic if:
-    ///     * `prices` is empty
-    ///     * length of `prices` isn't equal to 20
+    /// Panics if:
+    ///     * `prices.is_empty()`
+    ///     * `prices.len()` != 20
     ///
     /// # Example
     ///
@@ -144,6 +158,7 @@ pub mod single {
     /// let bbands = rust_ti::standard_indicators::single::bollinger_bands(&prices);
     /// assert_eq!((5230.115435120723, 5301.039500000001, 5371.963564879278), bbands);
     /// ```
+    #[inline]
     pub fn bollinger_bands(prices: &[f64]) -> (f64, f64, f64) {
         if prices.is_empty() {
             panic!("Prices cannot be empty");
@@ -155,26 +170,15 @@ pub mod single {
             )
         };
 
-        return moving_constant_bands(
+        moving_constant_bands(
             prices,
-            &ConstantModelType::SimpleMovingAverage,
-            &DeviationModel::StandardDeviation,
-            &2.0,
-        );
+            ConstantModelType::SimpleMovingAverage,
+            DeviationModel::StandardDeviation,
+            2.0,
+        )
     }
 
-    /// The `macd`, short for the Moving Average Convergence/Divergencei,
-    /// was created by Gerald Appel in the late 1970s when the working week was 6 days, and daily
-    /// charts were primarily used to study stocks.
-    ///
-    /// The standard MACD uses a long period of 26, a short period of 12, and an exponential moving
-    /// average model for both. The MACD will be returned first
-    ///
-    /// This function will return the signal line second. It uses a period of 9 and an exponential
-    /// moving average.
-    ///
-    /// Finally the MACD histogram will be returned, which is simply the difference between MACD
-    /// and signal line.
+    /// Calculates the MACD, signal, and MACd histogram
     ///
     /// # Arguments
     ///
@@ -182,7 +186,7 @@ pub mod single {
     ///
     /// # Panics
     ///
-    /// `macd` will panic if length of `prices` isn't equal to 35.
+    /// Panics if `prices.len()` != 34
     ///
     /// 26 periods for the MACD, and as the signal does the exponential moving average of the MACD
     /// over periods, these need to be added to the total length.
@@ -201,6 +205,7 @@ pub mod single {
     /// let macd = rust_ti::standard_indicators::single::macd(&prices);
     /// assert_eq!((23.98848088685554, 24.707439348177488, -0.7189584613219466), macd);
     /// ```
+    #[inline]
     pub fn macd(prices: &[f64]) -> (f64, f64, f64) {
         if prices.len() != 34 {
             panic!(
@@ -208,19 +213,16 @@ pub mod single {
                 prices.len()
             )
         };
-        let mut macds = Vec::new();
+        let mut macds = Vec::with_capacity(9);
         let model = crate::ConstantModelType::ExponentialMovingAverage;
         for i in 0..9 {
-            macds.push(macd_line(&prices[i..i + 26], &12_usize, &model, &model));
+            macds.push(macd_line(&prices[i..i + 26], 12_usize, model, model));
         }
-        let signal = signal_line(&macds, &model);
-        return (macds[8], signal, macds[8] - signal);
+        let signal = signal_line(&macds, model);
+        (macds[8], signal, macds[8] - signal)
     }
 
-    /// The `rsi` or Relative Strength Index, is a momentum indicator that measures velocity and
-    /// magnitude of price movements.
-    ///
-    /// The standard period used is 14 days, and the model is a smoothed moving average.
+    /// Calculates the Relative Strength Index (RSI)
     ///
     /// # Arguments
     ///
@@ -228,7 +230,7 @@ pub mod single {
     ///
     /// # Panics
     ///
-    /// `rsi` will panic if the length of prices isn't equal to 14
+    /// Panics if `prices.len()` != 14
     ///
     /// # Examples
     ///
@@ -240,19 +242,20 @@ pub mod single {
     /// let rsi = rust_ti::standard_indicators::single::rsi(&prices);
     /// assert_eq!(39.44166748365885, rsi);
     /// ```
+    #[inline]
     pub fn rsi(prices: &[f64]) -> f64 {
         if prices.len() != 14 {
             panic!("RSI must have a period of 14 not {}", prices.len())
         };
-        return relative_strength_index(prices, &ConstantModelType::SmoothedMovingAverage);
+        relative_strength_index(prices, ConstantModelType::SmoothedMovingAverage)
     }
 }
 
-/// `bulk` module holds functions that return multiple values
+/// **bulk**: Functions that compute values of a slice of prices over a period and return a vector.
 pub mod bulk {
     use crate::standard_indicators::single;
 
-    /// The `simple_moving_average` is essentially just the mean
+    /// Calculates the simple moving average
     ///
     /// # Arguments
     ///
@@ -261,9 +264,9 @@ pub mod bulk {
     ///
     /// # Panics
     ///
-    /// `simple_moving_average` will panic if:
-    ///     * `prices` is empty
-    ///     * `period` is greater than length of `prices`
+    /// Panics if:
+    ///     * `prices.is_empty`
+    ///     * `period` > `prices.len()`
     ///
     /// # Examples
     ///
@@ -272,27 +275,33 @@ pub mod bulk {
     /// let period: usize = 3;
     ///
     /// let simple_moving_average =
-    /// rust_ti::standard_indicators::bulk::simple_moving_average(&prices, &period);
-    /// assert_eq!(vec![101.66666666666667, 102.0, 101.33333333333333], simple_moving_average);
+    ///     rust_ti::standard_indicators::bulk::simple_moving_average(
+    ///         &prices,
+    ///         period
+    ///     );
+    /// assert_eq!(
+    ///     vec![101.66666666666667, 102.0, 101.33333333333333],
+    ///     simple_moving_average
+    /// );
     /// ```
-    pub fn simple_moving_average(prices: &[f64], period: &usize) -> Vec<f64> {
+    #[inline]
+    pub fn simple_moving_average(prices: &[f64], period: usize) -> Vec<f64> {
         let length = prices.len();
-        if period > &length {
+        if period > length {
             panic!(
                 "Period ({}) cannot be greater than length of prices ({})",
                 period, length
             )
         };
 
-        let mut mas = Vec::new();
-        let loop_max = length - period + 1;
-        for i in 0..loop_max {
-            mas.push(single::simple_moving_average(&prices[i..i + period]));
+        let mut mas = Vec::with_capacity(length - period + 1);
+        for window in prices.windows(period) {
+            mas.push(single::simple_moving_average(window));
         }
-        return mas;
+        mas
     }
 
-    /// The `smoothed_moving_average` puts more weight on recent prices
+    /// Calculates the smoothed moving averages
     ///
     /// # Arguments
     ///
@@ -301,9 +310,9 @@ pub mod bulk {
     ///
     /// # Panics
     ///
-    /// `smoothed_moving_average` will panic if:
-    ///     * `prices` is empty
-    ///     * `period` is greater than length of `prices`
+    /// Panics if:
+    ///     * `prices.is_empty()`
+    ///     * `period` > `prices.len()`
     ///
     /// # Examples
     ///
@@ -312,27 +321,34 @@ pub mod bulk {
     /// let period: usize = 3;
     ///
     /// let smoothed_moving_average =
-    /// rust_ti::standard_indicators::bulk::smoothed_moving_average(&prices, &period);
-    /// assert_eq!(vec![102.05263157894737, 101.8421052631579, 100.94736842105264], smoothed_moving_average);
+    ///     rust_ti::standard_indicators::bulk::smoothed_moving_average(
+    ///         &prices,
+    ///         period
+    ///     );
+    ///
+    /// assert_eq!(
+    ///     vec![102.05263157894737, 101.8421052631579, 100.94736842105264],
+    ///     smoothed_moving_average
+    /// );
     /// ```
-    pub fn smoothed_moving_average(prices: &[f64], period: &usize) -> Vec<f64> {
+    #[inline]
+    pub fn smoothed_moving_average(prices: &[f64], period: usize) -> Vec<f64> {
         let length = prices.len();
-        if period > &length {
+        if period > length {
             panic!(
                 "Period ({}) cannot be greater than length of prices ({})",
                 period, length
             )
         };
 
-        let mut mas = Vec::new();
-        let loop_max = length - period + 1;
-        for i in 0..loop_max {
-            mas.push(single::smoothed_moving_average(&prices[i..i + period]));
+        let mut mas = Vec::with_capacity(length - period + 1);
+        for window in prices.windows(period) {
+            mas.push(single::smoothed_moving_average(window));
         }
-        return mas;
+        mas
     }
 
-    /// The `exponential_moving_average` puts exponentially more weight on recent prices
+    /// Calculates the exponential moving average
     ///
     /// # Arguments
     ///
@@ -341,9 +357,9 @@ pub mod bulk {
     ///
     /// # Panics
     ///
-    /// `exponential_moving_average` will panic if:
-    ///     * `prices` is empty
-    ///     * `period` is greater than length of `prices`
+    /// Panics if:
+    ///     * `prices.is_empty()`
+    ///     * `period` > `prices.len()`
     ///
     /// # Examples
     ///
@@ -352,37 +368,33 @@ pub mod bulk {
     /// let period: usize = 3;
     ///
     /// let exponential_moving_average =
-    /// rust_ti::standard_indicators::bulk::exponential_moving_average(&prices, &period);
-    /// assert_eq!(vec![102.28571428571429, 101.71428571428571, 100.71428571428571], exponential_moving_average);
+    ///     rust_ti::standard_indicators::bulk::exponential_moving_average(
+    ///         &prices,
+    ///         period
+    ///     );
+    /// assert_eq!(
+    ///     vec![102.28571428571429, 101.71428571428571, 100.71428571428571],
+    ///     exponential_moving_average
+    /// );
     /// ```
-    pub fn exponential_moving_average(prices: &[f64], period: &usize) -> Vec<f64> {
+    #[inline]
+    pub fn exponential_moving_average(prices: &[f64], period: usize) -> Vec<f64> {
         let length = prices.len();
-        if period > &length {
+        if period > length {
             panic!(
                 "Period ({}) cannot be greater than length of prices ({})",
                 period, length
             )
         };
 
-        let mut mas = Vec::new();
-        let loop_max = length - period + 1;
-        for i in 0..loop_max {
-            mas.push(single::exponential_moving_average(&prices[i..i + period]));
+        let mut mas = Vec::with_capacity(length - period + 1);
+        for window in prices.windows(period) {
+            mas.push(single::exponential_moving_average(window));
         }
-        return mas;
+        mas
     }
 
-    /// `bollinger_bands` are an indicator created by John Bollinger in the 80s.
-    ///
-    /// The function returns a vector of tulpes with the lower band, moving average,
-    /// and upper band in that order.
-    ///
-    /// The `bollinger_bands` function is a wrapper for the
-    /// [`moving_constant_bands`](crate::candle_indicators::bulk::moving_constant_bands) using a
-    /// simple moving average, standard deviation, and a deviation multiplier of 2.
-    ///
-    /// The standard period for Bollinger Bands is 20 periods, as such the function will panic if
-    /// there are less than 20 periods.
+    /// Calculates  Bollinger bands
     ///
     /// # Arguments
     ///
@@ -390,9 +402,9 @@ pub mod bulk {
     ///
     /// # Panics
     ///
-    /// `bollinger_bands` will panic if:
-    ///     * `prices` is empty
-    ///     * length of `prices` is less than 20
+    /// Panics if:
+    ///     * `prices.is_empty()`
+    ///     * `prices.len()` < 20
     ///
     /// # Example
     ///
@@ -402,6 +414,7 @@ pub mod bulk {
     ///     5305.4, 5288.88, 5298.25, 5300.94, 5270.64, 5239.26, 5249.84, 5273.27,
     ///     5282.59, 5335.27, 5350.22, 5351.13,5352.7, 5359.50
     /// ];
+    ///
     /// let bbands = rust_ti::standard_indicators::bulk::bollinger_bands(&prices);
     /// assert_eq!(
     ///     vec![
@@ -410,6 +423,7 @@ pub mod bulk {
     ///         (5230.115435120723, 5301.039500000001, 5371.963564879278)
     ///     ], bbands);
     /// ```
+    #[inline]
     pub fn bollinger_bands(prices: &[f64]) -> Vec<(f64, f64, f64)> {
         let length = prices.len();
         if length < 20 {
@@ -419,27 +433,15 @@ pub mod bulk {
             )
         };
 
-        let mut bbands = Vec::new();
-        let loop_max = length - 19;
-        for i in 0..loop_max {
-            bbands.push(single::bollinger_bands(&prices[i..i + 20]));
+        let mut bbands = Vec::with_capacity(length - 19);
+        for window in prices.windows(20) {
+            bbands.push(single::bollinger_bands(window));
         }
 
-        return bbands;
+        bbands
     }
 
-    /// The `macd`, short for the Moving Average Convergence/Divergence,
-    /// was created by Gerald Appel in the late 1970s when the working week was 6 days, and daily
-    /// charts were primarily used to study stocks.
-    ///
-    /// The standard MACD uses a long period of 26, a short period of 12, and an exponential moving
-    /// average model for both. The MACD will be returned first
-    ///
-    /// This function will return the signal line second. It uses a period of 9 and an exponential
-    /// moving average.
-    ///
-    /// Finally the MACD histogram will be returned, which is simply the difference between MACD
-    /// and signal line.
+    /// Calculates the MACD, signal line, and MACD histogram
     ///
     /// # Arguments
     ///
@@ -447,10 +449,7 @@ pub mod bulk {
     ///
     /// # Panics
     ///
-    /// `macd` will panic if length of `prices` is less than 34.
-    ///
-    /// 26 periods for the MACD, and as the signal does the exponential moving average of the MACD
-    /// over periods, these need to be added to the total length.
+    /// Panics if `prices.len()` < 34.
     ///
     /// # Examples
     ///
@@ -471,6 +470,7 @@ pub mod bulk {
     ///         (30.420645672222236, 25.56096652679902, 4.859679145423215)],
     ///     macd);
     /// ```
+    #[inline]
     pub fn macd(prices: &[f64]) -> Vec<(f64, f64, f64)> {
         let length = prices.len();
         if length < 34 {
@@ -479,21 +479,14 @@ pub mod bulk {
                 length
             )
         };
-        let mut macds = Vec::new();
-        let loop_max = length - 33;
-        // TODO: This shouldn't repeat calcs that are already being done, the function should
-        // return the enough so that it can be passed to other functions rather than recalc the
-        // macds to pass to signal function
-        for i in 0..loop_max {
-            macds.push(single::macd(&prices[i..i + 34]));
+        let mut macds = Vec::with_capacity(length - 33);
+        for window in prices.windows(34) {
+            macds.push(single::macd(window));
         }
-        return macds;
+        macds
     }
 
-    /// The `rsi` or Relative Strength Index, is a momentum indicator that measures velocity and
-    /// magnitude of price movements.
-    ///
-    /// The standard period used is 14 days, and the model is a smoothed moving average.
+    /// Calculates the Relative Strength Index (RSI)
     ///
     /// # Arguments
     ///
@@ -501,7 +494,7 @@ pub mod bulk {
     ///
     /// # Panics
     ///
-    /// `rsi` will panic if the length of prices is less than 14
+    /// Panic if `prices.len()` < 14
     ///
     /// # Examples
     ///
@@ -511,19 +504,21 @@ pub mod bulk {
     ///     5273.28, 5282.59, 5335.28, 5350.22, 5351.13, 5352.7, 5359.51, 5425.8
     /// ];
     /// let rsi = rust_ti::standard_indicators::bulk::rsi(&prices);
-    /// assert_eq!(vec![38.168621439659084, 35.624517227910545, 31.14286676169411, 39.44166748365885], rsi);
+    /// assert_eq!(
+    ///     vec![38.168621439659084, 35.624517227910545, 31.14286676169411, 39.44166748365885],
+    ///     rsi
+    /// );
     /// ```
     pub fn rsi(prices: &[f64]) -> Vec<f64> {
         let length = prices.len();
         if length < 14 {
             panic!("RSI must have a period of at least 14 not {}", length)
         };
-        let mut rsis = Vec::new();
-        let loop_max = length - 13;
-        for i in 0..loop_max {
-            rsis.push(single::rsi(&prices[i..i + 14]));
+        let mut rsis = Vec::with_capacity(length - 13);
+        for window in prices.windows(14) {
+            rsis.push(single::rsi(window));
         }
-        return rsis;
+        rsis
     }
 }
 
@@ -550,7 +545,7 @@ mod tests {
         let period: usize = 4;
         assert_eq!(
             vec![100.3925, 100.39],
-            bulk::simple_moving_average(&prices, &period)
+            bulk::simple_moving_average(&prices, period)
         );
     }
 
@@ -559,7 +554,7 @@ mod tests {
     fn bulk_simple_moving_average_panic() {
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
         let period: usize = 40;
-        bulk::simple_moving_average(&prices, &period);
+        bulk::simple_moving_average(&prices, period);
     }
 
     #[test]
@@ -581,7 +576,7 @@ mod tests {
         let period: usize = 4;
         assert_eq!(
             vec![100.40982857142858, 100.35371428571428],
-            bulk::smoothed_moving_average(&prices, &period)
+            bulk::smoothed_moving_average(&prices, period)
         );
     }
 
@@ -590,7 +585,7 @@ mod tests {
     fn bulk_smoothed_moving_average_panic() {
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
         let period: usize = 40;
-        bulk::smoothed_moving_average(&prices, &period);
+        bulk::smoothed_moving_average(&prices, period);
     }
 
     #[test]
@@ -615,7 +610,7 @@ mod tests {
         let period: usize = 4;
         assert_eq!(
             vec![100.41672794117645, 100.32544117647058],
-            bulk::exponential_moving_average(&prices, &period)
+            bulk::exponential_moving_average(&prices, period)
         );
     }
 
@@ -624,7 +619,7 @@ mod tests {
     fn bulk_exponential_moving_average_panic() {
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
         let period: usize = 40;
-        bulk::exponential_moving_average(&prices, &period);
+        bulk::exponential_moving_average(&prices, period);
     }
 
     #[test]

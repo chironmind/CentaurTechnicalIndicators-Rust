@@ -1,35 +1,49 @@
 //! # Trend Indicators
 //!
-//! Trend indicators show the trend direction of an asset
+//! This module provides functions to analyze the direction and persistence of price movements in financial time series.
 //!
-//! ## Bulk
+//! ## When to Use
+//! Use these indicators when you want to:
+//! - Identify or confirm the direction (uptrend, downtrend, sideways) of a market or asset
+//! - Detect trend reversals or continuations
+//! - Quantify the strength or consistency of a trend for strategy design or signal filtering
+//! - Calculate trend-following stop-and-reverse systems (e.g., Parabolic SAR)
+//! - Explore relationships between price and volume for trend confirmation
 //!
-//! * [`aroon_down`](bulk::aroon_down) - Calculates the Aroon down
-//! * [`aroon_indicator`](bulk::aroon_indicator) - Calculates the Aroon indicator
-//! * [`aroon_oscillator`](bulk::aroon_oscillator) - Calculates the Aroon Oscillator
-//! * [`aroon_up`](bulk::aroon_up) - Calculates the Aroon up
-//! * [`parabolic_time_price_system`](bulk::parabolic_time_price_system) - Calculates the parabolic
-//! time price system
-//! * [`directional_movement_system`](bulk::directional_movement_system) - Calculates Welles positive/negative
-//! Directional Index, Directional Movement, Directional Movement Index, Average Directional
-//! Movement Index, Average Directional Movement Index Rating.
-//! * [`volume_price_trend`](bulk::volume_price_trend)
-//! * [`true_strength_index`](bulk::true_strength_index)
+//! ## Structure
+//! - **single**: Functions that return a single value for a slice of prices.
+//! - **bulk**: Functions that compute values of a slice of prices over a period and return a vector.
 //!
-//! ## Single
+//! ## Included Indicators
 //!
-//! * [`aroon_down`](single::aroon_down) - Calculates the Aroon down
-//! * [`aroon_indicator`](single::aroon_indicator) - Calculates the Aroon indicator
-//! * [`aroon_oscillator`](single::aroon_oscillator) - Calculates the Aroon Oscillator
-//! * [`aroon_up`](single::aroon_up) - Calculates the Aroon up
-//! * [`long_parabolic_time_price_system`](single::long_parabolic_time_price_system) - Calculates the parabolic
-//! time price system for long positions
-//! * [`short_parabolic_time_price_system`](single::short_parabolic_time_price_system) - Calculates the
-//! parabolic time price system for short positions
-//! * [`volume_price_trend`](single::volume_price_trend)
-//! * [`true_strength_index`](single::true_strength_index)
+//! ### Bulk
+//!
+//! - [`aroon_down`](bulk::aroon_down): Calculates the Aroon Down
+//! - [`aroon_indicator`](bulk::aroon_indicator): Calculates Aroon Up, Down, and Oscillator
+//! - [`aroon_oscillator`](bulk::aroon_oscillator): Calculates the Aroon Oscillator
+//! - [`aroon_up`](bulk::aroon_up): Calculates the Aroon Up
+//! - [`parabolic_time_price_system`](bulk::parabolic_time_price_system): Computes the Parabolic Time Price System (Welles Wilder's SAR variant)
+//! - [`directional_movement_system`](bulk::directional_movement_system): Computes Directional Movement (+DI, -DI, ADX, ADXR)
+//! - [`volume_price_trend`](bulk::volume_price_trend): Computes the Volume Price Trend
+//! - [`true_strength_index`](bulk::true_strength_index): Computes the True Strength Index (TSI)
+//!
+//! ### Single
+//!
+//! - [`aroon_down`](single::aroon_down): Calculates the Aroon Down
+//! - [`aroon_indicator`](single::aroon_indicator): Calculates Aroon Up, Down, and Oscillator
+//! - [`aroon_oscillator`](single::aroon_oscillator): Calculates the Aroon Oscillator
+//! - [`aroon_up`](single::aroon_up): Calculates the Aroon Up
+//! - [`long_parabolic_time_price_system`](single::long_parabolic_time_price_system): Computes Parabolic SAR for long positions
+//! - [`short_parabolic_time_price_system`](single::short_parabolic_time_price_system): Computes Parabolic SAR for short positions
+//! - [`volume_price_trend`](single::volume_price_trend): Computes the Volume Price Trend
+//! - [`true_strength_index`](single::true_strength_index): Computes the True Strength Index (TSI)
+//!
+//! ## API Details
+//! - See function-level documentation for arguments, panics, and usage examples.
+//!
+//! ---
 
-/// `single` module holds functions that return a singular values
+/// **single**: Functions that return a single value for a slice of prices.
 pub mod single {
     use crate::basic_indicators::bulk::median as bulk_median;
     use crate::basic_indicators::bulk::mode as bulk_mode;
@@ -39,15 +53,8 @@ pub mod single {
     use crate::moving_average::bulk::moving_average as bulk_ma;
     use crate::moving_average::single::moving_average as single_ma;
     use crate::{ConstantModelType, MovingAverageType};
-    /// The `aroon_up` indicator tracks the uptrends in the `aroon_indicator` and is used to
-    /// calculate the `aroon_oscillator`.
-    ///
-    /// The Aroon up is included in the return of the `aroon_indicator`. If the caller wants the
-    /// Aroon up, Aroon down, and Aroon oscillator, then it is easier to call the `aroon_indicator`
-    /// rather that the three seperately.
-    ///
-    /// Standard period to use is 25 but the caller determines how many prices they want to provide
-    /// and the period will be determined from the length of `highs`.
+
+    /// Calculates the Aroon up
     ///
     /// # Arguments
     ///
@@ -55,7 +62,7 @@ pub mod single {
     ///
     /// # Panics
     ///
-    /// `aroon_up` will panic if `highs` is empty
+    /// Panics if `highs.is_empty()`
     ///
     /// # Examples
     ///
@@ -64,6 +71,7 @@ pub mod single {
     /// let aroon_up = rust_ti::trend_indicators::single::aroon_up(&highs);
     /// assert_eq!(50.0, aroon_up);
     /// ```
+    #[inline]
     pub fn aroon_up(highs: &[f64]) -> f64 {
         if highs.is_empty() {
             panic!("Highs cannot be empty")
@@ -72,18 +80,10 @@ pub mod single {
         let period = highs.len() - 1; // current period should be excluded from length
         let period_max = max(highs);
         let periods_since_max = period - highs.iter().rposition(|&x| x == period_max).unwrap();
-        return 100.0 * ((period as f64 - periods_since_max as f64) / period as f64);
+        100.0 * ((period as f64 - periods_since_max as f64) / period as f64)
     }
 
-    /// The `aroon_down` indicator tracks the downtrends in the `aroon_indicator` and is used to
-    /// calculate the `aroon_oscillator`.
-    ///
-    /// The Aroon down is included in the return of the `aroon_indicator`. If the caller wants the
-    /// Aroon up, Aroon down, and Aroon oscillator, then it is easier to call the `aroon_indicator`
-    /// rather that the three seperately.
-    ///
-    /// Standard period to use is 25 but the caller determines how many prices they want to provide
-    /// and the period will be determined from the length of `lows`.
+    /// Calculates the Aroon down
     ///
     /// # Arguments
     ///
@@ -91,7 +91,7 @@ pub mod single {
     ///
     /// # Panics
     ///
-    /// `aroon_down` will panic if `low` is empty
+    /// Panics if `low.is_empty()`
     ///
     /// # Examples
     ///
@@ -100,6 +100,7 @@ pub mod single {
     /// let aroon_down = rust_ti::trend_indicators::single::aroon_down(&lows);
     /// assert_eq!(25.0, aroon_down);
     /// ```
+    #[inline]
     pub fn aroon_down(lows: &[f64]) -> f64 {
         if lows.is_empty() {
             panic!("Lows cannot be empty")
@@ -108,14 +109,10 @@ pub mod single {
         let period = lows.len() - 1; // current period should be excluded from length
         let period_min = min(lows);
         let periods_since_min = period - lows.iter().rposition(|&x| x == period_min).unwrap();
-        return 100.0 * ((period as f64 - periods_since_min as f64) / period as f64);
+        100.0 * ((period as f64 - periods_since_min as f64) / period as f64)
     }
 
-    /// The `aroon_oscillators` takes the difference between the Aroon up and the Aroon down to
-    /// give a general sense of trend.
-    ///
-    /// The Aroon oscillator is returned in the `aroon_indicator` so it is easier to call that one
-    /// function rather than 3.
+    /// Calculates the Aroon Oscillator
     ///
     /// # Arguments
     ///
@@ -127,15 +124,19 @@ pub mod single {
     /// ```rust
     /// let aroon_up = 50.0;
     /// let aroon_down = 25.0;
-    /// let aroon_oscillator = rust_ti::trend_indicators::single::aroon_oscillator(&aroon_up,
-    /// &aroon_down);
+    /// let aroon_oscillator =
+    ///     rust_ti::trend_indicators::single::aroon_oscillator(
+    ///         aroon_up,
+    ///         aroon_down
+    ///     );
     /// assert_eq!(25.0, aroon_oscillator);
     /// ```
-    pub fn aroon_oscillator(aroon_up: &f64, aroon_down: &f64) -> f64 {
-        return aroon_up - aroon_down;
+    #[inline(always)]
+    pub fn aroon_oscillator(aroon_up: f64, aroon_down: f64) -> f64 {
+        aroon_up - aroon_down
     }
 
-    /// The `aroon_indicator` returns the Aroon up, Aroon down, and Aroon oscillator in that order
+    /// Calculates the Aroon Indicator
     ///
     /// # Arguments
     ///
@@ -144,14 +145,15 @@ pub mod single {
     ///
     /// # Panics
     ///
-    /// `aroon_indicator` will panic if length of `high` and `low` aren't equal
+    /// `high.len()` != `low.len()`
     ///
     /// # Examples
     ///
     /// ```rust
     /// let highs = vec![103.0, 102.0, 107.0, 104.0, 100.0];
     /// let lows = vec![98.0, 95.0, 101.0, 100.0, 97.0];
-    /// let aroon_indicator = rust_ti::trend_indicators::single::aroon_indicator(&highs, &lows);
+    /// let aroon_indicator =
+    ///     rust_ti::trend_indicators::single::aroon_indicator(&highs, &lows);
     /// assert_eq!((50.0, 25.0, 25.0), aroon_indicator);
     /// ```
     pub fn aroon_indicator(highs: &[f64], lows: &[f64]) -> (f64, f64, f64) {
@@ -163,30 +165,19 @@ pub mod single {
             )
         };
 
-        let aroon_up = aroon_up(&highs);
-        let aroon_down = aroon_down(&lows);
-        let aroon_oscillaor = aroon_oscillator(&aroon_up, &aroon_down);
-        return (aroon_up, aroon_down, aroon_oscillaor);
+        let aroon_up = aroon_up(highs);
+        let aroon_down = aroon_down(lows);
+        let aroon_oscillaor = aroon_oscillator(aroon_up, aroon_down);
+        (aroon_up, aroon_down, aroon_oscillaor)
     }
 
-    /// The `long_parabolic_time_price_system` returns Stop and Reverse (SaR) points based on a significant point
-    /// (period low) or previous SaR, time, and price. The function is to be used when considering
-    /// a long position.
-    ///
-    /// Welles uses the significant point as the SaR when no SaR points have been calculated
-    /// afterwhich he uses the previous SaR. He also uses an acceleration factor that increases by 0.02 every
-    /// day a new high is hit and never goes over 0.2, but in this function the value is determined
-    /// by the function caller.
-    ///
-    /// Welles has a rule that the SaR at t+1 cannot be above the low for t and t-1.
+    /// Calculates the long Stop and Reverse (SaR) point for the Parabolic Time Price System
     ///
     /// # Arguments
     ///
-    /// * `previous_sar` - Previous Stop and Reverse, if none use the significant point, which is
-    /// the period low.
-    /// * `extreme_point` - Highest high for the period being observed
-    /// * `acceleration_factor` - Factor used to multiply the difference between extreme point and
-    /// previous SaR.
+    /// * `previous_sar` - Previous SaR (if none use period low)
+    /// * `extreme_point` - Highest high for the period
+    /// * `acceleration_factor` - SaR acceleration
     /// * `low` - Lowest low for t or t-1
     ///
     /// # Examples
@@ -196,51 +187,47 @@ pub mod single {
     /// let extreme_point = 52.35;
     /// let acceleration_factor = 0.02;
     /// let low = 50.6;
+    ///
     /// let parabolic_time_price_system =
-    /// rust_ti::trend_indicators::single::long_parabolic_time_price_system(&previous_sar,
-    /// &extreme_point, &acceleration_factor, &low);
+    ///     rust_ti::trend_indicators::single::long_parabolic_time_price_system(
+    ///         previous_sar,
+    ///         extreme_point,
+    ///         acceleration_factor,
+    ///         low
+    ///     );
     /// assert_eq!(50.1381988, parabolic_time_price_system);
     ///
     /// let previous_sar = 51.96;
     /// let extreme_point = 54.2;
     /// let acceleration_factor = 0.12;
     /// let low = 52.1;
+    ///
     /// let parabolic_time_price_system =
-    /// rust_ti::trend_indicators::single::long_parabolic_time_price_system(&previous_sar,
-    /// &extreme_point, &acceleration_factor, &low);
+    ///     rust_ti::trend_indicators::single::long_parabolic_time_price_system(
+    ///         previous_sar,
+    ///         extreme_point,
+    ///         acceleration_factor,
+    ///         low
+    ///     );
     /// assert_eq!(52.1, parabolic_time_price_system);
     /// ```
     pub fn long_parabolic_time_price_system(
-        previous_sar: &f64,
-        extreme_point: &f64,
-        acceleration_factor: &f64,
-        low: &f64,
+        previous_sar: f64,
+        extreme_point: f64,
+        acceleration_factor: f64,
+        low: f64,
     ) -> f64 {
         let sar = previous_sar + acceleration_factor * (extreme_point - previous_sar);
-        if &sar > low {
-            return *low;
-        };
-        return sar;
+        sar.min(low)
     }
 
-    /// The `short_parabolic_time_price_system` returns Stop and Reverse (SaR) points based on a significant point
-    /// (period low) or previous SaR, time, and price. The function is to be used when considering
-    /// a short position.
-    ///
-    /// Welles uses the significant point as the SaR when no SaR points have been calculated
-    /// afterwhich he uses the previous SaR. He also uses an acceleration factor that increases by 0.02 every
-    /// day a new low is hit and never goes over 0.2, but in this function the value is determined
-    /// by the function caller.
-    ///
-    /// Welles has a rule that the SaR at t+1 cannot be above the high for t and t-1.
+    /// Calculates the short Stop and Reverse (SaR) point for the Parabolic Time Price System
     ///
     /// # Arguments
     ///
-    /// * `previous_sar` - Previous Stop and Reverse, if none use the significant point, which is
-    ///  the period high.
-    /// * `extreme_point` - Lowest low for the period being observed
-    /// * `acceleration_factor` - Factor used to multiply the difference between extreme point and
-    /// previous SaR.
+    /// * `previous_sar` - Previous SaR (if none use period high)
+    /// * `extreme_point` - Lowest low for the period
+    /// * `acceleration_factor` - SaR acceleration
     /// * `high` - Highest high for t or t-1
     ///
     /// # Examples
@@ -250,48 +237,48 @@ pub mod single {
     /// let extreme_point = 56.3;
     /// let acceleration_factor = 0.02;
     /// let high = 50.6;
+    ///
     /// let parabolic_time_price_system =
-    /// rust_ti::trend_indicators::single::short_parabolic_time_price_system(&previous_sar,
-    /// &extreme_point, &acceleration_factor, &high);
+    ///     rust_ti::trend_indicators::single::short_parabolic_time_price_system(
+    ///         previous_sar,
+    ///         extreme_point,
+    ///         acceleration_factor,
+    ///         high
+    ///     );
     /// assert_eq!(57.966, parabolic_time_price_system);
     ///
     /// let previous_sar = 57.7816384;
     /// let extreme_point = 55.5;
     /// let acceleration_factor = 0.08;
     /// let low = 58.1;
+    ///
     /// let parabolic_time_price_system =
-    /// rust_ti::trend_indicators::single::short_parabolic_time_price_system(&previous_sar,
-    /// &extreme_point, &acceleration_factor, &low);
+    ///     rust_ti::trend_indicators::single::short_parabolic_time_price_system(
+    ///         previous_sar,
+    ///         extreme_point,
+    ///         acceleration_factor,
+    ///         low
+    ///     );
     /// assert_eq!(58.1, parabolic_time_price_system);
     /// ```
     pub fn short_parabolic_time_price_system(
-        previous_sar: &f64,
-        extreme_point: &f64,
-        acceleration_factor: &f64,
-        high: &f64,
+        previous_sar: f64,
+        extreme_point: f64,
+        acceleration_factor: f64,
+        high: f64,
     ) -> f64 {
         let sar = previous_sar - acceleration_factor * (previous_sar - extreme_point);
-        if &sar < high {
-            return *high;
-        };
-        return sar;
+        sar.max(high)
     }
 
-    /// The `volume_price_trend` relates prices to the volume to give an indicator that tracks the
-    /// trend of an asset with relation to volume.
-    ///
-    /// A signal line is some times created by taking the moving average of the Volume-Price trend.
-    ///
-    /// The standard is to use the close prices.
-    ///
-    /// If there is no previous volume-price trend use 0.0.
+    /// Calculates the Volume Price Trend (VPT)
     ///
     /// # Arguments
     ///
-    /// * `current_price` - Price at t
-    /// * `previous_price` - Price at t-1
-    /// * `volume` - Volume at t
-    /// * `previous_volume_price_trend` - Previous volume-price trend. If none use 0.0
+    /// * `current_price` - Current price
+    /// * `previous_price` - Previous prices
+    /// * `volume` - Current volume
+    /// * `previous_volume_price_trend` - Previous VPT (if none use 0.0)
     ///
     /// # Examples
     ///
@@ -300,45 +287,33 @@ pub mod single {
     /// let previous_price = 101.0;
     /// let volume = 1000.0;
     /// let volume_price_trend = rust_ti::trend_indicators::single::volume_price_trend(
-    ///     &current_price,
-    ///     &previous_price,
-    ///     &volume,
-    ///     &0.0
+    ///     current_price,
+    ///     previous_price,
+    ///     volume,
+    ///     0.0
     /// );
     /// assert_eq!(9.900990099009901, volume_price_trend);
     ///
     /// let next_price = 100.0;
     /// let next_volume = 1500.0;
     /// let volume_price_trend = rust_ti::trend_indicators::single::volume_price_trend(
-    ///     &next_price,
-    ///     &current_price,
-    ///     &next_volume,
-    ///     &volume_price_trend
+    ///     next_price,
+    ///     current_price,
+    ///     next_volume,
+    ///     volume_price_trend
     /// );
     /// assert_eq!(-19.510774606872452, volume_price_trend);
     /// ```
     pub fn volume_price_trend(
-        current_price: &f64,
-        previous_price: &f64,
-        volume: &f64,
-        previous_volume_price_trend: &f64,
+        current_price: f64,
+        previous_price: f64,
+        volume: f64,
+        previous_volume_price_trend: f64,
     ) -> f64 {
-        return previous_volume_price_trend
-            + (volume * ((current_price - previous_price) / previous_price));
+        previous_volume_price_trend + (volume * ((current_price - previous_price) / previous_price))
     }
 
-    /// The `true_strength_index` measures trend direction by applying the moving average on the
-    /// difference of the prices twice.
-    ///
-    /// The standard model is an exponential moving average, the first smoothing period is 25, the
-    /// second smoothing period is 13.
-    ///
-    /// Due to the double smoothing, caller needs to be aware that the legnth of prices needs to be
-    /// the sum of the first and second period. For the standard TSI, the length of prices needs to
-    /// be 38.
-    ///
-    /// In the single function the length of the second period is assumed to be the difference
-    /// between length of `prices` and `first_period`.
+    /// Calculates the True Strength Index (TSI)
     ///
     /// # Arguments
     ///
@@ -349,9 +324,9 @@ pub mod single {
     ///
     /// # Panics
     ///
-    /// `true_strength_index` will panic if:
-    ///     * `prices` is empty
-    ///     * Length of `prices` needs to be greater than `first_period` + 1
+    /// Panics if:
+    ///     * `prices.is_empty()`
+    ///     * `prices.len()` > `first_period` + 1
     ///
     /// # Examples
     ///
@@ -359,18 +334,18 @@ pub mod single {
     /// let prices = vec![100.0, 115.0, 118.0, 120.0, 125.0, 117.0, 113.0, 115.0];
     /// let true_strength_index = rust_ti::trend_indicators::single::true_strength_index(
     ///     &prices,
-    ///     &rust_ti::ConstantModelType::ExponentialMovingAverage,
-    ///     &5_usize,
-    ///     &rust_ti::ConstantModelType::ExponentialMovingAverage,
+    ///     rust_ti::ConstantModelType::ExponentialMovingAverage,
+    ///     5_usize,
+    ///     rust_ti::ConstantModelType::ExponentialMovingAverage,
     /// );
     ///
     /// assert_eq!(-0.25821030430852665, true_strength_index);
     /// ```
     pub fn true_strength_index(
         prices: &[f64],
-        first_constant_model: &ConstantModelType,
-        first_period: &usize,
-        second_constant_model: &ConstantModelType,
+        first_constant_model: ConstantModelType,
+        first_period: usize,
+        second_constant_model: ConstantModelType,
     ) -> f64 {
         if prices.is_empty() {
             panic!("Prices cannot be empty")
@@ -383,86 +358,101 @@ pub mod single {
             )
         };
 
-        let mut price_momentum = Vec::new();
-        let mut abs_price_momentum = Vec::new();
+        let mut price_momentum = Vec::with_capacity(length - 1);
+        let mut abs_price_momentum = Vec::with_capacity(length - 1);
         for i in 1..length {
-            price_momentum.push(prices[i] - prices[i - 1]);
-            abs_price_momentum.push((prices[i] - prices[i - 1]).abs());
+            let diff = prices[i] - prices[i - 1];
+            price_momentum.push(diff);
+            abs_price_momentum.push(diff.abs());
         }
 
         let (initial_smoothing, abs_initial_smoothing) = match first_constant_model {
             ConstantModelType::SimpleMovingAverage => (
-                bulk_ma(&price_momentum, &MovingAverageType::Simple, first_period),
-                bulk_ma(
-                    &abs_price_momentum,
-                    &MovingAverageType::Simple,
-                    first_period,
-                ),
+                bulk_ma(&price_momentum, MovingAverageType::Simple, first_period),
+                bulk_ma(&abs_price_momentum, MovingAverageType::Simple, first_period),
             ),
             ConstantModelType::SmoothedMovingAverage => (
-                bulk_ma(&price_momentum, &MovingAverageType::Smoothed, first_period),
+                bulk_ma(&price_momentum, MovingAverageType::Smoothed, first_period),
                 bulk_ma(
                     &abs_price_momentum,
-                    &MovingAverageType::Smoothed,
+                    MovingAverageType::Smoothed,
                     first_period,
                 ),
             ),
             ConstantModelType::ExponentialMovingAverage => (
                 bulk_ma(
                     &price_momentum,
-                    &MovingAverageType::Exponential,
+                    MovingAverageType::Exponential,
                     first_period,
                 ),
                 bulk_ma(
                     &abs_price_momentum,
-                    &MovingAverageType::Exponential,
+                    MovingAverageType::Exponential,
                     first_period,
                 ),
             ),
-            ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => (
+            ConstantModelType::PersonalisedMovingAverage {
+                alpha_num,
+                alpha_den,
+            } => (
                 bulk_ma(
                     &price_momentum,
-                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
+                    MovingAverageType::Personalised {
+                        alpha_num,
+                        alpha_den,
+                    },
                     first_period,
                 ),
                 bulk_ma(
                     &abs_price_momentum,
-                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
+                    MovingAverageType::Personalised {
+                        alpha_num,
+                        alpha_den,
+                    },
                     first_period,
                 ),
             ),
             ConstantModelType::SimpleMovingMedian => (
-                bulk_median(&price_momentum, &first_period),
-                bulk_median(&abs_price_momentum, &first_period),
+                bulk_median(&price_momentum, first_period),
+                bulk_median(&abs_price_momentum, first_period),
             ),
             ConstantModelType::SimpleMovingMode => (
-                bulk_mode(&price_momentum, &first_period),
-                bulk_mode(&abs_price_momentum, &first_period),
+                bulk_mode(&price_momentum, first_period),
+                bulk_mode(&abs_price_momentum, first_period),
             ),
             _ => panic!("Not a supported constant model type"),
         };
 
         let (second_smoothing, abs_second_smoothing) = match second_constant_model {
             ConstantModelType::SimpleMovingAverage => (
-                single_ma(&initial_smoothing, &MovingAverageType::Simple),
-                single_ma(&abs_initial_smoothing, &MovingAverageType::Simple),
+                single_ma(&initial_smoothing, MovingAverageType::Simple),
+                single_ma(&abs_initial_smoothing, MovingAverageType::Simple),
             ),
             ConstantModelType::SmoothedMovingAverage => (
-                single_ma(&initial_smoothing, &MovingAverageType::Smoothed),
-                single_ma(&abs_initial_smoothing, &MovingAverageType::Smoothed),
+                single_ma(&initial_smoothing, MovingAverageType::Smoothed),
+                single_ma(&abs_initial_smoothing, MovingAverageType::Smoothed),
             ),
             ConstantModelType::ExponentialMovingAverage => (
-                single_ma(&initial_smoothing, &MovingAverageType::Exponential),
-                single_ma(&abs_initial_smoothing, &MovingAverageType::Exponential),
+                single_ma(&initial_smoothing, MovingAverageType::Exponential),
+                single_ma(&abs_initial_smoothing, MovingAverageType::Exponential),
             ),
-            ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => (
+            ConstantModelType::PersonalisedMovingAverage {
+                alpha_num,
+                alpha_den,
+            } => (
                 single_ma(
                     &initial_smoothing,
-                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
+                    MovingAverageType::Personalised {
+                        alpha_num,
+                        alpha_den,
+                    },
                 ),
                 single_ma(
                     &abs_initial_smoothing,
-                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
+                    MovingAverageType::Personalised {
+                        alpha_num,
+                        alpha_den,
+                    },
                 ),
             ),
             ConstantModelType::SimpleMovingMedian => (
@@ -476,13 +466,14 @@ pub mod single {
             _ => panic!("Not a supported constant model type"),
         };
         if abs_second_smoothing == 0.0 {
-            return 0.0;
-        };
-        return second_smoothing / abs_second_smoothing;
+            0.0
+        } else {
+            second_smoothing / abs_second_smoothing
+        }
     }
 }
 
-/// `bulk` module holds functions that return multiple vaues
+/// **bulk**: Functions that compute values of a slice of prices over a period and return a vector.
 pub mod bulk {
     use crate::basic_indicators::bulk::{median, mode};
     use crate::basic_indicators::single::{max, min};
@@ -490,12 +481,8 @@ pub mod bulk {
     use crate::other_indicators::bulk::true_range;
     use crate::trend_indicators::single;
     use crate::{ConstantModelType, MovingAverageType, Position};
-    /// The `aroon_up` indicator tracks the uptrends in the `aroon_indicator` and is used to
-    /// calculate the `aroon_oscillator`.
-    ///
-    /// The Aroon up is included in the return of the `aroon_indicator`. If the caller wants the
-    /// Aroon up, Aroon down, and Aroon oscillator, then it is easier to call the `aroon_indicator`
-    /// rather that the three seperately.
+
+    /// Calculates the aroon up
     ///
     /// # Arguments
     ///
@@ -504,39 +491,34 @@ pub mod bulk {
     ///
     /// # Panics
     ///
-    /// `aroon_up` will panic if `period` is greater than length of `highs`
+    /// Panics if `period` > `highs.len()`
     ///
     /// # Examples
     ///
     /// ```rust
     /// let highs = vec![103.0, 102.0, 107.0, 104.0, 100.0, 102.0, 99.0];
     /// let period: usize = 5;
-    /// let aroon_up = rust_ti::trend_indicators::bulk::aroon_up(&highs, &period);
+    /// let aroon_up = rust_ti::trend_indicators::bulk::aroon_up(&highs, period);
     /// assert_eq!(vec![50.0, 25.0, 0.0], aroon_up);
     /// ```
-    pub fn aroon_up(highs: &[f64], period: &usize) -> Vec<f64> {
+    #[inline]
+    pub fn aroon_up(highs: &[f64], period: usize) -> Vec<f64> {
         let length = highs.len();
-        if &length < period {
+        if length < period {
             panic!(
                 "Period ({}) cannot be longer than length of highs ({})",
                 period, length
             )
         };
 
-        let mut aroon_ups = Vec::new();
-        let loop_max = length - period + 1;
-        for i in 0..loop_max {
-            aroon_ups.push(single::aroon_up(&highs[i..i + period]));
+        let mut aroon_ups = Vec::with_capacity(length - period + 1);
+        for window in highs.windows(period) {
+            aroon_ups.push(single::aroon_up(window));
         }
-        return aroon_ups;
+        aroon_ups
     }
 
-    /// The `aroon_down` indicator tracks the downtrends in the `aroon_indicator` and is used to
-    /// calculate the `aroon_oscillator`.
-    ///
-    /// The Aroon down is included in the return of the `aroon_indicator`. If the caller wants the
-    /// Aroon up, Aroon down, and Aroon oscillator, then it is easier to call the `aroon_indicator`
-    /// rather that the three seperately.
+    /// Calculates the aroon down
     ///
     /// # Arguments
     ///
@@ -545,35 +527,33 @@ pub mod bulk {
     ///
     /// # Panics
     ///
-    /// `aroon_down` will panic if `period` is greater than length of `low`
+    /// Panics if `period` > `low.len()`
     ///
     /// # Examples
     ///
     /// ```rust
     /// let lows = vec![98.0, 95.0, 101.0, 100.0, 97.0, 98.0, 97.0];
     /// let period: usize = 5;
-    /// let aroon_down = rust_ti::trend_indicators::bulk::aroon_down(&lows, &period);
+    /// let aroon_down = rust_ti::trend_indicators::bulk::aroon_down(&lows, period);
     /// assert_eq!(vec![25.0, 0.0, 100.0], aroon_down);
     /// ```
-    pub fn aroon_down(lows: &[f64], period: &usize) -> Vec<f64> {
+    pub fn aroon_down(lows: &[f64], period: usize) -> Vec<f64> {
         let length = lows.len();
-        if &length < period {
+        if length < period {
             panic!(
                 "Period ({}) cannot be longer than length of lows ({})",
                 period, length
             )
         };
 
-        let mut aroon_downs = Vec::new();
-        let loop_max = length - period + 1;
-        for i in 0..loop_max {
-            aroon_downs.push(single::aroon_down(&lows[i..i + period]));
+        let mut aroon_downs = Vec::with_capacity(length - period + 1);
+        for window in lows.windows(period) {
+            aroon_downs.push(single::aroon_down(window));
         }
-        return aroon_downs;
+        aroon_downs
     }
 
-    /// The `aroon_oscillators` takes the difference between the Aroon up and the Aroon down to
-    /// give a general sense of trend.
+    /// Calculates the aroon oscillators
     ///
     /// # Arguments
     ///
@@ -582,15 +562,18 @@ pub mod bulk {
     ///
     /// # Panics
     ///
-    /// `aroon_oscillators` will panic if lengths of `aroon_up` and `aroon_down` aren't equal
+    /// Panics if `aroon_up.len()` != `aroon_down.len()`
     ///
     /// # Examples
     ///
     /// ```rust
     /// let aroon_up = vec![50.0, 25.0, 0.0];
     /// let aroon_down = vec![25.0, 0.0, 100.0];
-    /// let aroon_oscillator = rust_ti::trend_indicators::bulk::aroon_oscillator(&aroon_up,
-    /// &aroon_down);
+    /// let aroon_oscillator =
+    ///     rust_ti::trend_indicators::bulk::aroon_oscillator(
+    ///         &aroon_up,
+    ///         &aroon_down
+    ///     );
     /// assert_eq!(vec![25.0, 25.0, -100.0], aroon_oscillator);
     /// ```
     pub fn aroon_oscillator(aroon_up: &[f64], aroon_down: &[f64]) -> Vec<f64> {
@@ -603,14 +586,12 @@ pub mod bulk {
             )
         };
 
-        let mut aroon_oscillators = Vec::new();
-        for i in 0..length {
-            aroon_oscillators.push(single::aroon_oscillator(&aroon_up[i], &aroon_down[i]));
-        }
-        return aroon_oscillators;
+        (0..length)
+            .map(|i| single::aroon_oscillator(aroon_up[i], aroon_down[i]))
+            .collect()
     }
 
-    /// The `aroon_indicator` returns the Aroon up, Aroon down, and Aroon oscillator in that order
+    /// Calculates the aroon indicator
     ///
     /// # Arguments
     ///
@@ -620,9 +601,9 @@ pub mod bulk {
     ///
     /// # Panics
     ///
-    /// `aroon_indicator` will panic if:
-    /// * lengths of `high` and `low` aren't equal
-    /// * if lengths a less than `period`
+    /// Panics if:
+    /// * `high.len()` != `low.len()`
+    /// * lengths < `period`
     ///
     /// # Examples
     ///
@@ -630,11 +611,19 @@ pub mod bulk {
     /// let highs = vec![103.0, 102.0, 107.0, 104.0, 100.0, 102.0, 99.0];
     /// let lows = vec![98.0, 95.0, 101.0, 100.0, 97.0, 98.0, 97.0];
     /// let period: usize = 5;
-    /// let aroon_indicator = rust_ti::trend_indicators::bulk::aroon_indicator(&highs, &lows,
-    /// &period);
-    /// assert_eq!(vec![(50.0, 25.0, 25.0), (25.0, 0.0, 25.0), (0.0, 100.0, -100.0)], aroon_indicator);
+    ///
+    /// let aroon_indicator =
+    ///     rust_ti::trend_indicators::bulk::aroon_indicator(
+    ///         &highs,
+    ///         &lows,
+    ///         period
+    ///     );
+    /// assert_eq!(
+    ///     vec![(50.0, 25.0, 25.0), (25.0, 0.0, 25.0), (0.0, 100.0, -100.0)],
+    ///     aroon_indicator
+    /// );
     /// ```
-    pub fn aroon_indicator(highs: &[f64], lows: &[f64], period: &usize) -> Vec<(f64, f64, f64)> {
+    pub fn aroon_indicator(highs: &[f64], lows: &[f64], period: usize) -> Vec<(f64, f64, f64)> {
         let length = highs.len();
         if length != lows.len() {
             panic!(
@@ -643,52 +632,36 @@ pub mod bulk {
                 lows.len()
             )
         };
-        if &length < period {
+        if length < period {
             panic!(
                 "Period ({}) cannot be longer than lengths of highs and lows ({})",
                 period, length
             )
         };
 
-        let mut aroon_indicators = Vec::new();
         let loop_max = length - period + 1;
-        for i in 0..loop_max {
-            aroon_indicators.push(single::aroon_indicator(
-                &highs[i..i + period],
-                &lows[i..i + period],
-            ));
-        }
-        return aroon_indicators;
+        (0..loop_max)
+            .map(|i| single::aroon_indicator(&highs[i..i + period], &lows[i..i + period]))
+            .collect()
     }
 
-    /// The `parabolic_time_price_system` returns Stop and Reverse (SaR) points given a slices of
-    ///  high and low prices.
-    ///
-    /// Welles uses an acceleration factor that starts at 0.02, increases by 0.02 every
-    /// day a new high/low is hit and never goes over 0.2, but in these values are determined
-    /// by the function caller.
-    ///
-    /// Welles always makes the assumption that a short trade existed before starting to calculate
-    /// the parabolic time price system. To reflect this the `parabolic_time_price_system` starts
-    /// by calculating SaR from a short position.
+    /// Calculates the Parabolic time price system Stop and Reverse (SaR) points
     ///
     /// # Arguments
     ///
     /// * `highs` - Slice of highs.
     /// * `lows` - Slice of lows.
-    /// * `acceleration_factor_start` - The value to start at for the acceleration factor. Standard
-    /// is 0.02.
-    /// * `acceleration_factor_max` - The maximum value the acceleration factor can be. Standard is
-    /// 0.2.
-    /// * `acceleration_factor_step` - The step by which to increase the acceleration factor every
-    /// time it hits a new high/low. Standard is 0.02.
-    /// * `start_position` - A variant of the Position enum, whether the parabolic time system
-    /// should start long or short. If unsure start with short and 0.0 for `previous_sar`.
-    /// * `previous_sar`- Value for the previous SaR. If none use 0.0
+    /// * `acceleration_factor_start` - Initial acceleration factor
+    /// * `acceleration_factor_max` - Maximum acceleration factor
+    /// * `acceleration_factor_step` - Acceleration increment
+    /// * `start_position` - Variant of [Position]
+    /// * `previous_sar`- Previous SaR (0.0 if none)
     ///
     /// # Panics
     ///
-    /// `parabolic_time_price_system` will panic if lengths of `highs` and `lows` aren't equal
+    /// Panics if:
+    ///     * `highs.len()` != `lows.len()`
+    ///     * `highs.is_empty()` or `lows.is_empty()`
     ///
     /// # Examples
     ///
@@ -706,9 +679,17 @@ pub mod bulk {
     /// let acceleration_factor_start = 0.02;
     /// let acceleration_factor_max = 0.2;
     /// let acceleration_factor_step = 0.02;
-    /// let parabolic_time_price_system = rust_ti::trend_indicators::bulk::parabolic_time_price_system(&highs,
-    /// &lows, &acceleration_factor_start, &acceleration_factor_max, &acceleration_factor_step,
-    /// &rust_ti::Position::Long, &50.0);
+    ///
+    /// let parabolic_time_price_system =
+    ///     rust_ti::trend_indicators::bulk::parabolic_time_price_system(
+    ///         &highs,
+    ///         &lows,
+    ///         acceleration_factor_start,
+    ///         acceleration_factor_max,
+    ///         acceleration_factor_step,
+    ///         rust_ti::Position::Long,
+    ///         50.0
+    ///     );
     /// assert_eq!(
     ///     vec![
     ///     50.047, 50.093059999999994, 50.1381988, 50.182434824, 50.27513743104,
@@ -734,9 +715,16 @@ pub mod bulk {
     ///     56.0, 55.5, 55.0, 54.9, 54.0, 54.5, 53.8, 53.0, 51.5, 50.0, 50.5, 50.2, 51.5
     /// ];
     ///
-    /// let parabolic_time_price_system = rust_ti::trend_indicators::bulk::parabolic_time_price_system(&highs,
-    /// &lows, &acceleration_factor_start, &acceleration_factor_max, &acceleration_factor_step,
-    /// &rust_ti::Position::Short, &0.0);
+    /// let parabolic_time_price_system =
+    ///     rust_ti::trend_indicators::bulk::parabolic_time_price_system(
+    ///         &highs,
+    ///         &lows,
+    ///         acceleration_factor_start,
+    ///         acceleration_factor_max,
+    ///         acceleration_factor_step,
+    ///         rust_ti::Position::Short,
+    ///         0.0
+    ///     );
     /// assert_eq!(
     ///     vec![
     ///         52.3, 52.3, 50.047, 50.093059999999994, 50.1381988, 50.182434824,
@@ -754,11 +742,11 @@ pub mod bulk {
     pub fn parabolic_time_price_system(
         highs: &[f64],
         lows: &[f64],
-        acceleration_factor_start: &f64,
-        acceleration_factor_max: &f64,
-        acceleration_factor_step: &f64,
-        start_position: &crate::Position,
-        previous_sar: &f64,
+        acceleration_factor_start: f64,
+        acceleration_factor_max: f64,
+        acceleration_factor_step: f64,
+        start_position: Position,
+        previous_sar: f64,
     ) -> Vec<f64> {
         if highs.is_empty() || lows.is_empty() {
             panic!("Highs or lows cannot be empty")
@@ -779,92 +767,90 @@ pub mod bulk {
         // this is to substract 0.0000001 from the max, this shouldn't impact the
         // calculation but will resolve this issue.
         let acceleration_factor_max = acceleration_factor_max - 0.0000001;
-        let mut acceleration_factor = *acceleration_factor_start;
-        let mut sars = Vec::new();
+        let mut acceleration_factor = acceleration_factor_start;
+        let mut sars = Vec::with_capacity(length);
 
-        let mut position = match start_position {
-            Position::Short => 's',
-            Position::Long => 'l',
-            _ => panic!("Unsupported position"),
-        };
+        let mut position = start_position;
         let mut position_start = 0;
-        if position == 'l' {
-            if previous_sar == &0.0 {
+
+        if position == Position::Long {
+            if previous_sar == 0.0 {
                 sars.push(single::long_parabolic_time_price_system(
-                    &lows[0],
-                    &highs[0],
-                    &acceleration_factor,
-                    &lows[0],
+                    lows[0],
+                    highs[0],
+                    acceleration_factor,
+                    lows[0],
                 ));
             } else {
                 sars.push(single::long_parabolic_time_price_system(
-                    &previous_sar,
-                    &highs[0],
-                    &acceleration_factor,
-                    &lows[0],
+                    previous_sar,
+                    highs[0],
+                    acceleration_factor,
+                    lows[0],
                 ));
             }
-        } else if position == 's' {
-            if previous_sar == &0.0 {
+        } else if position == Position::Short {
+            if previous_sar == 0.0 {
                 sars.push(single::short_parabolic_time_price_system(
-                    &highs[0],
-                    &lows[0],
-                    &acceleration_factor,
-                    &highs[0],
+                    highs[0],
+                    lows[0],
+                    acceleration_factor,
+                    highs[0],
                 ));
             } else {
                 sars.push(single::short_parabolic_time_price_system(
                     previous_sar,
-                    &lows[0],
-                    &acceleration_factor,
-                    &highs[0],
+                    lows[0],
+                    acceleration_factor,
+                    highs[0],
                 ));
             }
         };
+
         for i in 1..length {
             let previous_sar = sars[i - 1];
-            if position == 's' && highs[i] > previous_sar {
-                position = 'l';
+            if position == Position::Short && highs[i] > previous_sar {
+                position = Position::Long;
                 let period_max = highs[i];
-                let previous_min = min(&lows[i - 1..i + 1]);
-                acceleration_factor = *acceleration_factor_start;
+                let previous_min = min(&lows[i - 1..=i]);
+                acceleration_factor = acceleration_factor_start;
                 let pivoted_sar = min(&lows[position_start..i]);
                 position_start = i;
                 sars.push(single::long_parabolic_time_price_system(
-                    &pivoted_sar,
-                    &period_max,
-                    &acceleration_factor,
-                    &previous_min,
+                    pivoted_sar,
+                    period_max,
+                    acceleration_factor,
+                    previous_min,
                 ));
-            } else if position == 's' {
+            } else if position == Position::Short {
                 let mut period_min = min(&lows[position_start..i]);
                 if period_min > lows[i] {
                     period_min = lows[i];
                     if acceleration_factor <= acceleration_factor_max {
-                        acceleration_factor = acceleration_factor + acceleration_factor_step;
+                        acceleration_factor += acceleration_factor_step;
                     };
                 };
                 let previous_max = max(&highs[i - 1..i + 1]);
                 sars.push(single::short_parabolic_time_price_system(
-                    &previous_sar,
-                    &period_min,
-                    &acceleration_factor,
-                    &previous_max,
+                    previous_sar,
+                    period_min,
+                    acceleration_factor,
+                    previous_max,
                 ));
-            } else if position == 'l' && lows[i] < previous_sar {
-                position = 's';
+            } else if position == Position::Long && lows[i] < previous_sar {
+                position = Position::Short;
                 let period_min = lows[i];
-                acceleration_factor = *acceleration_factor_start;
-                let previous_max = max(&highs[i - 1..i + 1]);
+                acceleration_factor = acceleration_factor_start;
+                let previous_max = max(&highs[i - 1..=i]);
                 let pivoted_sar = max(&highs[position_start..i]);
                 position_start = i;
                 sars.push(single::short_parabolic_time_price_system(
-                    &pivoted_sar,
-                    &period_min,
-                    &acceleration_factor,
-                    &previous_max,
+                    pivoted_sar,
+                    period_min,
+                    acceleration_factor,
+                    previous_max,
                 ));
-            } else if position == 'l' {
+            } else if position == Position::Long {
                 let mut period_max = max(&highs[position_start..i]);
                 if period_max < highs[i] {
                     period_max = highs[i];
@@ -874,78 +860,69 @@ pub mod bulk {
                 };
                 let previous_min = min(&lows[i - 1..i + 1]);
                 sars.push(single::long_parabolic_time_price_system(
-                    &previous_sar,
-                    &period_max,
-                    &acceleration_factor,
-                    &previous_min,
+                    previous_sar,
+                    period_max,
+                    acceleration_factor,
+                    previous_min,
                 ));
             }
         }
-        return sars;
+        sars
     }
 
-    /// The `directional_movement_system` function calculates the positive/negative Directional Movement (+/-
-    /// DM), positive/negative Directional Movement (+/-DI), Directional Movement Index (DX),
-    /// Average Directional Movement Index (ADX), and the Average Directional Movement Index Rating (ADXR).
-    ///
-    /// As Welles only used the +/- DI, ADX, and ADXR in his Directional Movement System, these are
-    /// the only values that will be returned as a tuple.
-    ///
-    /// When calculating the +/- DI and TR, Welles uses a accumulation technique for calculations
-    /// after the first to avoid having to keep track of previous data, and to make calculations
-    /// quick and easy by hand. However as things are now done programmatically this function will
-    /// not use the accumulation technique but will fully calculate the DI and TR.
-    ///
-    /// Unlike for most of the other functions there is no single version of this function as the
-    /// function calculates too many different indicators that are all dependant of each.
+    /// Calculates the directional movement system
     ///
     /// # Arguments
     ///
     /// * `high` - Slice of highs
     /// * `low` - Slice of lows
     /// * `close` - Slice of closing prices
-    /// * `period` - Period over which to calculate the DM. Welles recommends using a period of 14
-    /// * `constant_model_type` - Variant of [`ConstantModelType`] to calculate ADX
+    /// * `period` - Period over which to calculate the DM
+    /// * `constant_model_type` - Variant of [`ConstantModelType`]
     ///
     /// # Panics
     ///
-    /// `directional_movement_system` will panic if:
-    ///     * length of `high`, `low`, and `close` aren't equal
-    ///     * `high`, `close`, or `low` are empty
-    ///     * `period` is greater than lengths
+    /// Panics if:
+    ///     * `high.len()` != `low.len()` != `close.len()`
+    ///     * `high.is_empty()`
+    ///     * `period` > lengths
     ///
     /// # Examples
     ///
     /// ```rust
     /// let high = vec![
-    ///     4383.33, 4393.57, 4364.2, 4339.54, 4276.56, 4255.84, 4259.38, 4232.42, 4183.6, 4156.7,
-    ///     4177.47, 4195.55, 4245.64, 4319.72, 4373.62, 4372.21, 4386.26, 4391.2, 4393.4, 4418.03,
-    ///     4421.76, 4508.67, 4521.17, 4511.99, 4520.12, 4557.11, 4542.14, 4568.43, 4560.31, 4560.52,
-    ///     4568.14
+    ///     4383.33, 4393.57, 4364.2, 4339.54, 4276.56, 4255.84, 4259.38,
+    ///     4232.42, 4183.6, 4156.7, 4177.47, 4195.55, 4245.64, 4319.72,
+    ///     4373.62, 4372.21, 4386.26, 4391.2, 4393.4, 4418.03, 4421.76,
+    ///     4508.67, 4521.17, 4511.99, 4520.12, 4557.11, 4542.14, 4568.43,
+    ///     4560.31, 4560.52, 4568.14
     /// ];
     ///
     /// let low = vec![
-    ///     4342.37, 4337.54, 4303.84, 4269.69, 4223.03, 4189.22, 4219.43, 4181.42, 4127.9,
-    ///     4103.78, 4132.94, 4153.12, 4197.74, 4268.26, 4334.23, 4347.53, 4355.41, 4359.76,
-    ///     4343.94, 4353.34, 4393.82, 4458.97, 4495.31, 4487.83, 4499.66, 4510.36, 4525.51,
-    ///     4545.05, 4552.8, 4546.32, 4540.51
+    ///     4342.37, 4337.54, 4303.84, 4269.69, 4223.03, 4189.22, 4219.43,
+    ///     4181.42, 4127.9, 4103.78, 4132.94, 4153.12, 4197.74, 4268.26,
+    ///     4334.23, 4347.53, 4355.41, 4359.76, 4343.94, 4353.34, 4393.82,
+    ///     4458.97, 4495.31, 4487.83, 4499.66, 4510.36, 4525.51, 4545.05,
+    ///     4552.8, 4546.32, 4540.51
     /// ];
     ///
     /// let close = vec![
-    ///     4373.63, 4373.2, 4314.6, 4278.0, 4224.16, 4217.04, 4247.68, 4186.77, 4137.23,
-    ///     4117.37, 4166.82, 4193.8, 4237.86, 4317.78, 4358.34, 4365.98, 4378.38, 4382.78,
-    ///     4347.35, 4415.24, 4411.55, 4495.7, 4502.88, 4508.24, 4514.02, 4547.38, 4538.19,
-    ///     4556.62, 4559.34, 4550.43, 4554.89
+    ///     4373.63, 4373.2, 4314.6, 4278.0, 4224.16, 4217.04, 4247.68,
+    ///     4186.77, 4137.23, 4117.37, 4166.82, 4193.8, 4237.86, 4317.78,
+    ///     4358.34, 4365.98, 4378.38, 4382.78, 4347.35, 4415.24, 4411.55,
+    ///     4495.7, 4502.88, 4508.24, 4514.02, 4547.38, 4538.19, 4556.62,
+    ///     4559.34, 4550.43, 4554.89
     /// ];
     ///
     /// let period: usize = 5;
     ///
-    /// let directional_movement_system = rust_ti::trend_indicators::bulk::directional_movement_system(
-    ///     &high,
-    ///     &low,
-    ///     &close,
-    ///     &period,
-    ///     &rust_ti::ConstantModelType::SimpleMovingAverage
+    /// let directional_movement_system =
+    ///     rust_ti::trend_indicators::bulk::directional_movement_system(
+    ///         &high,
+    ///         &low,
+    ///         &close,
+    ///         period,
+    ///         rust_ti::ConstantModelType::SimpleMovingAverage
     /// );
     ///
     /// assert_eq!(
@@ -974,8 +951,8 @@ pub mod bulk {
         high: &[f64],
         low: &[f64],
         close: &[f64],
-        period: &usize,
-        constant_model_type: &ConstantModelType,
+        period: usize,
+        constant_model_type: ConstantModelType,
     ) -> Vec<(f64, f64, f64, f64)> {
         let length = high.len();
         if length != low.len() || length != close.len() {
@@ -997,8 +974,8 @@ pub mod bulk {
             )
         };
 
-        let mut positive_dm = Vec::new();
-        let mut negative_dm = Vec::new();
+        let mut positive_dm = Vec::with_capacity(length - 1);
+        let mut negative_dm = Vec::with_capacity(length - 1);
 
         for i in 1..length {
             let high_diff = high[i] - high[i - 1];
@@ -1018,10 +995,10 @@ pub mod bulk {
 
         let tr = true_range(&close[1..], &high[1..], &low[1..]);
 
-        let mut positive_di: Vec<f64> = Vec::new();
-        let mut negative_di: Vec<f64> = Vec::new();
+        let mut positive_di: Vec<f64> = Vec::with_capacity(length - period);
+        let mut negative_di: Vec<f64> = Vec::with_capacity(length - period);
 
-        for i in *period..length {
+        for i in period..length {
             let tr_sum: f64 = tr[i - period..i].iter().sum();
             let positive_dm_sum: f64 = positive_dm[i - period..i].iter().sum();
             let negative_dm_sum: f64 = negative_dm[i - period..i].iter().sum();
@@ -1029,41 +1006,48 @@ pub mod bulk {
             negative_di.push((negative_dm_sum / tr_sum) * 100.0);
         }
 
-        let mut dx = Vec::new();
-        for i in 0..positive_di.len() {
-            let di_diff = (positive_di[i] - negative_di[i]).abs();
-            let di_sum = positive_di[i] + negative_di[i];
-            dx.push((di_diff / di_sum) * 100.0);
-        }
+        let dx: Vec<f64> = positive_di
+            .iter()
+            .zip(&negative_di)
+            .map(|(&p, &n)| {
+                let di_diff = (p - n).abs();
+                let di_sum = p + n;
+                (di_diff / di_sum) * 100.0
+            })
+            .collect();
 
         let adx = match constant_model_type {
             ConstantModelType::SimpleMovingAverage => {
-                moving_average(&dx, &MovingAverageType::Simple, period)
+                moving_average(&dx, MovingAverageType::Simple, period)
             }
             ConstantModelType::SmoothedMovingAverage => {
-                moving_average(&dx, &MovingAverageType::Smoothed, period)
+                moving_average(&dx, MovingAverageType::Smoothed, period)
             }
             ConstantModelType::ExponentialMovingAverage => {
-                moving_average(&dx, &MovingAverageType::Exponential, period)
+                moving_average(&dx, MovingAverageType::Exponential, period)
             }
-            ConstantModelType::PersonalisedMovingAverage(alpha_nominator, alpha_denominator) => {
-                moving_average(
-                    &dx,
-                    &MovingAverageType::Personalised(alpha_nominator, alpha_denominator),
-                    period,
-                )
-            }
-            ConstantModelType::SimpleMovingMedian => median(&dx, &period),
-            ConstantModelType::SimpleMovingMode => mode(&dx, &period),
+            ConstantModelType::PersonalisedMovingAverage {
+                alpha_num,
+                alpha_den,
+            } => moving_average(
+                &dx,
+                MovingAverageType::Personalised {
+                    alpha_num,
+                    alpha_den,
+                },
+                period,
+            ),
+            ConstantModelType::SimpleMovingMedian => median(&dx, period),
+            ConstantModelType::SimpleMovingMode => mode(&dx, period),
             _ => panic!("Not a supported constant model type"),
         };
 
-        let mut adxr = Vec::new();
-        for i in *period..adx.len() + 1 {
+        let mut adxr = Vec::with_capacity(adx.len() - period - 1);
+        for i in period..=adx.len() {
             adxr.push((adx[i - period] + adx[i - 1]) / 2.0);
         }
 
-        let mut directional_movement_system = Vec::new();
+        let mut directional_movement_system = Vec::with_capacity(adxr.len());
         for i in 0..adxr.len() {
             directional_movement_system.push((
                 // Because the period is used 3 times to get various indicators
@@ -1075,31 +1059,20 @@ pub mod bulk {
                 adxr[i],
             ));
         }
-        return directional_movement_system;
+        directional_movement_system
     }
 
-    /// The `volume_price_trend` relates prices to the volume to give an indicator that tracks the
-    /// trend of an asset with relation to volume.
-    ///
-    /// A signal line is some times created by taking the moving average of the Volume-Price trend.
-    ///
-    /// The standard is to use the close prices.
-    ///
-    /// If there is no previous volume-price trend use 0.0.
-    ///
-    /// In the bulk function length of volume should be 1 shorter than length of prices as the
-    /// function does the difference between the prices at t and t-1, but only uses volume for t.
+    /// Calculates the Volume Price Trend (VPT)
     ///
     /// # Arguments
     ///
     /// * `prices` - Slice of prices
     /// * `volumes` - Slice of volumes
-    /// * `previous_volume_price_trend` - Previous volume-price trend. If none use 0.0
+    /// * `previous_volume_price_trend` - Previous VPT (0.0 if none)
     ///
     /// # Panics
     ///
-    /// `volume_price_trend` will panic if length of `volumes` isn't equal to length of `prices` -
-    /// 1.
+    /// Panics if `volumes.len()` != `prices.len() - 1`
     ///
     /// # Examples
     ///
@@ -1107,26 +1080,35 @@ pub mod bulk {
     /// let prices = [101.0, 102.0, 100.0];
     /// let volumes = [1000.0, 1500.0];
     ///
-    /// let volume_price_trend = rust_ti::trend_indicators::bulk::volume_price_trend(
-    ///     &prices,
-    ///     &volumes,
-    ///     &0.0
+    /// let volume_price_trend =
+    ///     rust_ti::trend_indicators::bulk::volume_price_trend(
+    ///         &prices,
+    ///         &volumes,
+    ///         0.0
+    ///     );
+    /// assert_eq!(
+    ///     vec![9.900990099009901, -19.510774606872452],
+    ///     volume_price_trend
     /// );
-    /// assert_eq!(vec![9.900990099009901, -19.510774606872452], volume_price_trend);
     ///
     /// let next_prices = [100.0, 98.0, 97.0];
     /// let next_volumes = [2000.0, 800.0];
-    /// let volume_price_trend = rust_ti::trend_indicators::bulk::volume_price_trend(
-    ///     &next_prices,
-    ///     &next_volumes,
-    ///     &volume_price_trend[1]
+    ///
+    /// let volume_price_trend =
+    ///     rust_ti::trend_indicators::bulk::volume_price_trend(
+    ///         &next_prices,
+    ///         &next_volumes,
+    ///         volume_price_trend[1]
+    ///     );
+    /// assert_eq!(
+    ///     vec![-59.51077460687245, -67.6740399129949],
+    ///     volume_price_trend
     /// );
-    /// assert_eq!(vec![-59.51077460687245, -67.6740399129949], volume_price_trend);
     /// ```
     pub fn volume_price_trend(
         prices: &[f64],
         volumes: &[f64],
-        previous_volume_price_trend: &f64,
+        previous_volume_price_trend: f64,
     ) -> Vec<f64> {
         let length = volumes.len();
         if length != prices.len() - 1 {
@@ -1141,68 +1123,62 @@ pub mod bulk {
             panic!("Volumes nor prices can be empty")
         };
 
-        let mut vpts = vec![single::volume_price_trend(
-            &prices[1],
-            &prices[0],
-            &volumes[0],
+        let mut vpts = Vec::with_capacity(length);
+        let mut vpt = single::volume_price_trend(
+            prices[1],
+            prices[0],
+            volumes[0],
             previous_volume_price_trend,
-        )];
+        );
+        vpts.push(vpt);
 
         for i in 1..length {
-            vpts.push(single::volume_price_trend(
-                &prices[i + 1],
-                &prices[i],
-                &volumes[i],
-                &vpts[i - 1],
-            ));
+            vpt = single::volume_price_trend(prices[i + 1], prices[i], volumes[i], vpt);
+            vpts.push(vpt);
         }
-        return vpts;
+        vpts
     }
 
-    /// The `true_strength_index` measures trend direction by applying the moving average on the
-    /// difference of the prices twice.
-    ///
-    /// The standard model is an exponential moving average, the first smoothing period is 25, the
-    /// second smoothing period is 13.
-    ///
-    /// Due to the double smoothing, caller needs to be aware that the legnth of prices needs to be
-    /// the sum of the first and second period. For the standard TSI, the length of prices needs to
-    /// be 38.
+    /// Calculates the True Strength Index (TSI)
     ///
     /// # Arguments
     ///
     /// * `prices` - Slice of prices
     /// * `first_constant_model` - Variant of [`ConstantModelType`]
-    /// * `first_period` - Period over which to apply the first smoothing
+    /// * `first_period` - Period for first smoothing
     /// * `second_constant_model` - Variant of [`ConstantModelType`]
-    /// * `second_period` - Period over which to apply the second smoothing
+    /// * `second_period` - Period for second smoothing
     ///
     /// # Panics
     ///
-    /// `true_strength_index` will panic if:
-    ///     * `prices` is empty
-    ///     * Length of `prices` needs to be greater than sum of `first_period` and `second_period`
+    /// Panics if:
+    ///     * `prices.is_empty()`
+    ///     * `prices.len()` < `first_period` + `second_period`
     ///
     /// # Examples
     ///
     /// ```rust
-    /// let prices = vec![100.0, 115.0, 118.0, 120.0, 125.0, 117.0, 113.0, 115.0, 110.0, 107.0];
+    /// let prices =
+    ///     vec![100.0, 115.0, 118.0, 120.0, 125.0, 117.0, 113.0, 115.0, 110.0, 107.0];
     /// let true_strength_index = rust_ti::trend_indicators::bulk::true_strength_index(
     ///     &prices,
-    ///     &rust_ti::ConstantModelType::ExponentialMovingAverage,
-    ///     &5_usize,
-    ///     &rust_ti::ConstantModelType::ExponentialMovingAverage,
-    ///     &3_usize
+    ///     rust_ti::ConstantModelType::ExponentialMovingAverage,
+    ///     5_usize,
+    ///     rust_ti::ConstantModelType::ExponentialMovingAverage,
+    ///     3_usize
     /// );
     ///
-    /// assert_eq!(vec![-0.25821030430852665, -0.48120300751879697, -0.6691474966170501], true_strength_index);
+    /// assert_eq!(
+    ///     vec![-0.25821030430852665, -0.48120300751879697, -0.6691474966170501],
+    ///     true_strength_index
+    /// );
     /// ```
     pub fn true_strength_index(
         prices: &[f64],
-        first_constant_model: &ConstantModelType,
-        first_period: &usize,
-        second_constant_model: &ConstantModelType,
-        second_period: &usize,
+        first_constant_model: ConstantModelType,
+        first_period: usize,
+        second_constant_model: ConstantModelType,
+        second_period: usize,
     ) -> Vec<f64> {
         if prices.is_empty() {
             panic!("Prices cannot be empty")
@@ -1217,17 +1193,17 @@ pub mod bulk {
         };
 
         let loop_max = length - period_sum + 1;
-        let mut tsis = Vec::new();
 
-        for i in 0..loop_max {
-            tsis.push(single::true_strength_index(
-                &prices[i..i + period_sum],
-                first_constant_model,
-                first_period,
-                second_constant_model,
-            ));
-        }
-        return tsis;
+        (0..loop_max)
+            .map(|i| {
+                single::true_strength_index(
+                    &prices[i..i + period_sum],
+                    first_constant_model,
+                    first_period,
+                    second_constant_model,
+                )
+            })
+            .collect()
     }
 }
 
@@ -1253,7 +1229,7 @@ mod tests {
         let highs = vec![101.26, 102.57, 102.32, 100.69, 100.83, 101.73, 102.01];
         assert_eq!(
             vec![33.33333333333333, 0.0, 0.0, 100.0],
-            bulk::aroon_up(&highs, &4)
+            bulk::aroon_up(&highs, 4)
         );
     }
 
@@ -1261,7 +1237,7 @@ mod tests {
     #[should_panic]
     fn bulk_aroon_up_panic() {
         let highs = vec![101.26, 102.57, 102.32, 100.69, 100.83, 101.73, 102.01];
-        bulk::aroon_up(&highs, &40);
+        bulk::aroon_up(&highs, 40);
     }
 
     #[test]
@@ -1282,7 +1258,7 @@ mod tests {
         let lows = vec![100.08, 98.75, 100.14, 98.98, 99.07, 100.1, 99.96];
         assert_eq!(
             vec![33.33333333333333, 0.0, 33.33333333333333, 0.0],
-            bulk::aroon_down(&lows, &4)
+            bulk::aroon_down(&lows, 4)
         );
     }
 
@@ -1290,14 +1266,14 @@ mod tests {
     #[should_panic]
     fn bulk_aroon_down_panic() {
         let lows = vec![100.08, 98.75, 100.14, 98.98, 99.07, 100.1, 99.96];
-        bulk::aroon_down(&lows, &40);
+        bulk::aroon_down(&lows, 40);
     }
 
     #[test]
     fn single_aroon_oscillator() {
         assert_eq!(
             0.0,
-            single::aroon_oscillator(&33.33333333333333, &33.33333333333333)
+            single::aroon_oscillator(33.33333333333333, 33.33333333333333)
         );
     }
 
@@ -1364,7 +1340,7 @@ mod tests {
                 (0.0, 33.33333333333333, -33.33333333333333),
                 (100.0, 0.0, 100.0)
             ],
-            bulk::aroon_indicator(&highs, &lows, &4)
+            bulk::aroon_indicator(&highs, &lows, 4)
         );
     }
 
@@ -1373,7 +1349,7 @@ mod tests {
     fn bulk_aroon_indicator_high_panic() {
         let highs = vec![102.57, 102.32, 100.69, 100.83, 101.73, 102.01];
         let lows = vec![100.08, 98.75, 100.14, 98.98, 99.07, 100.1, 99.96];
-        bulk::aroon_indicator(&highs, &lows, &4);
+        bulk::aroon_indicator(&highs, &lows, 4);
     }
 
     #[test]
@@ -1381,7 +1357,7 @@ mod tests {
     fn bulk_aroon_indicator_low_panic() {
         let highs = vec![101.26, 102.57, 102.32, 100.69, 100.83, 101.73, 102.01];
         let lows = vec![98.75, 100.14, 98.98, 99.07, 100.1, 99.96];
-        bulk::aroon_indicator(&highs, &lows, &4);
+        bulk::aroon_indicator(&highs, &lows, 4);
     }
 
     #[test]
@@ -1389,14 +1365,14 @@ mod tests {
     fn bulk_aroon_indicator_period_panic() {
         let highs = vec![101.26, 102.57, 102.32, 100.69, 100.83, 101.73, 102.01];
         let lows = vec![100.08, 98.75, 100.14, 98.98, 99.07, 100.1, 99.96];
-        bulk::aroon_indicator(&highs, &lows, &40);
+        bulk::aroon_indicator(&highs, &lows, 40);
     }
 
     #[test]
     fn single_long_parabolic_price_time_system() {
         assert_eq!(
             100.6,
-            single::long_parabolic_time_price_system(&100.0, &110.0, &0.06, &105.0)
+            single::long_parabolic_time_price_system(100.0, 110.0, 0.06, 105.0)
         );
     }
 
@@ -1404,7 +1380,7 @@ mod tests {
     fn single_long_parabolic_price_time_system_min() {
         assert_eq!(
             90.0,
-            single::long_parabolic_time_price_system(&100.0, &110.0, &0.06, &90.0)
+            single::long_parabolic_time_price_system(100.0, 110.0, 0.06, 90.0)
         );
     }
 
@@ -1412,7 +1388,7 @@ mod tests {
     fn single_short_parabolic_price_time_system() {
         assert_eq!(
             99.6,
-            single::short_parabolic_time_price_system(&100.0, &90.0, &0.04, &95.0)
+            single::short_parabolic_time_price_system(100.0, 90.0, 0.04, 95.0)
         );
     }
 
@@ -1420,7 +1396,7 @@ mod tests {
     fn single_short_parabolic_price_time_system_max() {
         assert_eq!(
             105.0,
-            single::short_parabolic_time_price_system(&100.0, &90.0, &0.04, &105.0)
+            single::short_parabolic_time_price_system(100.0, 90.0, 0.04, 105.0)
         );
     }
 
@@ -1439,11 +1415,11 @@ mod tests {
             bulk::parabolic_time_price_system(
                 &highs,
                 &lows,
-                &0.02,
-                &0.2,
-                &0.02,
-                &crate::Position::Long,
-                &90.58
+                0.02,
+                0.2,
+                0.02,
+                crate::Position::Long,
+                90.58
             )
         );
     }
@@ -1457,11 +1433,11 @@ mod tests {
             bulk::parabolic_time_price_system(
                 &highs,
                 &lows,
-                &0.02,
-                &0.2,
-                &0.02,
-                &crate::Position::Long,
-                &0.0
+                0.02,
+                0.2,
+                0.02,
+                crate::Position::Long,
+                0.0
             )
         );
     }
@@ -1475,11 +1451,11 @@ mod tests {
             bulk::parabolic_time_price_system(
                 &highs,
                 &lows,
-                &0.02,
-                &0.2,
-                &0.02,
-                &crate::Position::Short,
-                &102.39
+                0.02,
+                0.2,
+                0.02,
+                crate::Position::Short,
+                102.39
             )
         );
     }
@@ -1493,11 +1469,11 @@ mod tests {
             bulk::parabolic_time_price_system(
                 &highs,
                 &lows,
-                &0.02,
-                &0.2,
-                &0.02,
-                &crate::Position::Short,
-                &0.0
+                0.02,
+                0.2,
+                0.02,
+                crate::Position::Short,
+                0.0
             )
         );
     }
@@ -1511,11 +1487,11 @@ mod tests {
             bulk::parabolic_time_price_system(
                 &highs,
                 &lows,
-                &0.02,
-                &0.2,
-                &0.02,
-                &crate::Position::Long,
-                &90.58
+                0.02,
+                0.2,
+                0.02,
+                crate::Position::Long,
+                90.58
             )
         );
     }
@@ -1529,11 +1505,11 @@ mod tests {
             bulk::parabolic_time_price_system(
                 &highs,
                 &lows,
-                &0.02,
-                &0.2,
-                &0.02,
-                &crate::Position::Short,
-                &102.39
+                0.02,
+                0.2,
+                0.02,
+                crate::Position::Short,
+                102.39
             )
         );
     }
@@ -1554,11 +1530,11 @@ mod tests {
             bulk::parabolic_time_price_system(
                 &highs,
                 &lows,
-                &0.02,
-                &0.2,
-                &0.02,
-                &crate::Position::Long,
-                &90.58
+                0.02,
+                0.2,
+                0.02,
+                crate::Position::Long,
+                90.58
             )
         );
     }
@@ -1579,11 +1555,11 @@ mod tests {
             bulk::parabolic_time_price_system(
                 &highs,
                 &lows,
-                &0.02,
-                &0.2,
-                &0.02,
-                &crate::Position::Long,
-                &90.58
+                0.02,
+                0.2,
+                0.02,
+                crate::Position::Long,
+                90.58
             )
         );
     }
@@ -1604,11 +1580,11 @@ mod tests {
             bulk::parabolic_time_price_system(
                 &highs,
                 &lows,
-                &0.02,
-                &0.2,
-                &0.02,
-                &crate::Position::Long,
-                &90.58
+                0.02,
+                0.2,
+                0.02,
+                crate::Position::Long,
+                90.58
             )
         );
     }
@@ -1629,11 +1605,11 @@ mod tests {
             bulk::parabolic_time_price_system(
                 &highs,
                 &lows,
-                &0.02,
-                &0.2,
-                &0.02,
-                &crate::Position::Long,
-                &90.58
+                0.02,
+                0.2,
+                0.02,
+                crate::Position::Long,
+                90.58
             )
         );
     }
@@ -1669,8 +1645,8 @@ mod tests {
                 &highs,
                 &lows,
                 &close,
-                &3_usize,
-                &crate::ConstantModelType::SimpleMovingAverage
+                3_usize,
+                crate::ConstantModelType::SimpleMovingAverage
             )
         );
     }
@@ -1701,8 +1677,8 @@ mod tests {
                 &highs,
                 &lows,
                 &close,
-                &3_usize,
-                &crate::ConstantModelType::SmoothedMovingAverage
+                3_usize,
+                crate::ConstantModelType::SmoothedMovingAverage
             )
         );
     }
@@ -1733,8 +1709,8 @@ mod tests {
                 &highs,
                 &lows,
                 &close,
-                &3_usize,
-                &crate::ConstantModelType::ExponentialMovingAverage
+                3_usize,
+                crate::ConstantModelType::ExponentialMovingAverage
             )
         );
     }
@@ -1770,8 +1746,11 @@ mod tests {
                 &highs,
                 &lows,
                 &close,
-                &3_usize,
-                &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0)
+                3_usize,
+                crate::ConstantModelType::PersonalisedMovingAverage {
+                    alpha_num: 5.0,
+                    alpha_den: 4.0
+                }
             )
         );
     }
@@ -1807,8 +1786,8 @@ mod tests {
                 &highs,
                 &lows,
                 &close,
-                &3_usize,
-                &crate::ConstantModelType::SimpleMovingMedian
+                3_usize,
+                crate::ConstantModelType::SimpleMovingMedian
             )
         );
     }
@@ -1839,8 +1818,8 @@ mod tests {
                 &highs,
                 &lows,
                 &close,
-                &3_usize,
-                &crate::ConstantModelType::SimpleMovingMode
+                3_usize,
+                crate::ConstantModelType::SimpleMovingMode
             )
         );
     }
@@ -1862,8 +1841,8 @@ mod tests {
             &highs,
             &lows,
             &close,
-            &3_usize,
-            &crate::ConstantModelType::SimpleMovingMode,
+            3_usize,
+            crate::ConstantModelType::SimpleMovingMode,
         );
     }
 
@@ -1884,8 +1863,8 @@ mod tests {
             &highs,
             &lows,
             &close,
-            &3_usize,
-            &crate::ConstantModelType::SimpleMovingMode,
+            3_usize,
+            crate::ConstantModelType::SimpleMovingMode,
         );
     }
 
@@ -1906,8 +1885,8 @@ mod tests {
             &highs,
             &lows,
             &close,
-            &3_usize,
-            &crate::ConstantModelType::SimpleMovingMode,
+            3_usize,
+            crate::ConstantModelType::SimpleMovingMode,
         );
     }
 
@@ -1922,8 +1901,8 @@ mod tests {
             &highs,
             &lows,
             &close,
-            &3_usize,
-            &crate::ConstantModelType::SimpleMovingMode,
+            3_usize,
+            crate::ConstantModelType::SimpleMovingMode,
         );
     }
 
@@ -1944,8 +1923,8 @@ mod tests {
             &highs,
             &lows,
             &close,
-            &3_usize,
-            &crate::ConstantModelType::SimpleMovingMode,
+            3_usize,
+            crate::ConstantModelType::SimpleMovingMode,
         );
     }
 
@@ -1953,7 +1932,7 @@ mod tests {
     fn single_volume_price_trend_no_previous() {
         assert_eq!(
             -11.379612133266974,
-            single::volume_price_trend(&99.01, &100.55, &743.0, &0.0)
+            single::volume_price_trend(99.01, 100.55, 743.0, 0.0)
         );
     }
 
@@ -1961,7 +1940,7 @@ mod tests {
     fn single_volume_price_trend_previous() {
         assert_eq!(
             4.023680463440446,
-            single::volume_price_trend(&100.43, &99.01, &1074.0, &-11.379612133266974)
+            single::volume_price_trend(100.43, 99.01, 1074.0, -11.379612133266974)
         );
     }
 
@@ -1976,7 +1955,7 @@ mod tests {
                 8.910367708287545,
                 16.1792785993767
             ],
-            bulk::volume_price_trend(&prices, &volume, &0.0)
+            bulk::volume_price_trend(&prices, &volume, 0.0)
         );
     }
 
@@ -1991,7 +1970,7 @@ mod tests {
                 18.910367708287545,
                 26.1792785993767
             ],
-            bulk::volume_price_trend(&prices, &volume, &10.0)
+            bulk::volume_price_trend(&prices, &volume, 10.0)
         );
     }
 
@@ -2000,7 +1979,7 @@ mod tests {
     fn bulk_volume_price_trend_panic_length() {
         let prices = vec![100.55, 99.01, 101.0, 101.76];
         let volume = vec![743.0, 1074.0, 861.0, 966.0];
-        bulk::volume_price_trend(&prices, &volume, &10.0);
+        bulk::volume_price_trend(&prices, &volume, 10.0);
     }
 
     #[test]
@@ -2008,7 +1987,7 @@ mod tests {
     fn bulk_volume_price_trend_panic_volume_empty() {
         let prices = vec![100.55, 99.01, 100.43, 101.0, 101.76];
         let volume = Vec::new();
-        bulk::volume_price_trend(&prices, &volume, &10.0);
+        bulk::volume_price_trend(&prices, &volume, 10.0);
     }
 
     #[test]
@@ -2016,7 +1995,7 @@ mod tests {
     fn bulk_volume_price_trend_panic_prices_empty() {
         let prices = Vec::new();
         let volume = vec![743.0, 1074.0, 861.0, 966.0];
-        bulk::volume_price_trend(&prices, &volume, &10.0);
+        bulk::volume_price_trend(&prices, &volume, 10.0);
     }
 
     #[test]
@@ -2026,9 +2005,9 @@ mod tests {
             0.3688989784336005,
             single::true_strength_index(
                 &prices,
-                &crate::ConstantModelType::SimpleMovingAverage,
-                &5_usize,
-                &crate::ConstantModelType::SimpleMovingAverage
+                crate::ConstantModelType::SimpleMovingAverage,
+                5_usize,
+                crate::ConstantModelType::SimpleMovingAverage
             )
         );
     }
@@ -2040,9 +2019,9 @@ mod tests {
             0.5156567622865983,
             single::true_strength_index(
                 &prices,
-                &crate::ConstantModelType::SmoothedMovingAverage,
-                &5_usize,
-                &crate::ConstantModelType::SmoothedMovingAverage
+                crate::ConstantModelType::SmoothedMovingAverage,
+                5_usize,
+                crate::ConstantModelType::SmoothedMovingAverage
             )
         );
     }
@@ -2054,9 +2033,9 @@ mod tests {
             0.6031084483806584,
             single::true_strength_index(
                 &prices,
-                &crate::ConstantModelType::ExponentialMovingAverage,
-                &5_usize,
-                &crate::ConstantModelType::ExponentialMovingAverage
+                crate::ConstantModelType::ExponentialMovingAverage,
+                5_usize,
+                crate::ConstantModelType::ExponentialMovingAverage
             )
         );
     }
@@ -2068,9 +2047,15 @@ mod tests {
             0.7550056326977878,
             single::true_strength_index(
                 &prices,
-                &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0),
-                &5_usize,
-                &crate::ConstantModelType::PersonalisedMovingAverage(&5.0, &4.0)
+                crate::ConstantModelType::PersonalisedMovingAverage {
+                    alpha_num: 5.0,
+                    alpha_den: 4.0
+                },
+                5_usize,
+                crate::ConstantModelType::PersonalisedMovingAverage {
+                    alpha_num: 5.0,
+                    alpha_den: 4.0
+                }
             )
         );
     }
@@ -2082,9 +2067,9 @@ mod tests {
             0.2249999999999778,
             single::true_strength_index(
                 &prices,
-                &crate::ConstantModelType::SimpleMovingMedian,
-                &5_usize,
-                &crate::ConstantModelType::SimpleMovingMedian
+                crate::ConstantModelType::SimpleMovingMedian,
+                5_usize,
+                crate::ConstantModelType::SimpleMovingMedian
             )
         );
     }
@@ -2096,9 +2081,9 @@ mod tests {
             0.0,
             single::true_strength_index(
                 &prices,
-                &crate::ConstantModelType::SimpleMovingMode,
-                &5_usize,
-                &crate::ConstantModelType::SimpleMovingMode
+                crate::ConstantModelType::SimpleMovingMode,
+                5_usize,
+                crate::ConstantModelType::SimpleMovingMode
             )
         );
     }
@@ -2109,9 +2094,9 @@ mod tests {
         let prices = vec![100.14, 98.98, 99.07, 100.1, 99.96];
         single::true_strength_index(
             &prices,
-            &crate::ConstantModelType::SimpleMovingMode,
-            &5_usize,
-            &crate::ConstantModelType::SimpleMovingMode,
+            crate::ConstantModelType::SimpleMovingMode,
+            5_usize,
+            crate::ConstantModelType::SimpleMovingMode,
         );
     }
 
@@ -2121,9 +2106,9 @@ mod tests {
         let prices = Vec::new();
         single::true_strength_index(
             &prices,
-            &crate::ConstantModelType::SimpleMovingMode,
-            &5_usize,
-            &crate::ConstantModelType::SimpleMovingMode,
+            crate::ConstantModelType::SimpleMovingMode,
+            5_usize,
+            crate::ConstantModelType::SimpleMovingMode,
         );
     }
 
@@ -2136,10 +2121,10 @@ mod tests {
             vec![0.6031084483806584, 0.43792017300550673, 0.06758060421426838],
             bulk::true_strength_index(
                 &prices,
-                &crate::ConstantModelType::ExponentialMovingAverage,
-                &5_usize,
-                &crate::ConstantModelType::ExponentialMovingAverage,
-                &3_usize
+                crate::ConstantModelType::ExponentialMovingAverage,
+                5_usize,
+                crate::ConstantModelType::ExponentialMovingAverage,
+                3_usize
             )
         );
     }
@@ -2150,23 +2135,23 @@ mod tests {
         let prices = vec![100.14, 98.98, 99.07, 100.1, 99.96, 99.52, 101.16];
         bulk::true_strength_index(
             &prices,
-            &crate::ConstantModelType::SimpleMovingMode,
-            &5_usize,
-            &crate::ConstantModelType::SimpleMovingMode,
-            &3_usize,
+            crate::ConstantModelType::SimpleMovingMode,
+            5_usize,
+            crate::ConstantModelType::SimpleMovingMode,
+            3_usize,
         );
     }
 
     #[test]
     #[should_panic]
-    fn bulk_true_strength_index_panic_() {
+    fn bulk_true_strength_index_panic_empty() {
         let prices = Vec::new();
         bulk::true_strength_index(
             &prices,
-            &crate::ConstantModelType::SimpleMovingMode,
-            &5_usize,
-            &crate::ConstantModelType::SimpleMovingMode,
-            &3_usize,
+            crate::ConstantModelType::SimpleMovingMode,
+            5_usize,
+            crate::ConstantModelType::SimpleMovingMode,
+            3_usize,
         );
     }
 }

@@ -1,40 +1,51 @@
-# Contributing to Rust TI
+# Contributing to RustTI
 
-First of all I appreciate all contributions no matter how big or small.
+Thank you for considering contributing—every improvement is appreciated, big or small!
 
-## How to contribute
+---
 
-Contributing is easy, all you have to do is:
-    * Clone the code
-    * Make the changes
-    * Raise a PR
-    * @ 0100101001010000 on the PR and ask for a review
+## 🙌 How to Contribute
 
-## What to do?
+1. **Fork and clone the repository**  
+2. **Make your changes**  
+3. **Open a Pull Request (PR)** on [GitHub](https://github.com/0100101001010000/RustTI/pulls)
+4. **Tag @0100101001010000** in your PR for a review
 
-There are a few things that need to be done in the code, so if you have no ideas, doing some of the following
-would be very helpful.
+See [open issues](https://github.com/0100101001010000/RustTI/issues) if you want to start with something small.
 
-### General
+---
 
-    * remove test_ prefix from all tests
-    * in parabolic t/p system remove single functions, and have the bulk function find the trend and determine
-      whether to go long or short like it does in the volatility system ... or return s/l in vol system
-    * Add the ability for indicators to use something other than normal distributions (for variance, std dev...)
+## 🛠️ What to Work On?
 
-### New indicators
+- Remove `test_` prefix from all test functions
+- Refactor parabolic T/P system: remove single functions; let bulk function determine trend (like `volatility` system)
+- Allow indicators to use non-normal distributions (for variance, standard deviation, etc.)
 
-    * Indicator that shows the distribution of prices over a period. Essentially does a count for each unique price, and orders the prices in ascending order
-    * Create a version of mode/median absolute deviation that doesn't take the mode/median from the absolute deviation of the mean, but rather the absolute deviation from the mode/mean
-    * McGinley dynamic versions of anything using MA (Donchain channels, Keltner channels, Supertrend, 
-percentage price oscillator, relative vigor index)
+### New Indicator Ideas
 
-## I have an indicator I want to add
+- Indicator showing price distribution over a period (count unique prices, order ascending)
+- Median/mode absolute deviation based on deviation from mode/median (not mean)
+- McGinley dynamic versions of indicators using MA (Donchian, Keltner, Supertrend, PPO, RVI, etc.)
 
-If you have a new indicator you want to add there are a few rules to follow:
+---
 
-    1. Raise an issue with link(s) to the indicator, there needs to be a clear explanation of what
-it is used for, and how it is calculated.
-    2. Add the indicator to the code, make sure that it is properly documented and has unit tests.
-    3. Probably the most important part, in `assets/rust_ti_hand_calcs.ods` add a new tab for the indicator
-and do the calculations "by hand" to show that the results that come up in the tests are what is calculated in the spreadsheet.
+## ➕ Adding a New Indicator
+
+1. **Open an Issue**  
+   - Describe the indicator, what it’s used for, and how it’s calculated (with source/reference)
+2. **Implement the indicator**  
+   - Add documentation and unit tests
+3. **Verify results**  
+   - Add a tab to `assets/rust_ti_hand_calcs.ods` with hand calculations to ensure test accuracy
+
+---
+
+## 🧪 Code Style & Testing
+
+- Format code with `rustfmt` or `cargo fmt`
+- Run tests with `cargo test` before submitting your PR
+
+---
+
+Thanks again for your interest and contributions!
+
