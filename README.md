@@ -32,7 +32,7 @@ cargo add rust_ti
 ```
 Or, manually in your `Cargo.toml`:
 ```toml
-rust_ti = "1.4.2"
+rust_ti = "2.0.0"
 ```
 
 **2. Calculate your first indicator:**
