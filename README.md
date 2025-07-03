@@ -55,7 +55,7 @@ Simple Moving Average: 100.352
 
 **3. Explore more examples**
 
-**COMING SOON**
+**COMING SOON** Being developer [here](https://github.com/0100101001010000/RustTI-tutorials)
 
 ---
 
@@ -63,7 +63,7 @@ Simple Moving Average: 100.352
 
 > Task-oriented guides for common problems and advanced scenarios.
 
-- **COMING SOON**
+- **COMING SOON** Being developed [here](https://github.com/0100101001010000/RustTI-how-to-guides)
 
 *(Contributions welcome! Submit your favorite how-to guide as a PR.)*
 
