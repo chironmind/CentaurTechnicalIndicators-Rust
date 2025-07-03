@@ -1,7 +1,7 @@
 //! # RustTI
 //!
 //! **RustTI** is an comprehensive, highly configurable Technical Indicators library for Rust.
-//! It empowers you to design, compute, and experiment with a wide variety of 
+//! It empowers you to design, compute, and experiment with a wide variety of
 //! technical indicators for financial data analysis.
 //!
 //! ## Why RustTI?

@@ -10,7 +10,7 @@
 //! - Quantify the overall or local trend direction of an asset
 //!
 //! ## Structure
-//! Unlike other modules, `chart_trends` does not have `single` or `bulk` submodules. 
+//! Unlike other modules, `chart_trends` does not have `single` or `bulk` submodules.
 //! All functions operate over slices and return either trend breakdowns or locations of key points.
 //!
 //! ## Included Functions
@@ -25,7 +25,7 @@
 //! - All functions work on slices of `f64` prices (or equivalent).
 //! - Returns are typically vectors of trend segments or indices/values of peaks/valleys.
 //! - See each function's documentation for examples, panics, and usage tips.
-//! 
+//!
 //! ---
 
 use crate::basic_indicators::single::{max, mean, min};
@@ -41,7 +41,7 @@ use crate::basic_indicators::single::{max, mean, min};
 /// # Panics
 ///
 /// Panics if:
-///     * `period` == 0 
+///     * `period` == 0
 ///     * `period` > `prices.len()`
 ///
 /// # Examples
@@ -131,7 +131,7 @@ pub fn peaks(prices: &[f64], period: usize, closest_neighbor: usize) -> Vec<(f64
 /// # Panics
 ///
 /// Panics if:
-///     * `period` == 0 
+///     * `period` == 0
 ///     * `period` > `prices.len()`
 ///
 /// # Examples

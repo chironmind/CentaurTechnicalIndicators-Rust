@@ -1,4 +1,9 @@
-![alt text](./assets/banner.webp)
+![RustTI Banner](./assets/banner.webp)
+
+[![Crates.io](https://img.shields.io/crates/v/rust_ti.svg)](https://crates.io/crates/rust_ti)
+[![Docs.rs](https://docs.rs/rust_ti/badge.svg)](https://docs.rs/rust_ti/)
+[![CI](https://github.com/0100101001010000/RustTI/actions/workflows/rust.yml/badge.svg)](https://github.com/0100101001010000/RustTI/actions)
+[![License](https://img.shields.io/github/license/0100101001010000/RustTI)](LICENSE)
 
 # 🦀 Meet RusTI
 
@@ -10,48 +15,27 @@ Welcome to RustTI — powered by precision, performance, and one extremely serio
 
 # RustTI
 
-A configurable technical indicators library written in pure Rust for all of your technical analysis needs.
+A highly configurable and high-performance technical indicators library written in pure Rust. 
 
-Everything is configurable in the RustTI functions.
+Designed for flexibility, speed, and advanced use cases in quantitative and algorithmic trading.
 
-Many of the functions accept parameters that allow the caller to move the technical
-indicators away from their default behaviour. For example, if a TI uses the mean to calculate
-the indicator, it can be told to use the median, or mode instead.
+---
 
-For this reason, RustTI is a more advanced Technical Inidcators package, and users should
-have some knowledge of the indicators they plan on using.
+## 🚀 Getting Started (Tutorial)
 
-* [Install](#install)
-* [Documentation](#documentation)
-* [Examples](#examples)
-* [Available indicators](#available-indicators)
-* [Release notes](#release-notes)
+> The fastest way to get up and running with RustTI.
 
-## Install
-
-Run the following Cargo command in your project directory:
+**1. Add RustTI to your project:**
 
 ```shell
 cargo add rust_ti
 ```
-
-Or add the following line to your Cargo.toml:
-
-```
-rust_ti = "1.4.2" 
+Or, manually in your `Cargo.toml`:
+```toml
+rust_ti = "1.4.2"
 ```
 
-
-## Documentation
-
-Documentation can be found here: [rust_ti](https://docs.rs/rust_ti/latest/rust_ti/)
-
-
-## Examples
-
-### Simple Example
-
-Single example, where the moving average needs to be calculated for the entire vector
+**2. Calculate your first indicator:**
 
 ```rust
 use rust_ti;
@@ -60,243 +44,141 @@ let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
 
 let ma = rust_ti::moving_average::single::moving_average(
     &prices,
-    &rust_ti::MovingAverageType::Simple
+    rust_ti::MovingAverageType::Simple
 );
-assert_eq!(100.352, ma);
-
-let sma = rust_ti::moving_average::single::moving_average(
-    &prices,
-    &rust_ti::MovingAverageType::Smoothed
-);
-assert_eq!(100.34228938600666, sma);
-
-let ema = rust_ti::moving_average::single::moving_average(
-    &prices,
-    &rust_ti::MovingAverageType::Exponential
-);
-assert_eq!(100.32810426540287, ema);
-
-// The values used in the example for the personalised moving average are random.
-// If using the PMA, it is recommended to look into how the moving averages are calculated before using values.
-let pma = rust_ti::moving_average::single::moving_average(
-    &prices,
-    &rust_ti::MovingAverageType::Personalised(&5.0, &3.0)
-);
-assert_eq!(100.27405995388162, personalised_ma);
+println!("Simple Moving Average: {}", ma);
+```
+Expected output:
+```
+Simple Moving Average: 100.352
 ```
 
-Bulk example, where the moving average is calculated for a period.
+**3. Explore more examples**
 
-Behind the scenes, the function will be calculating the moving average for a period of 3. The slices 
-`[100.2, 100.46, 100.53]`, `[100.46, 100.53, 100.38]`, and `[100.53, 100.38, 100.19]` will be derived from
-`prices`. The function will return the moving averages for the 3 periods as a vector.
+**COMING SOON**
 
-```rust
-let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
-let period: usize = 3;
+---
 
-let ma = rust_ti::moving_average::bulk::moving_average(
-    &prices,
-    &rust_ti::MovingAverageType::Simple,
-    &period
-);
-assert_eq!(
-    vec![100.39666666666666, 100.456666666666666, 100.36666666666667],
-    ma
-);
+## 🛠️ How-To Guides
 
-let sma = rust_ti::moving_average::bulk::moving_average(
-    &prices,
-    &rust_ti::MovingAverageType::Smoothed,
-    &period
-);
-assert_eq!(
-    vec![100.43842105263158, 100.4442105263158, 100.32157894736842],
-    sma
-);
+> Task-oriented guides for common problems and advanced scenarios.
 
-let ema = rust_ti::moving_average::bulk::moving_average(
-    &prices,
-    &rust_ti::MovingAverageType::Exponential,
-    &period
-);
-assert_eq!(
-    vec![100.46285714285715, 100.4342857142857, 100.29285714285713],
-    pma
-);
+- **COMING SOON**
 
-let pma = rust_ti::moving_average::bulk::moving_average(
-    &prices,
-    &rust_ti::MovingAverageType::Personalised(&5.0, &3.0),
-    &period
-);
-assert_eq!(
-    vec![100.5125581395349, 100.40279069767443, 100.22441860465118],
-    pma
-);
-```
+*(Contributions welcome! Submit your favorite how-to guide as a PR.)*
 
-### S&P 500 Example
+---
 
-An example using the Rust TI for the S&P 500 can be found in [GitHub](https://github.com/0100101001010000/rustTI/blob/main/examples/main.rs)
 
-and under `examples/main.rs`
+## 📚 Reference
 
-The code in `examples/main.rs` can be run by cloning the repo, and running:
+> For complete API details, see [docs.rs/rust_ti](https://docs.rs/rust_ti/).
+
+### Example
+
+A reference of how to call each function can be found 
+
+- [Reference Example](https://github.com/0100101001010000/RustTI/blob/main/examples/reference.rs)
+
+Clone and run:
 ```shell
 cargo build
-cargo run --example sp500
+cargo run --example reference
 ```
 
-### Visa Example
 
-A large amount of pre-defined data can be used to show speed. [GitHub](https://github.com/0100101001010000/rustTI/blob/main/examples/visa.rs)
+### Library Structure
 
-The code in `examples/visa.rs` can be run by cloning the repo, and running:
-```shell
-cargo build
-cargo run --example visa
-```
+- Modules based on their analysis areas (**`moving_average`**, **`momentum_indicators`**, **`strength_indicators`**...)
+- **`bulk` & `single` submodules**  
+  - `bulk`: Compute indicator over rolling periods, returns a vector.
+  - `single`: Compute indicator for the entire vector, returns a single value.
+- Types used to personalise the technical indicators (**`MovingAverageType`**, **`DeviationModel`**, **`Position`**...)
 
-## Available indicators:
+---
 
-All indicators are grouped and split into modules based on their analysis area.
+## 🧠 Explanation & Design
 
-The modules are split into two sub modules: `bulk` and `single`. 
+### Why RustTI?
 
-`Bulk` indicators calculate the indicator for a given period and return a vector of the indicator.
+- **Performance:** Pure Rust implementation for maximal speed, safety, and zero dependencies.
+- **Configurability:** Most indicators are highly customizable—tweak calculation methods, periods, or even use medians instead of means.
+- **Breadth:** Covers a wide range of technical indicators out of the box.
+- **Advanced Use:** Designed for users who understand technical analysis and want deep control.
 
-`Single` indicators calculate the indicator for the entire vector and return a single value. 
+**Note:** Some features may require background in technical analysis. See [Investopedia: Technical Analysis](https://www.investopedia.com/terms/t/technicalanalysis.asp) for a primer.
+
+---
+
+## 📈 Available Indicators
+
+All indicators are grouped and split into modules based on their analysis area.  
+Each module has `bulk` (vector output) and `single` (scalar output) submodules.
 
 ### Standard Indicators
-
-Standard indicators are indicators with the configurations hardcoded to meet industry defaults.
-
-* Simple Moving Average
-* Smoothed Moving Average
-* Exponential Moving Average
-* Bollinger Bands
-* MACD
-* RSI
+- Simple, Smoothed, Exponential Moving Average
+- Bollinger Bands, MACD, RSI
 
 ### Basic Indicators
+- Absolute Deviation, Log, Mean, Median, Mode, Std. Deviation, Variance, Max/Min
 
-Basic indicators are very simple indicators primarily used by other indicators. 
-         
-* Absolute Deviation
-* Log
-* Log Difference
-* Mean 
-* Median 
-* Mode 
-* Standard Deviation 
-* Variance
-* Max
-* Min
- 
 ### Candle Indicators
-
-Candle indicators are indicators to be used with candle charts
-
-* Ichimoku Cloud 
-* McGinley Dynamic Bands 
-* McGinley Dynamic Envelopes 
-* Moving Constant Bands, generic version of Bollinger bansa 
-* Moving Constant envelopes, generic version of moving average envelopes 
-* Donchian Channels
-* Keltner Channel
-* Supertrend
+- Ichimoku Cloud, McGinley Bands/Envelopes, Donchian Channels, Keltner, Supertrend
 
 ### Chart Trends
+- Trend break down, overall trends, peak/valley trends
 
-Chart trends are indicators to be used with charts that show trend direction
-
-* Break down trends 
-* Overall trend 
-* Peak trend 
-* Peaks 
-* Valley trend 
-* Valleys 
-
-### Correlation indicators
-
-Correlation calculate the correlation between two assests
-
-* Correlate asset prices 
+### Correlation Indicators
+- Correlate asset prices
 
 ### Momentum Indicators
-
-Momentum indicators calculate the momentum of price movement
-
-* Chaikin Oscillator
-* Commodity Channel Index 
-* MACD Line 
-* McGinley Dynamic Chaikin Oscillator 
-* McGinley Dynamic Commodity Channel Index 
-* McGinley Dynamic MACD Line 
-* Money Flow Index
-* On Balance Volume 
-* Rate of Change 
-* Relative Strength Index 
-* Signal Line 
-* Slow Stochastic 
-* Slowest Stochastic
-* Stochastic Oscillator 
-* Williams %r
-* Percentage-Price Oscillator
-* Chande Momentum Oscillator
+- Chaikin Oscillator, CCI, MACD, Money Flow Index, On Balance Volume, ROC, RSI, etc.
 
 ### Moving Averages
-
-* McGinley Dynamic
-* Moving Average
+- McGinley Dynamic, Moving Average
 
 ### Other Indicators
-
-Indicators that don't belong anywhere else
-
-* Return on Investment
-* True Range
-* Average True Range
-* Internal Bar Strength
+- ROI, True Range, ATR, Internal Bar Strength
 
 ### Strength Indicators
-
-Strength indicators calculate the strength of price movement
-
-* Accumulation Distribution
-* Positive Volume Index
-* Negative Volume Index
-* Relative Vigor Index
+- Accumulation/Distribution, PVI, NVI, RVI
 
 ### Trend Indicators
-
-Trend indicators show the trend of price movement
-
-* Aroon Down
-* Aroon Indicator 
-* Aroon Oscillator
-* Aroon Up
-* Parabolic Time Price System 
-* Long Parabolic Time Price System
-* Short Parabolic Time Price System 
-* Direcational Movement
-* Volume-Price trend
-* True Strength Index
+- Aroon (Up/Down/Oscillator), Parabolic, DM, Volume-Price Trend, TSI
 
 ### Volatility Indicators
+- Ulcer Index, Volatility System
 
-Volatility indicators show how volatile an asset is
+---
 
-* Ulcer Index
-* Volatility System
+## 🤝 Contributing
 
+Contributions, bug reports, and feature requests are welcome!
+- [Open an issue](https://github.com/0100101001010000/RustTI/issues)
+- [Submit a pull request](https://github.com/0100101001010000/RustTI/pulls)
+- See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines
 
-## Release notes
+---
 
-What's new in v1.4.2?
+## 💬 Community & Support
 
-Updated `peaks` and `valleys` function to stop producing peaks/valleys when the period shifted if
-it was within a given period of the previous one.
+- Start a [discussion](https://github.com/0100101001010000/RustTI/discussions)
+- File [issues](https://github.com/0100101001010000/RustTI/issues)
+- Add your project to the [Showcase](https://github.com/0100101001010000/RustTI/discussions/categories/show-and-tell)
 
-[Full changelog](https://github.com/0100101001010000/RustTI/releases/tag/v1.4.2)
+---
+
+## 📰 Release Notes
+
+**Latest (v2.0.0):**
+- Full refactor of the code and docstrings to fall in line with Rust standards (obvious, constrained, unsurprising, and flexible)
+
+[Changlelog →](https://github.com/0100101001010000/RustTI/blob/main/CONTRIBUTING.md)
+[Full changelog →](https://github.com/0100101001010000/RustTI/releases)
+
+---
+
+## 📄 License
+
+MIT License. See [LICENSE](LICENSE).
+

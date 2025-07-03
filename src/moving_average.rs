@@ -15,7 +15,7 @@
 //! - **bulk**: Functions that compute values of a slice of prices over a period and return a vector.
 //!
 //! ## Included Functions
-//! ### Bulk 
+//! ### Bulk
 //! - [`mcginley_dynamic`](bulk::mcginley_dynamic): McGinley Dynamic Moving Average (adaptive smoothing)
 //! - [`moving_average`](bulk::moving_average): Configurable moving average (Simple, Smoothed, Exponential, or Personalized)
 //!

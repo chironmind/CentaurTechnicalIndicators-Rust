@@ -4,18 +4,18 @@
 //! They help identify trends, volatility, and price action patterns commonly used in trading and analysis.
 //!
 //! ## When to Use
-//! 
-//! Use these indicators to analyze support/resistance, volatility bands, 
+//!
+//! Use these indicators to analyze support/resistance, volatility bands,
 //! and price channels on candle charts for both traditional and crypto assets.
 //!
 //! ## Structure
-//! 
+//!
 //! - **single**: Functions that return a single value for a slice of prices.
 //! - **bulk**: Functions that compute values of a slice of prices over a period and return a vector.
 //!
 //! ## Included Indicators
 //!
-//! ### Bulk 
+//! ### Bulk
 //! - [`ichimoku_cloud`](bulk::ichimoku_cloud): Ichimoku Cloud values
 //! - [`mcginley_dynamic_bands`](bulk::mcginley_dynamic_bands): McGinley Dynamic Bands
 //! - [`mcginley_dynamic_envelopes`](bulk::mcginley_dynamic_envelopes): McGinley Dynamic Envelopes
@@ -25,8 +25,8 @@
 //! - [`keltner_channel`](bulk::keltner_channel): Keltner Channels
 //! - [`supertrend`](bulk::supertrend): Supertrend indicator
 //!
-//! ### Single 
-//! - [`ichimoku_cloud`](single::ichimoku_cloud): Ichimoku Cloud 
+//! ### Single
+//! - [`ichimoku_cloud`](single::ichimoku_cloud): Ichimoku Cloud
 //! - [`mcginley_dynamic_bands`](single::mcginley_dynamic_bands): McGinley Dynamic Bands
 //! - [`mcginley_dynamic_envelopes`](single::mcginley_dynamic_envelopes): McGinley Dynamic Envelopes
 //! - [`moving_constant_bands`](single::moving_constant_bands): Customizable bands (Bollinger, etc.)
@@ -254,15 +254,11 @@ pub mod single {
 
         let deviation = match deviation_model {
             DeviationModel::StandardDeviation => standard_deviation(prices),
-            DeviationModel::MeanAbsoluteDeviation => {
-                absolute_deviation(prices, CentralPoint::Mean)
-            }
+            DeviationModel::MeanAbsoluteDeviation => absolute_deviation(prices, CentralPoint::Mean),
             DeviationModel::MedianAbsoluteDeviation => {
                 absolute_deviation(prices, CentralPoint::Median)
             }
-            DeviationModel::ModeAbsoluteDeviation => {
-                absolute_deviation(prices, CentralPoint::Mode)
-            }
+            DeviationModel::ModeAbsoluteDeviation => absolute_deviation(prices, CentralPoint::Mode),
             DeviationModel::UlcerIndex => ulcer_index(prices),
             _ => panic!("Unsupported DeviationModel"),
         };
@@ -326,15 +322,11 @@ pub mod single {
 
         let deviation = match deviation_model {
             DeviationModel::StandardDeviation => standard_deviation(prices),
-            DeviationModel::MeanAbsoluteDeviation => {
-                absolute_deviation(prices, CentralPoint::Mean)
-            }
+            DeviationModel::MeanAbsoluteDeviation => absolute_deviation(prices, CentralPoint::Mean),
             DeviationModel::MedianAbsoluteDeviation => {
                 absolute_deviation(prices, CentralPoint::Median)
             }
-            DeviationModel::ModeAbsoluteDeviation => {
-                absolute_deviation(prices, CentralPoint::Mode)
-            }
+            DeviationModel::ModeAbsoluteDeviation => absolute_deviation(prices, CentralPoint::Mode),
             DeviationModel::UlcerIndex => ulcer_index(prices),
             _ => panic!("Unsupported DeviationModel"),
         };
@@ -646,7 +638,7 @@ pub mod bulk {
     /// # Panics
     ///
     /// Panics if:
-    ///     * `period` == 0 
+    ///     * `period` == 0
     ///     * `period` > `prices.len()`
     ///
     /// # Examples
@@ -723,7 +715,7 @@ pub mod bulk {
     /// # Panics
     ///
     /// Panics if:
-    ///     * `period` == 0 
+    ///     * `period` == 0
     ///     * `period` > `prices.len()`
     ///
     /// # Examples
@@ -787,7 +779,7 @@ pub mod bulk {
     /// # Panics
     ///
     /// Panics if:
-    ///     * `period` == 0 
+    ///     * `period` == 0
     ///     * `period` > `prices.len()`
     ///
     /// # Examples
@@ -871,7 +863,7 @@ pub mod bulk {
     ///
     ///
     /// Panics if:
-    ///     * `period` <= 0 
+    ///     * `period` <= 0
     ///     * `period` > `prices.len()`
     ///
     /// # Examples
@@ -1033,7 +1025,7 @@ pub mod bulk {
     /// # Panics
     ///
     /// Panics if:
-    ///     * `period` == 0 
+    ///     * `period` == 0
     ///     * `period` > `high.len()`
     ///     * `high.len()` != `low.len()`
     ///     * `high.is_empty()` or `low.is_empty()`
@@ -1101,7 +1093,7 @@ pub mod bulk {
     /// Panics if:
     ///     * `high.len()` != `low.len()` != `close.len()`
     ///     * `high.is_empty()`, `low.is_empty()`, or `close.is_empty()`
-    ///     * `period` == 0 
+    ///     * `period` == 0
     ///     * `period` > `high.len()`
     ///
     /// # Examples
@@ -1190,7 +1182,7 @@ pub mod bulk {
     /// Panics if:
     ///     * `high.len()` != `low.len()` != `close.len()`
     ///     * `high.is_empty()`, `low.is_empty()`, or `close.is_empty()`
-    ///     * `period` == 0 
+    ///     * `period` == 0
     ///     * `period` > `slices.len()`
     ///
     /// # Examples

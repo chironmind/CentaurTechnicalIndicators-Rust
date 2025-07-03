@@ -1,6 +1,6 @@
 //! # Momentum Indicators
 //!
-//! The `momentum_indicators` module provides functions to measure the speed, strength, 
+//! The `momentum_indicators` module provides functions to measure the speed, strength,
 //! and direction of price movements in time series data.
 //! These indicators are commonly used to identify overbought/oversold conditions, trend continuation, or potential reversals.
 //!
@@ -16,7 +16,7 @@
 //!
 //! ## Included Indicators
 //!
-//! ### Bulk 
+//! ### Bulk
 //! - [`chaikin_oscillator`](bulk::chaikin_oscillator): Chaikin Oscillator
 //! - [`commodity_channel_index`](bulk::commodity_channel_index): Commodity Channel Index (CCI)
 //! - [`macd_line`](bulk::macd_line): Moving Average Convergence Divergence (MACD) line
@@ -34,7 +34,7 @@
 //! - [`percentage_price_oscillator`](bulk::percentage_price_oscillator): Percentage Price Oscillator (PPO)
 //! - [`chande_momentum_oscillator`](bulk::chande_momentum_oscillator): Chande Momentum Oscillator (CMO)
 //!
-//! ### Single 
+//! ### Single
 //! - [`chaikin_oscillator`](single::chaikin_oscillator): Chaikin Oscillator
 //! - [`commodity_channel_index`](single::commodity_channel_index): Commodity Channel Index (CCI)
 //! - [`macd_line`](single::macd_line): MACD line
@@ -615,15 +615,11 @@ pub mod single {
 
         let deviation = match deviation_model {
             DeviationModel::StandardDeviation => standard_deviation(prices),
-            DeviationModel::MeanAbsoluteDeviation => {
-                absolute_deviation(prices, CentralPoint::Mean)
-            }
+            DeviationModel::MeanAbsoluteDeviation => absolute_deviation(prices, CentralPoint::Mean),
             DeviationModel::MedianAbsoluteDeviation => {
                 absolute_deviation(prices, CentralPoint::Median)
             }
-            DeviationModel::ModeAbsoluteDeviation => {
-                absolute_deviation(prices, CentralPoint::Mode)
-            }
+            DeviationModel::ModeAbsoluteDeviation => absolute_deviation(prices, CentralPoint::Mode),
             DeviationModel::UlcerIndex => ulcer_index(prices),
             _ => panic!("Unsupported DeviationModel"),
         };
@@ -690,15 +686,11 @@ pub mod single {
 
         let deviation = match deviation_model {
             DeviationModel::StandardDeviation => standard_deviation(prices),
-            DeviationModel::MeanAbsoluteDeviation => {
-                absolute_deviation(prices, CentralPoint::Mean)
-            }
+            DeviationModel::MeanAbsoluteDeviation => absolute_deviation(prices, CentralPoint::Mean),
             DeviationModel::MedianAbsoluteDeviation => {
                 absolute_deviation(prices, CentralPoint::Median)
             }
-            DeviationModel::ModeAbsoluteDeviation => {
-                absolute_deviation(prices, CentralPoint::Mode)
-            }
+            DeviationModel::ModeAbsoluteDeviation => absolute_deviation(prices, CentralPoint::Mode),
             DeviationModel::UlcerIndex => ulcer_index(prices),
             _ => panic!("Unsupported DeviationModel"),
         };

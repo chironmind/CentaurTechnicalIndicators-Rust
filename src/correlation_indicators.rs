@@ -1,6 +1,6 @@
 //! # Correlation Indicators
 //!
-//! The `correlation_indicators` module provides functions to measure the co-movement 
+//! The `correlation_indicators` module provides functions to measure the co-movement
 //! and statistical relationship between two different price series or assets.
 //!
 //! ## When to Use
@@ -15,7 +15,7 @@
 //!
 //! ## Included Indicators
 //!
-//! ### Bulk 
+//! ### Bulk
 //! - [`correlate_asset_prices`](bulk::correlate_asset_prices): Correlation between two price series
 //!
 //! ### Single

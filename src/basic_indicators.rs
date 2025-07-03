@@ -12,7 +12,7 @@
 //!
 //! ## Included Indicators
 //!
-//! ### Bulk 
+//! ### Bulk
 //! - [`absolute_deviation`](bulk::absolute_deviation): Mean/Median/Mode absolute deviation over each period
 //! - [`log`](bulk::log): Natural logarithm of each price
 //! - [`log_difference`](bulk::log_difference): Difference in log(price) at t and t-1
@@ -349,7 +349,7 @@ pub mod bulk {
     /// # Arguments
     ///
     /// * `prices` - Slice of prices
-    /// * `period` - Period over which to calculate the mean 
+    /// * `period` - Period over which to calculate the mean
     ///
     /// # Panics
     ///
@@ -395,7 +395,7 @@ pub mod bulk {
     /// # Panics
     ///
     /// Panics if:
-    ///     * `period` == 0 
+    ///     * `period` == 0
     ///     * `period` > `prices.len()`
     ///
     /// # Examples
@@ -432,12 +432,12 @@ pub mod bulk {
     /// # Arguments
     ///
     /// * `prices` - Slice of prices
-    /// * `period` - Period over which to calculate the mode 
+    /// * `period` - Period over which to calculate the mode
     ///
     /// # Panics
     ///
     /// Panics if:
-    ///     * `period` == 0 
+    ///     * `period` == 0
     ///     * `period` > `prices.len()`
     ///
     /// # Examples
@@ -482,7 +482,7 @@ pub mod bulk {
     /// let prices = vec![101.0, 102.0, 103.0, 101.0];
     /// let log = rust_ti::basic_indicators::bulk::log(&prices);
     /// assert_eq!(
-    ///     vec![4.61512051684126, 4.624972813284271, 4.634728988229636, 4.61512051684126], 
+    ///     vec![4.61512051684126, 4.624972813284271, 4.634728988229636, 4.61512051684126],
     ///     log
     /// );
     /// ```
@@ -510,7 +510,7 @@ pub mod bulk {
     /// let prices = vec![100.0, 102.0, 103.0, 101.0];
     /// let log_difference = rust_ti::basic_indicators::bulk::log_difference(&prices);
     /// assert_eq!(
-    ///     vec![0.019802627296178876, 0.009756174945365181, -0.01960847138837618], 
+    ///     vec![0.019802627296178876, 0.009756174945365181, -0.01960847138837618],
     ///     log_difference
     /// );
     /// ```
@@ -537,7 +537,7 @@ pub mod bulk {
     /// # Panics
     ///
     /// Panics if:
-    ///     * `period` == 0 
+    ///     * `period` == 0
     ///     * `period` > `prices.len()`
     ///
     /// # Examples
@@ -579,7 +579,7 @@ pub mod bulk {
     /// # Panics
     ///
     /// Panics if:
-    ///     * `period` == 0 
+    ///     * `period` == 0
     ///     * `period` > `prices.len()`
     ///
     /// # Examples
@@ -587,7 +587,7 @@ pub mod bulk {
     /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0];
     /// let period: usize = 3;
-    /// let standard_deviation = 
+    /// let standard_deviation =
     ///     rust_ti::basic_indicators::bulk::standard_deviation(&prices, period);
     /// assert_eq!(vec![1.247219128924647, 0.816496580927726], standard_deviation);
     /// ```
@@ -618,11 +618,11 @@ pub mod bulk {
     /// * `prices` - Slice of prices
     /// * `period` - Period over which to calculate the standard deviation
     /// * `central_point` - Variant of [`CentralPoint`]
-    /// 
+    ///
     /// # Panics
     ///
     /// Panics if:
-    ///     * `period` == 0 
+    ///     * `period` == 0
     ///     * `period` > `prices.len()`
     ///
     /// # Examples
@@ -633,31 +633,31 @@ pub mod bulk {
     ///
     /// let mean_absolute_deviation =
     ///     rust_ti::basic_indicators::bulk::absolute_deviation(
-    ///         &prices, 
-    ///         period, 
+    ///         &prices,
+    ///         period,
     ///         rust_ti::CentralPoint::Mean
     ///     );
     /// assert_eq!(
-    ///     vec![1.1111111111111096, 0.6666666666666666, 1.1111111111111096], 
+    ///     vec![1.1111111111111096, 0.6666666666666666, 1.1111111111111096],
     ///     mean_absolute_deviation
     /// );
     ///
     /// let median_absolute_deviation =
     ///     rust_ti::basic_indicators::bulk::absolute_deviation(
-    ///         &prices, 
-    ///         period, 
+    ///         &prices,
+    ///         period,
     ///         rust_ti::CentralPoint::Median
     ///     );
     /// assert_eq!(vec![1.0, 0.6666666666666666, 1.0], median_absolute_deviation);
     ///
     /// let mode_absolute_deviation =
     ///     rust_ti::basic_indicators::bulk::absolute_deviation(
-    ///         &prices, 
-    ///         period, 
+    ///         &prices,
+    ///         period,
     ///         rust_ti::CentralPoint::Mode
     ///     );
     /// assert_eq!(
-    ///     vec![1.1111111111111096, 0.6666666666666666, 1.1111111111111096], 
+    ///     vec![1.1111111111111096, 0.6666666666666666, 1.1111111111111096],
     ///     mode_absolute_deviation
     /// );
     /// ```

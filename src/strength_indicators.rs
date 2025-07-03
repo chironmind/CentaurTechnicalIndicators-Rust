@@ -43,9 +43,9 @@ pub mod single {
     /// # Arguments
     ///
     /// * `high` - High
-    /// * `low` - Low 
+    /// * `low` - Low
     /// * `close` - Close
-    /// * `volume` - Volume 
+    /// * `volume` - Volume
     /// * `previous_accumulation_distribution` - Previous AD (0.0 if none)
     ///
     /// # Examples
@@ -59,10 +59,10 @@ pub mod single {
     ///
     /// let accumulation_distribution =
     ///     rust_ti::strength_indicators::single::accumulation_distribution(
-    ///         high, 
-    ///         low, 
+    ///         high,
+    ///         low,
     ///         close,
-    ///         volume, 
+    ///         volume,
     ///         previous
     ///     );
     /// assert_eq!(500.0, accumulation_distribution);
@@ -76,7 +76,7 @@ pub mod single {
     ///         high,
     ///         low,
     ///         close,
-    ///         volume, 
+    ///         volume,
     ///         accumulation_distribution
     ///     );
     /// assert_eq!(0.0, accumulation_distribution);
@@ -164,7 +164,7 @@ pub mod single {
     /// let low = vec![90.0, 110.0, 105.0, 110.0, 120.0, 105.0, 95.0, 85.0];
     /// let close = vec![100.0, 115.0, 115.0, 120.0, 125.0, 110.0, 100.0, 90.0];
     ///
-    /// let relative_vigor_index = 
+    /// let relative_vigor_index =
     ///     rust_ti::strength_indicators::single::relative_vigor_index(
     ///         &open,
     ///         &high,
@@ -298,10 +298,10 @@ pub mod bulk {
     ///
     /// let accumulation_distribution =
     ///     rust_ti::strength_indicators::bulk::accumulation_distribution(
-    ///         &high, 
-    ///         &low, 
+    ///         &high,
+    ///         &low,
     ///         &close,
-    ///         &volume, 
+    ///         &volume,
     ///         previous
     ///     );
     /// assert_eq!(vec![500.0, 0.0, 240.0], accumulation_distribution);
@@ -328,13 +328,7 @@ pub mod bulk {
         );
         ads.push(ad);
         for i in 1..length {
-            ad = single::accumulation_distribution(
-                high[i],
-                low[i],
-                close[i],
-                volume[i],
-                ad,
-            );
+            ad = single::accumulation_distribution(high[i], low[i], close[i], volume[i], ad);
             ads.push(ad);
         }
         ads
@@ -360,7 +354,7 @@ pub mod bulk {
     /// let close = vec![100.0, 115.0, 118.0, 120.0, 125.0];
     /// let volume = vec![1000.0, 1200.0, 1300.0, 1100.0, 1100.0];
     ///
-    /// let positive_volume_index = 
+    /// let positive_volume_index =
     ///     rust_ti::strength_indicators::bulk::positive_volume_index(
     ///         &close,
     ///         &volume,
@@ -372,7 +366,7 @@ pub mod bulk {
     /// let next_close = vec![125.0, 122.0, 115.0, 120.0];
     /// let next_volume = vec![1100.0, 1000.0, 1500.0, 1600.0];
     ///
-    /// let positive_volume_index = 
+    /// let positive_volume_index =
     ///     rust_ti::strength_indicators::bulk::positive_volume_index(
     ///         &next_close,
     ///         &next_volume,
@@ -399,7 +393,7 @@ pub mod bulk {
             panic!("Prices cannot be empty")
         };
 
-        let mut pvis = Vec::with_capacity(length-1);
+        let mut pvis = Vec::with_capacity(length - 1);
         let mut prev = previous_positive_volume_index;
 
         for i in 1..length {
@@ -431,7 +425,7 @@ pub mod bulk {
     /// let close = vec![100.0, 115.0, 118.0, 120.0, 125.0];
     /// let volume = vec![1000.0, 1200.0, 1300.0, 1100.0, 1100.0];
     ///
-    /// let negative_volume_index = 
+    /// let negative_volume_index =
     ///     rust_ti::strength_indicators::bulk::negative_volume_index(
     ///         &close,
     ///         &volume,
@@ -439,7 +433,7 @@ pub mod bulk {
     ///     );
     ///
     /// assert_eq!(
-    ///     vec![0.0, 0.0, 0.017236426314277506, 0.017236426314277506], 
+    ///     vec![0.0, 0.0, 0.017236426314277506, 0.017236426314277506],
     ///     negative_volume_index
     /// );
     ///
@@ -447,7 +441,7 @@ pub mod bulk {
     /// let next_close = vec![125.0, 122.0, 115.0, 120.0];
     /// let next_volume = vec![1100.0, 1000.0, 1500.0, 1600.0];
     ///
-    /// let negative_volume_index = 
+    /// let negative_volume_index =
     ///     rust_ti::strength_indicators::bulk::negative_volume_index(
     ///         &next_close,
     ///         &next_volume,
@@ -455,7 +449,7 @@ pub mod bulk {
     ///     );
     ///
     /// assert_eq!(
-    ///     vec![0.016822752082734847, 0.016822752082734847, 0.016822752082734847], 
+    ///     vec![0.016822752082734847, 0.016822752082734847, 0.016822752082734847],
     ///     negative_volume_index
     /// );
     /// ```
@@ -483,7 +477,7 @@ pub mod bulk {
         for i in 1..length {
             if volume[i] < volume[i - 1] {
                 prev = single::volume_index(close[i], close[i - 1], prev);
-            } 
+            }
             nvis.push(prev);
         }
         nvis

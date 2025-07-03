@@ -15,7 +15,7 @@
 //! - **bulk**: Functions that compute values of a slice of prices over a period and return a vector.
 //!
 //! ## Included Indicators
-//! 
+//!
 //! ### Bulk
 //!
 //! - [`aroon_down`](bulk::aroon_down): Calculates the Aroon Down
@@ -24,8 +24,8 @@
 //! - [`aroon_up`](bulk::aroon_up): Calculates the Aroon Up
 //! - [`parabolic_time_price_system`](bulk::parabolic_time_price_system): Computes the Parabolic Time Price System (Welles Wilder's SAR variant)
 //! - [`directional_movement_system`](bulk::directional_movement_system): Computes Directional Movement (+DI, -DI, ADX, ADXR)
-//! - [`volume_price_trend`](bulk::volume_price_trend): Computes the Volume Price Trend 
-//! - [`true_strength_index`](bulk::true_strength_index): Computes the True Strength Index (TSI) 
+//! - [`volume_price_trend`](bulk::volume_price_trend): Computes the Volume Price Trend
+//! - [`true_strength_index`](bulk::true_strength_index): Computes the True Strength Index (TSI)
 //!
 //! ### Single
 //!
@@ -124,7 +124,7 @@ pub mod single {
     /// ```rust
     /// let aroon_up = 50.0;
     /// let aroon_down = 25.0;
-    /// let aroon_oscillator = 
+    /// let aroon_oscillator =
     ///     rust_ti::trend_indicators::single::aroon_oscillator(
     ///         aroon_up,
     ///         aroon_down
@@ -136,8 +136,8 @@ pub mod single {
         aroon_up - aroon_down
     }
 
-    /// Calculates the Aroon Indicator 
-    /// 
+    /// Calculates the Aroon Indicator
+    ///
     /// # Arguments
     ///
     /// * `high` - Slice of highs
@@ -152,7 +152,7 @@ pub mod single {
     /// ```rust
     /// let highs = vec![103.0, 102.0, 107.0, 104.0, 100.0];
     /// let lows = vec![98.0, 95.0, 101.0, 100.0, 97.0];
-    /// let aroon_indicator = 
+    /// let aroon_indicator =
     ///     rust_ti::trend_indicators::single::aroon_indicator(&highs, &lows);
     /// assert_eq!((50.0, 25.0, 25.0), aroon_indicator);
     /// ```
@@ -171,7 +171,7 @@ pub mod single {
         (aroon_up, aroon_down, aroon_oscillaor)
     }
 
-    /// Calculates the long Stop and Reverse (SaR) point for the Parabolic Time Price System 
+    /// Calculates the long Stop and Reverse (SaR) point for the Parabolic Time Price System
     ///
     /// # Arguments
     ///
@@ -191,8 +191,8 @@ pub mod single {
     /// let parabolic_time_price_system =
     ///     rust_ti::trend_indicators::single::long_parabolic_time_price_system(
     ///         previous_sar,
-    ///         extreme_point, 
-    ///         acceleration_factor, 
+    ///         extreme_point,
+    ///         acceleration_factor,
     ///         low
     ///     );
     /// assert_eq!(50.1381988, parabolic_time_price_system);
@@ -205,8 +205,8 @@ pub mod single {
     /// let parabolic_time_price_system =
     ///     rust_ti::trend_indicators::single::long_parabolic_time_price_system(
     ///         previous_sar,
-    ///         extreme_point, 
-    ///         acceleration_factor, 
+    ///         extreme_point,
+    ///         acceleration_factor,
     ///         low
     ///     );
     /// assert_eq!(52.1, parabolic_time_price_system);
@@ -241,8 +241,8 @@ pub mod single {
     /// let parabolic_time_price_system =
     ///     rust_ti::trend_indicators::single::short_parabolic_time_price_system(
     ///         previous_sar,
-    ///         extreme_point, 
-    ///         acceleration_factor, 
+    ///         extreme_point,
+    ///         acceleration_factor,
     ///         high
     ///     );
     /// assert_eq!(57.966, parabolic_time_price_system);
@@ -255,8 +255,8 @@ pub mod single {
     /// let parabolic_time_price_system =
     ///     rust_ti::trend_indicators::single::short_parabolic_time_price_system(
     ///         previous_sar,
-    ///         extreme_point, 
-    ///         acceleration_factor, 
+    ///         extreme_point,
+    ///         acceleration_factor,
     ///         low
     ///     );
     /// assert_eq!(58.1, parabolic_time_price_system);
@@ -310,8 +310,7 @@ pub mod single {
         volume: f64,
         previous_volume_price_trend: f64,
     ) -> f64 {
-        previous_volume_price_trend
-            + (volume * ((current_price - previous_price) / previous_price))
+        previous_volume_price_trend + (volume * ((current_price - previous_price) / previous_price))
     }
 
     /// Calculates the True Strength Index (TSI)
@@ -359,10 +358,10 @@ pub mod single {
             )
         };
 
-        let mut price_momentum = Vec::with_capacity(length-1);
-        let mut abs_price_momentum = Vec::with_capacity(length-1);
+        let mut price_momentum = Vec::with_capacity(length - 1);
+        let mut abs_price_momentum = Vec::with_capacity(length - 1);
         for i in 1..length {
-            let diff = prices[i] - prices[i-1];
+            let diff = prices[i] - prices[i - 1];
             price_momentum.push(diff);
             abs_price_momentum.push(diff.abs());
         }
@@ -466,7 +465,11 @@ pub mod single {
             ),
             _ => panic!("Not a supported constant model type"),
         };
-        if abs_second_smoothing == 0.0 { 0.0} else {second_smoothing / abs_second_smoothing}
+        if abs_second_smoothing == 0.0 {
+            0.0
+        } else {
+            second_smoothing / abs_second_smoothing
+        }
     }
 }
 
@@ -566,7 +569,7 @@ pub mod bulk {
     /// ```rust
     /// let aroon_up = vec![50.0, 25.0, 0.0];
     /// let aroon_down = vec![25.0, 0.0, 100.0];
-    /// let aroon_oscillator = 
+    /// let aroon_oscillator =
     ///     rust_ti::trend_indicators::bulk::aroon_oscillator(
     ///         &aroon_up,
     ///         &aroon_down
@@ -609,14 +612,14 @@ pub mod bulk {
     /// let lows = vec![98.0, 95.0, 101.0, 100.0, 97.0, 98.0, 97.0];
     /// let period: usize = 5;
     ///
-    /// let aroon_indicator = 
+    /// let aroon_indicator =
     ///     rust_ti::trend_indicators::bulk::aroon_indicator(
-    ///         &highs, 
+    ///         &highs,
     ///         &lows,
     ///         period
     ///     );
     /// assert_eq!(
-    ///     vec![(50.0, 25.0, 25.0), (25.0, 0.0, 25.0), (0.0, 100.0, -100.0)], 
+    ///     vec![(50.0, 25.0, 25.0), (25.0, 0.0, 25.0), (0.0, 100.0, -100.0)],
     ///     aroon_indicator
     /// );
     /// ```
@@ -637,11 +640,10 @@ pub mod bulk {
         };
 
         let loop_max = length - period + 1;
-        (0..loop_max) 
+        (0..loop_max)
             .map(|i| single::aroon_indicator(&highs[i..i + period], &lows[i..i + period]))
             .collect()
     }
-
 
     /// Calculates the Parabolic time price system Stop and Reverse (SaR) points
     ///
@@ -650,15 +652,15 @@ pub mod bulk {
     /// * `highs` - Slice of highs.
     /// * `lows` - Slice of lows.
     /// * `acceleration_factor_start` - Initial acceleration factor
-    /// * `acceleration_factor_max` - Maximum acceleration factor 
+    /// * `acceleration_factor_max` - Maximum acceleration factor
     /// * `acceleration_factor_step` - Acceleration increment
-    /// * `start_position` - Variant of [Position] 
+    /// * `start_position` - Variant of [Position]
     /// * `previous_sar`- Previous SaR (0.0 if none)
     ///
     /// # Panics
     ///
     /// Panics if:
-    ///     * `highs.len()` != `lows.len()` 
+    ///     * `highs.len()` != `lows.len()`
     ///     * `highs.is_empty()` or `lows.is_empty()`
     ///
     /// # Examples
@@ -678,14 +680,14 @@ pub mod bulk {
     /// let acceleration_factor_max = 0.2;
     /// let acceleration_factor_step = 0.02;
     ///
-    /// let parabolic_time_price_system = 
+    /// let parabolic_time_price_system =
     ///     rust_ti::trend_indicators::bulk::parabolic_time_price_system(
     ///         &highs,
-    ///         &lows, 
-    ///         acceleration_factor_start, 
-    ///         acceleration_factor_max, 
+    ///         &lows,
+    ///         acceleration_factor_start,
+    ///         acceleration_factor_max,
     ///         acceleration_factor_step,
-    ///         rust_ti::Position::Long, 
+    ///         rust_ti::Position::Long,
     ///         50.0
     ///     );
     /// assert_eq!(
@@ -713,14 +715,14 @@ pub mod bulk {
     ///     56.0, 55.5, 55.0, 54.9, 54.0, 54.5, 53.8, 53.0, 51.5, 50.0, 50.5, 50.2, 51.5
     /// ];
     ///
-    /// let parabolic_time_price_system = 
+    /// let parabolic_time_price_system =
     ///     rust_ti::trend_indicators::bulk::parabolic_time_price_system(
     ///         &highs,
-    ///         &lows, 
-    ///         acceleration_factor_start, 
-    ///         acceleration_factor_max, 
+    ///         &lows,
+    ///         acceleration_factor_start,
+    ///         acceleration_factor_max,
     ///         acceleration_factor_step,
-    ///         rust_ti::Position::Short, 
+    ///         rust_ti::Position::Short,
     ///         0.0
     ///     );
     /// assert_eq!(
@@ -889,32 +891,32 @@ pub mod bulk {
     ///
     /// ```rust
     /// let high = vec![
-    ///     4383.33, 4393.57, 4364.2, 4339.54, 4276.56, 4255.84, 4259.38, 
-    ///     4232.42, 4183.6, 4156.7, 4177.47, 4195.55, 4245.64, 4319.72, 
-    ///     4373.62, 4372.21, 4386.26, 4391.2, 4393.4, 4418.03, 4421.76, 
-    ///     4508.67, 4521.17, 4511.99, 4520.12, 4557.11, 4542.14, 4568.43, 
+    ///     4383.33, 4393.57, 4364.2, 4339.54, 4276.56, 4255.84, 4259.38,
+    ///     4232.42, 4183.6, 4156.7, 4177.47, 4195.55, 4245.64, 4319.72,
+    ///     4373.62, 4372.21, 4386.26, 4391.2, 4393.4, 4418.03, 4421.76,
+    ///     4508.67, 4521.17, 4511.99, 4520.12, 4557.11, 4542.14, 4568.43,
     ///     4560.31, 4560.52, 4568.14
     /// ];
     ///
     /// let low = vec![
-    ///     4342.37, 4337.54, 4303.84, 4269.69, 4223.03, 4189.22, 4219.43, 
-    ///     4181.42, 4127.9, 4103.78, 4132.94, 4153.12, 4197.74, 4268.26, 
-    ///     4334.23, 4347.53, 4355.41, 4359.76, 4343.94, 4353.34, 4393.82, 
-    ///     4458.97, 4495.31, 4487.83, 4499.66, 4510.36, 4525.51, 4545.05, 
+    ///     4342.37, 4337.54, 4303.84, 4269.69, 4223.03, 4189.22, 4219.43,
+    ///     4181.42, 4127.9, 4103.78, 4132.94, 4153.12, 4197.74, 4268.26,
+    ///     4334.23, 4347.53, 4355.41, 4359.76, 4343.94, 4353.34, 4393.82,
+    ///     4458.97, 4495.31, 4487.83, 4499.66, 4510.36, 4525.51, 4545.05,
     ///     4552.8, 4546.32, 4540.51
     /// ];
     ///
     /// let close = vec![
-    ///     4373.63, 4373.2, 4314.6, 4278.0, 4224.16, 4217.04, 4247.68, 
-    ///     4186.77, 4137.23, 4117.37, 4166.82, 4193.8, 4237.86, 4317.78, 
+    ///     4373.63, 4373.2, 4314.6, 4278.0, 4224.16, 4217.04, 4247.68,
+    ///     4186.77, 4137.23, 4117.37, 4166.82, 4193.8, 4237.86, 4317.78,
     ///     4358.34, 4365.98, 4378.38, 4382.78, 4347.35, 4415.24, 4411.55,
-    ///     4495.7, 4502.88, 4508.24, 4514.02, 4547.38, 4538.19, 4556.62, 
+    ///     4495.7, 4502.88, 4508.24, 4514.02, 4547.38, 4538.19, 4556.62,
     ///     4559.34, 4550.43, 4554.89
     /// ];
     ///
     /// let period: usize = 5;
     ///
-    /// let directional_movement_system = 
+    /// let directional_movement_system =
     ///     rust_ti::trend_indicators::bulk::directional_movement_system(
     ///         &high,
     ///         &low,
@@ -1004,11 +1006,15 @@ pub mod bulk {
             negative_di.push((negative_dm_sum / tr_sum) * 100.0);
         }
 
-        let dx: Vec<f64> = positive_di.iter().zip(&negative_di).map(|(&p, &n)| {
-            let di_diff = (p-n).abs();
-            let di_sum = p + n;
-            (di_diff / di_sum) * 100.0
-        }).collect();
+        let dx: Vec<f64> = positive_di
+            .iter()
+            .zip(&negative_di)
+            .map(|(&p, &n)| {
+                let di_diff = (p - n).abs();
+                let di_sum = p + n;
+                (di_diff / di_sum) * 100.0
+            })
+            .collect();
 
         let adx = match constant_model_type {
             ConstantModelType::SimpleMovingAverage => {
@@ -1074,28 +1080,28 @@ pub mod bulk {
     /// let prices = [101.0, 102.0, 100.0];
     /// let volumes = [1000.0, 1500.0];
     ///
-    /// let volume_price_trend = 
+    /// let volume_price_trend =
     ///     rust_ti::trend_indicators::bulk::volume_price_trend(
     ///         &prices,
     ///         &volumes,
     ///         0.0
     ///     );
     /// assert_eq!(
-    ///     vec![9.900990099009901, -19.510774606872452], 
+    ///     vec![9.900990099009901, -19.510774606872452],
     ///     volume_price_trend
     /// );
     ///
     /// let next_prices = [100.0, 98.0, 97.0];
     /// let next_volumes = [2000.0, 800.0];
-    /// 
-    /// let volume_price_trend = 
+    ///
+    /// let volume_price_trend =
     ///     rust_ti::trend_indicators::bulk::volume_price_trend(
     ///         &next_prices,
     ///         &next_volumes,
     ///         volume_price_trend[1]
     ///     );
     /// assert_eq!(
-    ///     vec![-59.51077460687245, -67.6740399129949], 
+    ///     vec![-59.51077460687245, -67.6740399129949],
     ///     volume_price_trend
     /// );
     /// ```
@@ -1127,12 +1133,7 @@ pub mod bulk {
         vpts.push(vpt);
 
         for i in 1..length {
-            vpt = single::volume_price_trend(
-                prices[i + 1],
-                prices[i],
-                volumes[i],
-                vpt,
-            );
+            vpt = single::volume_price_trend(prices[i + 1], prices[i], volumes[i], vpt);
             vpts.push(vpt);
         }
         vpts
@@ -1157,7 +1158,7 @@ pub mod bulk {
     /// # Examples
     ///
     /// ```rust
-    /// let prices = 
+    /// let prices =
     ///     vec![100.0, 115.0, 118.0, 120.0, 125.0, 117.0, 113.0, 115.0, 110.0, 107.0];
     /// let true_strength_index = rust_ti::trend_indicators::bulk::true_strength_index(
     ///     &prices,
@@ -1168,7 +1169,7 @@ pub mod bulk {
     /// );
     ///
     /// assert_eq!(
-    ///     vec![-0.25821030430852665, -0.48120300751879697, -0.6691474966170501], 
+    ///     vec![-0.25821030430852665, -0.48120300751879697, -0.6691474966170501],
     ///     true_strength_index
     /// );
     /// ```
@@ -1192,14 +1193,16 @@ pub mod bulk {
         };
 
         let loop_max = length - period_sum + 1;
-        
+
         (0..loop_max)
-            .map(|i| single::true_strength_index(
-                &prices[i..i + period_sum],
-                first_constant_model,
-                first_period,
-                second_constant_model,
-            ))
+            .map(|i| {
+                single::true_strength_index(
+                    &prices[i..i + period_sum],
+                    first_constant_model,
+                    first_period,
+                    second_constant_model,
+                )
+            })
             .collect()
     }
 }

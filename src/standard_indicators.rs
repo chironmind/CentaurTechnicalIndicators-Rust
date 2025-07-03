@@ -24,11 +24,11 @@
 //! - [`smoothed_moving_average`](bulk::smoothed_moving_average): Smoothed MA
 //!
 //! ### Single
-//! - [`bollinger_bands`](single::bollinger_bands): Standard Bollinger Bands 
+//! - [`bollinger_bands`](single::bollinger_bands): Standard Bollinger Bands
 //! - [`exponential_moving_average`](single::exponential_moving_average): EMA
 //! - [`macd`](single::macd): MACD
-//! - [`rsi`](single::rsi): RSI 
-//! - [`simple_moving_average`](single::simple_moving_average): SMA 
+//! - [`rsi`](single::rsi): RSI
+//! - [`simple_moving_average`](single::simple_moving_average): SMA
 //! - [`smoothed_moving_average`](single::smoothed_moving_average): Smoothed MA
 //!
 //! ## API Details
@@ -276,11 +276,11 @@ pub mod bulk {
     ///
     /// let simple_moving_average =
     ///     rust_ti::standard_indicators::bulk::simple_moving_average(
-    ///         &prices, 
+    ///         &prices,
     ///         period
     ///     );
     /// assert_eq!(
-    ///     vec![101.66666666666667, 102.0, 101.33333333333333], 
+    ///     vec![101.66666666666667, 102.0, 101.33333333333333],
     ///     simple_moving_average
     /// );
     /// ```
@@ -322,12 +322,12 @@ pub mod bulk {
     ///
     /// let smoothed_moving_average =
     ///     rust_ti::standard_indicators::bulk::smoothed_moving_average(
-    ///         &prices, 
+    ///         &prices,
     ///         period
     ///     );
     ///
     /// assert_eq!(
-    ///     vec![102.05263157894737, 101.8421052631579, 100.94736842105264], 
+    ///     vec![102.05263157894737, 101.8421052631579, 100.94736842105264],
     ///     smoothed_moving_average
     /// );
     /// ```
@@ -369,11 +369,11 @@ pub mod bulk {
     ///
     /// let exponential_moving_average =
     ///     rust_ti::standard_indicators::bulk::exponential_moving_average(
-    ///         &prices, 
+    ///         &prices,
     ///         period
     ///     );
     /// assert_eq!(
-    ///     vec![102.28571428571429, 101.71428571428571, 100.71428571428571], 
+    ///     vec![102.28571428571429, 101.71428571428571, 100.71428571428571],
     ///     exponential_moving_average
     /// );
     /// ```
@@ -505,7 +505,7 @@ pub mod bulk {
     /// ];
     /// let rsi = rust_ti::standard_indicators::bulk::rsi(&prices);
     /// assert_eq!(
-    ///     vec![38.168621439659084, 35.624517227910545, 31.14286676169411, 39.44166748365885], 
+    ///     vec![38.168621439659084, 35.624517227910545, 31.14286676169411, 39.44166748365885],
     ///     rsi
     /// );
     /// ```
