@@ -23,6 +23,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Removed
 - Deprecated legacy argument patterns (e.g., passing reference to period) across most modules for a cleaner API.
 - Removed repetitive or redundant docstrings in favor of more centralized, clearer documentation
+- Removed main and visa from examples to fall in line with diataxis, clearer tutorials and how tos will be put in another repo
 
 ---
 
