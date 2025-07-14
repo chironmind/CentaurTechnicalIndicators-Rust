@@ -120,14 +120,13 @@ All indicators are grouped and split into modules based on their analysis area.
 Each module has `bulk` (vector output) and `single` (scalar output) submodules.
 
 ### Standard Indicators
-- Simple, Smoothed, Exponential Moving Average
-- Bollinger Bands, MACD, RSI
+- Simple, Smoothed, Exponential Moving Average, Bollinger Bands, MACD, RSI
 
 ### Basic Indicators
 - Absolute Deviation, Log, Mean, Median, Mode, Std. Deviation, Variance, Max/Min
 
 ### Candle Indicators
-- Ichimoku Cloud, McGinley Bands/Envelopes, Donchian Channels, Keltner, Supertrend
+- Ichimoku Cloud, Moving Constant Bands/Envelopes, Donchian Channels, Keltner, Supertrend
 
 ### Chart Trends
 - Trend break down, overall trends, peak/valley trends
@@ -136,7 +135,7 @@ Each module has `bulk` (vector output) and `single` (scalar output) submodules.
 - Correlate asset prices
 
 ### Momentum Indicators
-- Chaikin Oscillator, CCI, MACD, Money Flow Index, On Balance Volume, ROC, RSI, etc.
+- Chaikin Oscillator, CCI, MACD, Money Flow Index, On Balance Volume, ROC, RSI, Williams %R
 
 ### Moving Averages
 - McGinley Dynamic, Moving Average
@@ -305,7 +304,7 @@ Contributions, bug reports, and feature requests are welcome!
 - Improved runtime of some indicators
 - Added links to benchmark, tutorials, and how to documents
 
-[Changlelog →](https://github.com/0100101001010000/RustTI/blob/main/CONTRIBUTING.md)
+[Human friendly changlelog →](https://github.com/0100101001010000/RustTI/blob/main/CONTRIBUTING.md)
 
 [Full changelog →](https://github.com/0100101001010000/RustTI/releases)
 

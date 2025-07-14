@@ -243,6 +243,7 @@ pub mod single {
     ///
     /// assert_eq!(0.5, internal_bar_strength);
     /// ```
+    #[inline]
     pub fn internal_bar_strength(high: f64, low: f64, close: f64) -> f64 {
         (close - low) / (high - low)
     }

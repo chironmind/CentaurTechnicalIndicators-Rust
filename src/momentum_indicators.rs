@@ -1897,6 +1897,7 @@ pub mod bulk {
     ///         rust_ti::ConstantModelType::SimpleMovingMedian);
     /// assert_eq!(vec![0.0, -1.3333333333333286, -1.0], macd);
     /// ```
+    #[inline]
     pub fn macd_line(
         prices: &[f64],
         short_period: usize,
@@ -1975,6 +1976,7 @@ pub mod bulk {
     ///     median_signal_line
     /// );
     /// ```
+    #[inline]
     pub fn signal_line(
         macds: &[f64],
         constant_model_type: ConstantModelType,

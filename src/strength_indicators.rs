@@ -522,6 +522,7 @@ pub mod bulk {
     ///
     /// assert_eq!(vec![0.10185185185185186, -0.06611570247933886, -0.17037037037037037], relative_vigor_index);
     /// ```
+    #[inline]
     pub fn relative_vigor_index(
         open: &[f64],
         high: &[f64],

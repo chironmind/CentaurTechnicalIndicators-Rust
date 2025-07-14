@@ -174,37 +174,7 @@ pub fn valleys(prices: &[f64], period: usize, closest_neighbor: usize) -> Vec<(f
             period, length
         )
     };
-    let mut peaks: Vec<(f64, usize)> = Vec::new();
-    let mut last_peak_idx: usize = 0;
-    let mut last_peak: f64 = 0.0;
 
-    for i in 0..=length - period {
-        let window = &prices[i..i + period];
-        let peak = max(window);
-        let local_idx = window.iter().rposition(|&x| x == peak).unwrap();
-        let idx = i + local_idx;
-
-        if last_peak_idx != 0 {
-            if idx <= last_peak_idx + closest_neighbor {
-                if peak < last_peak {
-                    last_peak_idx = idx;
-                } else if peak > last_peak {
-                    peaks.pop();
-                    peaks.push((peak, idx));
-                    last_peak_idx = idx;
-                    last_peak = peak;
-                }
-            } else if !peaks.contains(&(peak, idx)) {
-                peaks.push((peak, idx));
-                last_peak_idx = idx;
-                last_peak = peak;
-            }
-        } else {
-            peaks.push((peak, idx));
-            last_peak_idx = idx;
-            last_peak = peak;
-        }
-    }
     let mut valleys: Vec<(f64, usize)> = Vec::new();
     let mut last_valley_idx: usize = 0;
     let mut last_valley: f64 = 0.0;
@@ -271,6 +241,7 @@ fn get_trend_line(p: &[(f64, usize)]) -> (f64, f64) {
 /// let peak_trend = rust_ti::chart_trends::peak_trend(&highs, period);
 /// assert_eq!((0.6666666666666666, 105.66666666666667), peak_trend);
 /// ```
+#[inline]
 pub fn peak_trend(prices: &[f64], period: usize) -> (f64, f64) {
     let peaks = peaks(prices, period, 1);
     get_trend_line(&peaks)
@@ -291,6 +262,7 @@ pub fn peak_trend(prices: &[f64], period: usize) -> (f64, f64) {
 /// let valley_trend = rust_ti::chart_trends::valley_trend(&lows, period);
 /// assert_eq!((-0.6666666666666666, 96.33333333333333), valley_trend);
 /// ```
+#[inline]
 pub fn valley_trend(prices: &[f64], period: usize) -> (f64, f64) {
     let valleys = valleys(prices, period, 1);
     get_trend_line(&valleys)
@@ -309,6 +281,7 @@ pub fn valley_trend(prices: &[f64], period: usize) -> (f64, f64) {
 /// let overall_trend = rust_ti::chart_trends::overall_trend(&prices);
 /// assert_eq!((-0.1, 101.4), overall_trend);
 /// ```
+#[inline]
 pub fn overall_trend(prices: &[f64]) -> (f64, f64) {
     let indexed_prices: Vec<(f64, usize)> =
         prices.iter().enumerate().map(|(i, &y)| (y, i)).collect();

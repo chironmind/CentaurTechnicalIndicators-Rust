@@ -10,6 +10,7 @@ Thank you for considering contributing—every improvement is appreciated, big o
 2. **Make your changes**  
 3. **Open a Pull Request (PR)** on [GitHub](https://github.com/0100101001010000/RustTI/pulls)
 4. **Tag @0100101001010000** in your PR for a review
+5. **Run benchmarks** from [RustTI-Benchmarks](https://github.com/0100101001010000/RustTI-benchmarks)
 
 See [open issues](https://github.com/0100101001010000/RustTI/issues) if you want to start with something small.
 
@@ -37,6 +38,8 @@ See [open issues](https://github.com/0100101001010000/RustTI/issues) if you want
    - Add documentation and unit tests
 3. **Verify results**  
    - Add a tab to `assets/rust_ti_hand_calcs.ods` with hand calculations to ensure test accuracy
+4. **Add to benchmarks and run**
+   - Add a bench in [RustTI-Benchmarks](https://github.com/0100101001010000/RustTI-benchmarks), run it, and document the runtime
 
 ---
 
