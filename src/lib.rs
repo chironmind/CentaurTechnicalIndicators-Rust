@@ -61,6 +61,7 @@
 //! - **Explanations:** Coming soon
 //! - **Reference:** You're here!
 //!
+//! ---
 
 
 #![allow(unreachable_patterns)]
