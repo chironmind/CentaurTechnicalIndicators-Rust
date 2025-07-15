@@ -154,8 +154,6 @@ Each module has `bulk` (vector output) and `single` (scalar output) submodules.
 
 ---
 
-<<<<<<< Updated upstream
-=======
 ## 📊 Performance Benchmarks
 
 Want to know how fast RustTI runs in real-world scenarios?  
@@ -276,11 +274,10 @@ We provide detailed, reproducible benchmarks using realistic OHLCV data and a va
 
 *These results are from a Raspberry Pi 5 8GB, your machine will likely be faster!*
 
-👉 [See all benchmarks and how to run your own](https://github.com/0100101001010000/RustTI-benchmarks/blob/main/README.md)
+👉 [See all benchmarks and how to run your own](https://github.com/0100101001010000/RustTI-benchmarks)
 
 ---
 
->>>>>>> Stashed changes
 ## 🤝 Contributing
 
 Contributions, bug reports, and feature requests are welcome!

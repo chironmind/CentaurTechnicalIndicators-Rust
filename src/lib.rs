@@ -50,6 +50,18 @@
 //!
 //! ## Types
 //! All shared enums and types are re-exported at the crate root for convenience.
+//!
+//! ## More docs
+//!
+//! This repository is part of a structured documentation suite:
+//!
+//! - **Tutorials:** [See here](https://github.com/0100101001010000/RustTI-tutorials)
+//! - **How-To Guides:** [See here](https://github.com/0100101001010000/RustTI-how-to-guides)
+//! - **Benchmarks:** [See here](github.com/0100101001010000/RustTI-benchmarks)
+//! - **Explanations:** Coming soon
+//! - **Reference:** You're here!
+//!
+
 
 #![allow(unreachable_patterns)]
 
