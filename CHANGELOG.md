@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [2.1.0] - TBD
+### Added
+- Added benchmarks to README
+- Added tutorials to README
+
+### Changed
+- Removed unused loop from valleys
+- Inlined functions to improve runtime
+
+---
+
 ## [2.0.0] - 2025-07-03
 ### Added
 - Expanded and improved documentation for core modules, including comprehensive doc comments and usage examples for `basic_indicators`, `candle_indicators`, `chart_trends`, and `correlation_indicators`.

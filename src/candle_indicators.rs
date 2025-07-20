@@ -1047,6 +1047,7 @@ pub mod bulk {
     ///         (95.0, 101.0, 107.0), (95.0, 101.0, 107.0), (95.0, 102.0, 109.0), (95.0, 102.0, 109.0)
     ///     ], donchian_channels);
     /// ```
+    #[inline]
     pub fn donchian_channels(high: &[f64], low: &[f64], period: usize) -> Vec<(f64, f64, f64)> {
         if high.is_empty() || low.is_empty() {
             panic!(

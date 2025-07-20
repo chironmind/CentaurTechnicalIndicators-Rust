@@ -55,7 +55,11 @@ Simple Moving Average: 100.352
 
 **3. Explore more examples**
 
-**COMING SOON** Being developer [here](https://github.com/0100101001010000/RustTI-tutorials)
+- [Getting started tutorial](https://github.com/0100101001010000/RustTI-tutorials/blob/main/getting_started.md)
+- [Choosing the right model](https://github.com/0100101001010000/RustTI-tutorials/blob/main/choose_right_model.md)
+- [Building your first strategy](https://github.com/0100101001010000/RustTI-tutorials/blob/main/first_strategy.md)
+- [Backtesting tutorial](https://github.com/0100101001010000/RustTI-tutorials/blob/main/backtest.md)
+- [Visualization tutorial](https://github.com/0100101001010000/RustTI-tutorials/blob/main/visualization.md)
 
 ---
 
@@ -63,7 +67,14 @@ Simple Moving Average: 100.352
 
 > Task-oriented guides for common problems and advanced scenarios.
 
-- **COMING SOON** Being developed [here](https://github.com/0100101001010000/RustTI-how-to-guides)
+- [Load CSV Price Data:](https://github.com/0100101001010000/RustTI-how-to-guides/blob/main/load_csv.md) Parse OHLC prices from a file and calculate RSI 
+- [When to use a bulk vs single module:](https://github.com/0100101001010000/RustTI-how-to-guides/blob/main/bulk_vs_single.md) Understand when to use bulk functions or single functions
+- [Choosing the right constant model type:](https://github.com/0100101001010000/RustTI-how-to-guides/blob/main/choose_constant_model_type.md) Programatically determine the best `ConstantModelType` 
+- [Choosing the right deviation model:](https://github.com/0100101001010000/RustTI-how-to-guides/blob/main/choose_deviation_model.md) Programatically determine the best deviation model 
+- [Choosing the right period:](https://github.com/0100101001010000/RustTI-how-to-guides/blob/main/choose_period.md) Programatically determine the best period
+- [How to use the Personalised Moving Average:](https://github.com/0100101001010000/RustTI-how-to-guides/blob/main/personliased_moving_average.md) Programatically determine the alpha of the moving average
+- [How to use the McGinley dynamic variation of functions:](https://github.com/0100101001010000/RustTI-how-to-guides/blob/main/mcginley_dynamic.md) Quick guide on how to use the McGinley Dynamic functions 
+
 
 *(Contributions welcome! Submit your favorite how-to guide as a PR.)*
 
@@ -116,14 +127,13 @@ All indicators are grouped and split into modules based on their analysis area.
 Each module has `bulk` (vector output) and `single` (scalar output) submodules.
 
 ### Standard Indicators
-- Simple, Smoothed, Exponential Moving Average
-- Bollinger Bands, MACD, RSI
+- Simple, Smoothed, Exponential Moving Average, Bollinger Bands, MACD, RSI
 
 ### Basic Indicators
 - Absolute Deviation, Log, Mean, Median, Mode, Std. Deviation, Variance, Max/Min
 
 ### Candle Indicators
-- Ichimoku Cloud, McGinley Bands/Envelopes, Donchian Channels, Keltner, Supertrend
+- Ichimoku Cloud, Moving Constant Bands/Envelopes, Donchian Channels, Keltner, Supertrend
 
 ### Chart Trends
 - Trend break down, overall trends, peak/valley trends
@@ -132,7 +142,7 @@ Each module has `bulk` (vector output) and `single` (scalar output) submodules.
 - Correlate asset prices
 
 ### Momentum Indicators
-- Chaikin Oscillator, CCI, MACD, Money Flow Index, On Balance Volume, ROC, RSI, etc.
+- Chaikin Oscillator, CCI, MACD, Money Flow Index, On Balance Volume, ROC, RSI, Williams %R
 
 ### Moving Averages
 - McGinley Dynamic, Moving Average
@@ -148,6 +158,130 @@ Each module has `bulk` (vector output) and `single` (scalar output) submodules.
 
 ### Volatility Indicators
 - Ulcer Index, Volatility System
+
+---
+
+## 📊 Performance Benchmarks
+
+Want to know how fast RustTI runs in real-world scenarios?  
+We provide detailed, reproducible benchmarks using realistic OHLCV data and a variety of indicators.
+
+### Momentum Indicators
+
+| Function                                      | Time per Operation |
+|-----------------------------------------------|--------------------|
+| `relative_strength_index`                     | 573.86 µs          |
+| `stochastic_oscillator`                       | 784.13 µs          |
+| `slow_stochastic`                             | 28.866 µs          |
+| `slowest_stochastic`                          | 28.866 µs          |
+| `williams_percent_r`                          | 76.256 µs          |
+| `money_flow_index`                            | 150.69 µs          |
+| `rate_of_change`                              | 5.3984 µs          |
+| `on_balance_volume`                           | 17.405 µs          |
+| `commodity_channel_index`                     | 103.19 µs          |
+| `mcginley_dynamic_commodity_channel_index`    | 66.044 µs          |
+| `macd_line`                                   | 51.482 µs          |
+| `mcginley_dynamic_macd_line`                  | 44.461 µs          |
+| `chaikin_oscillator`                          | 258.33 µs          |
+| `percentage_price_oscillator`                 | 58.060 µs          |
+| `chande_momentum_oscillator`                  | 370.14 µs          |
+
+### Candle Indicators
+
+| Function                                      | Time per Operation |
+|-----------------------------------------------|--------------------|
+| `moving_constant_envelopes`                   | 37.572 µs          |
+| `mcginley_dynamic_envelopes`                  | 39.264 µs          |
+| `moving_constant_bands`                       | 119.70 µs          |
+| `mcginley_dynamic_bands`                      | 43.219 µs          |
+| `ichimoku_cloud`                              | 192.93 µs          |
+| `donchian_channel`                            | 28.481 µs          |
+| `keltner_channel`                             | 318.05 µs          |
+| `supertrend`                                  | 148.80 µs          |
+
+### Trend Indicators
+
+| Function                                      | Time per Operation |
+|-----------------------------------------------|--------------------|
+| `aroon_up`                                    | 16.531 µs          |
+| `aroon_down`                                  | 16.592 µs          |
+| `aroon_indicator`                             | 66.468 µs          |
+| `parabolic_time_price_system`                 | 43.939 µs          |
+| `directional_movement_system`                 | 88.965 µs          |
+| `volume_price_trend`                          | 6.2801 µs          |
+| `true_strength_indx`                          | 705.25 µs          |
+
+### Strength Indicators
+
+| Function                                      | Time per Operation |
+|-----------------------------------------------|--------------------|
+| `accumulation_distribution`                   | 8.2935 µs          |
+| `positive_volume_index`                       | 7.6977 µs          |
+| `negative_volume_index`                       | 7.6167 µs          |
+| `relative_vigor_index`                        | 505.34 µs          |
+
+### Other Indicators
+
+| Function                                      | Time per Operation |
+|-----------------------------------------------|--------------------|
+| `return_on_investment`                        | 40.962 µs          |
+| `true_range`                                  | 3.4663 µs          |
+| `average_true_range`                          | 122.08 µs          |
+| `internal_bar_strength`                       | 5.3943 µs          |
+| `positivity_indicator`                        | 20.683 µs          |
+
+### Basic Indicators
+
+| Function                                      | Time per Operation |
+|-----------------------------------------------|--------------------|
+| `mean`                                        | 5.7432 µs          |
+| `median`                                      | 333.68 µs          |
+| `mode`                                        | 931.09 µs          |
+| `log`                                         | 20.335 µs          |
+| `log_difference`                              | 42.223 µs          |
+| `variance`                                    | 20.921 µs          |
+| `standard_deviation`                          | 24.095 µs          |
+| `absolute_deviation(Mean)`                    | 26.991 µs          |
+| `absolute_deviation(Median)`                  | 345.14 µs          |
+| `absoluite_deviation(Mode)`                   | 956.83 µs          |
+
+### Chart Trends
+
+| Function                                      | Time per Operation |
+|-----------------------------------------------|--------------------|
+| `peaks`                                       | 93.094 µs          |
+| `valleys`                                     | 92.119 µs          |
+| `peak_trend`                                  | 188.14 µs          |
+| `valley_trend`                                | 188.81 µs          |
+| `overall_trend`                               | 10.337 µs          |
+| `break_down_trends`                           | 14.655 ms          |
+
+### Correlation Indicators
+
+| Function                                      | Time per Operation |
+|-----------------------------------------------|--------------------|
+| `correlate_asset_prices`                      | 231.14 µs          |
+
+### Moving Average
+
+| Function                                      | Time per Operation |
+|-----------------------------------------------|--------------------|
+| `moving_average(Simple)`                      | 17.575 µs          |
+| `moving_average(Smoothed)`                    | 76.601 µs          |
+| `moving_average(Exponential)`                 | 78.505 µs          |
+| `mcginley_dynamic`                            | 39.653 µs          |
+
+### Volatility Indicators
+
+| Function                                      | Time per Operation |
+|-----------------------------------------------|--------------------|
+| `ulcer_index`                                 | 65.959 µs          |
+| `volatility_system`                           | 137.25 µs          |
+
+
+*These results are from a Raspberry Pi 5 8GB, your machine will likely be faster!*
+
+👉 [See all benchmarks and how to run your own](https://github.com/0100101001010000/RustTI-benchmarks)
 
 ---
 
@@ -170,10 +304,12 @@ Contributions, bug reports, and feature requests are welcome!
 
 ## 📰 Release Notes
 
-**Latest (v2.0.0):**
-- Full refactor of the code and docstrings to fall in line with Rust standards (obvious, constrained, unsurprising, and flexible)
+**Latest (v2.1.0):**
+- Improved runtime of some indicators
+- Added links to benchmark, tutorials, and how to documents
 
-[Changlelog →](https://github.com/0100101001010000/RustTI/blob/main/CONTRIBUTING.md)
+[Human friendly changlelog →](https://github.com/0100101001010000/RustTI/blob/main/CONTRIBUTING.md)
+
 [Full changelog →](https://github.com/0100101001010000/RustTI/releases)
 
 ---

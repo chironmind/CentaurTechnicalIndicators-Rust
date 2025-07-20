@@ -156,6 +156,7 @@ pub mod single {
     ///     rust_ti::trend_indicators::single::aroon_indicator(&highs, &lows);
     /// assert_eq!((50.0, 25.0, 25.0), aroon_indicator);
     /// ```
+    #[inline]
     pub fn aroon_indicator(highs: &[f64], lows: &[f64]) -> (f64, f64, f64) {
         if highs.len() != lows.len() {
             panic!(
@@ -211,6 +212,7 @@ pub mod single {
     ///     );
     /// assert_eq!(52.1, parabolic_time_price_system);
     /// ```
+    #[inline]
     pub fn long_parabolic_time_price_system(
         previous_sar: f64,
         extreme_point: f64,
@@ -261,6 +263,7 @@ pub mod single {
     ///     );
     /// assert_eq!(58.1, parabolic_time_price_system);
     /// ```
+    #[inline]
     pub fn short_parabolic_time_price_system(
         previous_sar: f64,
         extreme_point: f64,
@@ -304,6 +307,7 @@ pub mod single {
     /// );
     /// assert_eq!(-19.510774606872452, volume_price_trend);
     /// ```
+    #[inline]
     pub fn volume_price_trend(
         current_price: f64,
         previous_price: f64,
@@ -537,6 +541,7 @@ pub mod bulk {
     /// let aroon_down = rust_ti::trend_indicators::bulk::aroon_down(&lows, period);
     /// assert_eq!(vec![25.0, 0.0, 100.0], aroon_down);
     /// ```
+    #[inline]
     pub fn aroon_down(lows: &[f64], period: usize) -> Vec<f64> {
         let length = lows.len();
         if length < period {
@@ -576,6 +581,7 @@ pub mod bulk {
     ///     );
     /// assert_eq!(vec![25.0, 25.0, -100.0], aroon_oscillator);
     /// ```
+    #[inline]
     pub fn aroon_oscillator(aroon_up: &[f64], aroon_down: &[f64]) -> Vec<f64> {
         let length = aroon_up.len();
         if length != aroon_down.len() {
@@ -623,6 +629,7 @@ pub mod bulk {
     ///     aroon_indicator
     /// );
     /// ```
+    #[inline]
     pub fn aroon_indicator(highs: &[f64], lows: &[f64], period: usize) -> Vec<(f64, f64, f64)> {
         let length = highs.len();
         if length != lows.len() {
@@ -1105,6 +1112,7 @@ pub mod bulk {
     ///     volume_price_trend
     /// );
     /// ```
+    #[inline]
     pub fn volume_price_trend(
         prices: &[f64],
         volumes: &[f64],
@@ -1173,6 +1181,7 @@ pub mod bulk {
     ///     true_strength_index
     /// );
     /// ```
+    #[inline]
     pub fn true_strength_index(
         prices: &[f64],
         first_constant_model: ConstantModelType,

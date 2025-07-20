@@ -466,7 +466,7 @@ pub mod bulk {
         result
     }
 
-    /// Calculates the natural logrithm of slice of prices
+    /// Calculates the natural logarithm of slice of prices
     ///
     /// # Arguments
     ///

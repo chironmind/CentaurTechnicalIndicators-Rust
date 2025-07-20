@@ -52,6 +52,7 @@ pub mod single {
     /// let ulcer_index = rust_ti::volatility_indicators::single::ulcer_index(&prices);
     /// assert_eq!(1.9417475728155338, ulcer_index);
     /// ```
+    #[inline]
     pub fn ulcer_index(prices: &[f64]) -> f64 {
         if prices.is_empty() {
             panic!("Prices cannot be empty")
@@ -98,6 +99,7 @@ pub mod bulk {
     ///     ulcer_index
     /// );
     /// ```
+    #[inline]
     pub fn ulcer_index(prices: &[f64], period: usize) -> Vec<f64> {
         let length = prices.len();
         if period > length {
