@@ -67,7 +67,14 @@ Simple Moving Average: 100.352
 
 > Task-oriented guides for common problems and advanced scenarios.
 
-- **COMING SOON** Being developed [here](https://github.com/0100101001010000/RustTI-how-to-guides)
+- [Load CSV Price Data:](https://github.com/0100101001010000/RustTI-how-to-guides/blob/main/load_csv.md) Parse OHLC prices from a file and calculate RSI 
+- [When to use a bulk vs single module:](https://github.com/0100101001010000/RustTI-how-to-guides/blob/main/bulk_vs_single.md) Understand when to use bulk functions or single functions
+- [Choosing the right constant model type:](https://github.com/0100101001010000/RustTI-how-to-guides/blob/main/choose_constant_model_type.md) Programatically determine the best `ConstantModelType` 
+- [Choosing the right deviation model:](https://github.com/0100101001010000/RustTI-how-to-guides/blob/main/choose_deviation_model.md) Programatically determine the best deviation model 
+- [Choosing the right period:](https://github.com/0100101001010000/RustTI-how-to-guides/blob/main/choose_period.md) Programatically determine the best period
+- [How to use the Personalised Moving Average:](https://github.com/0100101001010000/RustTI-how-to-guides/blob/main/personliased_moving_average.md) Programatically determine the alpha of the moving average
+- [How to use the McGinley dynamic variation of functions:](https://github.com/0100101001010000/RustTI-how-to-guides/blob/main/mcginley_dynamic.md) Quick guide on how to use the McGinley Dynamic functions 
+
 
 *(Contributions welcome! Submit your favorite how-to guide as a PR.)*
 
