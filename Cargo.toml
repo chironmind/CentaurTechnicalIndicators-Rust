@@ -13,9 +13,6 @@ keywords = [
 	"technical-analysis", 
 	"finance", 
 	"indicators",
-	"algorithmic-trading",
-	"quant",
-	"market",
 	"rust"
 ]
 categories = ["finance", "mathematics", "science", "algorithms"]
