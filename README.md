@@ -1,9 +1,15 @@
 ![RustTI Banner](./assets/banner.webp)
 
-[![Crates.io](https://img.shields.io/crates/v/rust_ti.svg)](https://crates.io/crates/rust_ti)
+[![Crates.io Version](https://img.shields.io/crates/v/rust_ti.svg)](https://crates.io/crates/rust_ti)
 [![Docs.rs](https://docs.rs/rust_ti/badge.svg)](https://docs.rs/rust_ti/)
 [![CI](https://github.com/0100101001010000/RustTI/actions/workflows/rust.yml/badge.svg)](https://github.com/0100101001010000/RustTI/actions)
+TODO: Code coverage!
 [![License](https://img.shields.io/github/license/0100101001010000/RustTI)](LICENSE)
+
+[![Crates.io Downloads](https://img.shields.io/crates/d/rust_ti.svg)](https://crates.io/crates/rust_ti)
+[![Tutorials](https://img.shields.io/badge/Tutorials-Available-brightgreen?style=flat&logo=book)](https://github.com/0100101001010000/RustTI-tutorials)
+[![Benchmarks](https://img.shields.io/badge/Performance-Microsecond-blue?logo=zap)](https://github.com/0100101001010000/RustTI-benchmarks)
+[![MSRV](https://img.shields.io/crates/msrv/rust_ti)](https://crates.io/crates/rust_ti)
 
 # 🦀 Meet RusTI
 
@@ -32,7 +38,7 @@ cargo add rust_ti
 ```
 Or, manually in your `Cargo.toml`:
 ```toml
-rust_ti = "2.0.0"
+rust_ti = "2.1.0"
 ```
 
 **2. Calculate your first indicator:**
@@ -53,7 +59,7 @@ Expected output:
 Simple Moving Average: 100.352
 ```
 
-**3. Explore more examples**
+**3. Explore more tutorials**
 
 - [Getting started tutorial](https://github.com/0100101001010000/RustTI-tutorials/blob/main/getting_started.md)
 - [Choosing the right model](https://github.com/0100101001010000/RustTI-tutorials/blob/main/choose_right_model.md)
