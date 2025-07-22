@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [2.1.1] - 2025-07-22
+### Fixed
+- Chaikin Oscillator was taking the first Accumulation Distribution instead of the last
+
+### Changed
+- Minor doc updates
+
+---
+
 ## [2.1.0] - 2025-07-20
 ### Added
 - Added benchmarks to README
