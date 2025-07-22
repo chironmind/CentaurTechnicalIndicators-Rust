@@ -983,7 +983,7 @@ pub mod single {
     ///         rust_ti::ConstantModelType::ExponentialMovingAverage,
     ///         rust_ti::ConstantModelType::ExponentialMovingAverage
     ///     );
-    /// assert_eq!((-179.95937711577525, 500.0), chaikin_oscillator);
+    /// assert_eq!((-179.95937711577525, -760.0), chaikin_oscillator);
     ///
     /// let previous = 500.0;
     /// let chaikin_oscillator =
@@ -997,7 +997,7 @@ pub mod single {
     ///         rust_ti::ConstantModelType::SimpleMovingAverage,
     ///         rust_ti::ConstantModelType::SimpleMovingMedian
     ///     );
-    /// assert_eq!((-333.3333333333333, 1000.0), chaikin_oscillator);
+    /// assert_eq!((-333.3333333333333, -260.0), chaikin_oscillator);
     /// ```
     pub fn chaikin_oscillator(
         highs: &[f64],
@@ -1096,7 +1096,7 @@ pub mod single {
             _ => panic!("Unsupported ConstantModelType"),
         };
 
-        (short_period_average - long_period_average, ad[0])
+        (short_period_average - long_period_average, ad[ad.len()-1])
     }
 
     /// Calculates the Percentage Price Oscillator (PPO)
@@ -2129,7 +2129,7 @@ pub mod bulk {
     ///     rust_ti::ConstantModelType::ExponentialMovingAverage
     /// );
     /// assert_eq!(
-    ///     vec![(-179.95937711577525, 500.0), (-339.790115098172, 0.0), (-203.39139533452317, 240.0)],
+    ///     vec![(-179.95937711577525, -760.0), (-339.790115098172, -2770.0), (-203.39139533452362, -3484.5454545454545)],
     ///     chaikin_oscillator
     /// );
     ///
@@ -2146,7 +2146,7 @@ pub mod bulk {
     ///     rust_ti::ConstantModelType::SimpleMovingMedian
     ///     );
     /// assert_eq!(
-    ///     vec![(-333.3333333333333, 1000.0), (-676.6666666666666, 500.0),(-280.3030303030303, 740.0)],
+    ///     vec![(-333.3333333333333, -260.0), (-676.6666666666667, -2270.0), (-280.30303030303, -2984.5454545454545)],
     ///     chaikin_oscillator
     /// );
     /// ```
@@ -3966,7 +3966,7 @@ mod tests {
         let close = vec![100.01, 100.44, 100.39, 100.63, 100.71];
         let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0];
         assert_eq!(
-            (29.535626025665053, -38.28571428571309),
+            (29.535626025665053, 304.76047677253655),
             single::chaikin_oscillator(
                 &highs,
                 &lows,
@@ -3987,7 +3987,7 @@ mod tests {
         let close = vec![100.01, 100.44, 100.39, 100.63, 100.71];
         let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0];
         assert_eq!(
-            (52.583143395495696, -38.28571428571309),
+            (52.583143395495696, 304.76047677253655),
             single::chaikin_oscillator(
                 &highs,
                 &lows,
@@ -4008,7 +4008,7 @@ mod tests {
         let close = vec![100.01, 100.44, 100.39, 100.63, 100.71];
         let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0];
         assert_eq!(
-            (58.83861961460434, -38.28571428571309),
+            (58.83861961460434, 304.76047677253655),
             single::chaikin_oscillator(
                 &highs,
                 &lows,
@@ -4029,7 +4029,7 @@ mod tests {
         let close = vec![100.01, 100.44, 100.39, 100.63, 100.71];
         let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0];
         assert_eq!(
-            (51.277072031524625, -38.28571428571309),
+            (51.277072031524625, 304.76047677253655),
             single::chaikin_oscillator(
                 &highs,
                 &lows,
@@ -4056,7 +4056,7 @@ mod tests {
         let close = vec![100.01, 100.44, 100.39, 100.63, 100.71];
         let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0];
         assert_eq!(
-            (21.535323383069596, -38.28571428571309),
+            (21.535323383069596, 304.76047677253655),
             single::chaikin_oscillator(
                 &highs,
                 &lows,
@@ -4077,7 +4077,7 @@ mod tests {
         let close = vec![100.01, 100.44, 100.39, 100.63, 100.71];
         let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0];
         assert_eq!(
-            (29.53333333333333, -38.28571428571309),
+            (29.53333333333333, 304.76047677253655),
             single::chaikin_oscillator(
                 &highs,
                 &lows,
@@ -4098,7 +4098,7 @@ mod tests {
         let close = vec![100.01, 100.44, 100.39, 100.63, 100.71];
         let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0];
         assert_eq!(
-            (29.53562602566504, 55.474285714286914),
+            (29.53562602566504, 398.52047677253654),
             single::chaikin_oscillator(
                 &highs,
                 &lows,
@@ -4119,7 +4119,7 @@ mod tests {
         let close = vec![100.01, 100.44, 100.39, 100.63, 100.71];
         let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0];
         assert_eq!(
-            (22.17005097965847, -38.28571428571309),
+            (22.17005097965847, 304.76047677253655),
             single::chaikin_oscillator(
                 &highs,
                 &lows,
@@ -4236,9 +4236,9 @@ mod tests {
         let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0, 396.0, 362.0];
         assert_eq!(
             vec![
-                (22.17005097965847, -38.28571428571309),
-                (212.46394428616193, 65.05231388329526),
-                (233.52784525415484, -129.68101945004022)
+                (22.17005097965847, 304.76047677253655),
+                (212.4639442861619, 848.8528216769286),
+                (233.52784525415495, 1588.098366482492)
             ],
             bulk::chaikin_oscillator(
                 &highs,
@@ -4262,9 +4262,9 @@ mod tests {
         let volume = vec![268.0, 319.0, 381.0, 414.0, 376.0, 396.0, 362.0];
         assert_eq!(
             vec![
-                (22.17005097965844, 61.71428571428691),
-                (212.46394428616193, 165.05231388329526),
-                (233.52784525415484, -29.681019450040225)
+                (22.17005097965844, 404.76047677253655),
+                (212.4639442861619, 948.8528216769286),
+                (233.52784525415473, 1688.098366482492)
             ],
             bulk::chaikin_oscillator(
                 &highs,
