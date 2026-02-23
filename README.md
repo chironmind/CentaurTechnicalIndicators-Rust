@@ -19,7 +19,7 @@ A highly configurable and high-performance technical indicators library written 
 
 Designed for flexibility, speed, and advanced use cases in quantitative and algorithmic trading.
 
-Part of the Centaur Labs ecosystem — visit [https://centaurlabs.pages.dev/](https://centaurlabs.pages.dev/) for more.
+Part of the Centaur Research and Technologies ecosystem — visit [https://centaurresearchtechnologies.com/](https://centaurresearchtechnologies.com/) for more.
 
 Looking for the Python bindings? See: [CentaurTechnicalIndicators-Python](https://github.com/chironmind/CentaurTechnicalIndicators-Python)
 
@@ -312,7 +312,7 @@ Contributions, bug reports, and feature requests are welcome!
 
 **Latest (v1.0.0):**
 - Rebranded from RustTI to Centaur Technical Indicators
-- Part of the Centaur Labs ecosystem
+- Part of the Centaur Research and Technologies ecosystem
 - All functionality remains the same
 
 [Human friendly changelog →](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust/blob/main/CHANGELOG.md)

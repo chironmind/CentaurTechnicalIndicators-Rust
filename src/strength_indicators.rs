@@ -88,7 +88,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://centaurlabs.pages.dev/indicators/strength-indicators/accumulation-distribution/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/strength-indicators/accumulation-distribution/>
     #[inline]
     pub fn accumulation_distribution(
         high: f64,
@@ -137,8 +137,8 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://centaurlabs.pages.dev/indicators/strength-indicators/positive-volume-index/>
-    /// <https://centaurlabs.pages.dev/indicators/strength-indicators/negative-volume-index/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/strength-indicators/positive-volume-index/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/strength-indicators/negative-volume-index/>
     #[inline]
     pub fn volume_index(
         current_close: f64,
@@ -193,7 +193,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://centaurlabs.pages.dev/indicators/strength-indicators/relative-vigor-index/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/strength-indicators/relative-vigor-index/>
     pub fn relative_vigor_index(
         open: &[f64],
         high: &[f64],
@@ -327,7 +327,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://centaurlabs.pages.dev/indicators/strength-indicators/accumulation-distribution/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/strength-indicators/accumulation-distribution/>
     #[inline]
     pub fn accumulation_distribution(
         high: &[f64],
@@ -408,7 +408,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://centaurlabs.pages.dev/indicators/strength-indicators/positive-volume-index/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/strength-indicators/positive-volume-index/>
     #[inline]
     pub fn positive_volume_index(
         close: &[f64],
@@ -486,7 +486,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://centaurlabs.pages.dev/indicators/strength-indicators/negative-volume-index/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/strength-indicators/negative-volume-index/>
     #[inline]
     pub fn negative_volume_index(
         close: &[f64],
@@ -555,7 +555,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://centaurlabs.pages.dev/indicators/strength-indicators/relative-vigor-index/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/strength-indicators/relative-vigor-index/>
     #[inline]
     pub fn relative_vigor_index(
         open: &[f64],

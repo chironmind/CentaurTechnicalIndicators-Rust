@@ -83,7 +83,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://centaurlabs.pages.dev/indicators/momentum-indicators/moving-average/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/moving-average/>
     #[inline]
     pub fn moving_average(
         prices: &[f64],
@@ -174,7 +174,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://centaurlabs.pages.dev/indicators/momentum-indicators/mcginley-dynamic/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/mcginley-dynamic/>
     #[inline]
     pub fn mcginley_dynamic(
         latest_price: f64,
@@ -256,7 +256,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://centaurlabs.pages.dev/indicators/momentum-indicators/moving-average/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/moving-average/>
     #[inline]
     pub fn moving_average(
         prices: &[f64],
@@ -315,7 +315,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://centaurlabs.pages.dev/indicators/momentum-indicators/mcginley-dynamic/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/mcginley-dynamic/>
     #[inline]
     pub fn mcginley_dynamic(
         prices: &[f64],
