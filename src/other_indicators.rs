@@ -34,6 +34,11 @@
 //! - All functions operate on slices of `f64` prices (and sometimes highs/lows/closes).
 //! - Function-level docs explain arguments, panics, and provide usage examples.
 //!
+//! ## Reference
+//!
+//! - Explanation and interactive playground:
+//! <https://tech.centaurresearchtechnologies.com/indicators/other-indicators/>
+//!
 //! ---
 
 /// **single**: Functions that return a single value for a slice of prices.
@@ -560,6 +565,11 @@ pub mod bulk {
     ///     ], positivity_indicator
     /// );
     /// ```
+    ///
+    /// # Reference
+    ///
+    /// - Explanation and interactive playground:
+    /// <https://tech.centaurresearchtechnologies.com/indicators/other-indicators/positivity-indicator/>
     pub fn positivity_indicator(
         open: &[f64],
         previous_close: &[f64],
