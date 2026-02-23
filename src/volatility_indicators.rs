@@ -26,6 +26,11 @@
 //! ## API Details
 //! - See function-level documentation for arguments, panics, and usage examples.
 //!
+//! ## Reference
+//!
+//! - Explanation and interactive playground:
+//! <https://tech.centaurresearchtechnologies.com/indicators/volatility-indicators/>
+//!
 //! ---
 
 /// **single**: Functions that return a single value for a slice of prices.
