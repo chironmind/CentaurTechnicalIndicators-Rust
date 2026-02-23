@@ -29,6 +29,11 @@
 //! - The McGinley Dynamic is an adaptive moving average that adjusts automatically to market speed.
 //! - See function-level docs for formulas, panics, and usage examples.
 //!
+//! ## Reference
+//!
+//! - Explanation and interactive playground:
+//! <https://tech.centaurresearchtechnologies.com/indicators/moving-averages/>
+//!
 //! ---
 
 /// **single**: Functions that return a single value for a slice of prices.
@@ -83,7 +88,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/moving-average/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/moving-averages/moving-average/>
     #[inline]
     pub fn moving_average(
         prices: &[f64],
@@ -174,7 +179,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/mcginley-dynamic/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/moving-averages/mcginley-dynamic/>
     #[inline]
     pub fn mcginley_dynamic(
         latest_price: f64,
@@ -256,7 +261,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/moving-average/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/moving-averages/moving-average/>
     #[inline]
     pub fn moving_average(
         prices: &[f64],
@@ -315,7 +320,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/mcginley-dynamic/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/moving-averages/mcginley-dynamic/>
     #[inline]
     pub fn mcginley_dynamic(
         prices: &[f64],

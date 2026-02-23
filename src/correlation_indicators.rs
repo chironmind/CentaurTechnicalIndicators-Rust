@@ -25,6 +25,11 @@
 //! - All functions require two slices of `f64` prices (for the two assets).
 //! - See each function for further details, panics, and usage examples.
 //!
+//! ## Reference
+//!
+//! - Explanation and interactive playground:
+//! <https://tech.centaurresearchtechnologies.com/indicators/correlation-indicators/>
+//!
 //! ---
 
 /// **single**: Functions that return a single value for a slice of prices
