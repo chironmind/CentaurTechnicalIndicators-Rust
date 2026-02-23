@@ -1,0 +1,4 @@
+* Alphabetically order the indicators in the doctrings for each category (momentum, strength, trend, volatility, candle) to make it easier to find them.
+* Refactor the parabolic T/P system to remove the single functions and let the bulk function
+* McGinley dynamic of McGinley dynamic causes insane values, because of possible division by zero. Maybe we can add a small epsilon to the denominator to prevent this? Or we can require the caller to seed the first value with a non-zero value (like the first price or something).
+* Deprecate welles volatility function, and other welles systems that just aren't clean. Let's keep this repo clean and simple, and if we want to add more complex systems we can add them in a separate repo. They would essentially be in the strategies repo!

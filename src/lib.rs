@@ -58,7 +58,7 @@
 //! - **Tutorials:** [See here](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust-tutorials)
 //! - **How-To Guides:** [See here](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust-how-to-guides)
 //! - **Benchmarks:** [See here](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust-benchmarks)
-//! - **Explanations:** [Centaur Labs](https://centaurlabs.pages.dev/)
+//! - **Explanations:** [Centaur Technologies](https://tech.centaurresearchtechnologies.com/)
 //! - **Reference:** You're here!
 //!
 //! ---

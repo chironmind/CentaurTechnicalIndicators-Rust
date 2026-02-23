@@ -120,7 +120,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://centaurlabs.pages.dev/indicators/momentum-indicators/rsi/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/rsi/>
     #[inline]
     pub fn relative_strength_index(
         prices: &[f64],
@@ -206,7 +206,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://centaurlabs.pages.dev/indicators/momentum-indicators/stochastic-oscillator/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/stochastic-oscillator/>
     #[inline]
     pub fn stochastic_oscillator(prices: &[f64]) -> crate::Result<f64> {
         assert_non_empty("prices", prices)?;
@@ -265,7 +265,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://centaurlabs.pages.dev/indicators/momentum-indicators/slow-stochastic-oscillator/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/slow-stochastic-oscillator/>
     #[deprecated(since = "1.0.0", note="Users can call the moving average functions directly on the SO")]
     pub fn slow_stochastic(
         stochastics: &[f64],
@@ -405,7 +405,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://centaurlabs.pages.dev/indicators/momentum-indicators/williams-percent-r/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/williams-percent-r/>
     #[inline]
     pub fn williams_percent_r(highs: &[f64], lows: &[f64], close: f64) -> crate::Result<f64> {
         assert_same_len(&[("highs", highs), ("lows", lows)])?;
@@ -448,7 +448,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://centaurlabs.pages.dev/indicators/momentum-indicators/money-flow-index/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/money-flow-index/>
     #[inline]
     pub fn money_flow_index(prices: &[f64], volume: &[f64]) -> crate::Result<f64> {
         assert_non_empty("prices", prices)?;
@@ -1214,7 +1214,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://centaurlabs.pages.dev/indicators/momentum-indicators/percentage-price-oscillator/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/percentage-price-oscillator/>
     #[inline]
     pub fn percentage_price_oscillator(
         prices: &[f64],
@@ -1292,7 +1292,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://centaurlabs.pages.dev/indicators/momentum-indicators/chande-momentum-oscillator/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/chande-momentum-oscillator/>
     #[inline]
     pub fn chande_momentum_oscillator(prices: &[f64]) -> crate::Result<f64> {
         let (previous_gains, previous_loss) = previous_gains_loss(prices)?;
@@ -1407,7 +1407,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://centaurlabs.pages.dev/indicators/momentum-indicators/rsi/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/rsi/>
     #[inline]
     pub fn relative_strength_index(
         prices: &[f64],
@@ -1455,7 +1455,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://centaurlabs.pages.dev/indicators/momentum-indicators/stochastic-oscillator/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/stochastic-oscillator/>
     #[inline]
     pub fn stochastic_oscillator(prices: &[f64], period: usize) -> crate::Result<Vec<f64>> {
         let length = prices.len();
@@ -1521,7 +1521,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://centaurlabs.pages.dev/indicators/momentum-indicators/slow-stochastic-oscillator/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/slow-stochastic-oscillator/>
     #[deprecated(since = "1.0.0", note="Users can call the moving average functions directly on the SO")]
     pub fn slow_stochastic(
         stochastics: &[f64],
@@ -1637,7 +1637,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://centaurlabs.pages.dev/indicators/momentum-indicators/williams-percent-r/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/williams-percent-r/>
     #[inline]
     pub fn williams_percent_r(
         highs: &[f64],
@@ -1697,7 +1697,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://centaurlabs.pages.dev/indicators/momentum-indicators/money-flow-index/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/money-flow-index/>
     #[inline]
     pub fn money_flow_index(
         prices: &[f64],
@@ -2327,7 +2327,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://centaurlabs.pages.dev/indicators/momentum-indicators/percentage-price-oscillator/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/percentage-price-oscillator/>
     #[inline]
     pub fn percentage_price_oscillator(
         prices: &[f64],
@@ -2384,7 +2384,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://centaurlabs.pages.dev/indicators/momentum-indicators/chande-momentum-oscillator/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/chande-momentum-oscillator/>
     #[inline]
     pub fn chande_momentum_oscillator(prices: &[f64], period: usize) -> crate::Result<Vec<f64>> {
         let length = prices.len();

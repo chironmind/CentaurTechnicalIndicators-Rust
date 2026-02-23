@@ -173,7 +173,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://centaurlabs.pages.dev/indicators/trend-indicators/aroon-indicator/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/trend-indicators/aroon-indicator/>
     #[inline]
     pub fn aroon_indicator(highs: &[f64], lows: &[f64]) -> crate::Result<(f64, f64, f64)> {
         assert_same_len(&[("highs", highs), ("lows", lows)])?;
@@ -323,7 +323,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://centaurlabs.pages.dev/indicators/trend-indicators/volume-price-trend/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/trend-indicators/volume-price-trend/>
     #[inline]
     pub fn volume_price_trend(
         current_price: f64,
@@ -366,7 +366,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://centaurlabs.pages.dev/indicators/trend-indicators/true-strength-index/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/trend-indicators/true-strength-index/>
     pub fn true_strength_index(
         prices: &[f64],
         first_constant_model: ConstantModelType,
@@ -649,7 +649,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://centaurlabs.pages.dev/indicators/trend-indicators/aroon-indicator/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/trend-indicators/aroon-indicator/>
     #[inline]
     pub fn aroon_indicator(
         highs: &[f64],
@@ -764,7 +764,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://centaurlabs.pages.dev/indicators/trend-indicators/parabolic-time-price-system/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/trend-indicators/parabolic-time-price-system/>
     pub fn parabolic_time_price_system(
         highs: &[f64],
         lows: &[f64],
@@ -973,7 +973,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://centaurlabs.pages.dev/indicators/trend-indicators/directional-movement-system/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/trend-indicators/directional-movement-system/>
     pub fn directional_movement_system(
         highs: &[f64],
         lows: &[f64],
@@ -1129,7 +1129,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://centaurlabs.pages.dev/indicators/trend-indicators/volume-price-trend/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/trend-indicators/volume-price-trend/>
     #[inline]
     pub fn volume_price_trend(
         prices: &[f64],
@@ -1201,7 +1201,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://centaurlabs.pages.dev/indicators/trend-indicators/true-strength-index/>
+    /// <https://tech.centaurresearchtechnologies.com/indicators/trend-indicators/true-strength-index/>
     #[inline]
     pub fn true_strength_index(
         prices: &[f64],

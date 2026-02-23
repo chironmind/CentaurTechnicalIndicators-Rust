@@ -16,7 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Package name changed from `rust_ti` to `centaur_technical_indicators`
   - This is a new package on crates.io with fresh versioning (1.0.0)
   - All functionality remains the same, only branding has changed
-  - Updated repository and documentation URLs to reflect Centaur Labs branding
+  - Updated repository and documentation URLs to reflect Centaur Technologies branding
 - **BREAKING:** `panic!` replaced with `Result<>` types in several functions for better error handling
 
 ### Removed
