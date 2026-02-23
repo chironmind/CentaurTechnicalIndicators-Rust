@@ -30,6 +30,11 @@
 //! - Functions in `single` operate on single values or slices and return a single value.
 //! - See function-level docs for arguments, panics, and usage examples.
 //!
+//! ## Reference
+//!
+//! - Explanation and interactive playground:
+//! <https://tech.centaurresearchtechnologies.com/indicators/strength-indicators/>
+//!
 //! ---
 
 /// **single**: Functions that return a single value for a slice of prices.
