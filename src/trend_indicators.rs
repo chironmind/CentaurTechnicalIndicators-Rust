@@ -41,6 +41,11 @@
 //! ## API Details
 //! - See function-level documentation for arguments, panics, and usage examples.
 //!
+//! ## Reference
+//!
+//! - Explanation and interactive playground:
+//! <https://tech.centaurresearchtechnologies.com/indicators/trend-indicators/>
+//!
 //! ---
 
 /// **single**: Functions that return a single value for a slice of prices.
@@ -76,6 +81,11 @@ pub mod single {
     /// let aroon_up = centaur_technical_indicators::trend_indicators::single::aroon_up(&highs).unwrap();
     /// assert_eq!(50.0, aroon_up);
     /// ```
+    ///
+    /// # Reference
+    ///
+    /// - Explanation and interactive playground:
+    /// <https://tech.centaurresearchtechnologies.com/indicators/trend-indicators/aroon-indicator/>
     #[inline]
     pub fn aroon_up(highs: &[f64]) -> crate::Result<f64> {
         assert_non_empty("highs", highs)?;
@@ -107,6 +117,11 @@ pub mod single {
     /// let aroon_down = centaur_technical_indicators::trend_indicators::single::aroon_down(&lows).unwrap();
     /// assert_eq!(25.0, aroon_down);
     /// ```
+    ///
+    /// # Reference
+    ///
+    /// - Explanation and interactive playground:
+    /// <https://tech.centaurresearchtechnologies.com/indicators/trend-indicators/aroon-indicator/>
     #[inline]
     pub fn aroon_down(lows: &[f64]) -> crate::Result<f64> {
         assert_non_empty("lows", lows)?;
@@ -140,6 +155,11 @@ pub mod single {
     ///     );
     /// assert_eq!(25.0, aroon_oscillator);
     /// ```
+    ///
+    /// # Reference
+    ///
+    /// - Explanation and interactive playground:
+    /// <https://tech.centaurresearchtechnologies.com/indicators/trend-indicators/aroon-indicator/>
     #[inline(always)]
     pub fn aroon_oscillator(aroon_up: f64, aroon_down: f64) -> f64 {
         aroon_up - aroon_down
@@ -224,6 +244,11 @@ pub mod single {
     ///     );
     /// assert_eq!(52.1, parabolic_time_price_system);
     /// ```
+    ///
+    /// # Reference
+    ///
+    /// - Explanation and interactive playground:
+    /// <https://tech.centaurresearchtechnologies.com/indicators/trend-indicators/parabolic-time-price-system/>
     #[inline]
     pub fn long_parabolic_time_price_system(
         previous_sar: f64,
@@ -275,6 +300,11 @@ pub mod single {
     ///     );
     /// assert_eq!(58.1, parabolic_time_price_system);
     /// ```
+    ///
+    /// # Reference
+    ///
+    /// - Explanation and interactive playground:
+    /// <https://tech.centaurresearchtechnologies.com/indicators/trend-indicators/parabolic-time-price-system/>
     #[inline]
     pub fn short_parabolic_time_price_system(
         previous_sar: f64,
@@ -525,6 +555,11 @@ pub mod bulk {
     /// let aroon_up = centaur_technical_indicators::trend_indicators::bulk::aroon_up(&highs, period).unwrap();
     /// assert_eq!(vec![50.0, 25.0, 0.0], aroon_up);
     /// ```
+    ///
+    /// # Reference
+    ///
+    /// - Explanation and interactive playground:
+    /// <https://tech.centaurresearchtechnologies.com/indicators/trend-indicators/aroon-indicator/>
     #[inline]
     pub fn aroon_up(highs: &[f64], period: usize) -> crate::Result<Vec<f64>> {
         let length = highs.len();
@@ -560,6 +595,11 @@ pub mod bulk {
     /// let aroon_down = centaur_technical_indicators::trend_indicators::bulk::aroon_down(&lows, period).unwrap();
     /// assert_eq!(vec![25.0, 0.0, 100.0], aroon_down);
     /// ```
+    ///
+    /// # Reference
+    ///
+    /// - Explanation and interactive playground:
+    /// <https://tech.centaurresearchtechnologies.com/indicators/trend-indicators/aroon-indicator/>
     #[inline]
     pub fn aroon_down(lows: &[f64], period: usize) -> crate::Result<Vec<f64>> {
         let length = lows.len();
@@ -599,6 +639,11 @@ pub mod bulk {
     ///     ).unwrap();
     /// assert_eq!(vec![25.0, 25.0, -100.0], aroon_oscillator);
     /// ```
+    ///
+    /// # Reference
+    ///
+    /// - Explanation and interactive playground:
+    /// <https://tech.centaurresearchtechnologies.com/indicators/trend-indicators/aroon-indicator/>
     #[inline]
     pub fn aroon_oscillator(aroon_up: &[f64], aroon_down: &[f64]) -> crate::Result<Vec<f64>> {
         let length = aroon_up.len();
