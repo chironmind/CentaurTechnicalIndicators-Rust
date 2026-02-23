@@ -174,6 +174,11 @@ pub mod single {
     ///     ).unwrap();
     /// assert_eq!((96.54649137791692, 99.53246533805869, 102.51843929820045), mcginley_envelope);
     /// ```
+    ///
+    /// # Reference
+    ///
+    /// - Explanation and interactive playground:
+    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/mcginley-dynamic-envelopes/>
     #[inline]
     pub fn mcginley_dynamic_envelopes(
         prices: &[f64],
@@ -358,6 +363,11 @@ pub mod single {
     ///     ).unwrap();
     /// assert_eq!((96.81953334480858, 99.53246533805869, 102.2453973313088), mcginley_bands);
     /// ```
+    ///
+    /// # Reference
+    ///
+    /// - Explanation and interactive playground:
+    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/mcginley-dynamic-bands/>
     #[inline]
     pub fn mcginley_dynamic_bands(
         prices: &[f64],
@@ -472,6 +482,11 @@ pub mod single {
     ///     ).unwrap();
     /// assert_eq!((102.25, 102.5, 102.5, 102.0, 99.0), ichimoku_cloud);
     /// ```
+    ///
+    /// # Reference
+    ///
+    /// - Explanation and interactive playground:
+    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/ichimoku-cloud/>
     pub fn ichimoku_cloud(
         highs: &[f64],
         lows: &[f64],
@@ -818,6 +833,11 @@ pub mod bulk {
     ///         (96.54649137791692, 99.53246533805869, 102.51843929820045)
     ///     ], mcginley_envelope);
     /// ```
+    ///
+    /// # Reference
+    ///
+    /// - Explanation and interactive playground:
+    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/mcginley-dynamic-envelopes/>
     #[inline]
     pub fn mcginley_dynamic_envelopes(
         prices: &[f64],
@@ -964,6 +984,11 @@ pub mod bulk {
     ///         (96.33246533805868, 99.53246533805869, 102.73246533805869)
     ///     ], mcginley_bands);
     /// ```
+    ///
+    /// # Reference
+    ///
+    /// - Explanation and interactive playground:
+    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/mcginley-dynamic-bands/>
     #[inline]
     pub fn mcginley_dynamic_bands(
         prices: &[f64],
@@ -1049,6 +1074,11 @@ pub mod bulk {
     ///         (99.0, 100.5, 100.5, 97.5, 103.0)
     ///     ], ichimoku_cloud);
     /// ```
+    ///
+    /// # Reference
+    ///
+    /// - Explanation and interactive playground:
+    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/ichimoku-cloud/>
     #[inline]
     pub fn ichimoku_cloud(
         highs: &[f64],
