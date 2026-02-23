@@ -38,6 +38,11 @@
 //! ## API Details
 //! - All indicators are highly configurable: choose your model (SMA, EMA, median, etc.), deviation method, and period.
 //!
+//! ## Reference
+//!
+//! - Explanation and interactive playground:
+//! <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/>
+//!
 //! ---
 
 /// **single**: Functions that return a single value for a slice of prices
