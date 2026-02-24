@@ -15,15 +15,15 @@
 //! ### Bulk
 //!
 //! - [`accumulation_distribution`](bulk::accumulation_distribution): Calculates the Accumulation/Distribution line
-//! - [`positive_volume_index`](bulk::positive_volume_index): Calculates the Positive Volume Index (PVI)
 //! - [`negative_volume_index`](bulk::negative_volume_index): Calculates the Negative Volume Index (NVI)
+//! - [`positive_volume_index`](bulk::positive_volume_index): Calculates the Positive Volume Index (PVI)
 //! - [`relative_vigor_index`](bulk::relative_vigor_index): Calculates the Relative Vigor Index (RVI)
 //!
 //! ### Single
 //!
 //! - [`accumulation_distribution`](single::accumulation_distribution): Calculates the Accumulation/Distribution value
-//! - [`volume_index`](single::volume_index): Generic calculation for use in PVI/NVI.
 //! - [`relative_vigor_index`](single::relative_vigor_index): Calculates the Relative Vigor Index (RVI)
+//! - [`volume_index`](single::volume_index): Generic calculation for use in PVI/NVI.
 //!
 //! ## API Details
 //! - Functions in `bulk` operate on slices and return vectors of results.

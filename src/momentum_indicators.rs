@@ -18,12 +18,14 @@
 //!
 //! ### Bulk
 //! - [`chaikin_oscillator`](bulk::chaikin_oscillator): Chaikin Oscillator
+//! - [`chande_momentum_oscillator`](bulk::chande_momentum_oscillator): Chande Momentum Oscillator (CMO)
 //! - [`commodity_channel_index`](bulk::commodity_channel_index): Commodity Channel Index (CCI)
 //! - [`macd_line`](bulk::macd_line): Moving Average Convergence Divergence (MACD) line
 //! - [`mcginley_dynamic_commodity_channel_index`](bulk::mcginley_dynamic_commodity_channel_index): McGinley variant of CCI
 //! - [`mcginley_dynamic_macd_line`](bulk::mcginley_dynamic_macd_line): McGinley variant of MACD
 //! - [`money_flow_index`](bulk::money_flow_index): Money Flow Index (MFI)
 //! - [`on_balance_volume`](bulk::on_balance_volume): On-Balance Volume (OBV)
+//! - [`percentage_price_oscillator`](bulk::percentage_price_oscillator): Percentage Price Oscillator (PPO)
 //! - [`rate_of_change`](bulk::rate_of_change): Rate of Change (ROC)
 //! - [`relative_strength_index`](bulk::relative_strength_index): Relative Strength Index (RSI)
 //! - [`signal_line`](bulk::signal_line): Signal line for MACD
@@ -31,17 +33,17 @@
 //! - [`slowest_stochastic`](bulk::slowest_stochastic): Slowest Stochastic Oscillator
 //! - [`stochastic_oscillator`](bulk::stochastic_oscillator): Stochastic Oscillator
 //! - [`williams_percent_r`](bulk::williams_percent_r): Williams %R
-//! - [`percentage_price_oscillator`](bulk::percentage_price_oscillator): Percentage Price Oscillator (PPO)
-//! - [`chande_momentum_oscillator`](bulk::chande_momentum_oscillator): Chande Momentum Oscillator (CMO)
 //!
 //! ### Single
 //! - [`chaikin_oscillator`](single::chaikin_oscillator): Chaikin Oscillator
+//! - [`chande_momentum_oscillator`](single::chande_momentum_oscillator): Chande Momentum Oscillator (CMO)
 //! - [`commodity_channel_index`](single::commodity_channel_index): Commodity Channel Index (CCI)
 //! - [`macd_line`](single::macd_line): MACD line
 //! - [`mcginley_dynamic_commodity_channel_index`](single::mcginley_dynamic_commodity_channel_index): McGinley variant of CCI
 //! - [`mcginley_dynamic_macd_line`](single::mcginley_dynamic_macd_line): McGinley variant of MACD
 //! - [`money_flow_index`](single::money_flow_index): Money Flow Index (MFI)
 //! - [`on_balance_volume`](single::on_balance_volume): On-Balance Volume (OBV)
+//! - [`percentage_price_oscillator`](single::percentage_price_oscillator): Percentage Price Oscillator (PPO)
 //! - [`rate_of_change`](single::rate_of_change): Rate of Change (ROC)
 //! - [`relative_strength_index`](single::relative_strength_index): Relative Strength Index (RSI)
 //! - [`signal_line`](single::signal_line): Signal line for MACD
@@ -49,8 +51,6 @@
 //! - [`slowest_stochastic`](single::slowest_stochastic): Slowest Stochastic Oscillator
 //! - [`stochastic_oscillator`](single::stochastic_oscillator): Stochastic Oscillator
 //! - [`williams_percent_r`](single::williams_percent_r): Williams %R
-//! - [`percentage_price_oscillator`](single::percentage_price_oscillator): Percentage Price Oscillator (PPO)
-//! - [`chande_momentum_oscillator`](single::chande_momentum_oscillator): Chande Momentum Oscillator (CMO)
 //!
 //! ## API Details
 //! - All indicators accept slices of `f64` prices and relevant parameters (periods, multipliers, etc.).

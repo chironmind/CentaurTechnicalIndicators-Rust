@@ -16,23 +16,23 @@
 //! ## Included Indicators
 //!
 //! ### Bulk
+//! - [`donchian_channels`](bulk::donchian_channels): Donchian Channels
 //! - [`ichimoku_cloud`](bulk::ichimoku_cloud): Ichimoku Cloud values
+//! - [`keltner_channel`](bulk::keltner_channel): Keltner Channels
 //! - [`mcginley_dynamic_bands`](bulk::mcginley_dynamic_bands): McGinley Dynamic Bands
 //! - [`mcginley_dynamic_envelopes`](bulk::mcginley_dynamic_envelopes): McGinley Dynamic Envelopes
 //! - [`moving_constant_bands`](bulk::moving_constant_bands): Generalized bands (e.g., Bollinger Bands)
 //! - [`moving_constant_envelopes`](bulk::moving_constant_envelopes): Generalized moving envelopes
-//! - [`donchian_channels`](bulk::donchian_channels): Donchian Channels
-//! - [`keltner_channel`](bulk::keltner_channel): Keltner Channels
 //! - [`supertrend`](bulk::supertrend): Supertrend indicator
 //!
 //! ### Single
+//! - [`donchian_channels`](single::donchian_channels): Donchian Channels
 //! - [`ichimoku_cloud`](single::ichimoku_cloud): Ichimoku Cloud
+//! - [`keltner_channel`](single::keltner_channel): Keltner Channel
 //! - [`mcginley_dynamic_bands`](single::mcginley_dynamic_bands): McGinley Dynamic Bands
 //! - [`mcginley_dynamic_envelopes`](single::mcginley_dynamic_envelopes): McGinley Dynamic Envelopes
 //! - [`moving_constant_bands`](single::moving_constant_bands): Customizable bands (Bollinger, etc.)
 //! - [`moving_constant_envelopes`](single::moving_constant_envelopes): Customizable envelopes
-//! - [`donchian_channels`](single::donchian_channels): Donchian Channels
-//! - [`keltner_channel`](single::keltner_channel): Keltner Channel
 //! - [`supertrend`](single::supertrend): Supertrend indicator
 //!
 //! ## API Details
