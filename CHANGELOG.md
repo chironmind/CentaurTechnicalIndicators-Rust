@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 - Reference URLs to doc strings
 
+### Deprecated
+- Deprecated certain functions in the `momentum_indicators` module (see documentation for migration guidance)
 ## [1.0.0] - 2026-01-07
 ### Changed
 - **BREAKING:** Rebranded from RustTI to Centaur Technical Indicators
