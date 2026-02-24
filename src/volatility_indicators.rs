@@ -207,10 +207,7 @@ pub mod bulk {
     /// );
     /// ```
     ///
-    /// # Reference
-    ///
-    /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/volatility-indicators/volatility-system/>
+    #[deprecated(since = "1.0.0", note="This function is deprecated as it is not commonly used.")]
     pub fn volatility_system(
         highs: &[f64],
         lows: &[f64],
