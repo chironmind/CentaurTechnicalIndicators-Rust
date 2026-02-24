@@ -38,7 +38,7 @@ cargo add centaur_technical_indicators
 ```
 Or, manually in your `Cargo.toml`:
 ```toml
-centaur_technical_indicators = "1.0.0"
+centaur_technical_indicators = "1.2.0"
 ```
 
 **2. Calculate your first indicator:**
@@ -310,10 +310,11 @@ Contributions, bug reports, and feature requests are welcome!
 
 ## 📰 Release Notes
 
-**Latest (v1.0.0):**
-- Rebranded from RustTI to Centaur Technical Indicators
-- Part of the Centaur Research and Technologies ecosystem
-- All functionality remains the same
+**Latest (v1.2.0):**
+- Added reference URLs to doc strings
+- Sorted `## Included Indicators` lists alphabetically in all module docstrings
+- Deprecated `signal_line`, slow and slowest stochastic wrapper functions in `momentum_indicators`
+- Deprecated Volume Price Trend and Volatility System
 
 [Human friendly changelog →](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust/blob/main/CHANGELOG.md)
 
