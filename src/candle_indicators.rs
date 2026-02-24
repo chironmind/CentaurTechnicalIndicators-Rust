@@ -38,6 +38,11 @@
 //! ## API Details
 //! - All indicators are highly configurable: choose your model (SMA, EMA, median, etc.), deviation method, and period.
 //!
+//! ## Reference
+//!
+//! - Explanation and interactive playground:
+//! <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/>
+//!
 //! ---
 
 /// **single**: Functions that return a single value for a slice of prices
@@ -61,7 +66,7 @@ pub mod single {
     ///
     /// * `prices` - Slice of prices
     /// * `constant_model_type` - Variant of [`ConstantModelType`]
-    /// * `difference` - Percent band width (e.g., 3.0 for +-3%)
+    /// * `difference` - Percent envelope width (e.g., 3.0 for +-3%)
     ///
     /// # Returns
     ///
@@ -93,6 +98,11 @@ pub mod single {
     ///     ).unwrap();
     /// assert_eq!((97.97, 101.0, 104.03), median_envelope);
     /// ```
+    ///
+    /// # Reference
+    ///
+    /// - Explanation and interactive playground:
+    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/moving-constant-envelopes/>
     #[inline]
     pub fn moving_constant_envelopes(
         prices: &[f64],
@@ -130,12 +140,12 @@ pub mod single {
         Ok((lower_envelope, moving_constant, upper_envelope))
     }
 
-    /// Calculates upper and lower bands around the McGinley dynamic.
+    /// Calculates upper and lower envelopes around the McGinley dynamic.
     ///
     /// # Arguments
     ///
     /// * `prices` - Slice of prices
-    /// * `difference` -Percent band width (e.g., 3.0 for +-3%)
+    /// * `difference` - Percent envelope width (e.g., 3.0 for +-3%)
     /// * `previous_mcginley_dynamic` - Previous McGinley dynamic (0.0 if none)
     ///
     /// # Returns
@@ -169,6 +179,11 @@ pub mod single {
     ///     ).unwrap();
     /// assert_eq!((96.54649137791692, 99.53246533805869, 102.51843929820045), mcginley_envelope);
     /// ```
+    ///
+    /// # Reference
+    ///
+    /// - Explanation and interactive playground:
+    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/mcginley-dynamic-envelopes/>
     #[inline]
     pub fn mcginley_dynamic_envelopes(
         prices: &[f64],
@@ -227,6 +242,11 @@ pub mod single {
     ///     ).unwrap();
     /// assert_eq!((98.21137440758295, 100.61137440758296, 103.01137440758296), ema_mad_bands);
     /// ```
+    ///
+    /// # Reference
+    ///
+    /// - Explanation and interactive playground:
+    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/moving-constant-bands/>
     #[inline]
     pub fn moving_constant_bands(
         prices: &[f64],
@@ -348,6 +368,11 @@ pub mod single {
     ///     ).unwrap();
     /// assert_eq!((96.81953334480858, 99.53246533805869, 102.2453973313088), mcginley_bands);
     /// ```
+    ///
+    /// # Reference
+    ///
+    /// - Explanation and interactive playground:
+    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/mcginley-dynamic-bands/>
     #[inline]
     pub fn mcginley_dynamic_bands(
         prices: &[f64],
@@ -462,6 +487,11 @@ pub mod single {
     ///     ).unwrap();
     /// assert_eq!((102.25, 102.5, 102.5, 102.0, 99.0), ichimoku_cloud);
     /// ```
+    ///
+    /// # Reference
+    ///
+    /// - Explanation and interactive playground:
+    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/ichimoku-cloud/>
     pub fn ichimoku_cloud(
         highs: &[f64],
         lows: &[f64],
@@ -523,6 +553,11 @@ pub mod single {
     ///
     /// assert_eq!((95.0, 101.0 ,107.0), donchian_channels);
     /// ```
+    ///
+    /// # Reference
+    ///
+    /// - Explanation and interactive playground:
+    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/donchian-channels/>
     #[inline]
     pub fn donchian_channels(highs: &[f64], lows: &[f64]) -> crate::Result<(f64, f64, f64)> {
         assert_same_len(&[("highs", highs), ("lows", lows)])?;
@@ -571,6 +606,11 @@ pub mod single {
     ///
     /// assert_eq!((86.76777251184836, 100.76777251184836, 114.76777251184836), keltner_channel);
     /// ```
+    ///
+    /// # Reference
+    ///
+    /// - Explanation and interactive playground:
+    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/keltner-channels/>
     pub fn keltner_channel(
         highs: &[f64],
         lows: &[f64],
@@ -653,6 +693,11 @@ pub mod single {
     ///
     /// assert_eq!(115.0, supertrend);
     /// ```
+    ///
+    /// # Reference
+    ///
+    /// - Explanation and interactive playground:
+    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/supertrend/>
     pub fn supertrend(
         highs: &[f64],
         lows: &[f64],
@@ -729,6 +774,11 @@ pub mod bulk {
     ///     median_envelope
     /// );
     /// ```
+    ///
+    /// # Reference
+    ///
+    /// - Explanation and interactive playground:
+    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/moving-constant-envelopes/>
     #[inline]
     pub fn moving_constant_envelopes(
         prices: &[f64],
@@ -788,6 +838,11 @@ pub mod bulk {
     ///         (96.54649137791692, 99.53246533805869, 102.51843929820045)
     ///     ], mcginley_envelope);
     /// ```
+    ///
+    /// # Reference
+    ///
+    /// - Explanation and interactive playground:
+    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/mcginley-dynamic-envelopes/>
     #[inline]
     pub fn mcginley_dynamic_envelopes(
         prices: &[f64],
@@ -865,6 +920,11 @@ pub mod bulk {
     ///         (97.8024644549763, 100.6824644549763, 103.5624644549763)
     ///     ], ema_mad_bands);
     /// ```
+    ///
+    /// # Reference
+    ///
+    /// - Explanation and interactive playground:
+    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/moving-constant-bands/>
     #[inline]
     pub fn moving_constant_bands(
         prices: &[f64],
@@ -929,6 +989,11 @@ pub mod bulk {
     ///         (96.33246533805868, 99.53246533805869, 102.73246533805869)
     ///     ], mcginley_bands);
     /// ```
+    ///
+    /// # Reference
+    ///
+    /// - Explanation and interactive playground:
+    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/mcginley-dynamic-bands/>
     #[inline]
     pub fn mcginley_dynamic_bands(
         prices: &[f64],
@@ -1014,6 +1079,11 @@ pub mod bulk {
     ///         (99.0, 100.5, 100.5, 97.5, 103.0)
     ///     ], ichimoku_cloud);
     /// ```
+    ///
+    /// # Reference
+    ///
+    /// - Explanation and interactive playground:
+    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/ichimoku-cloud/>
     #[inline]
     pub fn ichimoku_cloud(
         highs: &[f64],
@@ -1079,6 +1149,11 @@ pub mod bulk {
     ///         (95.0, 101.0, 107.0), (95.0, 101.0, 107.0), (95.0, 102.0, 109.0), (95.0, 102.0, 109.0)
     ///     ], donchian_channels);
     /// ```
+    ///
+    /// # Reference
+    ///
+    /// - Explanation and interactive playground:
+    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/donchian-channels/>
     #[inline]
     pub fn donchian_channels(
         highs: &[f64],
@@ -1143,6 +1218,11 @@ pub mod bulk {
     ///         (90.9747235387046, 104.9747235387046, 118.9747235387046)
     ///     ], keltner_channel);
     /// ```
+    ///
+    /// # Reference
+    ///
+    /// - Explanation and interactive playground:
+    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/keltner-channels/>
     #[inline]
     pub fn keltner_channel(
         highs: &[f64],
@@ -1212,6 +1292,11 @@ pub mod bulk {
     ///
     /// assert_eq!(vec![115.0, 115.6, 117.0], supertrend);
     /// ```
+    ///
+    /// # Reference
+    ///
+    /// - Explanation and interactive playground:
+    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/supertrend/>
     #[inline]
     pub fn supertrend(
         highs: &[f64],
