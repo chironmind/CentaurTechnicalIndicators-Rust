@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 - Reference URLs to doc strings
 
+### Changed
+- Sorted the `## Included Indicators` Bulk and Single lists alphabetically in all module docstrings (`candle_indicators`, `momentum_indicators`, `other_indicators`, `strength_indicators`, `trend_indicators`)
+
 ### Deprecated
 - Deprecated certain functions in the `momentum_indicators` module (see documentation for migration guidance)
 ## [1.0.0] - 2026-01-07

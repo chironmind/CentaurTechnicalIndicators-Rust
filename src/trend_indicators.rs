@@ -22,10 +22,10 @@
 //! - [`aroon_indicator`](bulk::aroon_indicator): Calculates Aroon Up, Down, and Oscillator
 //! - [`aroon_oscillator`](bulk::aroon_oscillator): Calculates the Aroon Oscillator
 //! - [`aroon_up`](bulk::aroon_up): Calculates the Aroon Up
-//! - [`parabolic_time_price_system`](bulk::parabolic_time_price_system): Computes the Parabolic Time Price System (Welles Wilder's SAR variant)
 //! - [`directional_movement_system`](bulk::directional_movement_system): Computes Directional Movement (+DI, -DI, ADX, ADXR)
-//! - [`volume_price_trend`](bulk::volume_price_trend): Computes the Volume Price Trend
+//! - [`parabolic_time_price_system`](bulk::parabolic_time_price_system): Computes the Parabolic Time Price System (Welles Wilder's SAR variant)
 //! - [`true_strength_index`](bulk::true_strength_index): Computes the True Strength Index (TSI)
+//! - [`volume_price_trend`](bulk::volume_price_trend): Computes the Volume Price Trend
 //!
 //! ### Single
 //!
@@ -35,8 +35,8 @@
 //! - [`aroon_up`](single::aroon_up): Calculates the Aroon Up
 //! - [`long_parabolic_time_price_system`](single::long_parabolic_time_price_system): Computes Parabolic SAR for long positions
 //! - [`short_parabolic_time_price_system`](single::short_parabolic_time_price_system): Computes Parabolic SAR for short positions
-//! - [`volume_price_trend`](single::volume_price_trend): Computes the Volume Price Trend
 //! - [`true_strength_index`](single::true_strength_index): Computes the True Strength Index (TSI)
+//! - [`volume_price_trend`](single::volume_price_trend): Computes the Volume Price Trend
 //!
 //! ## API Details
 //! - See function-level documentation for arguments, panics, and usage examples.
