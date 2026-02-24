@@ -350,11 +350,8 @@ pub mod single {
     /// assert_eq!(-19.510774606872452, volume_price_trend);
     /// ```
     ///
-    /// # Reference
-    ///
-    /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/trend-indicators/volume-price-trend/>
     #[inline]
+    #[deprecated(since = "1.0.0", note="This function is deprecated as it is not commonly used and can be easily calculated by users if needed. It will be removed in a future release.")]
     pub fn volume_price_trend(
         current_price: f64,
         previous_price: f64,
@@ -1171,11 +1168,8 @@ pub mod bulk {
     /// );
     /// ```
     ///
-    /// # Reference
-    ///
-    /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/trend-indicators/volume-price-trend/>
     #[inline]
+    #[deprecated(since = "1.0.0", note="This function is deprecated as it is not commonly used and can be easily calculated by users if needed. It will be removed in a future release.")]
     pub fn volume_price_trend(
         prices: &[f64],
         volumes: &[f64],
