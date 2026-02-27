@@ -10,15 +10,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [1.2.0] - 2026-02-25
 ### Added
-- Reference URLs to doc strings
+- Reference URLs to docstrings
 
 ### Changed
 - Sorted the `## Included Indicators` Bulk and Single lists alphabetically in all module docstrings (`candle_indicators`, `momentum_indicators`, `other_indicators`, `strength_indicators`, `trend_indicators`)
 
 ### Deprecated
 - Deprecated functions in the `momentum_indicators` module that were just wrappers for moving averages (`signal_line`, slow and slowest stochastics). These functions will be removed in the next major release (2.0.0) to encourage users to call the moving average functions directly for better flexibility and clarity.
-- Deprecated the Volume price trend  
-- Deprecated the volatility system 
+- Deprecated `volume_price_trend`.
+- Deprecated `volatility_system`.
 
 
 ## [1.0.0] - 2026-01-07
