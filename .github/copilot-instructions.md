@@ -2,146 +2,136 @@
 
 ## Repository Overview
 
-**Centaur Technical Indicators** is a comprehensive technical indicators library written in pure Rust for financial data analysis. The library provides over 70 configurable technical indicators across 11 specialized modules, supporting stocks, crypto, and any asset with arbitrary trading calendars.
+**Centaur Technical Indicators** is a Rust technical indicators library for financial data analysis. It provides 70+ configurable indicators across category-focused modules.
 
 **Key Characteristics:**
-- **Type**: Library crate (not an application)
-- **Language**: Pure Rust (edition 2021, version 2.1.4)
-- **Dependencies**: None - completely self-contained
-- **Size**: ~15,550 lines of code across 11 modules
-- **Testing**: Extensive test suite with 533+ tests including unit tests and doc tests
-- **License**: MIT License
+- **Type**: Library crate
+- **Crate name**: `centaur_technical_indicators`
+- **Language**: Rust edition 2021
+- **Current crate version**: `1.2.0`
+- **Authors**: `ChironMind`
+- **License**: MIT
+- **Dependencies**: No external runtime dependencies in `[dependencies]`
 
 ## Build Instructions
 
 ### Prerequisites
-- Rust toolchain (stable, beta, or nightly supported)
-- No external dependencies required
+- Rust toolchain (stable recommended; CI also checks beta and nightly)
 
-### Essential Commands (Always run in repository root)
+### Essential Commands (run in repository root)
 
-**Build and Validation (in order of speed):**
 ```bash
-cargo check          # Fast validation (1-2s) - run first for syntax/type checking
-cargo build           # Standard build (4-5s) - compiles the library
-cargo test            # Run all 533 tests (6-7s) - validates functionality
-cargo clippy          # Linting (0.14s) - catches common issues, some warnings expected
-cargo fmt             # Code formatting - ensures consistent style
-cargo doc --no-deps   # Generate documentation (0.09s) - creates API docs
+cargo check
+cargo build
+cargo test
+cargo clippy --all-targets --all-features
+cargo fmt --check
+cargo doc --no-deps
 ```
 
-**Examples and Benchmarks:**
+### Examples and Optional Benchmark Setup
+
 ```bash
-cargo run --example reference  # Run the comprehensive reference example (demonstrates all indicators)
-cargo bench --no-run          # Compile benchmarks (optional)
+cargo run --example reference
+cargo bench --no-run
 ```
 
 ### Expected Build Behavior
-- **One known warning**: `value assigned to 'end_index' is never read` in `src/chart_trends.rs:403` - this is harmless and doesn't affect functionality
-- **Clippy warnings**: "too many arguments" warnings for some functions - these are style warnings, not errors
-- **All commands should complete successfully** - if any fail, investigate the specific error
+- `cargo check`, `cargo build`, `cargo test`, and `cargo doc --no-deps` should succeed.
+- Current warning output includes:
+  - deprecated API usage warnings (intentional in compatibility paths and some tests/examples)
+  - one `unused_assignments` warning in `src/chart_trends.rs` (`end_index`)
+  - many clippy warnings in tests, including `unused_must_use`
+- Warnings are currently present in the repository baseline; do not assume warning-free output.
 
 ### Testing Notes
-- Tests run in ~6 seconds and should always pass
-- Tests include both unit tests and doc tests
-- Hand-calculation verification spreadsheet available at `assets/centaur_ti_hand_calcs.ods`
-- **Never modify tests to make unrelated code pass** - tests are carefully validated
+- `cargo test` currently runs both unit/integration-style module tests and doc tests.
+- Hand-calculation verification spreadsheet: `assets/centaur_ti_hand_calcs.ods`.
+- Do not modify tests only to force unrelated changes to pass.
 
 ## Project Architecture and Layout
 
 ### Module Structure
+
 ```
 src/
 ├── lib.rs                    # Main library entry point with module exports
-├── types.rs                  # Shared enums (MovingAverageType, DeviationModel, etc.)
-├── basic_indicators.rs       # Core statistical functions (mean, median, std dev)
-├── candle_indicators.rs      # Price-based indicators (bands, envelopes, channels)
-├── momentum_indicators.rs    # Momentum and oscillators (RSI, MACD, Stochastic)
-├── moving_average.rs         # Moving averages (SMA, EMA, McGinley Dynamic)
-├── trend_indicators.rs       # Trend analysis (Aroon, DMS, Parabolic SAR)
-├── volatility_indicators.rs  # Volatility measures (Ulcer Index, volatility systems)
-├── strength_indicators.rs    # Volume-based indicators (Accumulation/Distribution)
+├── basic_indicators.rs       # Core statistical functions
+├── candle_indicators.rs      # Candle/price channel and band indicators
+├── chart_trends.rs           # Trend and peak/valley analysis
 ├── correlation_indicators.rs # Asset correlation metrics
-├── chart_trends.rs          # Trend and peak/valley analysis
-├── other_indicators.rs      # Miscellaneous (ROI, True Range, Internal Bar Strength)
-└── standard_indicators.rs   # Common indicators (Bollinger Bands, standard MACD)
+├── error.rs                  # TechnicalIndicatorError and Result alias
+├── momentum_indicators.rs    # Momentum and oscillator indicators
+├── moving_average.rs         # Moving average models
+├── other_indicators.rs       # Miscellaneous indicators/utilities
+├── strength_indicators.rs    # Strength/volume-style indicators
+├── trend_indicators.rs       # Trend-focused indicators
+├── types.rs                  # Shared enums/configuration types
+├── validation.rs             # Centralized validation helper functions
+└── volatility_indicators.rs  # Volatility indicators
 ```
 
 ### Key Design Patterns
-- **Dual Function Structure**: Each module provides both `single` and `bulk` calculations
-  - `single`: Calculate indicator for one period or entire dataset
-  - `bulk`: Calculate indicator over sliding windows for time series
-- **Configuration Enums**: Extensive use of enums in `types.rs` for customization
-- **Error Handling**: Functions panic on invalid inputs (empty data, invalid periods)
+- **Dual calculation APIs**: Many modules expose `single` and `bulk` functions.
+- **Shared configuration enums**: Centralized in `types.rs` and re-exported at crate root.
+- **Error-first API**: Public calculations return `Result<T, TechnicalIndicatorError>` (via crate `Result<T>` alias), not panics for normal input-validation failures.
+- **Central validation utilities**: Common precondition checks are implemented in `src/validation.rs` and return `TechnicalIndicatorError` variants defined in `src/error.rs`.
 
 ### Configuration Files
-- **Cargo.toml**: Main project configuration, no external dependencies
-- **.github/workflows/rust.yml**: CI pipeline (tests on stable/beta/nightly Rust)
-- **.gitignore**: Only excludes `/target` directory
-- **No additional config files** - standard Rust project layout
+- **Cargo.toml**: package metadata, example registration, and dependency configuration
+- **.github/workflows/rust.yml**: CI build and test workflow
+- **.gitignore**: repository ignore rules
 
 ### GitHub Actions CI/CD
-The workflow runs on every push/PR to main branch:
-```yaml
-Strategy: Test on stable, beta, and nightly Rust
-Steps: checkout → setup Rust → cargo build --verbose → cargo test --verbose
-```
-**Always ensure your changes pass on stable Rust before submitting.**
+CI runs on pushes/PRs to main and validates with stable, beta, and nightly Rust toolchains.
 
 ## Development Guidelines
 
 ### Code Organization
-- **Find indicators by category**: Use module names to locate specific indicators
-- **Check `types.rs` first**: Understand available enums before implementing
-- **Follow naming conventions**: 
-  - Functions use snake_case
-  - Test functions currently mix `test_` prefix and no prefix (ongoing refactoring)
-  - Some functions use `high` parameter, others `highs` (standardization needed)
+- Use indicator category modules to locate implementations.
+- Check `types.rs`, `error.rs`, and `validation.rs` before introducing new parameter validation or error behavior.
+- Keep naming consistent with existing module conventions.
 
 ### Common File Locations
-- **Examples**: `/examples/reference.rs` - comprehensive usage examples
-- **Documentation**: Run `cargo doc --open` for local API docs
-- **Tests**: Integrated within each module file using `#[cfg(test)]`
-- **Assets**: `/assets/` contains banner and hand-calculation spreadsheet
+- **Examples**: `examples/reference.rs`
+- **Tests**: inline module tests (`#[cfg(test)]`) in source files
+- **Assets**: `assets/`
 
 ### Validation Steps
-1. **Always run `cargo check` first** - fastest way to catch syntax errors
-2. **Run `cargo test` before making changes** - understand current test state
-3. **Use `cargo clippy`** - catch common issues, but warnings are expected
-4. **Test examples**: `cargo run --example reference` should complete without errors
-5. **Verify documentation builds**: `cargo doc --no-deps` should succeed
+1. `cargo check`
+2. `cargo test`
+3. `cargo clippy --all-targets --all-features`
+4. `cargo run --example reference`
+5. `cargo doc --no-deps`
 
 ### Performance Notes
-- **Build time**: Very fast (~1-2s for full build)
-- **Test time**: Moderate (~6s for full suite)
-- **No heavy dependencies**: Pure Rust means no complex build requirements
+- Do not rely on fixed local run-time expectations in this document.
+- Command durations vary by machine, profile, and cache state.
+- Use dedicated benchmark workflows/repositories for repeatable performance claims.
 
 ## Common Tasks
 
 ### Adding New Indicators
-1. Choose appropriate module based on indicator type
-2. Implement both `single` and `bulk` versions
-3. Add comprehensive tests with hand-calculated expected values
-4. Update `assets/centaur_ti_hand_calcs.ods` with verification calculations
-5. Add doc tests with usage examples
+1. Choose the correct module by indicator category.
+2. Implement API behavior consistent with nearby indicators (`single`/`bulk` as applicable).
+3. Validate inputs using helpers from `validation.rs` and return `TechnicalIndicatorError` variants.
+4. Add/update tests with hand-calculated expectations.
+5. Add or update docs/examples as needed.
 
 ### Modifying Existing Indicators
-1. **Understand the math**: Check existing tests and documentation
-2. **Preserve API compatibility**: Avoid breaking changes to public interfaces
-3. **Update tests**: Ensure all existing tests continue to pass
-4. **Check examples**: Verify `reference.rs` still works
+1. Review indicator math and existing tests.
+2. Preserve public API compatibility unless intentionally making a breaking change.
+3. Keep error behavior consistent with existing `Result<T, TechnicalIndicatorError>` patterns.
+4. Re-run the validation commands above.
 
 ### Debugging Build Issues
-- **Import errors**: Check `lib.rs` for proper module exports
-- **Type errors**: Verify enum usage against `types.rs` definitions
-- **Test failures**: Use `cargo test -- --nocapture` for detailed output
+- **Import/export issues**: verify module exports in `src/lib.rs`
+- **Type/config errors**: verify enum/type usage in `src/types.rs`
+- **Validation errors**: inspect helper usage in `src/validation.rs` and error variants in `src/error.rs`
+- **Test failures**: run `cargo test -- --nocapture` for detailed output
 
-## Trust These Instructions
-
-These instructions are validated against the current codebase state. **Only search for additional information if these instructions are incomplete or incorrect.** The build commands, file locations, and architectural details have been tested and verified to work with the current repository state.
-
-For additional context, see:
-- `README.md` - Project overview and getting started guide
-- `CONTRIBUTING.md` - Contribution guidelines and workflow
-- [Centaur Technical Indicators Tutorials](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust-tutorials) - External tutorial repository
-- [Centaur Technical Indicators Benchmarks](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust-benchmarks) - Performance testing repository
+## Additional Context
+- `README.md` - project overview and usage
+- `CONTRIBUTING.md` - contribution workflow
+- [Centaur Technical Indicators Tutorials](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust-tutorials)
+- [Centaur Technical Indicators Benchmarks](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust-benchmarks)
