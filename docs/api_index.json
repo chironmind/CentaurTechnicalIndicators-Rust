@@ -1,0 +1,1169 @@
+{
+  "public_modules": [
+    "basic_indicators",
+    "candle_indicators",
+    "chart_trends",
+    "correlation_indicators",
+    "momentum_indicators",
+    "moving_average",
+    "other_indicators",
+    "strength_indicators",
+    "trend_indicators",
+    "volatility_indicators"
+  ],
+  "function_count": 124,
+  "functions": [
+    {
+      "module": "basic_indicators",
+      "submodule": "bulk",
+      "name": "absolute_deviation",
+      "full_signature": "pub fn absolute_deviation( prices: &[f64], period: usize, config: AbsDevConfig, ) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "basic_indicators",
+      "submodule": "bulk",
+      "name": "cauchy_iqr_scale",
+      "full_signature": "pub fn cauchy_iqr_scale(prices: &[f64], period: usize) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "basic_indicators",
+      "submodule": "bulk",
+      "name": "empirical_quantile_range_from_distribution",
+      "full_signature": "pub fn empirical_quantile_range_from_distribution( prices: &[f64], period: usize, precision: f64, low: f64, high: f64, ) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "basic_indicators",
+      "submodule": "bulk",
+      "name": "laplace_std_equivalent",
+      "full_signature": "pub fn laplace_std_equivalent(prices: &[f64], period: usize) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "basic_indicators",
+      "submodule": "bulk",
+      "name": "log",
+      "full_signature": "pub fn log(prices: &[f64]) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "basic_indicators",
+      "submodule": "bulk",
+      "name": "log_difference",
+      "full_signature": "pub fn log_difference(prices: &[f64]) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "basic_indicators",
+      "submodule": "bulk",
+      "name": "log_standard_deviation",
+      "full_signature": "pub fn log_standard_deviation(prices: &[f64], period: usize) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "basic_indicators",
+      "submodule": "bulk",
+      "name": "mean",
+      "full_signature": "pub fn mean(prices: &[f64], period: usize) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "basic_indicators",
+      "submodule": "bulk",
+      "name": "median",
+      "full_signature": "pub fn median(prices: &[f64], period: usize) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "basic_indicators",
+      "submodule": "bulk",
+      "name": "mode",
+      "full_signature": "pub fn mode(prices: &[f64], period: usize) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "basic_indicators",
+      "submodule": "bulk",
+      "name": "price_distribution",
+      "full_signature": "pub fn price_distribution( prices: &[f64], period: usize, precision: f64, ) -> crate::Result<Vec<Vec<(f64, usize)>>>",
+      "return_type": "crate::Result<Vec<Vec<(f64, usize)>>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "basic_indicators",
+      "submodule": "bulk",
+      "name": "standard_deviation",
+      "full_signature": "pub fn standard_deviation(prices: &[f64], period: usize) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "basic_indicators",
+      "submodule": "bulk",
+      "name": "student_t_adjusted_std",
+      "full_signature": "pub fn student_t_adjusted_std( prices: &[f64], period: usize, df: f64, ) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "basic_indicators",
+      "submodule": "bulk",
+      "name": "variance",
+      "full_signature": "pub fn variance(prices: &[f64], period: usize) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "basic_indicators",
+      "submodule": "single",
+      "name": "absolute_deviation",
+      "full_signature": "pub fn absolute_deviation(prices: &[f64], config: AbsDevConfig) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "basic_indicators",
+      "submodule": "single",
+      "name": "cauchy_iqr_scale",
+      "full_signature": "pub fn cauchy_iqr_scale(prices: &[f64]) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "basic_indicators",
+      "submodule": "single",
+      "name": "empirical_quantile_range_from_distribution",
+      "full_signature": "pub fn empirical_quantile_range_from_distribution( prices: &[f64], precision: f64, low: f64, high: f64, ) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "basic_indicators",
+      "submodule": "single",
+      "name": "laplace_std_equivalent",
+      "full_signature": "pub fn laplace_std_equivalent(prices: &[f64]) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "basic_indicators",
+      "submodule": "single",
+      "name": "log_difference",
+      "full_signature": "pub fn log_difference(price_t: f64, price_t_1: f64) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "basic_indicators",
+      "submodule": "single",
+      "name": "log_standard_deviation",
+      "full_signature": "pub fn log_standard_deviation(prices: &[f64]) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "basic_indicators",
+      "submodule": "single",
+      "name": "max",
+      "full_signature": "pub fn max(prices: &[f64]) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "basic_indicators",
+      "submodule": "single",
+      "name": "mean",
+      "full_signature": "pub fn mean(prices: &[f64]) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "basic_indicators",
+      "submodule": "single",
+      "name": "median",
+      "full_signature": "pub fn median(prices: &[f64]) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "basic_indicators",
+      "submodule": "single",
+      "name": "min",
+      "full_signature": "pub fn min(prices: &[f64]) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "basic_indicators",
+      "submodule": "single",
+      "name": "mode",
+      "full_signature": "pub fn mode(prices: &[f64]) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "basic_indicators",
+      "submodule": "single",
+      "name": "price_distribution",
+      "full_signature": "pub fn price_distribution(prices: &[f64], precision: f64) -> crate::Result<Vec<(f64, usize)>>",
+      "return_type": "crate::Result<Vec<(f64, usize)>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "basic_indicators",
+      "submodule": "single",
+      "name": "standard_deviation",
+      "full_signature": "pub fn standard_deviation(prices: &[f64]) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "basic_indicators",
+      "submodule": "single",
+      "name": "student_t_adjusted_std",
+      "full_signature": "pub fn student_t_adjusted_std(prices: &[f64], df: f64) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "basic_indicators",
+      "submodule": "single",
+      "name": "variance",
+      "full_signature": "pub fn variance(prices: &[f64]) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "candle_indicators",
+      "submodule": "bulk",
+      "name": "donchian_channels",
+      "full_signature": "pub fn donchian_channels( highs: &[f64], lows: &[f64], period: usize, ) -> crate::Result<Vec<(f64, f64, f64)>>",
+      "return_type": "crate::Result<Vec<(f64, f64, f64)>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "candle_indicators",
+      "submodule": "bulk",
+      "name": "ichimoku_cloud",
+      "full_signature": "pub fn ichimoku_cloud( highs: &[f64], lows: &[f64], close: &[f64], conversion_period: usize, base_period: usize, span_b_period: usize, ) -> crate::Result<Vec<(f64, f64, f64, f64, f64)>>",
+      "return_type": "crate::Result<Vec<(f64, f64, f64, f64, f64)>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "candle_indicators",
+      "submodule": "bulk",
+      "name": "keltner_channel",
+      "full_signature": "pub fn keltner_channel( highs: &[f64], lows: &[f64], close: &[f64], constant_model_type: ConstantModelType, atr_constant_model_type: ConstantModelType, multiplier: f64, period: usize, ) -> crate::Result<Vec<(f64, f64, f64)>>",
+      "return_type": "crate::Result<Vec<(f64, f64, f64)>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "candle_indicators",
+      "submodule": "bulk",
+      "name": "mcginley_dynamic_bands",
+      "full_signature": "pub fn mcginley_dynamic_bands( prices: &[f64], deviation_model: DeviationModel, deviation_multiplier: f64, previous_mcginley_dynamic: f64, period: usize, ) -> crate::Result<Vec<(f64, f64, f64)>>",
+      "return_type": "crate::Result<Vec<(f64, f64, f64)>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "candle_indicators",
+      "submodule": "bulk",
+      "name": "mcginley_dynamic_envelopes",
+      "full_signature": "pub fn mcginley_dynamic_envelopes( prices: &[f64], difference: f64, previous_mcginley_dynamic: f64, period: usize, ) -> crate::Result<Vec<(f64, f64, f64)>>",
+      "return_type": "crate::Result<Vec<(f64, f64, f64)>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "candle_indicators",
+      "submodule": "bulk",
+      "name": "moving_constant_bands",
+      "full_signature": "pub fn moving_constant_bands( prices: &[f64], constant_model_type: ConstantModelType, deviation_model: DeviationModel, deviation_multiplier: f64, period: usize, ) -> crate::Result<Vec<(f64, f64, f64)>>",
+      "return_type": "crate::Result<Vec<(f64, f64, f64)>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "candle_indicators",
+      "submodule": "bulk",
+      "name": "moving_constant_envelopes",
+      "full_signature": "pub fn moving_constant_envelopes( prices: &[f64], constant_model_type: ConstantModelType, difference: f64, period: usize, ) -> crate::Result<Vec<(f64, f64, f64)>>",
+      "return_type": "crate::Result<Vec<(f64, f64, f64)>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "candle_indicators",
+      "submodule": "bulk",
+      "name": "supertrend",
+      "full_signature": "pub fn supertrend( highs: &[f64], lows: &[f64], close: &[f64], constant_model_type: ConstantModelType, multiplier: f64, period: usize, ) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "candle_indicators",
+      "submodule": "single",
+      "name": "donchian_channels",
+      "full_signature": "pub fn donchian_channels(highs: &[f64], lows: &[f64]) -> crate::Result<(f64, f64, f64)>",
+      "return_type": "crate::Result<(f64, f64, f64)>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "candle_indicators",
+      "submodule": "single",
+      "name": "ichimoku_cloud",
+      "full_signature": "pub fn ichimoku_cloud( highs: &[f64], lows: &[f64], close: &[f64], conversion_period: usize, base_period: usize, span_b_period: usize, ) -> crate::Result<(f64, f64, f64, f64, f64)>",
+      "return_type": "crate::Result<(f64, f64, f64, f64, f64)>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "candle_indicators",
+      "submodule": "single",
+      "name": "keltner_channel",
+      "full_signature": "pub fn keltner_channel( highs: &[f64], lows: &[f64], close: &[f64], constant_model_type: ConstantModelType, atr_constant_model_type: ConstantModelType, multiplier: f64, ) -> crate::Result<(f64, f64, f64)>",
+      "return_type": "crate::Result<(f64, f64, f64)>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "candle_indicators",
+      "submodule": "single",
+      "name": "mcginley_dynamic_bands",
+      "full_signature": "pub fn mcginley_dynamic_bands( prices: &[f64], deviation_model: DeviationModel, deviation_multiplier: f64, previous_mcginley_dynamic: f64, ) -> crate::Result<(f64, f64, f64)>",
+      "return_type": "crate::Result<(f64, f64, f64)>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "candle_indicators",
+      "submodule": "single",
+      "name": "mcginley_dynamic_envelopes",
+      "full_signature": "pub fn mcginley_dynamic_envelopes( prices: &[f64], difference: f64, previous_mcginley_dynamic: f64, ) -> crate::Result<(f64, f64, f64)>",
+      "return_type": "crate::Result<(f64, f64, f64)>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "candle_indicators",
+      "submodule": "single",
+      "name": "moving_constant_bands",
+      "full_signature": "pub fn moving_constant_bands( prices: &[f64], constant_model_type: ConstantModelType, deviation_model: DeviationModel, deviation_multiplier: f64, ) -> crate::Result<(f64, f64, f64)>",
+      "return_type": "crate::Result<(f64, f64, f64)>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "candle_indicators",
+      "submodule": "single",
+      "name": "moving_constant_envelopes",
+      "full_signature": "pub fn moving_constant_envelopes( prices: &[f64], constant_model_type: ConstantModelType, difference: f64, ) -> crate::Result<(f64, f64, f64)>",
+      "return_type": "crate::Result<(f64, f64, f64)>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "candle_indicators",
+      "submodule": "single",
+      "name": "supertrend",
+      "full_signature": "pub fn supertrend( highs: &[f64], lows: &[f64], close: &[f64], constant_model_type: ConstantModelType, multiplier: f64, ) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "chart_trends",
+      "submodule": "top-level",
+      "name": "break_down_trends",
+      "full_signature": "pub fn break_down_trends( prices: &[f64], trend_break_config: TrendBreakConfig, ) -> crate::Result<Vec<(usize, usize, f64, f64)>>",
+      "return_type": "crate::Result<Vec<(usize, usize, f64, f64)>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "chart_trends",
+      "submodule": "top-level",
+      "name": "overall_trend",
+      "full_signature": "pub fn overall_trend(prices: &[f64]) -> crate::Result<(f64, f64)>",
+      "return_type": "crate::Result<(f64, f64)>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "chart_trends",
+      "submodule": "top-level",
+      "name": "peak_trend",
+      "full_signature": "pub fn peak_trend(prices: &[f64], period: usize) -> crate::Result<(f64, f64)>",
+      "return_type": "crate::Result<(f64, f64)>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "chart_trends",
+      "submodule": "top-level",
+      "name": "peaks",
+      "full_signature": "pub fn peaks( prices: &[f64], period: usize, closest_neighbor: usize, ) -> crate::Result<Vec<(f64, usize)>>",
+      "return_type": "crate::Result<Vec<(f64, usize)>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "chart_trends",
+      "submodule": "top-level",
+      "name": "valley_trend",
+      "full_signature": "pub fn valley_trend(prices: &[f64], period: usize) -> crate::Result<(f64, f64)>",
+      "return_type": "crate::Result<(f64, f64)>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "chart_trends",
+      "submodule": "top-level",
+      "name": "valleys",
+      "full_signature": "pub fn valleys( prices: &[f64], period: usize, closest_neighbor: usize, ) -> crate::Result<Vec<(f64, usize)>>",
+      "return_type": "crate::Result<Vec<(f64, usize)>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "correlation_indicators",
+      "submodule": "bulk",
+      "name": "correlate_asset_prices",
+      "full_signature": "pub fn correlate_asset_prices( prices_asset_a: &[f64], prices_asset_b: &[f64], constant_model_type: ConstantModelType, deviation_model: DeviationModel, period: usize, ) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "correlation_indicators",
+      "submodule": "single",
+      "name": "correlate_asset_prices",
+      "full_signature": "pub fn correlate_asset_prices( prices_asset_a: &[f64], prices_asset_b: &[f64], constant_model_type: ConstantModelType, deviation_model: DeviationModel, ) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "momentum_indicators",
+      "submodule": "bulk",
+      "name": "chaikin_oscillator",
+      "full_signature": "pub fn chaikin_oscillator( highs: &[f64], lows: &[f64], close: &[f64], volume: &[f64], short_period: usize, long_period: usize, previous_accumulation_distribution: f64, short_period_model: ConstantModelType, long_period_model: ConstantModelType, ) -> crate::Result<Vec<(f64, f64)>>",
+      "return_type": "crate::Result<Vec<(f64, f64)>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "momentum_indicators",
+      "submodule": "bulk",
+      "name": "chande_momentum_oscillator",
+      "full_signature": "pub fn chande_momentum_oscillator(prices: &[f64], period: usize) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "momentum_indicators",
+      "submodule": "bulk",
+      "name": "commodity_channel_index",
+      "full_signature": "pub fn commodity_channel_index( prices: &[f64], constant_model_type: ConstantModelType, deviation_model: DeviationModel, constant_multiplier: f64, period: usize, ) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "momentum_indicators",
+      "submodule": "bulk",
+      "name": "macd_line",
+      "full_signature": "pub fn macd_line( prices: &[f64], short_period: usize, short_period_model: ConstantModelType, long_period: usize, long_period_model: ConstantModelType, ) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "momentum_indicators",
+      "submodule": "bulk",
+      "name": "mcginley_dynamic_commodity_channel_index",
+      "full_signature": "pub fn mcginley_dynamic_commodity_channel_index( prices: &[f64], previous_mcginley_dynamic: f64, deviation_model: DeviationModel, constant_multiplier: f64, period: usize, ) -> crate::Result<Vec<(f64, f64)>>",
+      "return_type": "crate::Result<Vec<(f64, f64)>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "momentum_indicators",
+      "submodule": "bulk",
+      "name": "mcginley_dynamic_macd_line",
+      "full_signature": "pub fn mcginley_dynamic_macd_line( prices: &[f64], short_period: usize, previous_short_mcginley: f64, long_period: usize, previous_long_mcginley: f64, ) -> crate::Result<Vec<(f64, f64, f64)>>",
+      "return_type": "crate::Result<Vec<(f64, f64, f64)>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "momentum_indicators",
+      "submodule": "bulk",
+      "name": "money_flow_index",
+      "full_signature": "pub fn money_flow_index( prices: &[f64], volume: &[f64], period: usize, ) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "momentum_indicators",
+      "submodule": "bulk",
+      "name": "on_balance_volume",
+      "full_signature": "pub fn on_balance_volume( prices: &[f64], volume: &[f64], previous_on_balance_volume: f64, ) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "momentum_indicators",
+      "submodule": "bulk",
+      "name": "percentage_price_oscillator",
+      "full_signature": "pub fn percentage_price_oscillator( prices: &[f64], short_period: usize, long_period: usize, constant_model_type: ConstantModelType, ) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "momentum_indicators",
+      "submodule": "bulk",
+      "name": "rate_of_change",
+      "full_signature": "pub fn rate_of_change(prices: &[f64]) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "momentum_indicators",
+      "submodule": "bulk",
+      "name": "relative_strength_index",
+      "full_signature": "pub fn relative_strength_index( prices: &[f64], constant_model_type: ConstantModelType, period: usize, ) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "momentum_indicators",
+      "submodule": "bulk",
+      "name": "signal_line",
+      "full_signature": "pub fn signal_line( macds: &[f64], constant_model_type: ConstantModelType, period: usize, ) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": {
+        "since": "1.0.0",
+        "note": "Users can call the moving average functions directly on the MACD values to get the signal line.",
+        "raw": "#[deprecated(since = \"1.0.0\", note=\"Users can call the moving average functions directly on the MACD values to get the signal line.\")]"
+      }
+    },
+    {
+      "module": "momentum_indicators",
+      "submodule": "bulk",
+      "name": "slow_stochastic",
+      "full_signature": "pub fn slow_stochastic( stochastics: &[f64], constant_model_type: ConstantModelType, period: usize, ) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": {
+        "since": "1.0.0",
+        "note": "Users can call the moving average functions directly on the SO",
+        "raw": "#[deprecated(since = \"1.0.0\", note=\"Users can call the moving average functions directly on the SO\")]"
+      }
+    },
+    {
+      "module": "momentum_indicators",
+      "submodule": "bulk",
+      "name": "slowest_stochastic",
+      "full_signature": "pub fn slowest_stochastic( slow_stochastics: &[f64], constant_model_type: ConstantModelType, period: usize, ) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": {
+        "since": "1.0.0",
+        "note": "Users can call the moving average functions directly on the SO",
+        "raw": "#[deprecated(since = \"1.0.0\", note=\"Users can call the moving average functions directly on the SO\")]"
+      }
+    },
+    {
+      "module": "momentum_indicators",
+      "submodule": "bulk",
+      "name": "stochastic_oscillator",
+      "full_signature": "pub fn stochastic_oscillator(prices: &[f64], period: usize) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "momentum_indicators",
+      "submodule": "bulk",
+      "name": "williams_percent_r",
+      "full_signature": "pub fn williams_percent_r( highs: &[f64], lows: &[f64], close: &[f64], period: usize, ) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "momentum_indicators",
+      "submodule": "single",
+      "name": "chaikin_oscillator",
+      "full_signature": "pub fn chaikin_oscillator( highs: &[f64], lows: &[f64], close: &[f64], volume: &[f64], short_period: usize, previous_accumulation_distribution: f64, short_period_model: ConstantModelType, long_period_model: ConstantModelType, ) -> crate::Result<(f64, f64)>",
+      "return_type": "crate::Result<(f64, f64)>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "momentum_indicators",
+      "submodule": "single",
+      "name": "chande_momentum_oscillator",
+      "full_signature": "pub fn chande_momentum_oscillator(prices: &[f64]) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "momentum_indicators",
+      "submodule": "single",
+      "name": "commodity_channel_index",
+      "full_signature": "pub fn commodity_channel_index( prices: &[f64], constant_model_type: ConstantModelType, deviation_model: DeviationModel, constant_multiplier: f64, ) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "momentum_indicators",
+      "submodule": "single",
+      "name": "macd_line",
+      "full_signature": "pub fn macd_line( prices: &[f64], short_period: usize, short_period_model: ConstantModelType, long_period_model: ConstantModelType, ) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "momentum_indicators",
+      "submodule": "single",
+      "name": "mcginley_dynamic_commodity_channel_index",
+      "full_signature": "pub fn mcginley_dynamic_commodity_channel_index( prices: &[f64], previous_mcginley_dynamic: f64, deviation_model: DeviationModel, constant_multiplier: f64, ) -> crate::Result<(f64, f64)>",
+      "return_type": "crate::Result<(f64, f64)>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "momentum_indicators",
+      "submodule": "single",
+      "name": "mcginley_dynamic_macd_line",
+      "full_signature": "pub fn mcginley_dynamic_macd_line( prices: &[f64], short_period: usize, previous_short_mcginley: f64, previous_long_mcginley: f64, ) -> crate::Result<(f64, f64, f64)>",
+      "return_type": "crate::Result<(f64, f64, f64)>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "momentum_indicators",
+      "submodule": "single",
+      "name": "money_flow_index",
+      "full_signature": "pub fn money_flow_index(prices: &[f64], volume: &[f64]) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "momentum_indicators",
+      "submodule": "single",
+      "name": "on_balance_volume",
+      "full_signature": "pub fn on_balance_volume( current_price: f64, previous_price: f64, current_volume: f64, previous_on_balance_volume: f64, ) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "momentum_indicators",
+      "submodule": "single",
+      "name": "percentage_price_oscillator",
+      "full_signature": "pub fn percentage_price_oscillator( prices: &[f64], short_period: usize, constant_model_type: ConstantModelType, ) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "momentum_indicators",
+      "submodule": "single",
+      "name": "rate_of_change",
+      "full_signature": "pub fn rate_of_change(current_price: f64, previous_price: f64) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "momentum_indicators",
+      "submodule": "single",
+      "name": "relative_strength_index",
+      "full_signature": "pub fn relative_strength_index( prices: &[f64], constant_model_type: ConstantModelType, ) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "momentum_indicators",
+      "submodule": "single",
+      "name": "signal_line",
+      "full_signature": "pub fn signal_line( macds: &[f64], constant_model_type: ConstantModelType, ) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": {
+        "since": "1.0.0",
+        "note": "Users can call the moving average functions directly on the MACD values to get the signal line.",
+        "raw": "#[deprecated(since = \"1.0.0\", note=\"Users can call the moving average functions directly on the MACD values to get the signal line.\")]"
+      }
+    },
+    {
+      "module": "momentum_indicators",
+      "submodule": "single",
+      "name": "slow_stochastic",
+      "full_signature": "pub fn slow_stochastic( stochastics: &[f64], constant_model_type: ConstantModelType, ) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": {
+        "since": "1.0.0",
+        "note": "Users can call the moving average functions directly on the SO",
+        "raw": "#[deprecated(since = \"1.0.0\", note=\"Users can call the moving average functions directly on the SO\")]"
+      }
+    },
+    {
+      "module": "momentum_indicators",
+      "submodule": "single",
+      "name": "slowest_stochastic",
+      "full_signature": "pub fn slowest_stochastic( slow_stochastics: &[f64], constant_model_type: ConstantModelType, ) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": {
+        "since": "1.0.0",
+        "note": "Users can call the moving average functions directly on the SO",
+        "raw": "#[deprecated(since = \"1.0.0\", note=\"Users can call the moving average functions directly on the SO\")]"
+      }
+    },
+    {
+      "module": "momentum_indicators",
+      "submodule": "single",
+      "name": "stochastic_oscillator",
+      "full_signature": "pub fn stochastic_oscillator(prices: &[f64]) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "momentum_indicators",
+      "submodule": "single",
+      "name": "williams_percent_r",
+      "full_signature": "pub fn williams_percent_r(highs: &[f64], lows: &[f64], close: f64) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "moving_average",
+      "submodule": "bulk",
+      "name": "mcginley_dynamic",
+      "full_signature": "pub fn mcginley_dynamic( prices: &[f64], previous_mcginley_dynamic: f64, period: usize, ) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "moving_average",
+      "submodule": "bulk",
+      "name": "moving_average",
+      "full_signature": "pub fn moving_average( prices: &[f64], moving_average_type: MovingAverageType, period: usize, ) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "moving_average",
+      "submodule": "single",
+      "name": "mcginley_dynamic",
+      "full_signature": "pub fn mcginley_dynamic( latest_price: f64, previous_mcginley_dynamic: f64, period: usize, ) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "moving_average",
+      "submodule": "single",
+      "name": "moving_average",
+      "full_signature": "pub fn moving_average( prices: &[f64], moving_average_type: MovingAverageType, ) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "other_indicators",
+      "submodule": "bulk",
+      "name": "average_true_range",
+      "full_signature": "pub fn average_true_range( close: &[f64], highs: &[f64], lows: &[f64], constant_model_type: ConstantModelType, period: usize, ) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "other_indicators",
+      "submodule": "bulk",
+      "name": "internal_bar_strength",
+      "full_signature": "pub fn internal_bar_strength( highs: &[f64], lows: &[f64], close: &[f64], ) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "other_indicators",
+      "submodule": "bulk",
+      "name": "positivity_indicator",
+      "full_signature": "pub fn positivity_indicator( open: &[f64], previous_close: &[f64], signal_period: usize, constant_model_type: ConstantModelType, ) -> crate::Result<Vec<(f64, f64)>>",
+      "return_type": "crate::Result<Vec<(f64, f64)>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "other_indicators",
+      "submodule": "bulk",
+      "name": "return_on_investment",
+      "full_signature": "pub fn return_on_investment(prices: &[f64], investment: f64) -> crate::Result<Vec<(f64, f64)>>",
+      "return_type": "crate::Result<Vec<(f64, f64)>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "other_indicators",
+      "submodule": "bulk",
+      "name": "true_range",
+      "full_signature": "pub fn true_range(close: &[f64], highs: &[f64], lows: &[f64]) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "other_indicators",
+      "submodule": "single",
+      "name": "average_true_range",
+      "full_signature": "pub fn average_true_range( close: &[f64], highs: &[f64], lows: &[f64], constant_model_type: ConstantModelType, ) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "other_indicators",
+      "submodule": "single",
+      "name": "internal_bar_strength",
+      "full_signature": "pub fn internal_bar_strength(high: f64, low: f64, close: f64) -> f64",
+      "return_type": "f64",
+      "return_kind": "plain",
+      "deprecated": null
+    },
+    {
+      "module": "other_indicators",
+      "submodule": "single",
+      "name": "return_on_investment",
+      "full_signature": "pub fn return_on_investment(start_price: f64, end_price: f64, investment: f64) -> (f64, f64)",
+      "return_type": "(f64, f64)",
+      "return_kind": "plain",
+      "deprecated": null
+    },
+    {
+      "module": "other_indicators",
+      "submodule": "single",
+      "name": "true_range",
+      "full_signature": "pub fn true_range(close: f64, high: f64, low: f64) -> f64",
+      "return_type": "f64",
+      "return_kind": "plain",
+      "deprecated": null
+    },
+    {
+      "module": "strength_indicators",
+      "submodule": "bulk",
+      "name": "accumulation_distribution",
+      "full_signature": "pub fn accumulation_distribution( high: &[f64], low: &[f64], close: &[f64], volume: &[f64], previous_accumulation_distribution: f64, ) -> Result<Vec<f64>>",
+      "return_type": "Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "strength_indicators",
+      "submodule": "bulk",
+      "name": "negative_volume_index",
+      "full_signature": "pub fn negative_volume_index( close: &[f64], volume: &[f64], previous_negative_volume_index: f64, ) -> Result<Vec<f64>>",
+      "return_type": "Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "strength_indicators",
+      "submodule": "bulk",
+      "name": "positive_volume_index",
+      "full_signature": "pub fn positive_volume_index( close: &[f64], volume: &[f64], previous_positive_volume_index: f64, ) -> Result<Vec<f64>>",
+      "return_type": "Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "strength_indicators",
+      "submodule": "bulk",
+      "name": "relative_vigor_index",
+      "full_signature": "pub fn relative_vigor_index( open: &[f64], high: &[f64], low: &[f64], close: &[f64], constant_model_type: ConstantModelType, period: usize, ) -> Result<Vec<f64>>",
+      "return_type": "Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "strength_indicators",
+      "submodule": "single",
+      "name": "accumulation_distribution",
+      "full_signature": "pub fn accumulation_distribution( high: f64, low: f64, close: f64, volume: f64, previous_accumulation_distribution: f64, ) -> f64",
+      "return_type": "f64",
+      "return_kind": "plain",
+      "deprecated": null
+    },
+    {
+      "module": "strength_indicators",
+      "submodule": "single",
+      "name": "relative_vigor_index",
+      "full_signature": "pub fn relative_vigor_index( open: &[f64], high: &[f64], low: &[f64], close: &[f64], constant_model_type: ConstantModelType, ) -> Result<f64>",
+      "return_type": "Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "strength_indicators",
+      "submodule": "single",
+      "name": "volume_index",
+      "full_signature": "pub fn volume_index( current_close: f64, previous_close: f64, previous_volume_index: f64, ) -> f64",
+      "return_type": "f64",
+      "return_kind": "plain",
+      "deprecated": null
+    },
+    {
+      "module": "trend_indicators",
+      "submodule": "bulk",
+      "name": "aroon_down",
+      "full_signature": "pub fn aroon_down(lows: &[f64], period: usize) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "trend_indicators",
+      "submodule": "bulk",
+      "name": "aroon_indicator",
+      "full_signature": "pub fn aroon_indicator( highs: &[f64], lows: &[f64], period: usize, ) -> crate::Result<Vec<(f64, f64, f64)>>",
+      "return_type": "crate::Result<Vec<(f64, f64, f64)>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "trend_indicators",
+      "submodule": "bulk",
+      "name": "aroon_oscillator",
+      "full_signature": "pub fn aroon_oscillator(aroon_up: &[f64], aroon_down: &[f64]) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "trend_indicators",
+      "submodule": "bulk",
+      "name": "aroon_up",
+      "full_signature": "pub fn aroon_up(highs: &[f64], period: usize) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "trend_indicators",
+      "submodule": "bulk",
+      "name": "directional_movement_system",
+      "full_signature": "pub fn directional_movement_system( highs: &[f64], lows: &[f64], close: &[f64], period: usize, constant_model_type: ConstantModelType, ) -> crate::Result<Vec<(f64, f64, f64, f64)>>",
+      "return_type": "crate::Result<Vec<(f64, f64, f64, f64)>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "trend_indicators",
+      "submodule": "bulk",
+      "name": "parabolic_time_price_system",
+      "full_signature": "pub fn parabolic_time_price_system( highs: &[f64], lows: &[f64], acceleration_factor_start: f64, acceleration_factor_max: f64, acceleration_factor_step: f64, start_position: Position, previous_sar: f64, ) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "trend_indicators",
+      "submodule": "bulk",
+      "name": "true_strength_index",
+      "full_signature": "pub fn true_strength_index( prices: &[f64], first_constant_model: ConstantModelType, first_period: usize, second_constant_model: ConstantModelType, second_period: usize, ) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "trend_indicators",
+      "submodule": "bulk",
+      "name": "volume_price_trend",
+      "full_signature": "pub fn volume_price_trend( prices: &[f64], volumes: &[f64], previous_volume_price_trend: f64, ) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": {
+        "since": "1.0.0",
+        "note": "This function is deprecated as it is not commonly used and can be easily calculated by users if needed. It will be removed in a future release.",
+        "raw": "#[deprecated(since = \"1.0.0\", note=\"This function is deprecated as it is not commonly used and can be easily calculated by users if needed. It will be removed in a future release.\")]"
+      }
+    },
+    {
+      "module": "trend_indicators",
+      "submodule": "single",
+      "name": "aroon_down",
+      "full_signature": "pub fn aroon_down(lows: &[f64]) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "trend_indicators",
+      "submodule": "single",
+      "name": "aroon_indicator",
+      "full_signature": "pub fn aroon_indicator(highs: &[f64], lows: &[f64]) -> crate::Result<(f64, f64, f64)>",
+      "return_type": "crate::Result<(f64, f64, f64)>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "trend_indicators",
+      "submodule": "single",
+      "name": "aroon_oscillator",
+      "full_signature": "pub fn aroon_oscillator(aroon_up: f64, aroon_down: f64) -> f64",
+      "return_type": "f64",
+      "return_kind": "plain",
+      "deprecated": null
+    },
+    {
+      "module": "trend_indicators",
+      "submodule": "single",
+      "name": "aroon_up",
+      "full_signature": "pub fn aroon_up(highs: &[f64]) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "trend_indicators",
+      "submodule": "single",
+      "name": "long_parabolic_time_price_system",
+      "full_signature": "pub fn long_parabolic_time_price_system( previous_sar: f64, extreme_point: f64, acceleration_factor: f64, low: f64, ) -> f64",
+      "return_type": "f64",
+      "return_kind": "plain",
+      "deprecated": null
+    },
+    {
+      "module": "trend_indicators",
+      "submodule": "single",
+      "name": "short_parabolic_time_price_system",
+      "full_signature": "pub fn short_parabolic_time_price_system( previous_sar: f64, extreme_point: f64, acceleration_factor: f64, high: f64, ) -> f64",
+      "return_type": "f64",
+      "return_kind": "plain",
+      "deprecated": null
+    },
+    {
+      "module": "trend_indicators",
+      "submodule": "single",
+      "name": "true_strength_index",
+      "full_signature": "pub fn true_strength_index( prices: &[f64], first_constant_model: ConstantModelType, first_period: usize, second_constant_model: ConstantModelType, ) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "trend_indicators",
+      "submodule": "single",
+      "name": "volume_price_trend",
+      "full_signature": "pub fn volume_price_trend( current_price: f64, previous_price: f64, volume: f64, previous_volume_price_trend: f64, ) -> f64",
+      "return_type": "f64",
+      "return_kind": "plain",
+      "deprecated": {
+        "since": "1.0.0",
+        "note": "This function is deprecated as it is not commonly used and can be easily calculated by users if needed. It will be removed in a future release.",
+        "raw": "#[deprecated(since = \"1.0.0\", note=\"This function is deprecated as it is not commonly used and can be easily calculated by users if needed. It will be removed in a future release.\")]"
+      }
+    },
+    {
+      "module": "volatility_indicators",
+      "submodule": "bulk",
+      "name": "ulcer_index",
+      "full_signature": "pub fn ulcer_index(prices: &[f64], period: usize) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    },
+    {
+      "module": "volatility_indicators",
+      "submodule": "bulk",
+      "name": "volatility_system",
+      "full_signature": "pub fn volatility_system( highs: &[f64], lows: &[f64], close: &[f64], period: usize, constant_multiplier: f64, constant_model_type: ConstantModelType, ) -> crate::Result<Vec<f64>>",
+      "return_type": "crate::Result<Vec<f64>>",
+      "return_kind": "Result<T>",
+      "deprecated": {
+        "since": "1.0.0",
+        "note": "This function is deprecated as it is not commonly used.",
+        "raw": "#[deprecated(since = \"1.0.0\", note=\"This function is deprecated as it is not commonly used.\")]"
+      }
+    },
+    {
+      "module": "volatility_indicators",
+      "submodule": "single",
+      "name": "ulcer_index",
+      "full_signature": "pub fn ulcer_index(prices: &[f64]) -> crate::Result<f64>",
+      "return_type": "crate::Result<f64>",
+      "return_kind": "Result<T>",
+      "deprecated": null
+    }
+  ]
+}

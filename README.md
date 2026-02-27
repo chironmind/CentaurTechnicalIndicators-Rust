@@ -112,6 +112,18 @@ cargo run --example reference
   - `single`: Compute indicator for the entire vector, returns a single value.
 - Types used to personalise the technical indicators (**`MovingAverageType`**, **`DeviationModel`**, **`Position`**...)
 
+### Generated API Index (AI/codegen source-of-truth)
+
+The checked-in API index in `docs/api_index.json` and `docs/api_index.md` is the source-of-truth for AI and code generation tooling.
+
+Regenerate it whenever you add, remove, or change any public function signature:
+
+```shell
+python3 scripts/generate_api_index.py
+```
+
+CI validates this index is up-to-date and will fail if generated output differs from the checked-in files.
+
 ---
 
 ## 🧠 Explanation & Design

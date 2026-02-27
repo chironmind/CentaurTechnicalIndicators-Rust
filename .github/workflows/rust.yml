@@ -26,3 +26,7 @@ jobs:
       run: cargo build --verbose
     - name: Test
       run: cargo test --verbose
+    - name: Verify generated API index is current
+      run: |
+        python3 scripts/generate_api_index.py
+        git diff --exit-code -- docs/api_index.json docs/api_index.md
