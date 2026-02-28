@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ---
 
 ## [Unreleased]
+### Changed
+- Removed the deprecation marker from `volume_price_trend` in both the bulk and single APIs.
 
 ## [1.2.0] - 2026-02-25
 ### Added
