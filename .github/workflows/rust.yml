@@ -10,7 +10,17 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  policy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: AI Policy Check
+      run: .github/scripts/ai_policy_check.sh
+
   build:
+    needs: policy
     runs-on: ubuntu-latest
     strategy:
       matrix:

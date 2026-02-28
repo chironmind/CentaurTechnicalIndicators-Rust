@@ -2,6 +2,13 @@
 
 This document is a practical map for contributors and coding agents working in `CentaurTechnicalIndicators-Rust`.
 
+## How to use this roadmap
+
+- `Now`: high-confidence, near-term items that improve contributor and agent reliability.
+- `Next`: medium-term items that build on completed `Now` work.
+- `Later`: directional items that should not block current PRs.
+- Each milestone includes acceptance criteria and non-goals to keep the implementation scope clear.
+
 ## Current API surface by module
 
 The crate currently exports the following indicator modules from `src/lib.rs`, each with `single` and/or `bulk` submodules where applicable:
@@ -60,7 +67,71 @@ Testing guidance:
 - Prefer deterministic tests with explicit expected values.
 - Do not weaken or remove unrelated assertions to make a change pass.
 
-## ML/feature-engineering roadmap
+## Contributor workflow roadmap
+
+This section tracks changes that make the repository easier for both human contributors and coding agents to work in safely.
+
+### Now
+
+1. **PR quality report standardization**
+   - Goal: all AI/human PRs present the same validation summary shape.
+   - Acceptance criteria:
+     - `AGENTS.md` defines a required PR summary format.
+     - PR descriptions consistently include `Summary`, `Scope`, `Compatibility`, `Validation`, `Benchmarks`, and `Changelog`.
+   - Non-goals:
+     - Enforcing via CI in this milestone.
+2. **Repository orientation map**
+   - Goal: reduce onboarding/search time for contributors and agents.
+   - Acceptance criteria:
+     - Add `docs/REPO_MAP.md` with key directories, extension points, and "if changing X, also check Y" guidance.
+     - Include where indicator implementations, shared validation, tests, docs, and changelog updates belong.
+   - Non-goals:
+     - Exhaustive architecture documentation.
+3. **Machine-readable contribution policy**
+   - Goal: enable deterministic checks by automation/bots.
+   - Acceptance criteria:
+     - Add a minimal policy file (for example `ai-policy.yaml`) listing required checks and user-facing change obligations.
+     - Ensure policy contents match `AGENTS.md`/`CONTRIBUTING.md`.
+   - Non-goals:
+     - Full custom policy engine implementation.
+
+### Next
+
+1. **CI guardrails for contribution policy**
+   - Goal: make contributor requirements executable rather than advisory.
+   - Acceptance criteria:
+     - Add CI checks for required validation commands.
+     - Add CI checks for `CHANGELOG.md` updates on user-facing changes.
+   - Non-goals:
+     - Blocking on benchmark jobs in the main CI pipeline if benchmark infra is external.
+2. **Public API change detection**
+   - Goal: surface API-impacting changes early in PR review.
+   - Acceptance criteria:
+     - Add an API diff/report step or equivalent review signal for `pub` surface changes.
+     - Require explicit compatibility notes when public API changes are detected.
+   - Non-goals:
+     - Automatic semver bumping.
+
+### Later
+
+1. **Agent bootstrap command**
+   - Goal: provide a one-command local setup and verification flow for new contributors/agents.
+   - Acceptance criteria:
+     - Script or task runner target that documents and runs core checks in order.
+   - Non-goals:
+     - Replacing existing contributor docs.
+2. **Automated PR feedback assistant**
+   - Goal: comment on missing PR sections or unmet requirements.
+   - Acceptance criteria:
+     - Bot comments are actionable and link to relevant docs.
+   - Non-goals:
+     - Autonomous code modification/merging.
+
+## Library feature roadmap
+
+This section tracks potential library capabilities and APIs for end users.
+
+### Next
 
 Potential roadmap items for ML-oriented users of this library:
 
@@ -81,3 +152,10 @@ Near-term implementation preference:
 
 - Start with non-breaking additions in utility/helper layers.
 - Maintain strong error semantics and test coverage for each new feature API.
+
+### Later
+
+1. **Model-pipeline integration examples**
+   - Example notebooks/apps showing leakage-safe train/validation feature generation.
+2. **Expanded cross-asset utilities**
+   - Additional helpers for multi-series feature blocks with explicit alignment contracts.
