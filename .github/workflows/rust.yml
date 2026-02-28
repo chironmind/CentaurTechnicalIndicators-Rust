@@ -17,7 +17,7 @@ jobs:
       with:
         fetch-depth: 0
     - name: AI Policy Check
-      run: .github/scripts/ai_policy_check.sh
+      run: bash "${{ github.workspace }}/.github/scripts/ai_policy_check.sh"
 
   build:
     needs: policy
