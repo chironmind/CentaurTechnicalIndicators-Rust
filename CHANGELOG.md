@@ -11,6 +11,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added repository-level `AGENTS.md` guidance for coding agents, including AI contribution expectations, required quality gates, and PR reporting expectations.
 
 ### Changed
+- Added `AI_FRIENDLY_ROADMAP.md` with module API surface, error-handling conventions, validation/testing expectations, and an ML/feature-engineering roadmap.
+- Updated `.github/copilot-instructions.md` to reflect the current module layout, remove stale `standard_indicators.rs` references, and avoid outdated warning/timing claims.
+- Removed the temporary docs consistency checker (`scripts/check_docs_consistency.py`) and its CI workflow step.
+- Updated contributor guidance links in `CONTRIBUTING.md` and `AGENTS.md` so referenced local files exist.
+
 - Removed the deprecation marker from `volume_price_trend` in both the bulk and single APIs.
 - Expanded `CONTRIBUTING.md` with a dedicated AI-assisted contribution checklist, explicit pre-PR validation gates, benchmark regression expectations, and links to AI contribution guidance docs.
 - Clarified contributor expectations to update `CHANGELOG.md` for each user-facing change and to validate benchmark impact using the companion benchmark repository.
