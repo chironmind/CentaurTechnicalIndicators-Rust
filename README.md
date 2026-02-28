@@ -298,6 +298,17 @@ Contributions, bug reports, and feature requests are welcome!
 - [Submit a pull request](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust/pulls)
 - See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines
 
+### Local quality gates
+
+Before opening a PR, run the same quality gates used in CI:
+
+```bash
+cargo fmt --all -- --check
+cargo clippy --all-targets --all-features -- -D warnings
+cargo test --all-features
+cargo doc --no-deps
+```
+
 ---
 
 ## 💬 Community & Support
@@ -325,4 +336,3 @@ Contributions, bug reports, and feature requests are welcome!
 ## 📄 License
 
 MIT License. See [LICENSE](LICENSE-MIT).
-
