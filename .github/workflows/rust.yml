@@ -1,4 +1,4 @@
-name: Centaur Technical Indicators Build and Test
+name: Centaur Technical Indicators CI
 
 on:
   push:
@@ -24,7 +24,37 @@ jobs:
     - name: AI Policy Check
       run: bash "${{ github.workspace }}/.github/scripts/ai_policy_check.sh"
 
-  quality-gates:
+  fmt:
+    permissions:
+      contents: read
+    needs: policy
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set Rust toolchain (stable + rustfmt)
+      run: |
+        rustup update stable
+        rustup default stable
+        rustup component add rustfmt
+    - name: Cargo fmt check
+      run: cargo fmt --all -- --check
+
+  clippy:
+    permissions:
+      contents: read
+    needs: policy
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set Rust toolchain (stable + clippy)
+      run: |
+        rustup update stable
+        rustup default stable
+        rustup component add clippy
+    - name: Cargo clippy (all targets, all features, deny warnings)
+      run: cargo clippy --all-targets --all-features -- -D warnings
+
+  test:
     permissions:
       contents: read
     needs: policy
@@ -32,20 +62,34 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Set Rust toolchain (stable)
-      run: rustup update stable && rustup default stable
-    - name: Cargo fmt check
-      run: cargo fmt --all -- --check
-    - name: Cargo clippy (all targets, all features, deny warnings)
-      run: cargo clippy --all-targets --all-features -- -D warnings
+      run: |
+        rustup update stable
+        rustup default stable
     - name: Cargo test (all features)
       run: cargo test --all-features
+
+  doc:
+    permissions:
+      contents: read
+    needs: policy
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set Rust toolchain (stable)
+      run: |
+        rustup update stable
+        rustup default stable
     - name: Cargo doc (no deps)
       run: cargo doc --no-deps
 
   build:
     permissions:
       contents: read
-    needs: quality-gates
+    needs:
+      - fmt
+      - clippy
+      - test
+      - doc
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -56,7 +100,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Set Rust toolchain (${{ matrix.toolchain }})
-      run: rustup update ${{ matrix.toolchain }} && rustup default ${{ matrix.toolchain }}
+      run: |
+        rustup update ${{ matrix.toolchain }}
+        rustup default ${{ matrix.toolchain }}
     - name: Build
       run: cargo build --verbose
     - name: Test

@@ -9,6 +9,7 @@
 use centaur_technical_indicators::{AbsDevConfig, CentralPoint, DeviationAggregate};
 use std::time::Instant;
 
+#[allow(deprecated)]
 fn main() {
     let now = Instant::now();
 

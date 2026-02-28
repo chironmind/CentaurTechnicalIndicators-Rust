@@ -64,6 +64,7 @@
 //! ---
 
 #![allow(unreachable_patterns)]
+#![cfg_attr(test, allow(deprecated, unused_must_use, clippy::excessive_precision))]
 
 pub mod basic_indicators;
 pub mod candle_indicators;

@@ -28,7 +28,7 @@
 //! ## Reference
 //!
 //! - Explanation and interactive playground:
-//! <https://tech.centaurresearchtechnologies.com/indicators/correlation-indicators/>
+//!   <https://tech.centaurresearchtechnologies.com/indicators/correlation-indicators/>
 //!
 //! ---
 
@@ -93,7 +93,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/correlation-indicators/correlate-asset-prices/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/correlation-indicators/correlate-asset-prices/>
     pub fn correlate_asset_prices(
         prices_asset_a: &[f64],
         prices_asset_b: &[f64],
@@ -314,7 +314,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/correlation-indicators/correlate-asset-prices/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/correlation-indicators/correlate-asset-prices/>
     #[inline]
     pub fn correlate_asset_prices(
         prices_asset_a: &[f64],

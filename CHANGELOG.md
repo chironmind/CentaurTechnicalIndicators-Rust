@@ -16,8 +16,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 - Updated `.github/workflows/rust.yml` to add explicit stable-toolchain CI quality gate steps for `cargo fmt --all -- --check`, `cargo clippy --all-targets --all-features -- -D warnings`, `cargo test --all-features`, and `cargo doc --no-deps`, with each gate logged as its own named step.
+- Updated `.github/workflows/rust.yml` so each required quality gate (`fmt`, `clippy`, `test`, `doc`) runs as its own blocking CI job on PRs and pushes to `main`; the toolchain matrix build now depends on all gate jobs.
+- Updated `.github/workflows/rust.yml` to remove third-party Rust CI actions and use native `rustup`/`cargo` commands for toolchain setup and checks.
 - Updated `README.md` contributing guidance to list the exact local quality-gate commands that CI runs.
 - Updated `CONTRIBUTING.md` to include a matching `Local quality gates` section with the exact CI command set.
+- Updated `AGENTS.md` and `CONTRIBUTING.md` with CI policy guidance to avoid third-party GitHub Actions for Rust toolchain setup/caching unless explicitly approved by maintainers.
 - Added `AI_FRIENDLY_ROADMAP.md` with module API surface, error-handling conventions, validation/testing expectations, and an ML/feature-engineering roadmap.
 - Updated `.github/copilot-instructions.md` to reflect the current module layout, remove stale `standard_indicators.rs` references, and avoid outdated warning/timing claims.
 - Removed the temporary docs consistency checker (`scripts/check_docs_consistency.py`) and its CI workflow step.
