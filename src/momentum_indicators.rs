@@ -60,7 +60,7 @@
 //! ## Reference
 //!
 //! - Explanation and interactive playground:
-//! <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/>
+//!   <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/>
 //!
 //! ---
 
@@ -125,7 +125,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/rsi/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/rsi/>
     #[inline]
     pub fn relative_strength_index(
         prices: &[f64],
@@ -211,7 +211,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/stochastic-oscillator/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/stochastic-oscillator/>
     #[inline]
     pub fn stochastic_oscillator(prices: &[f64]) -> crate::Result<f64> {
         assert_non_empty("prices", prices)?;
@@ -270,8 +270,12 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/slow-stochastic-oscillator/>
-    #[deprecated(since = "1.0.0", note="Users can call the moving average functions directly on the SO")]
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/slow-stochastic-oscillator/>
+    #[allow(deprecated)]
+    #[deprecated(
+        since = "1.0.0",
+        note = "Users can call the moving average functions directly on the SO"
+    )]
     pub fn slow_stochastic(
         stochastics: &[f64],
         constant_model_type: ConstantModelType,
@@ -345,8 +349,12 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/slow-stochastic-oscillator/>
-    #[deprecated(since = "1.0.0", note="Users can call the moving average functions directly on the SO")]
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/slow-stochastic-oscillator/>
+    #[allow(deprecated)]
+    #[deprecated(
+        since = "1.0.0",
+        note = "Users can call the moving average functions directly on the SO"
+    )]
     pub fn slowest_stochastic(
         slow_stochastics: &[f64],
         constant_model_type: ConstantModelType,
@@ -415,7 +423,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/williams-percent-r/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/williams-percent-r/>
     #[inline]
     pub fn williams_percent_r(highs: &[f64], lows: &[f64], close: f64) -> crate::Result<f64> {
         assert_same_len(&[("highs", highs), ("lows", lows)])?;
@@ -458,7 +466,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/money-flow-index/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/money-flow-index/>
     #[inline]
     pub fn money_flow_index(prices: &[f64], volume: &[f64]) -> crate::Result<f64> {
         assert_non_empty("prices", prices)?;
@@ -525,7 +533,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/rate-of-change/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/rate-of-change/>
     #[inline]
     pub fn rate_of_change(current_price: f64, previous_price: f64) -> crate::Result<f64> {
         Ok(((current_price - previous_price) / previous_price) * 100.0)
@@ -573,7 +581,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/on-balance-volume/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/on-balance-volume/>
     #[inline]
     pub fn on_balance_volume(
         current_price: f64,
@@ -640,7 +648,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/commodity-channel-index/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/commodity-channel-index/>
     #[inline]
     pub fn commodity_channel_index(
         prices: &[f64],
@@ -765,7 +773,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/mcginley-dynamic-commodity-channel-index/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/mcginley-dynamic-commodity-channel-index/>
     #[inline]
     pub fn mcginley_dynamic_commodity_channel_index(
         prices: &[f64],
@@ -873,7 +881,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/macd/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/macd/>
     #[inline]
     pub fn macd_line(
         prices: &[f64],
@@ -976,8 +984,12 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/macd/>
-    #[deprecated(since = "1.0.0", note="Users can call the moving average functions directly on the MACD values to get the signal line.")]
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/macd/>
+    #[allow(deprecated)]
+    #[deprecated(
+        since = "1.0.0",
+        note = "Users can call the moving average functions directly on the MACD values to get the signal line."
+    )]
     pub fn signal_line(
         macds: &[f64],
         constant_model_type: ConstantModelType,
@@ -1052,7 +1064,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/mcginley-dynamic-macd/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/mcginley-dynamic-macd/>
     #[inline]
     pub fn mcginley_dynamic_macd_line(
         prices: &[f64],
@@ -1139,7 +1151,8 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/chaikin-oscillator/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/chaikin-oscillator/>
+    #[allow(clippy::too_many_arguments)]
     pub fn chaikin_oscillator(
         highs: &[f64],
         lows: &[f64],
@@ -1264,7 +1277,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/percentage-price-oscillator/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/percentage-price-oscillator/>
     #[inline]
     pub fn percentage_price_oscillator(
         prices: &[f64],
@@ -1342,7 +1355,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/chande-momentum-oscillator/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/chande-momentum-oscillator/>
     #[inline]
     pub fn chande_momentum_oscillator(prices: &[f64]) -> crate::Result<f64> {
         let (previous_gains, previous_loss) = previous_gains_loss(prices)?;
@@ -1457,7 +1470,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/rsi/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/rsi/>
     #[inline]
     pub fn relative_strength_index(
         prices: &[f64],
@@ -1505,7 +1518,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/stochastic-oscillator/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/stochastic-oscillator/>
     #[inline]
     pub fn stochastic_oscillator(prices: &[f64], period: usize) -> crate::Result<Vec<f64>> {
         let length = prices.len();
@@ -1571,8 +1584,12 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/slow-stochastic-oscillator/>
-    #[deprecated(since = "1.0.0", note="Users can call the moving average functions directly on the SO")]
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/slow-stochastic-oscillator/>
+    #[allow(deprecated)]
+    #[deprecated(
+        since = "1.0.0",
+        note = "Users can call the moving average functions directly on the SO"
+    )]
     pub fn slow_stochastic(
         stochastics: &[f64],
         constant_model_type: ConstantModelType,
@@ -1637,8 +1654,12 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/slow-stochastic-oscillator/>
-    #[deprecated(since = "1.0.0", note="Users can call the moving average functions directly on the SO")]
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/slow-stochastic-oscillator/>
+    #[allow(deprecated)]
+    #[deprecated(
+        since = "1.0.0",
+        note = "Users can call the moving average functions directly on the SO"
+    )]
     pub fn slowest_stochastic(
         slow_stochastics: &[f64],
         constant_model_type: ConstantModelType,
@@ -1692,7 +1713,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/williams-percent-r/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/williams-percent-r/>
     #[inline]
     pub fn williams_percent_r(
         highs: &[f64],
@@ -1752,7 +1773,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/money-flow-index/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/money-flow-index/>
     #[inline]
     pub fn money_flow_index(
         prices: &[f64],
@@ -1800,7 +1821,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/rate-of-change/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/rate-of-change/>
     #[inline]
     pub fn rate_of_change(prices: &[f64]) -> crate::Result<Vec<f64>> {
         assert_non_empty("prices", prices)?;
@@ -1846,7 +1867,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/on-balance-volume/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/on-balance-volume/>
     #[inline]
     pub fn on_balance_volume(
         prices: &[f64],
@@ -1935,7 +1956,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/commodity-channel-index/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/commodity-channel-index/>
     #[inline]
     pub fn commodity_channel_index(
         prices: &[f64],
@@ -1993,7 +2014,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/mcginley-dynamic-commodity-channel-index/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/mcginley-dynamic-commodity-channel-index/>
     #[inline]
     pub fn mcginley_dynamic_commodity_channel_index(
         prices: &[f64],
@@ -2078,7 +2099,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/macd/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/macd/>
     #[inline]
     pub fn macd_line(
         prices: &[f64],
@@ -2156,8 +2177,12 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/macd/>
-    #[deprecated(since = "1.0.0", note="Users can call the moving average functions directly on the MACD values to get the signal line.")]
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/macd/>
+    #[allow(deprecated)]
+    #[deprecated(
+        since = "1.0.0",
+        note = "Users can call the moving average functions directly on the MACD values to get the signal line."
+    )]
     pub fn signal_line(
         macds: &[f64],
         constant_model_type: ConstantModelType,
@@ -2216,7 +2241,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/mcginley-dynamic-macd/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/mcginley-dynamic-macd/>
     #[inline]
     pub fn mcginley_dynamic_macd_line(
         prices: &[f64],
@@ -2325,8 +2350,9 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/chaikin-oscillator/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/chaikin-oscillator/>
     #[inline]
+    #[allow(clippy::too_many_arguments)]
     pub fn chaikin_oscillator(
         highs: &[f64],
         lows: &[f64],
@@ -2422,7 +2448,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/percentage-price-oscillator/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/percentage-price-oscillator/>
     #[inline]
     pub fn percentage_price_oscillator(
         prices: &[f64],
@@ -2479,7 +2505,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/chande-momentum-oscillator/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/momentum-indicators/chande-momentum-oscillator/>
     #[inline]
     pub fn chande_momentum_oscillator(prices: &[f64], period: usize) -> crate::Result<Vec<f64>> {
         let length = prices.len();

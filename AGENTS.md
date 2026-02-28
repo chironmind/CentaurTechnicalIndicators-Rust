@@ -47,6 +47,11 @@ Run these before opening a PR:
    - Clone/check out `https://github.com/chironmind/CentaurTechnicalIndicators-Rust-Benchmarks`
    - Run the relevant benchmark suite(s) and summarize regressions/improvements in the PR
 
+## CI implementation policy
+- Keep CI implementation dependency-light, consistent with the crate philosophy.
+- Prefer native `rustup` and `cargo` commands in workflows.
+- Do not introduce third-party GitHub Actions for Rust toolchain setup or Cargo caching unless explicitly approved by maintainers.
+
 ## Docs to review before coding
 - `.github/copilot-instructions.md`
 - `AI_FRIENDLY_ROADMAP.md`

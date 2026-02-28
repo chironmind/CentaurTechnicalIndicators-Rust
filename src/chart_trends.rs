@@ -444,7 +444,6 @@ pub fn break_down_trends(
                 };
                 trends.push((start_index, end_index, current_slope, current_intercept));
                 start_index = end_index;
-                end_index = index;
                 indexed_points = (start_index..=index).map(|x| (prices[x], x)).collect();
                 let current_trend = get_trend_line(&indexed_points);
                 current_slope = current_trend.0;

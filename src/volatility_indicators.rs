@@ -29,7 +29,7 @@
 //! ## Reference
 //!
 //! - Explanation and interactive playground:
-//! <https://tech.centaurresearchtechnologies.com/indicators/volatility-indicators/>
+//!   <https://tech.centaurresearchtechnologies.com/indicators/volatility-indicators/>
 //!
 //! ---
 
@@ -63,7 +63,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/volatility-indicators/ulcer-index/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/volatility-indicators/ulcer-index/>
     #[inline]
     pub fn ulcer_index(prices: &[f64]) -> crate::Result<f64> {
         assert_non_empty("prices", prices)?;
@@ -118,7 +118,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/volatility-indicators/ulcer-index/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/volatility-indicators/ulcer-index/>
     #[inline]
     pub fn ulcer_index(prices: &[f64], period: usize) -> crate::Result<Vec<f64>> {
         let length = prices.len();
@@ -207,7 +207,10 @@ pub mod bulk {
     /// );
     /// ```
     ///
-    #[deprecated(since = "1.0.0", note="This function is deprecated as it is not commonly used.")]
+    #[deprecated(
+        since = "1.0.0",
+        note = "This function is deprecated as it is not commonly used."
+    )]
     pub fn volatility_system(
         highs: &[f64],
         lows: &[f64],
