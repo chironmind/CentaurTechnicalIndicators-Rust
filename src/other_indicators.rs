@@ -37,7 +37,7 @@
 //! ## Reference
 //!
 //! - Explanation and interactive playground:
-//! <https://tech.centaurresearchtechnologies.com/indicators/other-indicators/>
+//!   <https://tech.centaurresearchtechnologies.com/indicators/other-indicators/>
 //!
 //! ---
 
@@ -88,7 +88,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/other-indicators/return-on-investment/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/other-indicators/return-on-investment/>
     #[inline]
     pub fn return_on_investment(start_price: f64, end_price: f64, investment: f64) -> (f64, f64) {
         let initial_investment = investment / start_price;
@@ -138,7 +138,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/other-indicators/true-range/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/other-indicators/true-range/>
     #[inline]
     pub fn true_range(close: f64, high: f64, low: f64) -> f64 {
         let h_l_tr = high - low;
@@ -197,7 +197,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/other-indicators/average-true-range/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/other-indicators/average-true-range/>
     #[inline]
     pub fn average_true_range(
         close: &[f64],
@@ -272,7 +272,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/other-indicators/internal-bar-strength/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/other-indicators/internal-bar-strength/>
     #[inline]
     pub fn internal_bar_strength(high: f64, low: f64, close: f64) -> f64 {
         (close - low) / (high - low)
@@ -328,7 +328,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/other-indicators/return-on-investment/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/other-indicators/return-on-investment/>
     #[inline]
     pub fn return_on_investment(prices: &[f64], investment: f64) -> crate::Result<Vec<(f64, f64)>> {
         assert_non_empty("prices", prices)?;
@@ -378,7 +378,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/other-indicators/true-range/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/other-indicators/true-range/>
     #[inline]
     pub fn true_range(close: &[f64], highs: &[f64], lows: &[f64]) -> crate::Result<Vec<f64>> {
         let length = close.len();
@@ -441,7 +441,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/other-indicators/average-true-range/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/other-indicators/average-true-range/>
     #[inline]
     pub fn average_true_range(
         close: &[f64],
@@ -508,7 +508,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/other-indicators/internal-bar-strength/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/other-indicators/internal-bar-strength/>
     #[inline]
     pub fn internal_bar_strength(
         highs: &[f64],
@@ -569,7 +569,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/other-indicators/positivity-indicator/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/other-indicators/positivity-indicator/>
     pub fn positivity_indicator(
         open: &[f64],
         previous_close: &[f64],
