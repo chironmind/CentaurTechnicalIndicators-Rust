@@ -38,11 +38,9 @@ cargo bench --no-run
 
 ### Expected Build Behavior
 - `cargo check`, `cargo build`, `cargo test`, and `cargo doc --no-deps` should succeed.
-- Current warning output includes:
-  - deprecated API usage warnings (intentional in compatibility paths and some tests/examples)
-  - one `unused_assignments` warning in `src/chart_trends.rs` (`end_index`)
-  - many clippy warnings in tests, including `unused_must_use`
+- Current warning output includes deprecated API usage warnings, an `unused_assignments` warning in `src/chart_trends.rs` (`end_index`), and many clippy warnings in tests (including `unused_must_use`).
 - Warnings are currently present in the repository baseline; do not assume warning-free output.
+- `cargo clippy --all-targets --all-features` is expected to succeed with warnings at the moment.
 
 ### Testing Notes
 - `cargo test` currently runs both unit/integration-style module tests and doc tests.
@@ -74,7 +72,7 @@ src/
 ### Key Design Patterns
 - **Dual calculation APIs**: Many modules expose `single` and `bulk` functions.
 - **Shared configuration enums**: Centralized in `types.rs` and re-exported at crate root.
-- **Error-first API**: Public calculations return `Result<T, TechnicalIndicatorError>` (via crate `Result<T>` alias), not panics for normal input-validation failures.
+- **Result-based API (preferred)**: Most calculation APIs return `Result<T, TechnicalIndicatorError>` via the crate `Result<T>` alias. Use existing module patterns when extending behavior.
 - **Central validation utilities**: Common precondition checks are implemented in `src/validation.rs` and return `TechnicalIndicatorError` variants defined in `src/error.rs`.
 
 ### Configuration Files
@@ -114,7 +112,7 @@ CI runs on pushes/PRs to main and validates with stable, beta, and nightly Rust 
 ### Adding New Indicators
 1. Choose the correct module by indicator category.
 2. Implement API behavior consistent with nearby indicators (`single`/`bulk` as applicable).
-3. Validate inputs using helpers from `validation.rs` and return `TechnicalIndicatorError` variants.
+3. Validate inputs with helper functions in `validation.rs` (for example `assert_non_empty`, `assert_same_len`, `assert_period`) and return `TechnicalIndicatorError` variants from `error.rs`.
 4. Add/update tests with hand-calculated expectations.
 5. Add or update docs/examples as needed.
 
