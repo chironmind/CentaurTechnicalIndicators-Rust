@@ -1,0 +1,57 @@
+version: 1
+repository: CentaurTechnicalIndicators-Rust
+
+required_checks:
+  local_commands:
+    - cargo fmt --all -- --check
+    - cargo clippy --all-targets --all-features -- -D warnings
+    - cargo test --all-features
+    - cargo doc --no-deps
+  benchmark:
+    required_for_paths:
+      - src/basic_indicators.rs
+      - src/candle_indicators.rs
+      - src/chart_trends.rs
+      - src/correlation_indicators.rs
+      - src/momentum_indicators.rs
+      - src/moving_average.rs
+      - src/other_indicators.rs
+      - src/strength_indicators.rs
+      - src/trend_indicators.rs
+      - src/volatility_indicators.rs
+    companion_repo: https://github.com/chironmind/CentaurTechnicalIndicators-Rust-Benchmarks
+
+change_requirements:
+  user_facing_change_requires:
+    - CHANGELOG.md
+  public_api_change_requires:
+    - Rust doc updates for changed/new public items
+    - tests in same module as the implementation change
+    - PR Compatibility section summarizing API and error-handling impact
+
+coding_rules:
+  validation:
+    required_helper_file: src/validation.rs
+    instruction: Reuse shared validation helpers for input and argument checks.
+  errors:
+    required_error_type: TechnicalIndicatorError
+    instruction: Return structured TechnicalIndicatorError variants where applicable.
+  compatibility:
+    preserve_public_api_unless_explicit_breaking_approval: true
+    preserve_error_variant_matching_behavior: true
+
+pr_report:
+  required_sections:
+    - Summary
+    - Scope
+    - Compatibility
+    - Validation
+    - Benchmarks
+    - Changelog
+
+notes:
+  source_of_truth:
+    - AGENTS.md
+    - CONTRIBUTING.md
+    - AI_FRIENDLY_ROADMAP.md
+  purpose: Minimal machine-readable policy for AI agents and automation.
