@@ -57,6 +57,12 @@ cargo test --all-features
 cargo doc --no-deps
 ```
 
+### CI dependency policy
+
+- Keep CI aligned with the project dependency philosophy.
+- Prefer native `rustup`/`cargo` commands in GitHub workflows.
+- Avoid third-party GitHub Actions for Rust toolchain setup and Cargo caching unless maintainers explicitly approve them.
+
 ## AI-Assisted Contributions
 
 If AI tools were used (Copilot, Codex, etc.), include what the assistant changed and what you verified manually in the PR.

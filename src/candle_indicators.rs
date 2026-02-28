@@ -41,7 +41,7 @@
 //! ## Reference
 //!
 //! - Explanation and interactive playground:
-//! <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/>
+//!   <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/>
 //!
 //! ---
 
@@ -102,7 +102,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/moving-constant-envelopes/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/moving-constant-envelopes/>
     #[inline]
     pub fn moving_constant_envelopes(
         prices: &[f64],
@@ -183,7 +183,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/mcginley-dynamic-envelopes/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/mcginley-dynamic-envelopes/>
     #[inline]
     pub fn mcginley_dynamic_envelopes(
         prices: &[f64],
@@ -246,7 +246,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/moving-constant-bands/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/moving-constant-bands/>
     #[inline]
     pub fn moving_constant_bands(
         prices: &[f64],
@@ -372,7 +372,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/mcginley-dynamic-bands/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/mcginley-dynamic-bands/>
     #[inline]
     pub fn mcginley_dynamic_bands(
         prices: &[f64],
@@ -491,7 +491,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/ichimoku-cloud/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/ichimoku-cloud/>
     pub fn ichimoku_cloud(
         highs: &[f64],
         lows: &[f64],
@@ -557,7 +557,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/donchian-channels/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/donchian-channels/>
     #[inline]
     pub fn donchian_channels(highs: &[f64], lows: &[f64]) -> crate::Result<(f64, f64, f64)> {
         assert_same_len(&[("highs", highs), ("lows", lows)])?;
@@ -610,7 +610,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/keltner-channels/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/keltner-channels/>
     pub fn keltner_channel(
         highs: &[f64],
         lows: &[f64],
@@ -697,7 +697,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/supertrend/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/supertrend/>
     pub fn supertrend(
         highs: &[f64],
         lows: &[f64],
@@ -778,7 +778,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/moving-constant-envelopes/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/moving-constant-envelopes/>
     #[inline]
     pub fn moving_constant_envelopes(
         prices: &[f64],
@@ -842,7 +842,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/mcginley-dynamic-envelopes/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/mcginley-dynamic-envelopes/>
     #[inline]
     pub fn mcginley_dynamic_envelopes(
         prices: &[f64],
@@ -924,7 +924,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/moving-constant-bands/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/moving-constant-bands/>
     #[inline]
     pub fn moving_constant_bands(
         prices: &[f64],
@@ -993,7 +993,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/mcginley-dynamic-bands/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/mcginley-dynamic-bands/>
     #[inline]
     pub fn mcginley_dynamic_bands(
         prices: &[f64],
@@ -1083,8 +1083,9 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/ichimoku-cloud/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/ichimoku-cloud/>
     #[inline]
+    #[allow(clippy::type_complexity)]
     pub fn ichimoku_cloud(
         highs: &[f64],
         lows: &[f64],
@@ -1153,7 +1154,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/donchian-channels/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/donchian-channels/>
     #[inline]
     pub fn donchian_channels(
         highs: &[f64],
@@ -1222,7 +1223,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/keltner-channels/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/keltner-channels/>
     #[inline]
     pub fn keltner_channel(
         highs: &[f64],
@@ -1296,7 +1297,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/supertrend/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/candle-indicators/supertrend/>
     #[inline]
     pub fn supertrend(
         highs: &[f64],

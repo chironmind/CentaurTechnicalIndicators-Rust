@@ -32,7 +32,7 @@
 //! ## Reference
 //!
 //! - Explanation and interactive playground:
-//! <https://tech.centaurresearchtechnologies.com/indicators/moving-averages/>
+//!   <https://tech.centaurresearchtechnologies.com/indicators/moving-averages/>
 //!
 //! ---
 
@@ -88,7 +88,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/moving-averages/moving-average/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/moving-averages/moving-average/>
     #[inline]
     pub fn moving_average(
         prices: &[f64],
@@ -179,7 +179,7 @@ pub mod single {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/moving-averages/mcginley-dynamic/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/moving-averages/mcginley-dynamic/>
     #[inline]
     pub fn mcginley_dynamic(
         latest_price: f64,
@@ -261,7 +261,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/moving-averages/moving-average/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/moving-averages/moving-average/>
     #[inline]
     pub fn moving_average(
         prices: &[f64],
@@ -320,7 +320,7 @@ pub mod bulk {
     /// # Reference
     ///
     /// - Explanation and interactive playground:
-    /// <https://tech.centaurresearchtechnologies.com/indicators/moving-averages/mcginley-dynamic/>
+    ///   <https://tech.centaurresearchtechnologies.com/indicators/moving-averages/mcginley-dynamic/>
     #[inline]
     pub fn mcginley_dynamic(
         prices: &[f64],
