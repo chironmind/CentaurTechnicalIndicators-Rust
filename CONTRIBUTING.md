@@ -38,7 +38,10 @@ See [open issues](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust/
 3. **Verify results**  
    - Add a tab to `assets/centaur_ti_hand_calcs.ods` with hand calculations to ensure test accuracy
 4. **Add to benchmarks and run**
-   - Add a bench in [CentaurTechnicalIndicators-Rust-benchmarks](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust-benchmarks), run it, and document the runtime
+   - Add a bench in [CentaurTechnicalIndicators-Rust-benchmarks](https://github.com/chironmind/CentaurTechnicalIndicators-Rust-Benchmarks), run it, and document the runtime
+   - If you do not have the benchmark repo locally, check it out first and run the relevant benchmark suites to confirm no regressions
+5. **Update changelog**
+   - Add an entry to `CHANGELOG.md` for every user-facing change included in your PR
 
 ---
 
@@ -49,5 +52,40 @@ See [open issues](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust/
 
 ---
 
-Thanks again for your interest and contributions!
+## 🤖 AI-Assisted Contributions
 
+If you are using an AI coding assistant (Copilot, Codex, etc.), include a quick note in your PR description about what the assistant changed and what you verified manually.
+
+### Required Checklist (AI-assisted PRs)
+
+- [ ] Reuse validation helpers from `src/validation.rs` for input and argument checks.
+- [ ] Return structured `TechnicalIndicatorError` values where applicable instead of ad hoc errors.
+- [ ] Document any new public APIs (including examples and parameter behavior).
+- [ ] Add or adjust unit tests in the same module as the changed code.
+- [ ] Avoid introducing deprecated API usage in new examples and tests.
+- [ ] Add or update the `CHANGELOG.md` entry for every user-facing change.
+
+### Required Pre-PR Command Gates
+
+Run all of the following locally before opening a PR:
+
+1. `cargo fmt --all -- --check`  
+   **Pass criteria:** no formatting diffs.
+2. `cargo clippy --all-targets --all-features -- -D warnings`  
+   **Pass criteria:** zero clippy warnings/errors.
+3. `cargo test --all-features`  
+   **Pass criteria:** all tests pass with no failures.
+4. `cargo doc --no-deps`  
+   **Pass criteria:** docs build successfully and include new public APIs.
+5. Relevant benchmark suite(s) in [CentaurTechnicalIndicators-Rust-benchmarks](https://github.com/chironmind/CentaurTechnicalIndicators-Rust-Benchmarks)  
+   **Pass criteria:** benchmark run completes and no unintended regressions are introduced for touched indicators.
+
+For AI-specific guidance, also review:
+
+- [`AGENTS.md`](AGENTS.md)
+- [`.github/copilot-instructions.md`](.github/copilot-instructions.md)
+- [`AI_FRIENDLY_ROADMAP.md`](AI_FRIENDLY_ROADMAP.md)
+
+---
+
+Thanks again for your interest and contributions!
