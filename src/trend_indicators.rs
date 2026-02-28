@@ -351,7 +351,6 @@ pub mod single {
     /// ```
     ///
     #[inline]
-    #[deprecated(since = "1.0.0", note="This function is deprecated as it is not commonly used and can be easily calculated by users if needed. It will be removed in a future release.")]
     pub fn volume_price_trend(
         current_price: f64,
         previous_price: f64,
@@ -1169,7 +1168,6 @@ pub mod bulk {
     /// ```
     ///
     #[inline]
-    #[deprecated(since = "1.0.0", note="This function is deprecated as it is not commonly used and can be easily calculated by users if needed. It will be removed in a future release.")]
     pub fn volume_price_trend(
         prices: &[f64],
         volumes: &[f64],
