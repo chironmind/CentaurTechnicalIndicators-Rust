@@ -6,12 +6,28 @@ on:
   pull_request:
     branches: [ "main" ]
 
+permissions:
+  contents: read
+
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
+  policy:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: AI Policy Check
+      run: bash "${{ github.workspace }}/.github/scripts/ai_policy_check.sh"
 
+  build:
+    permissions:
+      contents: read
+    needs: policy
     runs-on: ubuntu-latest
     strategy:
       matrix:

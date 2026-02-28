@@ -9,8 +9,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 ### Added
 - Added repository-level `AGENTS.md` guidance for coding agents, including AI contribution expectations, required quality gates, and PR reporting expectations.
+- Added `docs/REPO_MAP.md` with a quick repository map, extension points, and "if changing X, also check Y" guidance.
+- Added machine-readable repository policy file `ai-policy.yaml` for required checks, change obligations, and PR section requirements.
+- Added default pull request template at `.github/pull_request_template.md` with required sections (`Summary`, `Scope`, `Compatibility`, `Validation`, `Benchmarks`, `Changelog`).
+- Added CI policy script `.github/scripts/ai_policy_check.sh` to validate PR policy expectations.
 
 ### Changed
+- Added `AI_FRIENDLY_ROADMAP.md` with module API surface, error-handling conventions, validation/testing expectations, and an ML/feature-engineering roadmap.
+- Updated `.github/copilot-instructions.md` to reflect the current module layout, remove stale `standard_indicators.rs` references, and avoid outdated warning/timing claims.
+- Removed the temporary docs consistency checker (`scripts/check_docs_consistency.py`) and its CI workflow step.
+- Updated contributor guidance links in `CONTRIBUTING.md` and `AGENTS.md` so referenced local files exist.
+- Expanded `AGENTS.md` with change-scope discipline, backward compatibility rules, performance-sensitive path guidance, and a required PR summary format.
+- Reworked `AI_FRIENDLY_ROADMAP.md` into `Now`/`Next`/`Later` priorities, split into contributor-workflow and library-feature roadmaps, and added milestone acceptance criteria and non-goals.
+- Updated `.github/workflows/rust.yml` to run a policy job before build/test.
+- CI now fails PRs that modify `src/*.rs` without updating `CHANGELOG.md`.
+- CI now fails PRs with detected public API (`pub`) changes when the PR body does not include a `Compatibility` section.
+- Polished and standardized `CONTRIBUTING.md` style and wording while preserving contribution requirements and aligning language with the CI policy checks.
+
 - Removed the deprecation marker from `volume_price_trend` in both the bulk and single APIs.
 - Expanded `CONTRIBUTING.md` with a dedicated AI-assisted contribution checklist, explicit pre-PR validation gates, benchmark regression expectations, and links to AI contribution guidance docs.
 - Clarified contributor expectations to update `CHANGELOG.md` for each user-facing change and to validate benchmark impact using the companion benchmark repository.
