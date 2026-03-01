@@ -38,7 +38,7 @@ cargo add centaur_technical_indicators
 ```
 Or, manually in your `Cargo.toml`:
 ```toml
-centaur_technical_indicators = "1.2.0"
+centaur_technical_indicators = "1.2.1"
 ```
 
 **2. Calculate your first indicator:**
@@ -325,7 +325,7 @@ cargo doc --no-deps
 
 ## 📰 Release Notes
 
-**Latest (v1.2.0):**
+**Latest (v1.2.1):**
 - Added reference URLs to doc strings
 - Sorted `## Included Indicators` lists alphabetically in all module docstrings
 - Removed deprecated wrapper references from top-level module docs and the reference example
