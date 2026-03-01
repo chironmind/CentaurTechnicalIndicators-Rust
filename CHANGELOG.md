@@ -6,16 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## Changelog Conventions (Machine/Agent Friendly)
+- Version headers use `## [x.y.z] - YYYY-MM-DD`; only `Unreleased` omits a date.
+- Change type headers use Keep a Changelog categories: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`.
+- Each bullet should identify concrete artifacts (`module`, `file`, `function`, or `workflow`) and avoid ambiguous wording.
+- Compatibility-impact details are captured under `### Agent Notes` for each version.
+
+---
+
 ## [Unreleased]
 ### Added
-- Added machine-readable indicator discovery files: `docs/indicator_registry.json` (canonical registry) and `docs/indicator_registry.schema.json` (JSON schema).
-- Added repository-level `AGENTS.md` guidance for coding agents, including AI contribution expectations, required quality gates, and PR reporting expectations.
-- Added `docs/REPO_MAP.md` with a quick repository map, extension points, and "if changing X, also check Y" guidance.
-- Added machine-readable repository policy file `ai-policy.yaml` for required checks, change obligations, and PR section requirements.
-- Added default pull request template at `.github/pull_request_template.md` with required sections (`Summary`, `Scope`, `Compatibility`, `Validation`, `Benchmarks`, `Changelog`).
-- Added CI policy script `.github/scripts/ai_policy_check.sh` to validate PR policy expectations.
+- Machine-readable indicator discovery files: `docs/indicator_registry.json` (canonical registry) and `docs/indicator_registry.schema.json` (JSON schema).
+- Repository-level `AGENTS.md` guidance for coding agents, including AI contribution expectations, required quality gates, and PR reporting expectations.
+- `docs/REPO_MAP.md` with a quick repository map, extension points, and "if changing X, also check Y" guidance.
+- Machine-readable repository policy file `ai-policy.yaml` for required checks, change obligations, and PR section requirements.
+- Default pull request template at `.github/pull_request_template.md` with required sections (`Summary`, `Scope`, `Compatibility`, `Validation`, `Benchmarks`, `Changelog`).
+- CI policy script `.github/scripts/ai_policy_check.sh` to validate PR policy expectations.
 
 ### Changed
+- Moved pre-rebrand RustTI release history into `CHANGELOG_RUSTTI_LEGACY.md` and added a historical note with explicit legacy release-tag links.
 - Updated CI (`.github/workflows/rust.yml`) to run lightweight indicator registry schema validation via `.github/scripts/validate_indicator_registry.py`.
 - Linked the indicator registry in `README.md` and `AI_FRIENDLY_ROADMAP.md` as the canonical discovery source for tools/agents.
 - Normalized `docs/indicator_registry.json` entries so `id` and `function_path` are canonical and unique, replaced `supports_bulk`/`supports_single` with `mode` (`single`/`bulk`/`module`), renamed schema field names to avoid keyword-collisions (`parameters[].param_type`, `returns.return_type`, `is_deprecated`), standardized fallible return types to `centaur_technical_indicators::Result<...>`, and expanded `.github/scripts/validate_indicator_registry.py` to enforce uniqueness, mode/path consistency, and return-type/fallibility consistency.
@@ -41,185 +50,57 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Clarified contributor expectations to update `CHANGELOG.md` for each user-facing change and to validate benchmark impact using the companion benchmark repository.
 - Removed deprecated wrapper references from module overview docs and the reference example to keep docs focused on supported APIs.
 
+### Agent Notes
+- `breaking_change`: no
+- `public_api_change`: no intentional `pub` removal/rename; one deprecation marker removal (`volume_price_trend`)
+- `error_variant_change`: none
+- `indicator_semantics_change`: none
+- `warmup_or_output_order_change`: none
 
 ## [1.2.0] - 2026-02-25
 ### Added
-- Reference URLs to doc strings
+- Reference URLs in docstrings.
 
 ### Changed
 - Sorted the `## Included Indicators` Bulk and Single lists alphabetically in all module docstrings (`candle_indicators`, `momentum_indicators`, `other_indicators`, `strength_indicators`, `trend_indicators`)
 
 ### Deprecated
-- Deprecated functions in the `momentum_indicators` module that were just wrappers for moving averages (`signal_line`, slow and slowest stochastics). These functions will be removed in the next major release (2.0.0) to encourage users to call the moving average functions directly for better flexibility and clarity.
-- Deprecated the Volume price trend  
-- Deprecated the volatility system 
+- Functions in `momentum_indicators` that were wrappers for moving averages (`signal_line`, slow stochastic, slowest stochastic). These functions are planned for removal in `2.0.0`; call moving average functions directly for composability.
+- `volume_price_trend`.
+- Volatility system wrappers.
+
+### Agent Notes
+- `breaking_change`: no
+- `public_api_change`: deprecations only
+- `error_variant_change`: none
+- `indicator_semantics_change`: none
+- `warmup_or_output_order_change`: none
 
 
 ## [1.0.0] - 2026-01-07
 ### Changed
-- **BREAKING:** Rebranded from RustTI to Centaur Technical Indicators
-  - Package name changed from `rust_ti` to `centaur_technical_indicators`
-  - This is a new package on crates.io with fresh versioning (1.0.0)
-  - All functionality remains the same, only branding has changed
-  - Updated repository and documentation URLs to reflect Centaur Technologies branding
+- **BREAKING:** Rebranded from RustTI to Centaur Technical Indicators.
+- **BREAKING:** Package name changed from `rust_ti` to `centaur_technical_indicators`.
+- **BREAKING:** New package on crates.io with fresh versioning (`1.0.0`).
+- **BREAKING:** Repository and documentation URLs updated to reflect Centaur Technologies branding.
+- **BREAKING:** All functionality remained the same; this change was branding/package identity.
 - **BREAKING:** `panic!` replaced with `Result<>` types in several functions for better error handling
 
 ### Removed
 - Removed unused `deviation.rs` file
 
----
-
-## Everything below this line is from RustTI changelog
-
-## [2.2.0] - 2025-10-19
-### Added
-- Added new deviation indicators:
-  - log_standard_deviation
-  - student_t_adjusted_std
-  - laplace_std_equivalent
-  - cauchy_iqr_scale
-- AbsDevConfig and DeviationAggregate to allow caller to specify which aggregate to use for absolute deviation calculations
-
-### Changed
-- Updated DeviationModel to include new deviation types, and CustomAbsoluteDeviation that allows caller to specify which central point and aggregate to use
-- absolute_deviation now uses AbsDevConfig to allow caller to specify which aggregate to use
-
-## [2.1.5] - 2025-10-07
-### Added
-- Added new indicator: Price distribution
-
-### Changed
-- Minor document updates
-- `break_down_trends` made more reliable and easier to use 
-  - Added a config struct to hold parameters
-  - Fixed internal logic to be more robust
-
-## [2.1.4] - 2025-08-07
-### Changes
-- Minor document updates
-
-### Fixes
-- Fixed Welles' Volatility System, in some edge cases it would try to make an immediate pivot after establishing a SaR, which caused a crash. It has been updated to try for an extra period to confirm trend direction
+### Agent Notes
+- `breaking_change`: yes
+- `public_api_change`: package/crate identity changed (`rust_ti` -> `centaur_technical_indicators`)
+- `error_variant_change`: fallible APIs now return `Result` in places that previously panicked
+- `indicator_semantics_change`: no
+- `warmup_or_output_order_change`: none documented
 
 ---
 
-## [2.1.3] - 2025-08-04
-### Changes
-- Minor document updates
-- Made directional movement system error message clearer
+### Historical note
+Pre-rebrand RustTI release history is documented in [`CHANGELOG_RUSTTI_LEGACY.md`](CHANGELOG_RUSTTI_LEGACY.md). Legacy entries use explicit `rustti-v*` tag links to avoid ambiguity with Centaur releases.
 
----
-
-## [2.1.2] - 2025-07-27
-### Changed
-- Minor document updates
-
----
-
-## [2.1.1] - 2025-07-22
-### Fixed
-- Chaikin Oscillator was taking the first Accumulation Distribution instead of the last
-
-### Changed
-- Minor doc updates
-
----
-
-## [2.1.0] - 2025-07-20
-### Added
-- Added benchmarks to README
-- Added tutorials to README
-
-### Changed
-- Removed unused loop from valleys
-- Inlined functions to improve runtime
-
----
-
-## [2.0.0] - 2025-07-03
-### Added
-- Expanded and improved documentation for core modules, including comprehensive doc comments and usage examples for `basic_indicators`, `candle_indicators`, `chart_trends`, and `correlation_indicators`.
-- Additional inline documentation and usage instructions in the README.md and CONTRIBUTING.md files, clarifying usage philosophy and adding mascot introduction.
-- New doc tests and panic handling for invalid period lengths and other edge cases in indicator functions.
-
-### Changed
-- Major refactor of argument signatures: Many functions (especially in `basic_indicators`, `chart_trends`, `correlation_indicators`) now take plain values (e.g., period: usize) instead of references (e.g., &usize).
-- Improved error handling and panic messages across all indicator modules for consistency and clarity.
-- Numerous functions now use iterators and more idiomatic Rust for windowed calculations and internal logic.
-- Refined and clarified module-level and function-level documentation throughout the codebase.
-- Refactored custom type handling to use more idiomatic Rust enums and structures.
-- Updated tests across modules to cover new error handling and edge cases.
-
-### Removed
-- Deprecated legacy argument patterns (e.g., passing reference to period) across most modules for a cleaner API.
-- Removed repetitive or redundant docstrings in favor of more centralized, clearer documentation
-- Removed main and visa from examples to fall in line with diataxis, clearer tutorials and how tos will be put in another repo
-
----
-
-## [1.4.2] - 2024-06-27
-### Added
-- Improved `peaks` and `valleys` function: now avoids producing peaks/valleys when the period shifted and was within a given period of the previous one.
-
-### Changed
-- Documentation updates for several indicators.
-
----
-
-## [1.4.1] - 2024-05-10
-### Fixed
-- Fixed bug in exponential moving average calculation.
-- Minor code formatting improvements.
-
----
-
-## [1.4.0] - 2024-04-01
-### Added
-- New indicator: McGinley Dynamic Bands.
-- Added configuration options for moving averages.
-- Added S&P 500 and Visa usage examples.
-
-### Changed
-- Refactored indicator modules for improved organization.
-
-### Fixed
-- Calculation bug in RSI fixed.
-- Typo corrections in documentation.
-
----
-
-## [1.3.0] - 2023-12-20
-### Added
-- Support for more than 70 unique technical indicators.
-- Personalised moving average type.
-- Bulk and single calculation modes for all indicators.
-- Improved error handling for invalid input.
-
-### Changed
-- Major refactor of moving average module for flexibility.
-
----
-
-## [1.2.0] - 2023-07-15
-### Added
-- Candle indicators: Ichimoku Cloud, McGinley Dynamic Bands/Envelopes, Moving Constant Bands, Donchian Channels, Keltner Channel, Supertrend.
-- Chart trend indicators: breakdown, peaks, valleys, trend detection.
-- Correlation and momentum indicators (Chaikin Oscillator, MACD, etc).
-
----
-
-## [1.1.0] - 2023-03-30
-### Added
-- Standard indicators: Simple, Smoothed, Exponential Moving Averages, Bollinger Bands, MACD, RSI.
-- Basic statistical indicators: mean, median, mode, standard deviation, variance, min, max, etc.
-
----
-
-## [1.0.0] - 2023-01-10
-### Added
-- Initial release of RustTI.
-- Core library structure with modular technical indicator functions.
-- Full documentation on docs.rs.
-- Unit tests and hand-calculation verification spreadsheets.
-
----
+[Unreleased]: https://github.com/chironmind/CentaurTechnicalIndicators-Rust/compare/centaur-v1.2.0...HEAD
+[1.2.0]: https://github.com/chironmind/CentaurTechnicalIndicators-Rust/releases/tag/centaur-v1.2.0
+[1.0.0]: https://github.com/chironmind/CentaurTechnicalIndicators-Rust/releases/tag/centaur-v1.0.0
