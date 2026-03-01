@@ -93,6 +93,7 @@ def validate_registry_invariants(registry: dict[str, Any]) -> None:
     indicators = registry["indicators"]
     seen_ids: set[str] = set()
     seen_paths: set[str] = set()
+    seen_deprecated_replacements: list[tuple[str, str]] = []
 
     for idx, indicator in enumerate(indicators):
         path = f"registry.indicators[{idx}]"
@@ -103,6 +104,13 @@ def validate_registry_invariants(registry: dict[str, Any]) -> None:
         returns = indicator["returns"]
         return_type = returns["return_type"]
         fallible = returns["fallible"]
+        source = indicator["source"]
+        source_file = ROOT / source["file"]
+        source_line = source["line"]
+        docs_url = indicator["docs_url"]
+        fn_name = function_path.split("::")[-1]
+        deprecation = indicator.get("deprecation")
+        is_deprecated = indicator["is_deprecated"]
 
         if indicator_id in seen_ids:
             raise ValidationError(f"{path}.id must be unique; duplicate '{indicator_id}'")
@@ -113,6 +121,24 @@ def validate_registry_invariants(registry: dict[str, Any]) -> None:
                 f"{path}.function_path must be unique; duplicate '{function_path}'"
             )
         seen_paths.add(function_path)
+
+        if not source_file.exists():
+            raise ValidationError(f"{path}.source.file does not exist: {source['file']}")
+        source_lines = source_file.read_text().splitlines()
+        if source_line > len(source_lines):
+            raise ValidationError(
+                f"{path}.source.line {source_line} exceeds file length {len(source_lines)}"
+            )
+        source_text = source_lines[source_line - 1]
+        if f"pub fn {fn_name}(" not in source_text:
+            raise ValidationError(
+                f"{path}.source does not point to 'pub fn {fn_name}(' (found: {source_text.strip()})"
+            )
+
+        if f"fn.{fn_name}.html" not in docs_url:
+            raise ValidationError(
+                f"{path}.docs_url should include docs page for function '{fn_name}'"
+            )
 
         id_parts = indicator_id.split(".")
         if mode == "module":
@@ -149,6 +175,23 @@ def validate_registry_invariants(registry: dict[str, Any]) -> None:
         elif "Result<" in return_type:
             raise ValidationError(
                 f"{path}.returns.return_type must not use Result when fallible is false"
+            )
+
+        if is_deprecated and deprecation is None:
+            raise ValidationError(f"{path}.deprecation is required when is_deprecated is true")
+        if not is_deprecated and deprecation is not None:
+            raise ValidationError(
+                f"{path}.deprecation must be omitted when is_deprecated is false"
+            )
+        if deprecation and "replacement_function_path" in deprecation:
+            seen_deprecated_replacements.append(
+                (path, deprecation["replacement_function_path"])
+            )
+
+    for path, replacement_function_path in seen_deprecated_replacements:
+        if replacement_function_path not in seen_paths:
+            raise ValidationError(
+                f"{path}.deprecation.replacement_function_path must reference a known function_path"
             )
 
 

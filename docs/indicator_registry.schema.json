@@ -19,6 +19,8 @@
           "id",
           "module",
           "function_path",
+          "source",
+          "docs_url",
           "mode",
           "input_series",
           "parameters",
@@ -32,6 +34,19 @@
           "function_path": {
             "type": "string",
             "pattern": "^centaur_technical_indicators::"
+          },
+          "source": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["file", "line"],
+            "properties": {
+              "file": { "type": "string", "pattern": "^src/.+\\.rs$" },
+              "line": { "type": "integer", "minimum": 1 }
+            }
+          },
+          "docs_url": {
+            "type": "string",
+            "pattern": "^https://docs\\.rs/centaur_technical_indicators/"
           },
           "mode": {
             "type": "string",
@@ -49,7 +64,11 @@
               "required": ["name", "param_type"],
               "properties": {
                 "name": { "type": "string", "minLength": 1 },
-                "param_type": { "type": "string", "minLength": 1 }
+                "param_type": { "type": "string", "minLength": 1 },
+                "constraints": {
+                  "type": "array",
+                  "items": { "type": "string", "minLength": 1 }
+                }
               }
             }
           },
@@ -76,6 +95,22 @@
                   { "type": "string", "minLength": 1 },
                   { "type": "integer", "minimum": 0 }
                 ]
+              },
+              "details": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "deprecation": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["note"],
+            "properties": {
+              "note": { "type": "string", "minLength": 1 },
+              "replacement_function_path": {
+                "type": "string",
+                "pattern": "^centaur_technical_indicators::"
               }
             }
           },
