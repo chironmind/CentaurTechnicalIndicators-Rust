@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added machine-readable indicator discovery files: `docs/indicator_registry.json` (canonical registry) and `docs/indicator_registry.schema.json` (JSON schema).
 - Added repository-level `AGENTS.md` guidance for coding agents, including AI contribution expectations, required quality gates, and PR reporting expectations.
 - Added `docs/REPO_MAP.md` with a quick repository map, extension points, and "if changing X, also check Y" guidance.
+- Added `docs/AI_ONBOARDING.md` as a canonical start-here onboarding flow for coding agents.
 - Added machine-readable repository policy file `ai-policy.yaml` for required checks, change obligations, and PR section requirements.
 - Added default pull request template at `.github/pull_request_template.md` with required sections (`Summary`, `Scope`, `Compatibility`, `Validation`, `Benchmarks`, `Changelog`).
 - Added CI policy script `.github/scripts/ai_policy_check.sh` to validate PR policy expectations.
