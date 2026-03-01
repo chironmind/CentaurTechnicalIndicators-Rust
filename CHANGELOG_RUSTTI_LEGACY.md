@@ -24,21 +24,21 @@ These releases predate the Centaur rebrand and should be interpreted as RustTI-o
 
 ### Changed
 - Minor document updates
-- `break_down_trends` made more reliable and easier to use 
+- `break_down_trends` made more reliable and easier to use
   - Added a config struct to hold parameters
   - Fixed internal logic to be more robust
 
 ## [2.1.4] - 2025-08-07
-### Changes
+### Changed
 - Minor document updates
 
-### Fixes
+### Fixed
 - Fixed Welles' Volatility System, in some edge cases it would try to make an immediate pivot after establishing a SaR, which caused a crash. It has been updated to try for an extra period to confirm trend direction
 
 ---
 
 ## [2.1.3] - 2025-08-04
-### Changes
+### Changed
 - Minor document updates
 - Made directional movement system error message clearer
 
