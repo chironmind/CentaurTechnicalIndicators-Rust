@@ -24,7 +24,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -51,7 +51,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -90,7 +90,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -117,7 +117,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -140,7 +140,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -163,7 +163,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -190,7 +190,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -217,7 +217,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -244,7 +244,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -271,7 +271,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -302,7 +302,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<Vec<(f64, usize)>>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<Vec<(f64, usize)>>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -329,7 +329,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -360,7 +360,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -387,7 +387,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -414,7 +414,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -437,7 +437,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -472,7 +472,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -495,7 +495,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -520,7 +520,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -543,7 +543,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -566,7 +566,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -589,7 +589,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -612,7 +612,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -635,7 +635,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -658,7 +658,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -685,7 +685,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<(f64, usize)>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<(f64, usize)>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -708,7 +708,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -735,7 +735,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -758,7 +758,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -790,7 +790,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<(f64, f64, f64)>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<(f64, f64, f64)>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -835,7 +835,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<(f64, f64, f64, f64, f64)>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<(f64, f64, f64, f64, f64)>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -884,7 +884,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<(f64, f64, f64)>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<(f64, f64, f64)>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -923,7 +923,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<(f64, f64, f64)>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<(f64, f64, f64)>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -958,7 +958,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<(f64, f64, f64)>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<(f64, f64, f64)>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -997,7 +997,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<(f64, f64, f64)>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<(f64, f64, f64)>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -1032,7 +1032,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<(f64, f64, f64)>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<(f64, f64, f64)>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -1077,7 +1077,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -1105,7 +1105,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<(f64, f64, f64)>"
+        "return_type": "centaur_technical_indicators::Result<(f64, f64, f64)>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -1150,7 +1150,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<(f64, f64, f64, f64, f64)>"
+        "return_type": "centaur_technical_indicators::Result<(f64, f64, f64, f64, f64)>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -1195,7 +1195,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<(f64, f64, f64)>"
+        "return_type": "centaur_technical_indicators::Result<(f64, f64, f64)>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -1230,7 +1230,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<(f64, f64, f64)>"
+        "return_type": "centaur_technical_indicators::Result<(f64, f64, f64)>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -1261,7 +1261,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<(f64, f64, f64)>"
+        "return_type": "centaur_technical_indicators::Result<(f64, f64, f64)>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -1296,7 +1296,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<(f64, f64, f64)>"
+        "return_type": "centaur_technical_indicators::Result<(f64, f64, f64)>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -1327,7 +1327,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<(f64, f64, f64)>"
+        "return_type": "centaur_technical_indicators::Result<(f64, f64, f64)>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -1368,7 +1368,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -1395,7 +1395,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<(usize, usize, f64, f64)>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<(usize, usize, f64, f64)>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -1418,7 +1418,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<(f64, f64)>"
+        "return_type": "centaur_technical_indicators::Result<(f64, f64)>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -1445,7 +1445,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<(f64, f64)>"
+        "return_type": "centaur_technical_indicators::Result<(f64, f64)>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -1476,7 +1476,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<(f64, usize)>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<(f64, usize)>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -1503,7 +1503,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<(f64, f64)>"
+        "return_type": "centaur_technical_indicators::Result<(f64, f64)>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -1534,7 +1534,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<(f64, usize)>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<(f64, usize)>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -1574,7 +1574,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -1610,7 +1610,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -1668,7 +1668,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<(f64, f64)>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<(f64, f64)>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -1695,7 +1695,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -1734,7 +1734,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -1773,7 +1773,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -1812,7 +1812,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<(f64, f64)>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<(f64, f64)>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -1851,7 +1851,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<(f64, f64, f64)>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<(f64, f64, f64)>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -1883,7 +1883,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -1915,7 +1915,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -1950,7 +1950,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -1973,7 +1973,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -2004,7 +2004,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -2035,7 +2035,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -2066,7 +2066,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -2097,7 +2097,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -2124,7 +2124,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -2161,7 +2161,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -2215,7 +2215,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<(f64, f64)>"
+        "return_type": "centaur_technical_indicators::Result<(f64, f64)>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -2238,7 +2238,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -2273,7 +2273,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -2308,7 +2308,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -2343,7 +2343,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<(f64, f64)>"
+        "return_type": "centaur_technical_indicators::Result<(f64, f64)>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -2378,7 +2378,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<(f64, f64, f64)>"
+        "return_type": "centaur_technical_indicators::Result<(f64, f64, f64)>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -2406,7 +2406,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -2439,7 +2439,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -2470,7 +2470,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -2495,7 +2495,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -2522,7 +2522,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -2549,7 +2549,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -2576,7 +2576,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -2603,7 +2603,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -2626,7 +2626,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -2658,7 +2658,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -2689,7 +2689,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -2720,7 +2720,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -2749,7 +2749,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -2776,7 +2776,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -2817,7 +2817,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -2850,7 +2850,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -2886,7 +2886,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<(f64, f64)>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<(f64, f64)>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -2913,7 +2913,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<(f64, f64)>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<(f64, f64)>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -2946,7 +2946,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -2983,7 +2983,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -3112,7 +3112,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -3144,7 +3144,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -3176,7 +3176,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -3222,7 +3222,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -3301,7 +3301,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -3357,7 +3357,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -3389,7 +3389,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<(f64, f64, f64)>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<(f64, f64, f64)>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -3417,7 +3417,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -3444,7 +3444,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -3485,7 +3485,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<(f64, f64, f64, f64)>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<(f64, f64, f64, f64)>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -3533,7 +3533,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -3572,7 +3572,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -3604,7 +3604,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -3627,7 +3627,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -3655,7 +3655,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<(f64, f64, f64)>"
+        "return_type": "centaur_technical_indicators::Result<(f64, f64, f64)>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -3703,7 +3703,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -3804,7 +3804,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -3864,7 +3864,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -3909,7 +3909,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<Vec<f64>>"
+        "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
         "kind": "function_defined"
@@ -3932,7 +3932,7 @@
       ],
       "returns": {
         "fallible": true,
-        "return_type": "crate::Result<f64>"
+        "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
         "kind": "function_defined"
