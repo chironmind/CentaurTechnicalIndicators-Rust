@@ -321,7 +321,7 @@ cargo doc --no-deps
 **Latest (v1.2.0):**
 - Added reference URLs to doc strings
 - Sorted `## Included Indicators` lists alphabetically in all module docstrings
-- Added migration guidance for deprecated wrapper APIs in momentum and volatility modules
+- Removed deprecated wrapper references from top-level module docs and the reference example
 
 [Human friendly changelog →](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust/blob/main/CHANGELOG.md)
 

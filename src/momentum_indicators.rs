@@ -46,52 +46,6 @@
 //! - [`stochastic_oscillator`](single::stochastic_oscillator): Stochastic Oscillator
 //! - [`williams_percent_r`](single::williams_percent_r): Williams %R
 //!
-//! ### Deprecated APIs
-//! - [`signal_line`](bulk::signal_line) and [`signal_line`](single::signal_line)
-//! - [`slow_stochastic`](bulk::slow_stochastic) and [`slow_stochastic`](single::slow_stochastic)
-//! - [`slowest_stochastic`](bulk::slowest_stochastic) and [`slowest_stochastic`](single::slowest_stochastic)
-//!
-//! ### Migration Snippets
-//! Prefer composing these with moving-average and core indicator APIs:
-//!
-//! ```rust
-//! let macd_line = vec![0.8, 0.4, 0.2, -0.1, -0.2];
-//! let period: usize = 3;
-//!
-//! let signal_line = centaur_technical_indicators::moving_average::bulk::moving_average(
-//!     &macd_line,
-//!     centaur_technical_indicators::MovingAverageType::Exponential,
-//!     period,
-//! ).unwrap();
-//!
-//! let expected = [0.3428571428571429, 0.05714285714285715, -0.1142857142857143];
-//! for (actual, expected) in signal_line.iter().zip(expected.iter()) {
-//!     assert!((actual - expected).abs() < 1e-12);
-//! }
-//! ```
-//!
-//! ```rust
-//! let stochastics = vec![0.0, 5.882352941175241, 38.23529411764534, 47.36842105263394, 60.0];
-//! let period: usize = 3;
-//!
-//! let slow = centaur_technical_indicators::moving_average::bulk::moving_average(
-//!     &stochastics,
-//!     centaur_technical_indicators::MovingAverageType::Simple,
-//!     period,
-//! ).unwrap();
-//! let slowest = centaur_technical_indicators::moving_average::bulk::moving_average(
-//!     &slow,
-//!     centaur_technical_indicators::MovingAverageType::Simple,
-//!     period,
-//! ).unwrap();
-//!
-//! let expected_slow = [14.705882352940194, 30.495356037151508, 48.534571723426425];
-//! for (actual, expected) in slow.iter().zip(expected_slow.iter()) {
-//!     assert!((actual - expected).abs() < 1e-12);
-//! }
-//! assert!((slowest[0] - 31.245270037839376).abs() < 1e-12);
-//! ```
-//!
 //! ## API Details
 //! - All indicators accept slices of `f64` prices and relevant parameters (periods, multipliers, etc.).
 //! - Returns are vectors (for `bulk`) or scalars (for `single`).
@@ -4982,67 +4936,5 @@ mod tests {
             0.015,
         );
         assert_eq!(50.0, cci.unwrap());
-    }
-
-    #[test]
-    fn migration_signal_line_composition_matches_wrapper() {
-        let macd = vec![1.0, 0.5, 0.3, 0.1, -0.2];
-        let period: usize = 3;
-
-        let deprecated = bulk::signal_line(
-            &macd,
-            crate::ConstantModelType::ExponentialMovingAverage,
-            period,
-        )
-        .unwrap();
-        let migrated = crate::moving_average::bulk::moving_average(
-            &macd,
-            crate::MovingAverageType::Exponential,
-            period,
-        )
-        .unwrap();
-
-        assert_eq!(deprecated, migrated);
-    }
-
-    #[test]
-    fn migration_stochastic_composition_matches_wrappers() {
-        let stochastics = vec![
-            0.0,
-            5.882352941175241,
-            38.23529411764534,
-            47.36842105263394,
-            60.0,
-        ];
-        let period: usize = 3;
-
-        let deprecated_slow = bulk::slow_stochastic(
-            &stochastics,
-            crate::ConstantModelType::SimpleMovingAverage,
-            period,
-        )
-        .unwrap();
-        let migrated_slow = crate::moving_average::bulk::moving_average(
-            &stochastics,
-            crate::MovingAverageType::Simple,
-            period,
-        )
-        .unwrap();
-
-        let deprecated_slowest = bulk::slowest_stochastic(
-            &deprecated_slow,
-            crate::ConstantModelType::SimpleMovingAverage,
-            period,
-        )
-        .unwrap();
-        let migrated_slowest = crate::moving_average::bulk::moving_average(
-            &migrated_slow,
-            crate::MovingAverageType::Simple,
-            period,
-        )
-        .unwrap();
-
-        assert_eq!(deprecated_slow, migrated_slow);
-        assert_eq!(deprecated_slowest, migrated_slowest);
     }
 }
