@@ -100,6 +100,9 @@ def validate_registry_invariants(registry: dict[str, Any]) -> None:
         function_path = indicator["function_path"]
         mode = indicator["mode"]
         module = indicator["module"]
+        returns = indicator["returns"]
+        return_type = returns["return_type"]
+        fallible = returns["fallible"]
 
         if indicator_id in seen_ids:
             raise ValidationError(f"{path}.id must be unique; duplicate '{indicator_id}'")
@@ -136,6 +139,17 @@ def validate_registry_invariants(registry: dict[str, Any]) -> None:
                 raise ValidationError(
                     f"{path}.function_path must include '{expected_fragment}' for mode '{mode}'"
                 )
+
+        if fallible:
+            expected_prefix = "centaur_technical_indicators::Result<"
+            if not return_type.startswith(expected_prefix):
+                raise ValidationError(
+                    f"{path}.returns.return_type must start with '{expected_prefix}' when fallible is true"
+                )
+        elif "Result<" in return_type:
+            raise ValidationError(
+                f"{path}.returns.return_type must not use Result when fallible is false"
+            )
 
 
 def main() -> None:
