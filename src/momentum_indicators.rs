@@ -94,12 +94,12 @@ pub mod single {
     /// ```rust
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
     ///
-    /// let defaut_rsi =
+    /// let default_rsi =
     ///     centaur_technical_indicators::momentum_indicators::single::relative_strength_index(
     ///         &prices,
     ///         centaur_technical_indicators::ConstantModelType::SmoothedMovingAverage
     ///     ).unwrap();
-    /// assert_eq!(39.99999999999999, defaut_rsi);
+    /// assert_eq!(39.99999999999999, default_rsi);
     ///
     /// let ema_rsi =
     ///     centaur_technical_indicators::momentum_indicators::single::relative_strength_index(
@@ -1421,13 +1421,13 @@ pub mod bulk {
     /// ```
     /// let prices = vec![100.0, 102.0, 103.0, 101.0, 99.0];
     /// let period: usize = 3;
-    /// let defaut_rsi =
+    /// let default_rsi =
     ///     centaur_technical_indicators::momentum_indicators::bulk::relative_strength_index(
     ///         &prices,
     ///         centaur_technical_indicators::ConstantModelType::SmoothedMovingAverage,
     ///         period
     ///     ).unwrap();
-    /// assert_eq!(vec![100.0, 33.33333333333333, 0.0], defaut_rsi);
+    /// assert_eq!(vec![100.0, 33.33333333333333, 0.0], default_rsi);
     ///
     /// let ema_rsi =
     ///     centaur_technical_indicators::momentum_indicators::bulk::relative_strength_index(

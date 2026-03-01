@@ -25,6 +25,10 @@ jobs:
       run: bash "${{ github.workspace }}/.github/scripts/ai_policy_check.sh"
     - name: Indicator registry schema validation
       run: python3 "${{ github.workspace }}/.github/scripts/validate_indicator_registry.py"
+    - name: Indicator registry coverage check
+      run: python3 "${{ github.workspace }}/.github/scripts/check_indicator_registry_coverage.py"
+    - name: Docs consistency check
+      run: python3 "${{ github.workspace }}/.github/scripts/docs_consistency_check.py"
 
   fmt:
     permissions:
