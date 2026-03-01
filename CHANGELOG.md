@@ -15,6 +15,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ---
 
 ## [Unreleased]
+
+## [1.2.1] - 2026-03-01
 ### Added
 - Added machine-readable indicator discovery files: `docs/indicator_registry.json` (canonical registry) and `docs/indicator_registry.schema.json` (JSON schema).
 - Added repository-level `AGENTS.md` guidance for coding agents, including AI contribution expectations, required quality gates, and PR reporting expectations.
@@ -25,12 +27,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added CI policy script `.github/scripts/ai_policy_check.sh` to validate PR policy expectations.
 - Added `.github/scripts/check_indicator_registry_coverage.py` to enforce parity between the Rust public indicator function surface and `docs/indicator_registry.json`.
 - Added `.github/scripts/docs_consistency_check.py` to catch common docs naming drifts/typos and unknown README benchmark function names.
-- Machine-readable indicator discovery files: `docs/indicator_registry.json` (canonical registry) and `docs/indicator_registry.schema.json` (JSON schema).
-- Repository-level `AGENTS.md` guidance for coding agents, including AI contribution expectations, required quality gates, and PR reporting expectations.
-- `docs/REPO_MAP.md` with a quick repository map, extension points, and "if changing X, also check Y" guidance.
-- Machine-readable repository policy file `ai-policy.yaml` for required checks, change obligations, and PR section requirements.
-- Default pull request template at `.github/pull_request_template.md` with required sections (`Summary`, `Scope`, `Compatibility`, `Validation`, `Benchmarks`, `Changelog`).
-- CI policy script `.github/scripts/ai_policy_check.sh` to validate PR policy expectations.
 
 ### Changed
 - Moved pre-rebrand RustTI release history into `CHANGELOG_RUSTTI_LEGACY.md` and added a historical note with explicit legacy release-tag links.
@@ -114,6 +110,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Historical note
 Pre-rebrand RustTI release history is documented in [`CHANGELOG_RUSTTI_LEGACY.md`](CHANGELOG_RUSTTI_LEGACY.md). Legacy entries use explicit `rustti-v*` tag links to avoid ambiguity with Centaur releases.
 
-[Unreleased]: https://github.com/chironmind/CentaurTechnicalIndicators-Rust/compare/centaur-v1.2.0...HEAD
+[Unreleased]: https://github.com/chironmind/CentaurTechnicalIndicators-Rust/compare/centaur-v1.2.1...HEAD
+[1.2.1]: https://github.com/chironmind/CentaurTechnicalIndicators-Rust/compare/centaur-v1.2.0...centaur-v1.2.1
 [1.2.0]: https://github.com/chironmind/CentaurTechnicalIndicators-Rust/releases/tag/centaur-v1.2.0
 [1.0.0]: https://github.com/chironmind/CentaurTechnicalIndicators-Rust/releases/tag/centaur-v1.0.0
