@@ -84,7 +84,7 @@ jobs:
     - name: Cargo doc (no deps)
       run: cargo doc --no-deps
 
-  build:
+  build-matrix:
     permissions:
       contents: read
     needs:
@@ -109,3 +109,12 @@ jobs:
       run: cargo build --verbose
     - name: Test
       run: cargo test --verbose
+
+  build:
+    permissions:
+      contents: read
+    needs: build-matrix
+    runs-on: ubuntu-latest
+    steps:
+    - name: All builds passed
+      run: echo "All matrix builds passed"
