@@ -15,7 +15,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         },
         {
           "name": "config",
@@ -27,10 +31,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/basic_indicators.rs",
+        "line": 1002
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/basic_indicators/bulk/fn.absolute_deviation.html"
     },
     {
       "id": "basic_indicators.bulk.cauchy_iqr_scale",
@@ -46,7 +56,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -54,10 +68,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/basic_indicators.rs",
+        "line": 1198
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/basic_indicators/bulk/fn.cauchy_iqr_scale.html"
     },
     {
       "id": "basic_indicators.bulk.empirical_quantile_range_from_distribution",
@@ -73,11 +93,18 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         },
         {
           "name": "precision",
-          "param_type": "f64"
+          "param_type": "f64",
+          "constraints": [
+            "must be greater than 0"
+          ]
         },
         {
           "name": "low",
@@ -93,10 +120,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/basic_indicators.rs",
+        "line": 1233
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/basic_indicators/bulk/fn.empirical_quantile_range_from_distribution.html"
     },
     {
       "id": "basic_indicators.bulk.laplace_std_equivalent",
@@ -112,7 +145,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -120,10 +157,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/basic_indicators.rs",
+        "line": 1163
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/basic_indicators/bulk/fn.laplace_std_equivalent.html"
     },
     {
       "id": "basic_indicators.bulk.log",
@@ -143,10 +186,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/basic_indicators.rs",
+        "line": 837
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/basic_indicators/bulk/fn.log.html"
     },
     {
       "id": "basic_indicators.bulk.log_difference",
@@ -166,10 +215,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/basic_indicators.rs",
+        "line": 868
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/basic_indicators/bulk/fn.log_difference.html"
     },
     {
       "id": "basic_indicators.bulk.log_standard_deviation",
@@ -185,7 +240,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -193,10 +252,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/basic_indicators.rs",
+        "line": 1087
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/basic_indicators/bulk/fn.log_standard_deviation.html"
     },
     {
       "id": "basic_indicators.bulk.mean",
@@ -212,7 +277,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -220,10 +289,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/basic_indicators.rs",
+        "line": 734
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/basic_indicators/bulk/fn.mean.html"
     },
     {
       "id": "basic_indicators.bulk.median",
@@ -239,7 +314,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -247,10 +326,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/basic_indicators.rs",
+        "line": 768
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/basic_indicators/bulk/fn.median.html"
     },
     {
       "id": "basic_indicators.bulk.mode",
@@ -266,7 +351,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -274,10 +363,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/basic_indicators.rs",
+        "line": 803
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/basic_indicators/bulk/fn.mode.html"
     },
     {
       "id": "basic_indicators.bulk.price_distribution",
@@ -293,11 +388,18 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         },
         {
           "name": "precision",
-          "param_type": "f64"
+          "param_type": "f64",
+          "constraints": [
+            "must be greater than 0"
+          ]
         }
       ],
       "returns": {
@@ -305,10 +407,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<Vec<(f64, usize)>>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/basic_indicators.rs",
+        "line": 1048
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/basic_indicators/bulk/fn.price_distribution.html"
     },
     {
       "id": "basic_indicators.bulk.standard_deviation",
@@ -324,7 +432,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -332,10 +444,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/basic_indicators.rs",
+        "line": 938
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/basic_indicators/bulk/fn.standard_deviation.html"
     },
     {
       "id": "basic_indicators.bulk.student_t_adjusted_std",
@@ -351,7 +469,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         },
         {
           "name": "df",
@@ -363,10 +485,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/basic_indicators.rs",
+        "line": 1124
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/basic_indicators/bulk/fn.student_t_adjusted_std.html"
     },
     {
       "id": "basic_indicators.bulk.variance",
@@ -382,7 +510,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -390,10 +522,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/basic_indicators.rs",
+        "line": 902
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/basic_indicators/bulk/fn.variance.html"
     },
     {
       "id": "basic_indicators.single.absolute_deviation",
@@ -417,10 +555,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/basic_indicators.rs",
+        "line": 314
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/basic_indicators/single/fn.absolute_deviation.html"
     },
     {
       "id": "basic_indicators.single.cauchy_iqr_scale",
@@ -440,10 +584,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/basic_indicators.rs",
+        "line": 470
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/basic_indicators/single/fn.cauchy_iqr_scale.html"
     },
     {
       "id": "basic_indicators.single.empirical_quantile_range_from_distribution",
@@ -459,7 +609,10 @@
         },
         {
           "name": "precision",
-          "param_type": "f64"
+          "param_type": "f64",
+          "constraints": [
+            "must be greater than 0"
+          ]
         },
         {
           "name": "low",
@@ -475,10 +628,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/basic_indicators.rs",
+        "line": 682
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/basic_indicators/single/fn.empirical_quantile_range_from_distribution.html"
     },
     {
       "id": "basic_indicators.single.laplace_std_equivalent",
@@ -498,10 +657,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/basic_indicators.rs",
+        "line": 433
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/basic_indicators/single/fn.laplace_std_equivalent.html"
     },
     {
       "id": "basic_indicators.single.log_difference",
@@ -523,10 +688,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/basic_indicators.rs",
+        "line": 201
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/basic_indicators/single/fn.log_difference.html"
     },
     {
       "id": "basic_indicators.single.log_standard_deviation",
@@ -546,10 +717,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/basic_indicators.rs",
+        "line": 359
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/basic_indicators/single/fn.log_standard_deviation.html"
     },
     {
       "id": "basic_indicators.single.max",
@@ -569,10 +746,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/basic_indicators.rs",
+        "line": 522
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/basic_indicators/single/fn.max.html"
     },
     {
       "id": "basic_indicators.single.mean",
@@ -592,10 +775,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/basic_indicators.rs",
+        "line": 79
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/basic_indicators/single/fn.mean.html"
     },
     {
       "id": "basic_indicators.single.median",
@@ -615,10 +804,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/basic_indicators.rs",
+        "line": 114
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/basic_indicators/single/fn.median.html"
     },
     {
       "id": "basic_indicators.single.min",
@@ -638,10 +833,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/basic_indicators.rs",
+        "line": 553
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/basic_indicators/single/fn.min.html"
     },
     {
       "id": "basic_indicators.single.mode",
@@ -661,10 +862,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/basic_indicators.rs",
+        "line": 157
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/basic_indicators/single/fn.mode.html"
     },
     {
       "id": "basic_indicators.single.price_distribution",
@@ -680,7 +887,10 @@
         },
         {
           "name": "precision",
-          "param_type": "f64"
+          "param_type": "f64",
+          "constraints": [
+            "must be greater than 0"
+          ]
         }
       ],
       "returns": {
@@ -688,10 +898,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<(f64, usize)>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/basic_indicators.rs",
+        "line": 588
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/basic_indicators/single/fn.price_distribution.html"
     },
     {
       "id": "basic_indicators.single.standard_deviation",
@@ -711,10 +927,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/basic_indicators.rs",
+        "line": 267
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/basic_indicators/single/fn.standard_deviation.html"
     },
     {
       "id": "basic_indicators.single.student_t_adjusted_std",
@@ -738,10 +960,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/basic_indicators.rs",
+        "line": 402
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/basic_indicators/single/fn.student_t_adjusted_std.html"
     },
     {
       "id": "basic_indicators.single.variance",
@@ -761,10 +989,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/basic_indicators.rs",
+        "line": 236
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/basic_indicators/single/fn.variance.html"
     },
     {
       "id": "candle_indicators.bulk.donchian_channels",
@@ -785,7 +1019,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -793,10 +1031,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<(f64, f64, f64)>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/candle_indicators.rs",
+        "line": 1159
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/candle_indicators/bulk/fn.donchian_channels.html"
     },
     {
       "id": "candle_indicators.bulk.ichimoku_cloud",
@@ -838,10 +1082,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<(f64, f64, f64, f64, f64)>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/candle_indicators.rs",
+        "line": 1089
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/candle_indicators/bulk/fn.ichimoku_cloud.html"
     },
     {
       "id": "candle_indicators.bulk.keltner_channel",
@@ -879,7 +1129,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -887,10 +1141,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<(f64, f64, f64)>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/candle_indicators.rs",
+        "line": 1228
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/candle_indicators/bulk/fn.keltner_channel.html"
     },
     {
       "id": "candle_indicators.bulk.mcginley_dynamic_bands",
@@ -918,7 +1178,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -926,10 +1190,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<(f64, f64, f64)>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/candle_indicators.rs",
+        "line": 998
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/candle_indicators/bulk/fn.mcginley_dynamic_bands.html"
     },
     {
       "id": "candle_indicators.bulk.mcginley_dynamic_envelopes",
@@ -953,7 +1223,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -961,10 +1235,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<(f64, f64, f64)>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/candle_indicators.rs",
+        "line": 847
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/candle_indicators/bulk/fn.mcginley_dynamic_envelopes.html"
     },
     {
       "id": "candle_indicators.bulk.moving_constant_bands",
@@ -992,7 +1272,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -1000,10 +1284,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<(f64, f64, f64)>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/candle_indicators.rs",
+        "line": 929
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/candle_indicators/bulk/fn.moving_constant_bands.html"
     },
     {
       "id": "candle_indicators.bulk.moving_constant_envelopes",
@@ -1027,7 +1317,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -1035,10 +1329,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<(f64, f64, f64)>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/candle_indicators.rs",
+        "line": 783
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/candle_indicators/bulk/fn.moving_constant_envelopes.html"
     },
     {
       "id": "candle_indicators.bulk.supertrend",
@@ -1072,7 +1372,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -1080,10 +1384,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/candle_indicators.rs",
+        "line": 1302
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/candle_indicators/bulk/fn.supertrend.html"
     },
     {
       "id": "candle_indicators.single.donchian_channels",
@@ -1108,10 +1418,16 @@
         "return_type": "centaur_technical_indicators::Result<(f64, f64, f64)>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/candle_indicators.rs",
+        "line": 562
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/candle_indicators/single/fn.donchian_channels.html"
     },
     {
       "id": "candle_indicators.single.ichimoku_cloud",
@@ -1153,10 +1469,16 @@
         "return_type": "centaur_technical_indicators::Result<(f64, f64, f64, f64, f64)>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/candle_indicators.rs",
+        "line": 495
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/candle_indicators/single/fn.ichimoku_cloud.html"
     },
     {
       "id": "candle_indicators.single.keltner_channel",
@@ -1198,10 +1520,16 @@
         "return_type": "centaur_technical_indicators::Result<(f64, f64, f64)>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/candle_indicators.rs",
+        "line": 614
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/candle_indicators/single/fn.keltner_channel.html"
     },
     {
       "id": "candle_indicators.single.mcginley_dynamic_bands",
@@ -1233,10 +1561,16 @@
         "return_type": "centaur_technical_indicators::Result<(f64, f64, f64)>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/candle_indicators.rs",
+        "line": 377
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/candle_indicators/single/fn.mcginley_dynamic_bands.html"
     },
     {
       "id": "candle_indicators.single.mcginley_dynamic_envelopes",
@@ -1264,10 +1598,16 @@
         "return_type": "centaur_technical_indicators::Result<(f64, f64, f64)>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/candle_indicators.rs",
+        "line": 188
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/candle_indicators/single/fn.mcginley_dynamic_envelopes.html"
     },
     {
       "id": "candle_indicators.single.moving_constant_bands",
@@ -1299,10 +1639,16 @@
         "return_type": "centaur_technical_indicators::Result<(f64, f64, f64)>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/candle_indicators.rs",
+        "line": 251
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/candle_indicators/single/fn.moving_constant_bands.html"
     },
     {
       "id": "candle_indicators.single.moving_constant_envelopes",
@@ -1330,10 +1676,16 @@
         "return_type": "centaur_technical_indicators::Result<(f64, f64, f64)>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/candle_indicators.rs",
+        "line": 107
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/candle_indicators/single/fn.moving_constant_envelopes.html"
     },
     {
       "id": "candle_indicators.single.supertrend",
@@ -1371,10 +1723,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/candle_indicators.rs",
+        "line": 701
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/candle_indicators/single/fn.supertrend.html"
     },
     {
       "id": "chart_trends.break_down_trends",
@@ -1398,10 +1756,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<(usize, usize, f64, f64)>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "module",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/chart_trends.rs",
+        "line": 404
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/chart_trends/fn.break_down_trends.html"
     },
     {
       "id": "chart_trends.overall_trend",
@@ -1421,10 +1785,16 @@
         "return_type": "centaur_technical_indicators::Result<(f64, f64)>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "module",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/chart_trends.rs",
+        "line": 306
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/chart_trends/fn.overall_trend.html"
     },
     {
       "id": "chart_trends.peak_trend",
@@ -1440,7 +1810,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -1448,10 +1822,16 @@
         "return_type": "centaur_technical_indicators::Result<(f64, f64)>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "module",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/chart_trends.rs",
+        "line": 250
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/chart_trends/fn.peak_trend.html"
     },
     {
       "id": "chart_trends.peaks",
@@ -1467,7 +1847,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         },
         {
           "name": "closest_neighbor",
@@ -1479,10 +1863,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<(f64, usize)>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "module",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/chart_trends.rs",
+        "line": 80
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/chart_trends/fn.peaks.html"
     },
     {
       "id": "chart_trends.valley_trend",
@@ -1498,7 +1888,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -1506,10 +1900,16 @@
         "return_type": "centaur_technical_indicators::Result<(f64, f64)>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "module",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/chart_trends.rs",
+        "line": 279
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/chart_trends/fn.valley_trend.html"
     },
     {
       "id": "chart_trends.valleys",
@@ -1525,7 +1925,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         },
         {
           "name": "closest_neighbor",
@@ -1537,10 +1941,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<(f64, usize)>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "module",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/chart_trends.rs",
+        "line": 167
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/chart_trends/fn.valleys.html"
     },
     {
       "id": "correlation_indicators.bulk.correlate_asset_prices",
@@ -1569,7 +1979,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -1577,10 +1991,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/correlation_indicators.rs",
+        "line": 319
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/correlation_indicators/bulk/fn.correlate_asset_prices.html"
     },
     {
       "id": "correlation_indicators.single.correlate_asset_prices",
@@ -1613,10 +2033,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/correlation_indicators.rs",
+        "line": 97
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/correlation_indicators/single/fn.correlate_asset_prices.html"
     },
     {
       "id": "momentum_indicators.bulk.chaikin_oscillator",
@@ -1671,10 +2097,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<(f64, f64)>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/momentum_indicators.rs",
+        "line": 2350
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/momentum_indicators/bulk/fn.chaikin_oscillator.html"
     },
     {
       "id": "momentum_indicators.bulk.chande_momentum_oscillator",
@@ -1690,7 +2122,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -1698,10 +2134,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/momentum_indicators.rs",
+        "line": 2504
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/momentum_indicators/bulk/fn.chande_momentum_oscillator.html"
     },
     {
       "id": "momentum_indicators.bulk.commodity_channel_index",
@@ -1729,7 +2171,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -1737,10 +2183,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/momentum_indicators.rs",
+        "line": 1955
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/momentum_indicators/bulk/fn.commodity_channel_index.html"
     },
     {
       "id": "momentum_indicators.bulk.macd_line",
@@ -1776,10 +2228,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/momentum_indicators.rs",
+        "line": 2098
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/momentum_indicators/bulk/fn.macd_line.html"
     },
     {
       "id": "momentum_indicators.bulk.mcginley_dynamic_commodity_channel_index",
@@ -1807,7 +2265,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -1815,10 +2277,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<(f64, f64)>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/momentum_indicators.rs",
+        "line": 2013
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/momentum_indicators/bulk/fn.mcginley_dynamic_commodity_channel_index.html"
     },
     {
       "id": "momentum_indicators.bulk.mcginley_dynamic_macd_line",
@@ -1854,10 +2322,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<(f64, f64, f64)>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/momentum_indicators.rs",
+        "line": 2240
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/momentum_indicators/bulk/fn.mcginley_dynamic_macd_line.html"
     },
     {
       "id": "momentum_indicators.bulk.money_flow_index",
@@ -1878,7 +2352,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -1886,10 +2364,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/momentum_indicators.rs",
+        "line": 1772
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/momentum_indicators/bulk/fn.money_flow_index.html"
     },
     {
       "id": "momentum_indicators.bulk.on_balance_volume",
@@ -1918,10 +2402,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/momentum_indicators.rs",
+        "line": 1866
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/momentum_indicators/bulk/fn.on_balance_volume.html"
     },
     {
       "id": "momentum_indicators.bulk.percentage_price_oscillator",
@@ -1953,10 +2443,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/momentum_indicators.rs",
+        "line": 2447
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/momentum_indicators/bulk/fn.percentage_price_oscillator.html"
     },
     {
       "id": "momentum_indicators.bulk.rate_of_change",
@@ -1976,10 +2472,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/momentum_indicators.rs",
+        "line": 1820
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/momentum_indicators/bulk/fn.rate_of_change.html"
     },
     {
       "id": "momentum_indicators.bulk.relative_strength_index",
@@ -1999,7 +2501,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -2007,10 +2513,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/momentum_indicators.rs",
+        "line": 1469
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/momentum_indicators/bulk/fn.relative_strength_index.html"
     },
     {
       "id": "momentum_indicators.bulk.signal_line",
@@ -2030,7 +2542,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -2038,10 +2554,20 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": true
+      "is_deprecated": true,
+      "source": {
+        "file": "src/momentum_indicators.rs",
+        "line": 2180
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/momentum_indicators/bulk/fn.signal_line.html",
+      "deprecation": {
+        "note": "Users can call moving_average directly on MACD values to compute a signal line.",
+        "replacement_function_path": "centaur_technical_indicators::moving_average::bulk::moving_average"
+      }
     },
     {
       "id": "momentum_indicators.bulk.slow_stochastic",
@@ -2061,7 +2587,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -2069,10 +2599,20 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": true
+      "is_deprecated": true,
+      "source": {
+        "file": "src/momentum_indicators.rs",
+        "line": 1587
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/momentum_indicators/bulk/fn.slow_stochastic.html",
+      "deprecation": {
+        "note": "Users can call moving_average directly on stochastic oscillator outputs.",
+        "replacement_function_path": "centaur_technical_indicators::moving_average::bulk::moving_average"
+      }
     },
     {
       "id": "momentum_indicators.bulk.slowest_stochastic",
@@ -2092,7 +2632,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -2100,10 +2644,20 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": true
+      "is_deprecated": true,
+      "source": {
+        "file": "src/momentum_indicators.rs",
+        "line": 1657
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/momentum_indicators/bulk/fn.slowest_stochastic.html",
+      "deprecation": {
+        "note": "Users can call moving_average directly on stochastic oscillator outputs.",
+        "replacement_function_path": "centaur_technical_indicators::moving_average::bulk::moving_average"
+      }
     },
     {
       "id": "momentum_indicators.bulk.stochastic_oscillator",
@@ -2119,7 +2673,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -2127,10 +2685,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/momentum_indicators.rs",
+        "line": 1517
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/momentum_indicators/bulk/fn.stochastic_oscillator.html"
     },
     {
       "id": "momentum_indicators.bulk.williams_percent_r",
@@ -2156,7 +2720,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -2164,10 +2732,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/momentum_indicators.rs",
+        "line": 1712
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/momentum_indicators/bulk/fn.williams_percent_r.html"
     },
     {
       "id": "momentum_indicators.single.chaikin_oscillator",
@@ -2218,10 +2792,16 @@
         "return_type": "centaur_technical_indicators::Result<(f64, f64)>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/momentum_indicators.rs",
+        "line": 1150
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/momentum_indicators/single/fn.chaikin_oscillator.html"
     },
     {
       "id": "momentum_indicators.single.chande_momentum_oscillator",
@@ -2241,10 +2821,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/momentum_indicators.rs",
+        "line": 1354
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/momentum_indicators/single/fn.chande_momentum_oscillator.html"
     },
     {
       "id": "momentum_indicators.single.commodity_channel_index",
@@ -2276,10 +2862,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/momentum_indicators.rs",
+        "line": 647
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/momentum_indicators/single/fn.commodity_channel_index.html"
     },
     {
       "id": "momentum_indicators.single.macd_line",
@@ -2311,10 +2903,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/momentum_indicators.rs",
+        "line": 880
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/momentum_indicators/single/fn.macd_line.html"
     },
     {
       "id": "momentum_indicators.single.mcginley_dynamic_commodity_channel_index",
@@ -2346,10 +2944,16 @@
         "return_type": "centaur_technical_indicators::Result<(f64, f64)>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/momentum_indicators.rs",
+        "line": 772
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/momentum_indicators/single/fn.mcginley_dynamic_commodity_channel_index.html"
     },
     {
       "id": "momentum_indicators.single.mcginley_dynamic_macd_line",
@@ -2381,10 +2985,16 @@
         "return_type": "centaur_technical_indicators::Result<(f64, f64, f64)>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/momentum_indicators.rs",
+        "line": 1063
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/momentum_indicators/single/fn.mcginley_dynamic_macd_line.html"
     },
     {
       "id": "momentum_indicators.single.money_flow_index",
@@ -2409,10 +3019,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/momentum_indicators.rs",
+        "line": 465
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/momentum_indicators/single/fn.money_flow_index.html"
     },
     {
       "id": "momentum_indicators.single.on_balance_volume",
@@ -2442,10 +3058,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/momentum_indicators.rs",
+        "line": 580
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/momentum_indicators/single/fn.on_balance_volume.html"
     },
     {
       "id": "momentum_indicators.single.percentage_price_oscillator",
@@ -2473,10 +3095,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/momentum_indicators.rs",
+        "line": 1276
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/momentum_indicators/single/fn.percentage_price_oscillator.html"
     },
     {
       "id": "momentum_indicators.single.rate_of_change",
@@ -2498,10 +3126,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/momentum_indicators.rs",
+        "line": 532
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/momentum_indicators/single/fn.rate_of_change.html"
     },
     {
       "id": "momentum_indicators.single.relative_strength_index",
@@ -2525,10 +3159,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/momentum_indicators.rs",
+        "line": 124
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/momentum_indicators/single/fn.relative_strength_index.html"
     },
     {
       "id": "momentum_indicators.single.signal_line",
@@ -2552,10 +3192,20 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": true
+      "is_deprecated": true,
+      "source": {
+        "file": "src/momentum_indicators.rs",
+        "line": 987
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/momentum_indicators/single/fn.signal_line.html",
+      "deprecation": {
+        "note": "Users can call moving_average directly on MACD values to compute a signal line.",
+        "replacement_function_path": "centaur_technical_indicators::moving_average::single::moving_average"
+      }
     },
     {
       "id": "momentum_indicators.single.slow_stochastic",
@@ -2579,10 +3229,20 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": true
+      "is_deprecated": true,
+      "source": {
+        "file": "src/momentum_indicators.rs",
+        "line": 273
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/momentum_indicators/single/fn.slow_stochastic.html",
+      "deprecation": {
+        "note": "Users can call moving_average directly on stochastic oscillator outputs.",
+        "replacement_function_path": "centaur_technical_indicators::moving_average::single::moving_average"
+      }
     },
     {
       "id": "momentum_indicators.single.slowest_stochastic",
@@ -2606,10 +3266,20 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": true
+      "is_deprecated": true,
+      "source": {
+        "file": "src/momentum_indicators.rs",
+        "line": 352
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/momentum_indicators/single/fn.slowest_stochastic.html",
+      "deprecation": {
+        "note": "Users can call moving_average directly on stochastic oscillator outputs.",
+        "replacement_function_path": "centaur_technical_indicators::moving_average::single::moving_average"
+      }
     },
     {
       "id": "momentum_indicators.single.stochastic_oscillator",
@@ -2629,10 +3299,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/momentum_indicators.rs",
+        "line": 210
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/momentum_indicators/single/fn.stochastic_oscillator.html"
     },
     {
       "id": "momentum_indicators.single.williams_percent_r",
@@ -2661,10 +3337,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/momentum_indicators.rs",
+        "line": 422
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/momentum_indicators/single/fn.williams_percent_r.html"
     },
     {
       "id": "moving_average.bulk.mcginley_dynamic",
@@ -2684,7 +3366,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -2692,10 +3378,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/moving_average.rs",
+        "line": 325
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/moving_average/bulk/fn.mcginley_dynamic.html"
     },
     {
       "id": "moving_average.bulk.moving_average",
@@ -2715,7 +3407,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -2723,10 +3419,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/moving_average.rs",
+        "line": 266
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/moving_average/bulk/fn.moving_average.html"
     },
     {
       "id": "moving_average.single.mcginley_dynamic",
@@ -2744,7 +3446,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -2752,10 +3458,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/moving_average.rs",
+        "line": 184
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/moving_average/single/fn.mcginley_dynamic.html"
     },
     {
       "id": "moving_average.single.moving_average",
@@ -2779,10 +3491,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/moving_average.rs",
+        "line": 93
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/moving_average/single/fn.moving_average.html"
     },
     {
       "id": "other_indicators.bulk.average_true_range",
@@ -2812,7 +3530,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -2820,10 +3542,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/other_indicators.rs",
+        "line": 446
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/other_indicators/bulk/fn.average_true_range.html"
     },
     {
       "id": "other_indicators.bulk.internal_bar_strength",
@@ -2853,10 +3581,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/other_indicators.rs",
+        "line": 513
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/other_indicators/bulk/fn.internal_bar_strength.html"
     },
     {
       "id": "other_indicators.bulk.positivity_indicator",
@@ -2889,10 +3623,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<(f64, f64)>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/other_indicators.rs",
+        "line": 573
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/other_indicators/bulk/fn.positivity_indicator.html"
     },
     {
       "id": "other_indicators.bulk.return_on_investment",
@@ -2916,10 +3656,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<(f64, f64)>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/other_indicators.rs",
+        "line": 333
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/other_indicators/bulk/fn.return_on_investment.html"
     },
     {
       "id": "other_indicators.bulk.true_range",
@@ -2949,10 +3695,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/other_indicators.rs",
+        "line": 383
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/other_indicators/bulk/fn.true_range.html"
     },
     {
       "id": "other_indicators.single.average_true_range",
@@ -2986,10 +3738,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/other_indicators.rs",
+        "line": 202
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/other_indicators/single/fn.average_true_range.html"
     },
     {
       "id": "other_indicators.single.internal_bar_strength",
@@ -3015,10 +3773,16 @@
         "return_type": "f64"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/other_indicators.rs",
+        "line": 277
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/other_indicators/single/fn.internal_bar_strength.html"
     },
     {
       "id": "other_indicators.single.return_on_investment",
@@ -3044,10 +3808,16 @@
         "return_type": "(f64, f64)"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/other_indicators.rs",
+        "line": 93
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/other_indicators/single/fn.return_on_investment.html"
     },
     {
       "id": "other_indicators.single.true_range",
@@ -3073,10 +3843,16 @@
         "return_type": "f64"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/other_indicators.rs",
+        "line": 143
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/other_indicators/single/fn.true_range.html"
     },
     {
       "id": "strength_indicators.bulk.accumulation_distribution",
@@ -3115,10 +3891,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/strength_indicators.rs",
+        "line": 337
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/strength_indicators/bulk/fn.accumulation_distribution.html"
     },
     {
       "id": "strength_indicators.bulk.negative_volume_index",
@@ -3147,10 +3929,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/strength_indicators.rs",
+        "line": 496
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/strength_indicators/bulk/fn.negative_volume_index.html"
     },
     {
       "id": "strength_indicators.bulk.positive_volume_index",
@@ -3179,10 +3967,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/strength_indicators.rs",
+        "line": 418
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/strength_indicators/bulk/fn.positive_volume_index.html"
     },
     {
       "id": "strength_indicators.bulk.relative_vigor_index",
@@ -3217,7 +4011,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -3225,10 +4023,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/strength_indicators.rs",
+        "line": 565
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/strength_indicators/bulk/fn.relative_vigor_index.html"
     },
     {
       "id": "strength_indicators.single.accumulation_distribution",
@@ -3262,10 +4066,16 @@
         "return_type": "f64"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/strength_indicators.rs",
+        "line": 98
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/strength_indicators/single/fn.accumulation_distribution.html"
     },
     {
       "id": "strength_indicators.single.relative_vigor_index",
@@ -3304,10 +4114,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/strength_indicators.rs",
+        "line": 202
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/strength_indicators/single/fn.relative_vigor_index.html"
     },
     {
       "id": "strength_indicators.single.volume_index",
@@ -3333,10 +4149,16 @@
         "return_type": "f64"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/strength_indicators.rs",
+        "line": 148
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/strength_indicators/single/fn.volume_index.html"
     },
     {
       "id": "trend_indicators.bulk.aroon_down",
@@ -3352,7 +4174,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -3360,10 +4186,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/trend_indicators.rs",
+        "line": 600
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/trend_indicators/bulk/fn.aroon_down.html"
     },
     {
       "id": "trend_indicators.bulk.aroon_indicator",
@@ -3384,7 +4216,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -3392,10 +4228,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<(f64, f64, f64)>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/trend_indicators.rs",
+        "line": 695
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/trend_indicators/bulk/fn.aroon_indicator.html"
     },
     {
       "id": "trend_indicators.bulk.aroon_oscillator",
@@ -3420,10 +4262,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/trend_indicators.rs",
+        "line": 644
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/trend_indicators/bulk/fn.aroon_oscillator.html"
     },
     {
       "id": "trend_indicators.bulk.aroon_up",
@@ -3439,7 +4287,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -3447,10 +4299,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/trend_indicators.rs",
+        "line": 560
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/trend_indicators/bulk/fn.aroon_up.html"
     },
     {
       "id": "trend_indicators.bulk.directional_movement_system",
@@ -3476,7 +4334,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         },
         {
           "name": "constant_model_type",
@@ -3488,10 +4350,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<(f64, f64, f64, f64)>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/trend_indicators.rs",
+        "line": 1018
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/trend_indicators/bulk/fn.directional_movement_system.html"
     },
     {
       "id": "trend_indicators.bulk.parabolic_time_price_system",
@@ -3536,10 +4404,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/trend_indicators.rs",
+        "line": 809
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/trend_indicators/bulk/fn.parabolic_time_price_system.html"
     },
     {
       "id": "trend_indicators.bulk.true_strength_index",
@@ -3575,10 +4449,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/trend_indicators.rs",
+        "line": 1243
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/trend_indicators/bulk/fn.true_strength_index.html"
     },
     {
       "id": "trend_indicators.bulk.volume_price_trend",
@@ -3607,10 +4487,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/trend_indicators.rs",
+        "line": 1171
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/trend_indicators/bulk/fn.volume_price_trend.html"
     },
     {
       "id": "trend_indicators.single.aroon_down",
@@ -3630,10 +4516,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/trend_indicators.rs",
+        "line": 126
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/trend_indicators/single/fn.aroon_down.html"
     },
     {
       "id": "trend_indicators.single.aroon_indicator",
@@ -3658,10 +4550,16 @@
         "return_type": "centaur_technical_indicators::Result<(f64, f64, f64)>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/trend_indicators.rs",
+        "line": 198
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/trend_indicators/single/fn.aroon_indicator.html"
     },
     {
       "id": "trend_indicators.single.aroon_oscillator",
@@ -3683,10 +4581,16 @@
         "return_type": "f64"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/trend_indicators.rs",
+        "line": 164
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/trend_indicators/single/fn.aroon_oscillator.html"
     },
     {
       "id": "trend_indicators.single.aroon_up",
@@ -3706,10 +4610,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/trend_indicators.rs",
+        "line": 90
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/trend_indicators/single/fn.aroon_up.html"
     },
     {
       "id": "trend_indicators.single.long_parabolic_time_price_system",
@@ -3739,10 +4649,16 @@
         "return_type": "f64"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/trend_indicators.rs",
+        "line": 253
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/trend_indicators/single/fn.long_parabolic_time_price_system.html"
     },
     {
       "id": "trend_indicators.single.short_parabolic_time_price_system",
@@ -3772,10 +4688,16 @@
         "return_type": "f64"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/trend_indicators.rs",
+        "line": 309
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/trend_indicators/single/fn.short_parabolic_time_price_system.html"
     },
     {
       "id": "trend_indicators.single.true_strength_index",
@@ -3807,10 +4729,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/trend_indicators.rs",
+        "line": 396
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/trend_indicators/single/fn.true_strength_index.html"
     },
     {
       "id": "trend_indicators.single.volume_price_trend",
@@ -3840,10 +4768,16 @@
         "return_type": "f64"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/trend_indicators.rs",
+        "line": 354
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/trend_indicators/single/fn.volume_price_trend.html"
     },
     {
       "id": "volatility_indicators.bulk.ulcer_index",
@@ -3859,7 +4793,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         }
       ],
       "returns": {
@@ -3867,10 +4805,16 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/volatility_indicators.rs",
+        "line": 122
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/volatility_indicators/bulk/fn.ulcer_index.html"
     },
     {
       "id": "volatility_indicators.bulk.volatility_system",
@@ -3896,7 +4840,11 @@
         },
         {
           "name": "period",
-          "param_type": "usize"
+          "param_type": "usize",
+          "constraints": [
+            "must be greater than 0",
+            "must not exceed input series length"
+          ]
         },
         {
           "name": "constant_multiplier",
@@ -3912,10 +4860,19 @@
         "return_type": "centaur_technical_indicators::Result<Vec<f64>>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "bulk",
-      "is_deprecated": true
+      "is_deprecated": true,
+      "source": {
+        "file": "src/volatility_indicators.rs",
+        "line": 213
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/volatility_indicators/bulk/fn.volatility_system.html",
+      "deprecation": {
+        "note": "Deprecated because this indicator is not commonly used."
+      }
     },
     {
       "id": "volatility_indicators.single.ulcer_index",
@@ -3935,10 +4892,16 @@
         "return_type": "centaur_technical_indicators::Result<f64>"
       },
       "warmup": {
-        "kind": "function_defined"
+        "kind": "function_defined",
+        "details": "Warmup behavior is defined by the function implementation and documented in API docs."
       },
       "mode": "single",
-      "is_deprecated": false
+      "is_deprecated": false,
+      "source": {
+        "file": "src/volatility_indicators.rs",
+        "line": 67
+      },
+      "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/volatility_indicators/single/fn.ulcer_index.html"
     }
   ]
 }
