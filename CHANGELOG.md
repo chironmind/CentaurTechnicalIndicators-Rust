@@ -27,12 +27,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added CI policy script `.github/scripts/ai_policy_check.sh` to validate PR policy expectations.
 - Added `.github/scripts/check_indicator_registry_coverage.py` to enforce parity between the Rust public indicator function surface and `docs/indicator_registry.json`.
 - Added `.github/scripts/docs_consistency_check.py` to catch common docs naming drifts/typos and unknown README benchmark function names.
-- Machine-readable indicator discovery files: `docs/indicator_registry.json` (canonical registry) and `docs/indicator_registry.schema.json` (JSON schema).
-- Repository-level `AGENTS.md` guidance for coding agents, including AI contribution expectations, required quality gates, and PR reporting expectations.
-- `docs/REPO_MAP.md` with a quick repository map, extension points, and "if changing X, also check Y" guidance.
-- Machine-readable repository policy file `ai-policy.yaml` for required checks, change obligations, and PR section requirements.
-- Default pull request template at `.github/pull_request_template.md` with required sections (`Summary`, `Scope`, `Compatibility`, `Validation`, `Benchmarks`, `Changelog`).
-- CI policy script `.github/scripts/ai_policy_check.sh` to validate PR policy expectations.
 
 ### Changed
 - Moved pre-rebrand RustTI release history into `CHANGELOG_RUSTTI_LEGACY.md` and added a historical note with explicit legacy release-tag links.

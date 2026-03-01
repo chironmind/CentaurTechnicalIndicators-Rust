@@ -326,9 +326,9 @@ cargo doc --no-deps
 ## 📰 Release Notes
 
 **Latest (v1.2.1):**
-- Added reference URLs to doc strings
-- Sorted `## Included Indicators` lists alphabetically in all module docstrings
-- Removed deprecated wrapper references from top-level module docs and the reference example
+- Added machine-readable indicator registry (`docs/indicator_registry.json`) and JSON schema
+- Added contributor AI guidance docs (`AGENTS.md`, `docs/REPO_MAP.md`, `docs/AI_ONBOARDING.md`)
+- Added CI quality gates (`fmt`, `clippy`, `test`, `doc`) as blocking jobs and registry/docs validation scripts
 
 [Human friendly changelog →](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust/blob/main/CHANGELOG.md)
 
