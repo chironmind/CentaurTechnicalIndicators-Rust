@@ -6,14 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## Changelog Conventions (Machine/Agent Friendly)
+- Version headers use `## [x.y.z] - YYYY-MM-DD`; only `Unreleased` omits a date.
+- Change type headers use Keep a Changelog categories: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`.
+- Each bullet should identify concrete artifacts (`module`, `file`, `function`, or `workflow`) and avoid ambiguous wording.
+- Compatibility-impact details are captured under `### Agent Notes` for each version.
+
+---
+
 ## [Unreleased]
 ### Added
-- Added machine-readable indicator discovery files: `docs/indicator_registry.json` (canonical registry) and `docs/indicator_registry.schema.json` (JSON schema).
-- Added repository-level `AGENTS.md` guidance for coding agents, including AI contribution expectations, required quality gates, and PR reporting expectations.
-- Added `docs/REPO_MAP.md` with a quick repository map, extension points, and "if changing X, also check Y" guidance.
-- Added machine-readable repository policy file `ai-policy.yaml` for required checks, change obligations, and PR section requirements.
-- Added default pull request template at `.github/pull_request_template.md` with required sections (`Summary`, `Scope`, `Compatibility`, `Validation`, `Benchmarks`, `Changelog`).
-- Added CI policy script `.github/scripts/ai_policy_check.sh` to validate PR policy expectations.
+- Machine-readable indicator discovery files: `docs/indicator_registry.json` (canonical registry) and `docs/indicator_registry.schema.json` (JSON schema).
+- Repository-level `AGENTS.md` guidance for coding agents, including AI contribution expectations, required quality gates, and PR reporting expectations.
+- `docs/REPO_MAP.md` with a quick repository map, extension points, and "if changing X, also check Y" guidance.
+- Machine-readable repository policy file `ai-policy.yaml` for required checks, change obligations, and PR section requirements.
+- Default pull request template at `.github/pull_request_template.md` with required sections (`Summary`, `Scope`, `Compatibility`, `Validation`, `Benchmarks`, `Changelog`).
+- CI policy script `.github/scripts/ai_policy_check.sh` to validate PR policy expectations.
 
 ### Changed
 - Moved pre-rebrand RustTI release history into `CHANGELOG_RUSTTI_LEGACY.md` and added a historical note with explicit legacy release-tag links.
@@ -42,31 +50,51 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Clarified contributor expectations to update `CHANGELOG.md` for each user-facing change and to validate benchmark impact using the companion benchmark repository.
 - Removed deprecated wrapper references from module overview docs and the reference example to keep docs focused on supported APIs.
 
+### Agent Notes
+- `breaking_change`: no
+- `public_api_change`: no intentional `pub` removal/rename; one deprecation marker removal (`volume_price_trend`)
+- `error_variant_change`: none
+- `indicator_semantics_change`: none
+- `warmup_or_output_order_change`: none
 
 ## [1.2.0] - 2026-02-25
 ### Added
-- Reference URLs to doc strings
+- Reference URLs in docstrings.
 
 ### Changed
 - Sorted the `## Included Indicators` Bulk and Single lists alphabetically in all module docstrings (`candle_indicators`, `momentum_indicators`, `other_indicators`, `strength_indicators`, `trend_indicators`)
 
 ### Deprecated
-- Deprecated functions in the `momentum_indicators` module that were just wrappers for moving averages (`signal_line`, slow and slowest stochastics). These functions will be removed in the next major release (2.0.0) to encourage users to call the moving average functions directly for better flexibility and clarity.
-- Deprecated the Volume price trend  
-- Deprecated the volatility system 
+- Functions in `momentum_indicators` that were wrappers for moving averages (`signal_line`, slow stochastic, slowest stochastic). These functions are planned for removal in `2.0.0`; call moving average functions directly for composability.
+- `volume_price_trend`.
+- Volatility system wrappers.
+
+### Agent Notes
+- `breaking_change`: no
+- `public_api_change`: deprecations only
+- `error_variant_change`: none
+- `indicator_semantics_change`: none
+- `warmup_or_output_order_change`: none
 
 
 ## [1.0.0] - 2026-01-07
 ### Changed
-- **BREAKING:** Rebranded from RustTI to Centaur Technical Indicators
-  - Package name changed from `rust_ti` to `centaur_technical_indicators`
-  - This is a new package on crates.io with fresh versioning (1.0.0)
-  - All functionality remains the same, only branding has changed
-  - Updated repository and documentation URLs to reflect Centaur Technologies branding
+- **BREAKING:** Rebranded from RustTI to Centaur Technical Indicators.
+- **BREAKING:** Package name changed from `rust_ti` to `centaur_technical_indicators`.
+- **BREAKING:** New package on crates.io with fresh versioning (`1.0.0`).
+- **BREAKING:** Repository and documentation URLs updated to reflect Centaur Technologies branding.
+- **BREAKING:** All functionality remained the same; this change was branding/package identity.
 - **BREAKING:** `panic!` replaced with `Result<>` types in several functions for better error handling
 
 ### Removed
 - Removed unused `deviation.rs` file
+
+### Agent Notes
+- `breaking_change`: yes
+- `public_api_change`: package/crate identity changed (`rust_ti` -> `centaur_technical_indicators`)
+- `error_variant_change`: fallible APIs now return `Result` in places that previously panicked
+- `indicator_semantics_change`: no
+- `warmup_or_output_order_change`: none documented
 
 ---
 
