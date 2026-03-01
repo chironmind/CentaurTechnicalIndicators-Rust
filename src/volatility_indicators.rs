@@ -17,11 +17,44 @@
 //! ## Bulk
 //!
 //! - [`ulcer_index`](bulk::ulcer_index): Calculates the Ulcer Index
-//! - [`volatility_system`](bulk::volatility_system): Implements Welles Wilder's volatility system, including ATR and SAR logic
 //!
 //! ## Single
 //!
 //! - [`ulcer_index`](single::ulcer_index): Calculates the Ulcer Index for an entire slice
+//!
+//! ### Deprecated APIs
+//! - [`volatility_system`](bulk::volatility_system)
+//!
+//! ### Migration Snippet
+//! Prefer composing focused indicators instead of using `volatility_system`:
+//!
+//! ```rust
+//! let highs = vec![100.83, 100.91, 101.03, 101.27, 100.52];
+//! let lows = vec![100.59, 100.72, 100.84, 100.91, 99.85];
+//! let close = vec![100.76, 100.88, 100.96, 101.14, 100.01];
+//! let period: usize = 3;
+//!
+//! let atr = centaur_technical_indicators::other_indicators::bulk::average_true_range(
+//!     &close,
+//!     &highs,
+//!     &lows,
+//!     centaur_technical_indicators::ConstantModelType::SimpleMovingAverage,
+//!     period,
+//! ).unwrap();
+//!
+//! let sar = centaur_technical_indicators::trend_indicators::bulk::parabolic_time_price_system(
+//!     &highs,
+//!     &lows,
+//!     0.02,
+//!     0.2,
+//!     0.02,
+//!     centaur_technical_indicators::Position::Long,
+//!     lows[0],
+//! ).unwrap();
+//!
+//! assert_eq!(3, atr.len());
+//! assert_eq!(5, sar.len());
+//! ```
 //!
 //! ## API Details
 //! - See function-level documentation for arguments, panics, and usage examples.
@@ -433,5 +466,36 @@ mod tests {
             crate::ConstantModelType::SimpleMovingAverage,
         );
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn migration_volatility_system_composition_example_runs() {
+        let highs = vec![100.83, 100.91, 101.03, 101.27, 100.52];
+        let lows = vec![100.59, 100.72, 100.84, 100.91, 99.85];
+        let close = vec![100.76, 100.88, 100.96, 101.14, 100.01];
+        let period: usize = 3;
+
+        let atr = crate::other_indicators::bulk::average_true_range(
+            &close,
+            &highs,
+            &lows,
+            crate::ConstantModelType::SimpleMovingAverage,
+            period,
+        )
+        .unwrap();
+
+        let sar = crate::trend_indicators::bulk::parabolic_time_price_system(
+            &highs,
+            &lows,
+            0.02,
+            0.2,
+            0.02,
+            crate::Position::Long,
+            lows[0],
+        )
+        .unwrap();
+
+        assert_eq!(3, atr.len());
+        assert_eq!(5, sar.len());
     }
 }

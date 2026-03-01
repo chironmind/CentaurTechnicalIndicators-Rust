@@ -6,10 +6,11 @@
 // Data is generated up front and reused across calls. Each function is called with representative arguments.
 // Output is printed directly for reference and exploration purposes.
 
-use centaur_technical_indicators::{AbsDevConfig, CentralPoint, DeviationAggregate};
+use centaur_technical_indicators::{
+    AbsDevConfig, CentralPoint, ConstantModelType, DeviationAggregate, MovingAverageType,
+};
 use std::time::Instant;
 
-#[allow(deprecated)]
 fn main() {
     let now = Instant::now();
 
@@ -479,23 +480,58 @@ fn main() {
     println!("Stochastic Oscillator: {:?}", stochastic_oscillator);
 
     let stochastic_oscillator_unwrapped = stochastic_oscillator.unwrap();
+
+    let constant_model_bulk = |values: &[f64],
+                               model: ConstantModelType|
+     -> centaur_technical_indicators::Result<Vec<f64>> {
+        match model {
+            ConstantModelType::SimpleMovingAverage => {
+                centaur_technical_indicators::moving_average::bulk::moving_average(
+                    values,
+                    MovingAverageType::Simple,
+                    period,
+                )
+            }
+            ConstantModelType::SmoothedMovingAverage => {
+                centaur_technical_indicators::moving_average::bulk::moving_average(
+                    values,
+                    MovingAverageType::Smoothed,
+                    period,
+                )
+            }
+            ConstantModelType::ExponentialMovingAverage => {
+                centaur_technical_indicators::moving_average::bulk::moving_average(
+                    values,
+                    MovingAverageType::Exponential,
+                    period,
+                )
+            }
+            ConstantModelType::PersonalisedMovingAverage {
+                alpha_num,
+                alpha_den,
+            } => centaur_technical_indicators::moving_average::bulk::moving_average(
+                values,
+                MovingAverageType::Personalised {
+                    alpha_num,
+                    alpha_den,
+                },
+                period,
+            ),
+            ConstantModelType::SimpleMovingMedian => {
+                centaur_technical_indicators::basic_indicators::bulk::median(values, period)
+            }
+            ConstantModelType::SimpleMovingMode => {
+                centaur_technical_indicators::basic_indicators::bulk::mode(values, period)
+            }
+        }
+    };
+
     for model in &available_models {
-        let slow_so = centaur_technical_indicators::momentum_indicators::bulk::slow_stochastic(
-            &stochastic_oscillator_unwrapped,
-            *model,
-            period,
-        )
-        .unwrap();
+        let slow_so = constant_model_bulk(&stochastic_oscillator_unwrapped, *model).unwrap();
         println!("Slow Stochastic {:?}: {:?}", model, slow_so);
 
         for slowest_model in &available_models {
-            let slowest_so =
-                centaur_technical_indicators::momentum_indicators::bulk::slowest_stochastic(
-                    &slow_so,
-                    *slowest_model,
-                    period,
-                )
-                .unwrap();
+            let slowest_so = constant_model_bulk(&slow_so, *slowest_model).unwrap();
             println!("Slowest Stochastic {:?}: {:?}", slowest_model, slowest_so);
         }
     }
@@ -558,12 +594,7 @@ fn main() {
 
             let macd_unwrapped = macd.unwrap();
             for signal_model in &available_models {
-                let signal = centaur_technical_indicators::momentum_indicators::bulk::signal_line(
-                    &macd_unwrapped,
-                    *signal_model,
-                    period,
-                )
-                .unwrap();
+                let signal = constant_model_bulk(&macd_unwrapped, *signal_model).unwrap();
                 println!("Signal line {:?}: {:?}", signal_model, signal);
             }
         }
@@ -768,17 +799,11 @@ fn main() {
     );
     println!("Ulcer Index: {:?}", ulcer_index);
 
-    let constant_multiplier = 3.0;
     for model in &available_models {
-        let vs = centaur_technical_indicators::volatility_indicators::bulk::volatility_system(
-            &high,
-            &low,
-            &close,
-            period,
-            constant_multiplier,
-            *model,
+        let atr = centaur_technical_indicators::other_indicators::bulk::average_true_range(
+            &close, &high, &low, *model, period,
         );
-        println!("{:?} Volatility System: {:?}", model, vs);
+        println!("{:?} Average True Range: {:?}", model, atr);
     }
 
     // Chart trends (truncated, see documentation for argument meaning)
