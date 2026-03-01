@@ -35,7 +35,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Removed the deprecation marker from `volume_price_trend` in both the bulk and single APIs.
 - Expanded `CONTRIBUTING.md` with a dedicated AI-assisted contribution checklist, explicit pre-PR validation gates, benchmark regression expectations, and links to AI contribution guidance docs.
 - Clarified contributor expectations to update `CHANGELOG.md` for each user-facing change and to validate benchmark impact using the companion benchmark repository.
-- Updated migration guidance for deprecated momentum/volatility APIs in module docs and reference examples, with migration tests/doc tests to keep replacement compositions valid.
+- Removed deprecated wrapper references from module overview docs and the reference example to keep docs focused on supported APIs.
 
 
 ## [1.2.0] - 2026-02-25
