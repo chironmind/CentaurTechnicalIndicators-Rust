@@ -163,7 +163,7 @@ Each module has `bulk` (vector output) and `single` (scalar output) submodules.
 - Aroon (Up/Down/Oscillator), Parabolic, DM, Volume-Price Trend, TSI
 
 ### Volatility Indicators
-- Ulcer Index, Volatility System
+- Ulcer Index
 
 ---
 
@@ -178,8 +178,6 @@ We provide detailed, reproducible benchmarks using realistic OHLCV data and a va
 |-----------------------------------------------|--------------------|
 | `relative_strength_index`                     | 573.86 µs          |
 | `stochastic_oscillator`                       | 784.13 µs          |
-| `slow_stochastic`                             | 28.866 µs          |
-| `slowest_stochastic`                          | 28.866 µs          |
 | `williams_percent_r`                          | 76.256 µs          |
 | `money_flow_index`                            | 150.69 µs          |
 | `rate_of_change`                              | 5.3984 µs          |
@@ -282,7 +280,6 @@ We provide detailed, reproducible benchmarks using realistic OHLCV data and a va
 | Function                                      | Time per Operation |
 |-----------------------------------------------|--------------------|
 | `ulcer_index`                                 | 65.959 µs          |
-| `volatility_system`                           | 137.25 µs          |
 
 
 *These results are from a Raspberry Pi 5 8GB, your machine will likely be faster!*
@@ -324,8 +321,7 @@ cargo doc --no-deps
 **Latest (v1.2.0):**
 - Added reference URLs to doc strings
 - Sorted `## Included Indicators` lists alphabetically in all module docstrings
-- Deprecated `signal_line`, slow and slowest stochastic wrapper functions in `momentum_indicators`
-- Deprecated Volume Price Trend and Volatility System
+- Removed deprecated wrapper references from top-level module docs and the reference example
 
 [Human friendly changelog →](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust/blob/main/CHANGELOG.md)
 

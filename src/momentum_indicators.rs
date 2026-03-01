@@ -28,9 +28,6 @@
 //! - [`percentage_price_oscillator`](bulk::percentage_price_oscillator): Percentage Price Oscillator (PPO)
 //! - [`rate_of_change`](bulk::rate_of_change): Rate of Change (ROC)
 //! - [`relative_strength_index`](bulk::relative_strength_index): Relative Strength Index (RSI)
-//! - [`signal_line`](bulk::signal_line): Signal line for MACD
-//! - [`slow_stochastic`](bulk::slow_stochastic): Slow Stochastic Oscillator
-//! - [`slowest_stochastic`](bulk::slowest_stochastic): Slowest Stochastic Oscillator
 //! - [`stochastic_oscillator`](bulk::stochastic_oscillator): Stochastic Oscillator
 //! - [`williams_percent_r`](bulk::williams_percent_r): Williams %R
 //!
@@ -46,9 +43,6 @@
 //! - [`percentage_price_oscillator`](single::percentage_price_oscillator): Percentage Price Oscillator (PPO)
 //! - [`rate_of_change`](single::rate_of_change): Rate of Change (ROC)
 //! - [`relative_strength_index`](single::relative_strength_index): Relative Strength Index (RSI)
-//! - [`signal_line`](single::signal_line): Signal line for MACD
-//! - [`slow_stochastic`](single::slow_stochastic): Slow Stochastic Oscillator
-//! - [`slowest_stochastic`](single::slowest_stochastic): Slowest Stochastic Oscillator
 //! - [`stochastic_oscillator`](single::stochastic_oscillator): Stochastic Oscillator
 //! - [`williams_percent_r`](single::williams_percent_r): Williams %R
 //!

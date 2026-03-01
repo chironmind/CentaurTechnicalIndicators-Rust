@@ -17,7 +17,6 @@
 //! ## Bulk
 //!
 //! - [`ulcer_index`](bulk::ulcer_index): Calculates the Ulcer Index
-//! - [`volatility_system`](bulk::volatility_system): Implements Welles Wilder's volatility system, including ATR and SAR logic
 //!
 //! ## Single
 //!
