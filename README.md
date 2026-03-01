@@ -75,10 +75,10 @@ Simple Moving Average: 100.352
 
 - [Load CSV Price Data:](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust-how-to-guides/blob/main/load_csv.md) Parse OHLC prices from a file and calculate RSI 
 - [When to use a bulk vs single module:](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust-how-to-guides/blob/main/bulk_vs_single.md) Understand when to use bulk functions or single functions
-- [Choosing the right constant model type:](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust-how-to-guides/blob/main/choose_constant_model_type.md) Programatically determine the best `ConstantModelType` 
-- [Choosing the right deviation model:](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust-how-to-guides/blob/main/choose_deviation_model.md) Programatically determine the best deviation model 
-- [Choosing the right period:](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust-how-to-guides/blob/main/choose_period.md) Programatically determine the best period
-- [How to use the Personalised Moving Average:](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust-how-to-guides/blob/main/personliased_moving_average.md) Programatically determine the alpha of the moving average
+- [Choosing the right constant model type:](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust-how-to-guides/blob/main/choose_constant_model_type.md) Programmatically determine the best `ConstantModelType` 
+- [Choosing the right deviation model:](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust-how-to-guides/blob/main/choose_deviation_model.md) Programmatically determine the best deviation model 
+- [Choosing the right period:](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust-how-to-guides/blob/main/choose_period.md) Programmatically determine the best period
+- [How to use the Personalised Moving Average:](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust-how-to-guides/blob/main/personliased_moving_average.md) Programmatically determine the alpha of the moving average
 - [How to use the McGinley dynamic variation of functions:](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust-how-to-guides/blob/main/mcginley_dynamic.md) Quick guide on how to use the McGinley Dynamic functions 
 
 
@@ -206,7 +206,7 @@ We provide detailed, reproducible benchmarks using realistic OHLCV data and a va
 | `moving_constant_bands`                       | 119.70 µs          |
 | `mcginley_dynamic_bands`                      | 43.219 µs          |
 | `ichimoku_cloud`                              | 192.93 µs          |
-| `donchian_channel`                            | 28.481 µs          |
+| `donchian_channels`                           | 28.481 µs          |
 | `keltner_channel`                             | 318.05 µs          |
 | `supertrend`                                  | 148.80 µs          |
 
@@ -220,7 +220,7 @@ We provide detailed, reproducible benchmarks using realistic OHLCV data and a va
 | `parabolic_time_price_system`                 | 43.939 µs          |
 | `directional_movement_system`                 | 88.965 µs          |
 | `volume_price_trend`                          | 6.2801 µs          |
-| `true_strength_indx`                          | 705.25 µs          |
+| `true_strength_index`                         | 705.25 µs          |
 
 ### Strength Indicators
 
@@ -254,7 +254,7 @@ We provide detailed, reproducible benchmarks using realistic OHLCV data and a va
 | `standard_deviation`                          | 24.095 µs          |
 | `absolute_deviation(Mean)`                    | 26.991 µs          |
 | `absolute_deviation(Median)`                  | 345.14 µs          |
-| `absoluite_deviation(Mode)`                   | 956.83 µs          |
+| `absolute_deviation(Mode)`                    | 956.83 µs          |
 
 ### Chart Trends
 

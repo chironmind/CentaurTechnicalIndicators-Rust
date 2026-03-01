@@ -14,9 +14,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added machine-readable repository policy file `ai-policy.yaml` for required checks, change obligations, and PR section requirements.
 - Added default pull request template at `.github/pull_request_template.md` with required sections (`Summary`, `Scope`, `Compatibility`, `Validation`, `Benchmarks`, `Changelog`).
 - Added CI policy script `.github/scripts/ai_policy_check.sh` to validate PR policy expectations.
+- Added `.github/scripts/check_indicator_registry_coverage.py` to enforce parity between the Rust public indicator function surface and `docs/indicator_registry.json`.
+- Added `.github/scripts/docs_consistency_check.py` to catch common docs naming drifts/typos and unknown README benchmark function names.
 
 ### Changed
 - Updated CI (`.github/workflows/rust.yml`) to run lightweight indicator registry schema validation via `.github/scripts/validate_indicator_registry.py`.
+- Expanded `docs/indicator_registry.schema.json` and `docs/indicator_registry.json` metadata with per-indicator `source` locations, `docs_url`, optional parameter `constraints`, warmup descriptions, and structured deprecation guidance.
+- Expanded `.github/scripts/validate_indicator_registry.py` to validate enriched registry metadata, including source line mapping, docs URL shape, and deprecation consistency/replacement references.
+- Updated CI (`.github/workflows/rust.yml`) policy job to run indicator registry coverage checks and docs consistency checks.
 - Linked the indicator registry in `README.md` and `AI_FRIENDLY_ROADMAP.md` as the canonical discovery source for tools/agents.
 - Normalized `docs/indicator_registry.json` entries so `id` and `function_path` are canonical and unique, replaced `supports_bulk`/`supports_single` with `mode` (`single`/`bulk`/`module`), renamed schema field names to avoid keyword-collisions (`parameters[].param_type`, `returns.return_type`, `is_deprecated`), standardized fallible return types to `centaur_technical_indicators::Result<...>`, and expanded `.github/scripts/validate_indicator_registry.py` to enforce uniqueness, mode/path consistency, and return-type/fallibility consistency.
 - Updated `.github/workflows/rust.yml` to add explicit stable-toolchain CI quality gate steps for `cargo fmt --all -- --check`, `cargo clippy --all-targets --all-features -- -D warnings`, `cargo test --all-features`, and `cargo doc --no-deps`, with each gate logged as its own named step.
@@ -40,6 +45,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Expanded `CONTRIBUTING.md` with a dedicated AI-assisted contribution checklist, explicit pre-PR validation gates, benchmark regression expectations, and links to AI contribution guidance docs.
 - Clarified contributor expectations to update `CHANGELOG.md` for each user-facing change and to validate benchmark impact using the companion benchmark repository.
 - Removed deprecated wrapper references from module overview docs and the reference example to keep docs focused on supported APIs.
+- Corrected minor naming/typo drifts in docs and Rust doc comments (for example `default_rsi`, `donchian_channels`, and `true_strength_index`) to improve deterministic parsing for tools/agents.
 
 
 ## [1.2.0] - 2026-02-25
