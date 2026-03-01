@@ -9,6 +9,10 @@ This document is a practical map for contributors and coding agents working in `
 - `Later`: directional items that should not block current PRs.
 - Each milestone includes acceptance criteria and non-goals to keep the implementation scope clear.
 
+## Canonical indicator discovery source
+
+Tools/agents should treat `docs/indicator_registry.json` as the canonical machine-readable indicator discovery index, validated by `docs/indicator_registry.schema.json`.
+
 ## Current API surface by module
 
 The crate currently exports the following indicator modules from `src/lib.rs`, each with `single` and/or `bulk` submodules where applicable:

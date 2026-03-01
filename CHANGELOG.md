@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 ### Added
+- Added machine-readable indicator discovery files: `docs/indicator_registry.json` (canonical registry) and `docs/indicator_registry.schema.json` (JSON schema).
 - Added repository-level `AGENTS.md` guidance for coding agents, including AI contribution expectations, required quality gates, and PR reporting expectations.
 - Added `docs/REPO_MAP.md` with a quick repository map, extension points, and "if changing X, also check Y" guidance.
 - Added machine-readable repository policy file `ai-policy.yaml` for required checks, change obligations, and PR section requirements.
@@ -15,6 +16,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added CI policy script `.github/scripts/ai_policy_check.sh` to validate PR policy expectations.
 
 ### Changed
+- Updated CI (`.github/workflows/rust.yml`) to run lightweight indicator registry schema validation via `.github/scripts/validate_indicator_registry.py`.
+- Linked the indicator registry in `README.md` and `AI_FRIENDLY_ROADMAP.md` as the canonical discovery source for tools/agents.
 - Updated `.github/workflows/rust.yml` to add explicit stable-toolchain CI quality gate steps for `cargo fmt --all -- --check`, `cargo clippy --all-targets --all-features -- -D warnings`, `cargo test --all-features`, and `cargo doc --no-deps`, with each gate logged as its own named step.
 - Updated `.github/workflows/rust.yml` so each required quality gate (`fmt`, `clippy`, `test`, `doc`) runs as its own blocking CI job on PRs and pushes to `main`; the toolchain matrix build now depends on all gate jobs.
 - Updated `.github/workflows/rust.yml` to remove third-party Rust CI actions and use native `rustup`/`cargo` commands for toolchain setup and checks.

@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ChironMind/CentaurTechnicalIndicators-Rust/blob/main/docs/indicator_registry.schema.json",
+  "title": "Indicator Registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "indicators"],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "indicators": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "module",
+          "function_path",
+          "input_series",
+          "parameters",
+          "returns",
+          "warmup",
+          "supports_bulk",
+          "supports_single",
+          "deprecated"
+        ],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "module": { "type": "string", "minLength": 1 },
+          "function_path": {
+            "type": "string",
+            "pattern": "^centaur_technical_indicators::"
+          },
+          "input_series": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "parameters": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["name", "type"],
+              "properties": {
+                "name": { "type": "string", "minLength": 1 },
+                "type": { "type": "string", "minLength": 1 }
+              }
+            }
+          },
+          "returns": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["type", "fallible"],
+            "properties": {
+              "type": { "type": "string", "minLength": 1 },
+              "fallible": { "type": "boolean" }
+            }
+          },
+          "warmup": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["kind"],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": ["none", "period_minus_one", "custom", "function_defined"]
+              },
+              "value": {
+                "oneOf": [
+                  { "type": "string", "minLength": 1 },
+                  { "type": "integer", "minimum": 0 }
+                ]
+              }
+            }
+          },
+          "supports_bulk": { "type": "boolean" },
+          "supports_single": { "type": "boolean" },
+          "deprecated": { "type": "boolean" }
+        }
+      }
+    }
+  }
+}

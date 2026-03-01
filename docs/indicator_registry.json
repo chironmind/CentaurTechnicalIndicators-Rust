@@ -1,0 +1,4068 @@
+{
+  "version": 1,
+  "indicators": [
+    {
+      "id": "basic_indicators.bulk.absolute_deviation",
+      "module": "basic_indicators",
+      "function_path": "centaur_technical_indicators::basic_indicators::bulk::absolute_deviation",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        },
+        {
+          "name": "config",
+          "type": "AbsDevConfig"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": true,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "basic_indicators.bulk.log",
+      "module": "basic_indicators",
+      "function_path": "centaur_technical_indicators::basic_indicators::bulk::log",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": true,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "basic_indicators.bulk.log_difference",
+      "module": "basic_indicators",
+      "function_path": "centaur_technical_indicators::basic_indicators::bulk::log_difference",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": true,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "basic_indicators.bulk.mean",
+      "module": "basic_indicators",
+      "function_path": "centaur_technical_indicators::basic_indicators::bulk::mean",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": true,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "basic_indicators.bulk.median",
+      "module": "basic_indicators",
+      "function_path": "centaur_technical_indicators::basic_indicators::bulk::median",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": true,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "basic_indicators.bulk.mode",
+      "module": "basic_indicators",
+      "function_path": "centaur_technical_indicators::basic_indicators::bulk::mode",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": true,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "basic_indicators.bulk.standard_deviation",
+      "module": "basic_indicators",
+      "function_path": "centaur_technical_indicators::basic_indicators::bulk::standard_deviation",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": true,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "basic_indicators.bulk.variance",
+      "module": "basic_indicators",
+      "function_path": "centaur_technical_indicators::basic_indicators::bulk::variance",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": true,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "basic_indicators.cauchy_iqr_scale",
+      "module": "basic_indicators",
+      "function_path": "centaur_technical_indicators::basic_indicators::cauchy_iqr_scale",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "basic_indicators.empirical_quantile_range_from_distribution",
+      "module": "basic_indicators",
+      "function_path": "centaur_technical_indicators::basic_indicators::empirical_quantile_range_from_distribution",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        },
+        {
+          "name": "precision",
+          "type": "f64"
+        },
+        {
+          "name": "low",
+          "type": "f64"
+        },
+        {
+          "name": "high",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "basic_indicators.laplace_std_equivalent",
+      "module": "basic_indicators",
+      "function_path": "centaur_technical_indicators::basic_indicators::laplace_std_equivalent",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "basic_indicators.log_standard_deviation",
+      "module": "basic_indicators",
+      "function_path": "centaur_technical_indicators::basic_indicators::log_standard_deviation",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "basic_indicators.price_distribution",
+      "module": "basic_indicators",
+      "function_path": "centaur_technical_indicators::basic_indicators::price_distribution",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        },
+        {
+          "name": "precision",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<Vec<(f64, usize)>>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "basic_indicators.single.absolute_deviation",
+      "module": "basic_indicators",
+      "function_path": "centaur_technical_indicators::basic_indicators::single::absolute_deviation",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "config",
+          "type": "AbsDevConfig"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": true,
+      "deprecated": false
+    },
+    {
+      "id": "basic_indicators.single.cauchy_iqr_scale",
+      "module": "basic_indicators",
+      "function_path": "centaur_technical_indicators::basic_indicators::single::cauchy_iqr_scale",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": true,
+      "deprecated": false
+    },
+    {
+      "id": "basic_indicators.single.empirical_quantile_range_from_distribution",
+      "module": "basic_indicators",
+      "function_path": "centaur_technical_indicators::basic_indicators::single::empirical_quantile_range_from_distribution",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "precision",
+          "type": "f64"
+        },
+        {
+          "name": "low",
+          "type": "f64"
+        },
+        {
+          "name": "high",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": true,
+      "deprecated": false
+    },
+    {
+      "id": "basic_indicators.single.laplace_std_equivalent",
+      "module": "basic_indicators",
+      "function_path": "centaur_technical_indicators::basic_indicators::single::laplace_std_equivalent",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": true,
+      "deprecated": false
+    },
+    {
+      "id": "basic_indicators.single.log_difference",
+      "module": "basic_indicators",
+      "function_path": "centaur_technical_indicators::basic_indicators::single::log_difference",
+      "input_series": [],
+      "parameters": [
+        {
+          "name": "price_t",
+          "type": "f64"
+        },
+        {
+          "name": "price_t_1",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": true,
+      "deprecated": false
+    },
+    {
+      "id": "basic_indicators.single.log_standard_deviation",
+      "module": "basic_indicators",
+      "function_path": "centaur_technical_indicators::basic_indicators::single::log_standard_deviation",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": true,
+      "deprecated": false
+    },
+    {
+      "id": "basic_indicators.single.max",
+      "module": "basic_indicators",
+      "function_path": "centaur_technical_indicators::basic_indicators::single::max",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": true,
+      "deprecated": false
+    },
+    {
+      "id": "basic_indicators.single.mean",
+      "module": "basic_indicators",
+      "function_path": "centaur_technical_indicators::basic_indicators::single::mean",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": true,
+      "deprecated": false
+    },
+    {
+      "id": "basic_indicators.single.median",
+      "module": "basic_indicators",
+      "function_path": "centaur_technical_indicators::basic_indicators::single::median",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": true,
+      "deprecated": false
+    },
+    {
+      "id": "basic_indicators.single.min",
+      "module": "basic_indicators",
+      "function_path": "centaur_technical_indicators::basic_indicators::single::min",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": true,
+      "deprecated": false
+    },
+    {
+      "id": "basic_indicators.single.mode",
+      "module": "basic_indicators",
+      "function_path": "centaur_technical_indicators::basic_indicators::single::mode",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": true,
+      "deprecated": false
+    },
+    {
+      "id": "basic_indicators.single.price_distribution",
+      "module": "basic_indicators",
+      "function_path": "centaur_technical_indicators::basic_indicators::single::price_distribution",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "precision",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<(f64, usize)>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": true,
+      "deprecated": false
+    },
+    {
+      "id": "basic_indicators.single.standard_deviation",
+      "module": "basic_indicators",
+      "function_path": "centaur_technical_indicators::basic_indicators::single::standard_deviation",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": true,
+      "deprecated": false
+    },
+    {
+      "id": "basic_indicators.single.student_t_adjusted_std",
+      "module": "basic_indicators",
+      "function_path": "centaur_technical_indicators::basic_indicators::single::student_t_adjusted_std",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "df",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": true,
+      "deprecated": false
+    },
+    {
+      "id": "basic_indicators.single.variance",
+      "module": "basic_indicators",
+      "function_path": "centaur_technical_indicators::basic_indicators::single::variance",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": true,
+      "deprecated": false
+    },
+    {
+      "id": "basic_indicators.student_t_adjusted_std",
+      "module": "basic_indicators",
+      "function_path": "centaur_technical_indicators::basic_indicators::student_t_adjusted_std",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        },
+        {
+          "name": "df",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "candle_indicators.bulk.moving_constant_envelopes",
+      "module": "candle_indicators",
+      "function_path": "centaur_technical_indicators::candle_indicators::bulk::moving_constant_envelopes",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "constant_model_type",
+          "type": "ConstantModelType"
+        },
+        {
+          "name": "difference",
+          "type": "f64"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<(f64, f64, f64)>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": true,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "candle_indicators.donchian_channels",
+      "module": "candle_indicators",
+      "function_path": "centaur_technical_indicators::candle_indicators::donchian_channels",
+      "input_series": [
+        "highs",
+        "lows"
+      ],
+      "parameters": [
+        {
+          "name": "highs",
+          "type": "&[f64]"
+        },
+        {
+          "name": "lows",
+          "type": "&[f64]"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<(f64, f64, f64)>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "candle_indicators.donchian_channels",
+      "module": "candle_indicators",
+      "function_path": "centaur_technical_indicators::candle_indicators::donchian_channels",
+      "input_series": [
+        "highs",
+        "lows"
+      ],
+      "parameters": [
+        {
+          "name": "highs",
+          "type": "&[f64]"
+        },
+        {
+          "name": "lows",
+          "type": "&[f64]"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<(f64, f64, f64)>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "candle_indicators.ichimoku_cloud",
+      "module": "candle_indicators",
+      "function_path": "centaur_technical_indicators::candle_indicators::ichimoku_cloud",
+      "input_series": [
+        "highs",
+        "lows",
+        "close"
+      ],
+      "parameters": [
+        {
+          "name": "highs",
+          "type": "&[f64]"
+        },
+        {
+          "name": "lows",
+          "type": "&[f64]"
+        },
+        {
+          "name": "close",
+          "type": "&[f64]"
+        },
+        {
+          "name": "conversion_period",
+          "type": "usize"
+        },
+        {
+          "name": "base_period",
+          "type": "usize"
+        },
+        {
+          "name": "span_b_period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<(f64, f64, f64, f64, f64)>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "candle_indicators.ichimoku_cloud",
+      "module": "candle_indicators",
+      "function_path": "centaur_technical_indicators::candle_indicators::ichimoku_cloud",
+      "input_series": [
+        "highs",
+        "lows",
+        "close"
+      ],
+      "parameters": [
+        {
+          "name": "highs",
+          "type": "&[f64]"
+        },
+        {
+          "name": "lows",
+          "type": "&[f64]"
+        },
+        {
+          "name": "close",
+          "type": "&[f64]"
+        },
+        {
+          "name": "conversion_period",
+          "type": "usize"
+        },
+        {
+          "name": "base_period",
+          "type": "usize"
+        },
+        {
+          "name": "span_b_period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<(f64, f64, f64, f64, f64)>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "candle_indicators.keltner_channel",
+      "module": "candle_indicators",
+      "function_path": "centaur_technical_indicators::candle_indicators::keltner_channel",
+      "input_series": [
+        "highs",
+        "lows",
+        "close"
+      ],
+      "parameters": [
+        {
+          "name": "highs",
+          "type": "&[f64]"
+        },
+        {
+          "name": "lows",
+          "type": "&[f64]"
+        },
+        {
+          "name": "close",
+          "type": "&[f64]"
+        },
+        {
+          "name": "constant_model_type",
+          "type": "ConstantModelType"
+        },
+        {
+          "name": "atr_constant_model_type",
+          "type": "ConstantModelType"
+        },
+        {
+          "name": "multiplier",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<(f64, f64, f64)>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "candle_indicators.keltner_channel",
+      "module": "candle_indicators",
+      "function_path": "centaur_technical_indicators::candle_indicators::keltner_channel",
+      "input_series": [
+        "highs",
+        "lows",
+        "close"
+      ],
+      "parameters": [
+        {
+          "name": "highs",
+          "type": "&[f64]"
+        },
+        {
+          "name": "lows",
+          "type": "&[f64]"
+        },
+        {
+          "name": "close",
+          "type": "&[f64]"
+        },
+        {
+          "name": "constant_model_type",
+          "type": "ConstantModelType"
+        },
+        {
+          "name": "atr_constant_model_type",
+          "type": "ConstantModelType"
+        },
+        {
+          "name": "multiplier",
+          "type": "f64"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<(f64, f64, f64)>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "candle_indicators.mcginley_dynamic_bands",
+      "module": "candle_indicators",
+      "function_path": "centaur_technical_indicators::candle_indicators::mcginley_dynamic_bands",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "deviation_model",
+          "type": "DeviationModel"
+        },
+        {
+          "name": "deviation_multiplier",
+          "type": "f64"
+        },
+        {
+          "name": "previous_mcginley_dynamic",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<(f64, f64, f64)>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "candle_indicators.mcginley_dynamic_bands",
+      "module": "candle_indicators",
+      "function_path": "centaur_technical_indicators::candle_indicators::mcginley_dynamic_bands",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "deviation_model",
+          "type": "DeviationModel"
+        },
+        {
+          "name": "deviation_multiplier",
+          "type": "f64"
+        },
+        {
+          "name": "previous_mcginley_dynamic",
+          "type": "f64"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<(f64, f64, f64)>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "candle_indicators.mcginley_dynamic_envelopes",
+      "module": "candle_indicators",
+      "function_path": "centaur_technical_indicators::candle_indicators::mcginley_dynamic_envelopes",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "difference",
+          "type": "f64"
+        },
+        {
+          "name": "previous_mcginley_dynamic",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<(f64, f64, f64)>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "candle_indicators.mcginley_dynamic_envelopes",
+      "module": "candle_indicators",
+      "function_path": "centaur_technical_indicators::candle_indicators::mcginley_dynamic_envelopes",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "difference",
+          "type": "f64"
+        },
+        {
+          "name": "previous_mcginley_dynamic",
+          "type": "f64"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<(f64, f64, f64)>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "candle_indicators.moving_constant_bands",
+      "module": "candle_indicators",
+      "function_path": "centaur_technical_indicators::candle_indicators::moving_constant_bands",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "constant_model_type",
+          "type": "ConstantModelType"
+        },
+        {
+          "name": "deviation_model",
+          "type": "DeviationModel"
+        },
+        {
+          "name": "deviation_multiplier",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<(f64, f64, f64)>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "candle_indicators.moving_constant_bands",
+      "module": "candle_indicators",
+      "function_path": "centaur_technical_indicators::candle_indicators::moving_constant_bands",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "constant_model_type",
+          "type": "ConstantModelType"
+        },
+        {
+          "name": "deviation_model",
+          "type": "DeviationModel"
+        },
+        {
+          "name": "deviation_multiplier",
+          "type": "f64"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<(f64, f64, f64)>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "candle_indicators.single.moving_constant_envelopes",
+      "module": "candle_indicators",
+      "function_path": "centaur_technical_indicators::candle_indicators::single::moving_constant_envelopes",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "constant_model_type",
+          "type": "ConstantModelType"
+        },
+        {
+          "name": "difference",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<(f64, f64, f64)>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": true,
+      "deprecated": false
+    },
+    {
+      "id": "candle_indicators.supertrend",
+      "module": "candle_indicators",
+      "function_path": "centaur_technical_indicators::candle_indicators::supertrend",
+      "input_series": [
+        "highs",
+        "lows",
+        "close"
+      ],
+      "parameters": [
+        {
+          "name": "highs",
+          "type": "&[f64]"
+        },
+        {
+          "name": "lows",
+          "type": "&[f64]"
+        },
+        {
+          "name": "close",
+          "type": "&[f64]"
+        },
+        {
+          "name": "constant_model_type",
+          "type": "ConstantModelType"
+        },
+        {
+          "name": "multiplier",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "candle_indicators.supertrend",
+      "module": "candle_indicators",
+      "function_path": "centaur_technical_indicators::candle_indicators::supertrend",
+      "input_series": [
+        "highs",
+        "lows",
+        "close"
+      ],
+      "parameters": [
+        {
+          "name": "highs",
+          "type": "&[f64]"
+        },
+        {
+          "name": "lows",
+          "type": "&[f64]"
+        },
+        {
+          "name": "close",
+          "type": "&[f64]"
+        },
+        {
+          "name": "constant_model_type",
+          "type": "ConstantModelType"
+        },
+        {
+          "name": "multiplier",
+          "type": "f64"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "chart_trends.break_down_trends",
+      "module": "chart_trends",
+      "function_path": "centaur_technical_indicators::chart_trends::break_down_trends",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "trend_break_config",
+          "type": "TrendBreakConfig"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<(usize, usize, f64, f64)>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "chart_trends.overall_trend",
+      "module": "chart_trends",
+      "function_path": "centaur_technical_indicators::chart_trends::overall_trend",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<(f64, f64)>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "chart_trends.peak_trend",
+      "module": "chart_trends",
+      "function_path": "centaur_technical_indicators::chart_trends::peak_trend",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<(f64, f64)>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "chart_trends.peaks",
+      "module": "chart_trends",
+      "function_path": "centaur_technical_indicators::chart_trends::peaks",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        },
+        {
+          "name": "closest_neighbor",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<(f64, usize)>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "chart_trends.valley_trend",
+      "module": "chart_trends",
+      "function_path": "centaur_technical_indicators::chart_trends::valley_trend",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<(f64, f64)>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "chart_trends.valleys",
+      "module": "chart_trends",
+      "function_path": "centaur_technical_indicators::chart_trends::valleys",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        },
+        {
+          "name": "closest_neighbor",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<(f64, usize)>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "correlation_indicators.bulk.correlate_asset_prices",
+      "module": "correlation_indicators",
+      "function_path": "centaur_technical_indicators::correlation_indicators::bulk::correlate_asset_prices",
+      "input_series": [
+        "prices_asset_a",
+        "prices_asset_b"
+      ],
+      "parameters": [
+        {
+          "name": "prices_asset_a",
+          "type": "&[f64]"
+        },
+        {
+          "name": "prices_asset_b",
+          "type": "&[f64]"
+        },
+        {
+          "name": "constant_model_type",
+          "type": "ConstantModelType"
+        },
+        {
+          "name": "deviation_model",
+          "type": "DeviationModel"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": true,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "correlation_indicators.single.correlate_asset_prices",
+      "module": "correlation_indicators",
+      "function_path": "centaur_technical_indicators::correlation_indicators::single::correlate_asset_prices",
+      "input_series": [
+        "prices_asset_a",
+        "prices_asset_b"
+      ],
+      "parameters": [
+        {
+          "name": "prices_asset_a",
+          "type": "&[f64]"
+        },
+        {
+          "name": "prices_asset_b",
+          "type": "&[f64]"
+        },
+        {
+          "name": "constant_model_type",
+          "type": "ConstantModelType"
+        },
+        {
+          "name": "deviation_model",
+          "type": "DeviationModel"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": true,
+      "deprecated": false
+    },
+    {
+      "id": "momentum_indicators.bulk.relative_strength_index",
+      "module": "momentum_indicators",
+      "function_path": "centaur_technical_indicators::momentum_indicators::bulk::relative_strength_index",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "constant_model_type",
+          "type": "ConstantModelType"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": true,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "momentum_indicators.chaikin_oscillator",
+      "module": "momentum_indicators",
+      "function_path": "centaur_technical_indicators::momentum_indicators::chaikin_oscillator",
+      "input_series": [
+        "highs",
+        "lows",
+        "close",
+        "volume"
+      ],
+      "parameters": [
+        {
+          "name": "highs",
+          "type": "&[f64]"
+        },
+        {
+          "name": "lows",
+          "type": "&[f64]"
+        },
+        {
+          "name": "close",
+          "type": "&[f64]"
+        },
+        {
+          "name": "volume",
+          "type": "&[f64]"
+        },
+        {
+          "name": "short_period",
+          "type": "usize"
+        },
+        {
+          "name": "previous_accumulation_distribution",
+          "type": "f64"
+        },
+        {
+          "name": "short_period_model",
+          "type": "ConstantModelType"
+        },
+        {
+          "name": "long_period_model",
+          "type": "ConstantModelType"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<(f64, f64)>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "momentum_indicators.chaikin_oscillator",
+      "module": "momentum_indicators",
+      "function_path": "centaur_technical_indicators::momentum_indicators::chaikin_oscillator",
+      "input_series": [
+        "highs",
+        "lows",
+        "close",
+        "volume"
+      ],
+      "parameters": [
+        {
+          "name": "highs",
+          "type": "&[f64]"
+        },
+        {
+          "name": "lows",
+          "type": "&[f64]"
+        },
+        {
+          "name": "close",
+          "type": "&[f64]"
+        },
+        {
+          "name": "volume",
+          "type": "&[f64]"
+        },
+        {
+          "name": "short_period",
+          "type": "usize"
+        },
+        {
+          "name": "long_period",
+          "type": "usize"
+        },
+        {
+          "name": "previous_accumulation_distribution",
+          "type": "f64"
+        },
+        {
+          "name": "short_period_model",
+          "type": "ConstantModelType"
+        },
+        {
+          "name": "long_period_model",
+          "type": "ConstantModelType"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<(f64, f64)>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "momentum_indicators.chande_momentum_oscillator",
+      "module": "momentum_indicators",
+      "function_path": "centaur_technical_indicators::momentum_indicators::chande_momentum_oscillator",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "momentum_indicators.chande_momentum_oscillator",
+      "module": "momentum_indicators",
+      "function_path": "centaur_technical_indicators::momentum_indicators::chande_momentum_oscillator",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "momentum_indicators.commodity_channel_index",
+      "module": "momentum_indicators",
+      "function_path": "centaur_technical_indicators::momentum_indicators::commodity_channel_index",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "constant_model_type",
+          "type": "ConstantModelType"
+        },
+        {
+          "name": "deviation_model",
+          "type": "DeviationModel"
+        },
+        {
+          "name": "constant_multiplier",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "momentum_indicators.commodity_channel_index",
+      "module": "momentum_indicators",
+      "function_path": "centaur_technical_indicators::momentum_indicators::commodity_channel_index",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "constant_model_type",
+          "type": "ConstantModelType"
+        },
+        {
+          "name": "deviation_model",
+          "type": "DeviationModel"
+        },
+        {
+          "name": "constant_multiplier",
+          "type": "f64"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "momentum_indicators.macd_line",
+      "module": "momentum_indicators",
+      "function_path": "centaur_technical_indicators::momentum_indicators::macd_line",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "short_period",
+          "type": "usize"
+        },
+        {
+          "name": "short_period_model",
+          "type": "ConstantModelType"
+        },
+        {
+          "name": "long_period_model",
+          "type": "ConstantModelType"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "momentum_indicators.macd_line",
+      "module": "momentum_indicators",
+      "function_path": "centaur_technical_indicators::momentum_indicators::macd_line",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "short_period",
+          "type": "usize"
+        },
+        {
+          "name": "short_period_model",
+          "type": "ConstantModelType"
+        },
+        {
+          "name": "long_period",
+          "type": "usize"
+        },
+        {
+          "name": "long_period_model",
+          "type": "ConstantModelType"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "momentum_indicators.mcginley_dynamic_commodity_channel_index",
+      "module": "momentum_indicators",
+      "function_path": "centaur_technical_indicators::momentum_indicators::mcginley_dynamic_commodity_channel_index",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "previous_mcginley_dynamic",
+          "type": "f64"
+        },
+        {
+          "name": "deviation_model",
+          "type": "DeviationModel"
+        },
+        {
+          "name": "constant_multiplier",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<(f64, f64)>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "momentum_indicators.mcginley_dynamic_commodity_channel_index",
+      "module": "momentum_indicators",
+      "function_path": "centaur_technical_indicators::momentum_indicators::mcginley_dynamic_commodity_channel_index",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "previous_mcginley_dynamic",
+          "type": "f64"
+        },
+        {
+          "name": "deviation_model",
+          "type": "DeviationModel"
+        },
+        {
+          "name": "constant_multiplier",
+          "type": "f64"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<(f64, f64)>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "momentum_indicators.mcginley_dynamic_macd_line",
+      "module": "momentum_indicators",
+      "function_path": "centaur_technical_indicators::momentum_indicators::mcginley_dynamic_macd_line",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "short_period",
+          "type": "usize"
+        },
+        {
+          "name": "previous_short_mcginley",
+          "type": "f64"
+        },
+        {
+          "name": "previous_long_mcginley",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<(f64, f64, f64)>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "momentum_indicators.mcginley_dynamic_macd_line",
+      "module": "momentum_indicators",
+      "function_path": "centaur_technical_indicators::momentum_indicators::mcginley_dynamic_macd_line",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "short_period",
+          "type": "usize"
+        },
+        {
+          "name": "previous_short_mcginley",
+          "type": "f64"
+        },
+        {
+          "name": "long_period",
+          "type": "usize"
+        },
+        {
+          "name": "previous_long_mcginley",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<(f64, f64, f64)>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "momentum_indicators.money_flow_index",
+      "module": "momentum_indicators",
+      "function_path": "centaur_technical_indicators::momentum_indicators::money_flow_index",
+      "input_series": [
+        "prices",
+        "volume"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "volume",
+          "type": "&[f64]"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "momentum_indicators.money_flow_index",
+      "module": "momentum_indicators",
+      "function_path": "centaur_technical_indicators::momentum_indicators::money_flow_index",
+      "input_series": [
+        "prices",
+        "volume"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "volume",
+          "type": "&[f64]"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "momentum_indicators.on_balance_volume",
+      "module": "momentum_indicators",
+      "function_path": "centaur_technical_indicators::momentum_indicators::on_balance_volume",
+      "input_series": [],
+      "parameters": [
+        {
+          "name": "current_price",
+          "type": "f64"
+        },
+        {
+          "name": "previous_price",
+          "type": "f64"
+        },
+        {
+          "name": "current_volume",
+          "type": "f64"
+        },
+        {
+          "name": "previous_on_balance_volume",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "momentum_indicators.on_balance_volume",
+      "module": "momentum_indicators",
+      "function_path": "centaur_technical_indicators::momentum_indicators::on_balance_volume",
+      "input_series": [
+        "prices",
+        "volume"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "volume",
+          "type": "&[f64]"
+        },
+        {
+          "name": "previous_on_balance_volume",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "momentum_indicators.percentage_price_oscillator",
+      "module": "momentum_indicators",
+      "function_path": "centaur_technical_indicators::momentum_indicators::percentage_price_oscillator",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "short_period",
+          "type": "usize"
+        },
+        {
+          "name": "constant_model_type",
+          "type": "ConstantModelType"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "momentum_indicators.percentage_price_oscillator",
+      "module": "momentum_indicators",
+      "function_path": "centaur_technical_indicators::momentum_indicators::percentage_price_oscillator",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "short_period",
+          "type": "usize"
+        },
+        {
+          "name": "long_period",
+          "type": "usize"
+        },
+        {
+          "name": "constant_model_type",
+          "type": "ConstantModelType"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "momentum_indicators.rate_of_change",
+      "module": "momentum_indicators",
+      "function_path": "centaur_technical_indicators::momentum_indicators::rate_of_change",
+      "input_series": [],
+      "parameters": [
+        {
+          "name": "current_price",
+          "type": "f64"
+        },
+        {
+          "name": "previous_price",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "momentum_indicators.rate_of_change",
+      "module": "momentum_indicators",
+      "function_path": "centaur_technical_indicators::momentum_indicators::rate_of_change",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "momentum_indicators.signal_line",
+      "module": "momentum_indicators",
+      "function_path": "centaur_technical_indicators::momentum_indicators::signal_line",
+      "input_series": [
+        "macds"
+      ],
+      "parameters": [
+        {
+          "name": "macds",
+          "type": "&[f64]"
+        },
+        {
+          "name": "constant_model_type",
+          "type": "ConstantModelType"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": true
+    },
+    {
+      "id": "momentum_indicators.signal_line",
+      "module": "momentum_indicators",
+      "function_path": "centaur_technical_indicators::momentum_indicators::signal_line",
+      "input_series": [
+        "macds"
+      ],
+      "parameters": [
+        {
+          "name": "macds",
+          "type": "&[f64]"
+        },
+        {
+          "name": "constant_model_type",
+          "type": "ConstantModelType"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": true
+    },
+    {
+      "id": "momentum_indicators.single.relative_strength_index",
+      "module": "momentum_indicators",
+      "function_path": "centaur_technical_indicators::momentum_indicators::single::relative_strength_index",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "constant_model_type",
+          "type": "ConstantModelType"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": true,
+      "deprecated": false
+    },
+    {
+      "id": "momentum_indicators.slow_stochastic",
+      "module": "momentum_indicators",
+      "function_path": "centaur_technical_indicators::momentum_indicators::slow_stochastic",
+      "input_series": [
+        "stochastics"
+      ],
+      "parameters": [
+        {
+          "name": "stochastics",
+          "type": "&[f64]"
+        },
+        {
+          "name": "constant_model_type",
+          "type": "ConstantModelType"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": true
+    },
+    {
+      "id": "momentum_indicators.slow_stochastic",
+      "module": "momentum_indicators",
+      "function_path": "centaur_technical_indicators::momentum_indicators::slow_stochastic",
+      "input_series": [
+        "stochastics"
+      ],
+      "parameters": [
+        {
+          "name": "stochastics",
+          "type": "&[f64]"
+        },
+        {
+          "name": "constant_model_type",
+          "type": "ConstantModelType"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": true
+    },
+    {
+      "id": "momentum_indicators.slowest_stochastic",
+      "module": "momentum_indicators",
+      "function_path": "centaur_technical_indicators::momentum_indicators::slowest_stochastic",
+      "input_series": [
+        "slow_stochastics"
+      ],
+      "parameters": [
+        {
+          "name": "slow_stochastics",
+          "type": "&[f64]"
+        },
+        {
+          "name": "constant_model_type",
+          "type": "ConstantModelType"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": true
+    },
+    {
+      "id": "momentum_indicators.slowest_stochastic",
+      "module": "momentum_indicators",
+      "function_path": "centaur_technical_indicators::momentum_indicators::slowest_stochastic",
+      "input_series": [
+        "slow_stochastics"
+      ],
+      "parameters": [
+        {
+          "name": "slow_stochastics",
+          "type": "&[f64]"
+        },
+        {
+          "name": "constant_model_type",
+          "type": "ConstantModelType"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": true
+    },
+    {
+      "id": "momentum_indicators.stochastic_oscillator",
+      "module": "momentum_indicators",
+      "function_path": "centaur_technical_indicators::momentum_indicators::stochastic_oscillator",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "momentum_indicators.stochastic_oscillator",
+      "module": "momentum_indicators",
+      "function_path": "centaur_technical_indicators::momentum_indicators::stochastic_oscillator",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "momentum_indicators.williams_percent_r",
+      "module": "momentum_indicators",
+      "function_path": "centaur_technical_indicators::momentum_indicators::williams_percent_r",
+      "input_series": [
+        "highs",
+        "lows"
+      ],
+      "parameters": [
+        {
+          "name": "highs",
+          "type": "&[f64]"
+        },
+        {
+          "name": "lows",
+          "type": "&[f64]"
+        },
+        {
+          "name": "close",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "momentum_indicators.williams_percent_r",
+      "module": "momentum_indicators",
+      "function_path": "centaur_technical_indicators::momentum_indicators::williams_percent_r",
+      "input_series": [
+        "highs",
+        "lows",
+        "close"
+      ],
+      "parameters": [
+        {
+          "name": "highs",
+          "type": "&[f64]"
+        },
+        {
+          "name": "lows",
+          "type": "&[f64]"
+        },
+        {
+          "name": "close",
+          "type": "&[f64]"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "moving_average.bulk.moving_average",
+      "module": "moving_average",
+      "function_path": "centaur_technical_indicators::moving_average::bulk::moving_average",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "moving_average_type",
+          "type": "MovingAverageType"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": true,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "moving_average.mcginley_dynamic",
+      "module": "moving_average",
+      "function_path": "centaur_technical_indicators::moving_average::mcginley_dynamic",
+      "input_series": [],
+      "parameters": [
+        {
+          "name": "latest_price",
+          "type": "f64"
+        },
+        {
+          "name": "previous_mcginley_dynamic",
+          "type": "f64"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "moving_average.mcginley_dynamic",
+      "module": "moving_average",
+      "function_path": "centaur_technical_indicators::moving_average::mcginley_dynamic",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "previous_mcginley_dynamic",
+          "type": "f64"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "moving_average.single.moving_average",
+      "module": "moving_average",
+      "function_path": "centaur_technical_indicators::moving_average::single::moving_average",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "moving_average_type",
+          "type": "MovingAverageType"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": true,
+      "deprecated": false
+    },
+    {
+      "id": "other_indicators.bulk.average_true_range",
+      "module": "other_indicators",
+      "function_path": "centaur_technical_indicators::other_indicators::bulk::average_true_range",
+      "input_series": [
+        "close",
+        "highs",
+        "lows"
+      ],
+      "parameters": [
+        {
+          "name": "close",
+          "type": "&[f64]"
+        },
+        {
+          "name": "highs",
+          "type": "&[f64]"
+        },
+        {
+          "name": "lows",
+          "type": "&[f64]"
+        },
+        {
+          "name": "constant_model_type",
+          "type": "ConstantModelType"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": true,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "other_indicators.bulk.return_on_investment",
+      "module": "other_indicators",
+      "function_path": "centaur_technical_indicators::other_indicators::bulk::return_on_investment",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "investment",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<(f64, f64)>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": true,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "other_indicators.bulk.true_range",
+      "module": "other_indicators",
+      "function_path": "centaur_technical_indicators::other_indicators::bulk::true_range",
+      "input_series": [
+        "close",
+        "highs",
+        "lows"
+      ],
+      "parameters": [
+        {
+          "name": "close",
+          "type": "&[f64]"
+        },
+        {
+          "name": "highs",
+          "type": "&[f64]"
+        },
+        {
+          "name": "lows",
+          "type": "&[f64]"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": true,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "other_indicators.internal_bar_strength",
+      "module": "other_indicators",
+      "function_path": "centaur_technical_indicators::other_indicators::internal_bar_strength",
+      "input_series": [],
+      "parameters": [
+        {
+          "name": "high",
+          "type": "f64"
+        },
+        {
+          "name": "low",
+          "type": "f64"
+        },
+        {
+          "name": "close",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "f64",
+        "fallible": false
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "other_indicators.internal_bar_strength",
+      "module": "other_indicators",
+      "function_path": "centaur_technical_indicators::other_indicators::internal_bar_strength",
+      "input_series": [
+        "highs",
+        "lows",
+        "close"
+      ],
+      "parameters": [
+        {
+          "name": "highs",
+          "type": "&[f64]"
+        },
+        {
+          "name": "lows",
+          "type": "&[f64]"
+        },
+        {
+          "name": "close",
+          "type": "&[f64]"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "other_indicators.positivity_indicator",
+      "module": "other_indicators",
+      "function_path": "centaur_technical_indicators::other_indicators::positivity_indicator",
+      "input_series": [
+        "open",
+        "previous_close"
+      ],
+      "parameters": [
+        {
+          "name": "open",
+          "type": "&[f64]"
+        },
+        {
+          "name": "previous_close",
+          "type": "&[f64]"
+        },
+        {
+          "name": "signal_period",
+          "type": "usize"
+        },
+        {
+          "name": "constant_model_type",
+          "type": "ConstantModelType"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<(f64, f64)>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "other_indicators.single.average_true_range",
+      "module": "other_indicators",
+      "function_path": "centaur_technical_indicators::other_indicators::single::average_true_range",
+      "input_series": [
+        "close",
+        "highs",
+        "lows"
+      ],
+      "parameters": [
+        {
+          "name": "close",
+          "type": "&[f64]"
+        },
+        {
+          "name": "highs",
+          "type": "&[f64]"
+        },
+        {
+          "name": "lows",
+          "type": "&[f64]"
+        },
+        {
+          "name": "constant_model_type",
+          "type": "ConstantModelType"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": true,
+      "deprecated": false
+    },
+    {
+      "id": "other_indicators.single.return_on_investment",
+      "module": "other_indicators",
+      "function_path": "centaur_technical_indicators::other_indicators::single::return_on_investment",
+      "input_series": [],
+      "parameters": [
+        {
+          "name": "start_price",
+          "type": "f64"
+        },
+        {
+          "name": "end_price",
+          "type": "f64"
+        },
+        {
+          "name": "investment",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "(f64, f64)",
+        "fallible": false
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": true,
+      "deprecated": false
+    },
+    {
+      "id": "other_indicators.single.true_range",
+      "module": "other_indicators",
+      "function_path": "centaur_technical_indicators::other_indicators::single::true_range",
+      "input_series": [],
+      "parameters": [
+        {
+          "name": "close",
+          "type": "f64"
+        },
+        {
+          "name": "high",
+          "type": "f64"
+        },
+        {
+          "name": "low",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "f64",
+        "fallible": false
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": true,
+      "deprecated": false
+    },
+    {
+      "id": "strength_indicators.bulk.accumulation_distribution",
+      "module": "strength_indicators",
+      "function_path": "centaur_technical_indicators::strength_indicators::bulk::accumulation_distribution",
+      "input_series": [
+        "high",
+        "low",
+        "close",
+        "volume"
+      ],
+      "parameters": [
+        {
+          "name": "high",
+          "type": "&[f64]"
+        },
+        {
+          "name": "low",
+          "type": "&[f64]"
+        },
+        {
+          "name": "close",
+          "type": "&[f64]"
+        },
+        {
+          "name": "volume",
+          "type": "&[f64]"
+        },
+        {
+          "name": "previous_accumulation_distribution",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": true,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "strength_indicators.negative_volume_index",
+      "module": "strength_indicators",
+      "function_path": "centaur_technical_indicators::strength_indicators::negative_volume_index",
+      "input_series": [
+        "close",
+        "volume"
+      ],
+      "parameters": [
+        {
+          "name": "close",
+          "type": "&[f64]"
+        },
+        {
+          "name": "volume",
+          "type": "&[f64]"
+        },
+        {
+          "name": "previous_negative_volume_index",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "strength_indicators.positive_volume_index",
+      "module": "strength_indicators",
+      "function_path": "centaur_technical_indicators::strength_indicators::positive_volume_index",
+      "input_series": [
+        "close",
+        "volume"
+      ],
+      "parameters": [
+        {
+          "name": "close",
+          "type": "&[f64]"
+        },
+        {
+          "name": "volume",
+          "type": "&[f64]"
+        },
+        {
+          "name": "previous_positive_volume_index",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "strength_indicators.relative_vigor_index",
+      "module": "strength_indicators",
+      "function_path": "centaur_technical_indicators::strength_indicators::relative_vigor_index",
+      "input_series": [
+        "open",
+        "high",
+        "low",
+        "close"
+      ],
+      "parameters": [
+        {
+          "name": "open",
+          "type": "&[f64]"
+        },
+        {
+          "name": "high",
+          "type": "&[f64]"
+        },
+        {
+          "name": "low",
+          "type": "&[f64]"
+        },
+        {
+          "name": "close",
+          "type": "&[f64]"
+        },
+        {
+          "name": "constant_model_type",
+          "type": "ConstantModelType"
+        }
+      ],
+      "returns": {
+        "type": "Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "strength_indicators.relative_vigor_index",
+      "module": "strength_indicators",
+      "function_path": "centaur_technical_indicators::strength_indicators::relative_vigor_index",
+      "input_series": [
+        "open",
+        "high",
+        "low",
+        "close"
+      ],
+      "parameters": [
+        {
+          "name": "open",
+          "type": "&[f64]"
+        },
+        {
+          "name": "high",
+          "type": "&[f64]"
+        },
+        {
+          "name": "low",
+          "type": "&[f64]"
+        },
+        {
+          "name": "close",
+          "type": "&[f64]"
+        },
+        {
+          "name": "constant_model_type",
+          "type": "ConstantModelType"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "strength_indicators.single.accumulation_distribution",
+      "module": "strength_indicators",
+      "function_path": "centaur_technical_indicators::strength_indicators::single::accumulation_distribution",
+      "input_series": [],
+      "parameters": [
+        {
+          "name": "high",
+          "type": "f64"
+        },
+        {
+          "name": "low",
+          "type": "f64"
+        },
+        {
+          "name": "close",
+          "type": "f64"
+        },
+        {
+          "name": "volume",
+          "type": "f64"
+        },
+        {
+          "name": "previous_accumulation_distribution",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "f64",
+        "fallible": false
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": true,
+      "deprecated": false
+    },
+    {
+      "id": "strength_indicators.volume_index",
+      "module": "strength_indicators",
+      "function_path": "centaur_technical_indicators::strength_indicators::volume_index",
+      "input_series": [],
+      "parameters": [
+        {
+          "name": "current_close",
+          "type": "f64"
+        },
+        {
+          "name": "previous_close",
+          "type": "f64"
+        },
+        {
+          "name": "previous_volume_index",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "f64",
+        "fallible": false
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "trend_indicators.bulk.aroon_down",
+      "module": "trend_indicators",
+      "function_path": "centaur_technical_indicators::trend_indicators::bulk::aroon_down",
+      "input_series": [
+        "lows"
+      ],
+      "parameters": [
+        {
+          "name": "lows",
+          "type": "&[f64]"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": true,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "trend_indicators.bulk.aroon_indicator",
+      "module": "trend_indicators",
+      "function_path": "centaur_technical_indicators::trend_indicators::bulk::aroon_indicator",
+      "input_series": [
+        "highs",
+        "lows"
+      ],
+      "parameters": [
+        {
+          "name": "highs",
+          "type": "&[f64]"
+        },
+        {
+          "name": "lows",
+          "type": "&[f64]"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<(f64, f64, f64)>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": true,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "trend_indicators.bulk.aroon_oscillator",
+      "module": "trend_indicators",
+      "function_path": "centaur_technical_indicators::trend_indicators::bulk::aroon_oscillator",
+      "input_series": [
+        "aroon_up",
+        "aroon_down"
+      ],
+      "parameters": [
+        {
+          "name": "aroon_up",
+          "type": "&[f64]"
+        },
+        {
+          "name": "aroon_down",
+          "type": "&[f64]"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": true,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "trend_indicators.bulk.aroon_up",
+      "module": "trend_indicators",
+      "function_path": "centaur_technical_indicators::trend_indicators::bulk::aroon_up",
+      "input_series": [
+        "highs"
+      ],
+      "parameters": [
+        {
+          "name": "highs",
+          "type": "&[f64]"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": true,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "trend_indicators.directional_movement_system",
+      "module": "trend_indicators",
+      "function_path": "centaur_technical_indicators::trend_indicators::directional_movement_system",
+      "input_series": [
+        "highs",
+        "lows",
+        "close"
+      ],
+      "parameters": [
+        {
+          "name": "highs",
+          "type": "&[f64]"
+        },
+        {
+          "name": "lows",
+          "type": "&[f64]"
+        },
+        {
+          "name": "close",
+          "type": "&[f64]"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        },
+        {
+          "name": "constant_model_type",
+          "type": "ConstantModelType"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<(f64, f64, f64, f64)>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "trend_indicators.parabolic_time_price_system",
+      "module": "trend_indicators",
+      "function_path": "centaur_technical_indicators::trend_indicators::parabolic_time_price_system",
+      "input_series": [
+        "highs",
+        "lows"
+      ],
+      "parameters": [
+        {
+          "name": "highs",
+          "type": "&[f64]"
+        },
+        {
+          "name": "lows",
+          "type": "&[f64]"
+        },
+        {
+          "name": "acceleration_factor_start",
+          "type": "f64"
+        },
+        {
+          "name": "acceleration_factor_max",
+          "type": "f64"
+        },
+        {
+          "name": "acceleration_factor_step",
+          "type": "f64"
+        },
+        {
+          "name": "start_position",
+          "type": "Position"
+        },
+        {
+          "name": "previous_sar",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "trend_indicators.short_parabolic_time_price_system",
+      "module": "trend_indicators",
+      "function_path": "centaur_technical_indicators::trend_indicators::short_parabolic_time_price_system",
+      "input_series": [],
+      "parameters": [
+        {
+          "name": "previous_sar",
+          "type": "f64"
+        },
+        {
+          "name": "extreme_point",
+          "type": "f64"
+        },
+        {
+          "name": "acceleration_factor",
+          "type": "f64"
+        },
+        {
+          "name": "high",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "f64",
+        "fallible": false
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "trend_indicators.single.aroon_down",
+      "module": "trend_indicators",
+      "function_path": "centaur_technical_indicators::trend_indicators::single::aroon_down",
+      "input_series": [
+        "lows"
+      ],
+      "parameters": [
+        {
+          "name": "lows",
+          "type": "&[f64]"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": true,
+      "deprecated": false
+    },
+    {
+      "id": "trend_indicators.single.aroon_indicator",
+      "module": "trend_indicators",
+      "function_path": "centaur_technical_indicators::trend_indicators::single::aroon_indicator",
+      "input_series": [
+        "highs",
+        "lows"
+      ],
+      "parameters": [
+        {
+          "name": "highs",
+          "type": "&[f64]"
+        },
+        {
+          "name": "lows",
+          "type": "&[f64]"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<(f64, f64, f64)>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": true,
+      "deprecated": false
+    },
+    {
+      "id": "trend_indicators.single.aroon_oscillator",
+      "module": "trend_indicators",
+      "function_path": "centaur_technical_indicators::trend_indicators::single::aroon_oscillator",
+      "input_series": [],
+      "parameters": [
+        {
+          "name": "aroon_up",
+          "type": "f64"
+        },
+        {
+          "name": "aroon_down",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "f64",
+        "fallible": false
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": true,
+      "deprecated": false
+    },
+    {
+      "id": "trend_indicators.single.aroon_up",
+      "module": "trend_indicators",
+      "function_path": "centaur_technical_indicators::trend_indicators::single::aroon_up",
+      "input_series": [
+        "highs"
+      ],
+      "parameters": [
+        {
+          "name": "highs",
+          "type": "&[f64]"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": true,
+      "deprecated": false
+    },
+    {
+      "id": "trend_indicators.single.long_parabolic_time_price_system",
+      "module": "trend_indicators",
+      "function_path": "centaur_technical_indicators::trend_indicators::single::long_parabolic_time_price_system",
+      "input_series": [],
+      "parameters": [
+        {
+          "name": "previous_sar",
+          "type": "f64"
+        },
+        {
+          "name": "extreme_point",
+          "type": "f64"
+        },
+        {
+          "name": "acceleration_factor",
+          "type": "f64"
+        },
+        {
+          "name": "low",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "f64",
+        "fallible": false
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": true,
+      "deprecated": false
+    },
+    {
+      "id": "trend_indicators.true_strength_index",
+      "module": "trend_indicators",
+      "function_path": "centaur_technical_indicators::trend_indicators::true_strength_index",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "first_constant_model",
+          "type": "ConstantModelType"
+        },
+        {
+          "name": "first_period",
+          "type": "usize"
+        },
+        {
+          "name": "second_constant_model",
+          "type": "ConstantModelType"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "trend_indicators.true_strength_index",
+      "module": "trend_indicators",
+      "function_path": "centaur_technical_indicators::trend_indicators::true_strength_index",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "first_constant_model",
+          "type": "ConstantModelType"
+        },
+        {
+          "name": "first_period",
+          "type": "usize"
+        },
+        {
+          "name": "second_constant_model",
+          "type": "ConstantModelType"
+        },
+        {
+          "name": "second_period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "trend_indicators.volume_price_trend",
+      "module": "trend_indicators",
+      "function_path": "centaur_technical_indicators::trend_indicators::volume_price_trend",
+      "input_series": [],
+      "parameters": [
+        {
+          "name": "current_price",
+          "type": "f64"
+        },
+        {
+          "name": "previous_price",
+          "type": "f64"
+        },
+        {
+          "name": "volume",
+          "type": "f64"
+        },
+        {
+          "name": "previous_volume_price_trend",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "f64",
+        "fallible": false
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "trend_indicators.volume_price_trend",
+      "module": "trend_indicators",
+      "function_path": "centaur_technical_indicators::trend_indicators::volume_price_trend",
+      "input_series": [
+        "prices",
+        "volumes"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "volumes",
+          "type": "&[f64]"
+        },
+        {
+          "name": "previous_volume_price_trend",
+          "type": "f64"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "volatility_indicators.bulk.ulcer_index",
+      "module": "volatility_indicators",
+      "function_path": "centaur_technical_indicators::volatility_indicators::bulk::ulcer_index",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": true,
+      "supports_single": false,
+      "deprecated": false
+    },
+    {
+      "id": "volatility_indicators.bulk.volatility_system",
+      "module": "volatility_indicators",
+      "function_path": "centaur_technical_indicators::volatility_indicators::bulk::volatility_system",
+      "input_series": [
+        "highs",
+        "lows",
+        "close"
+      ],
+      "parameters": [
+        {
+          "name": "highs",
+          "type": "&[f64]"
+        },
+        {
+          "name": "lows",
+          "type": "&[f64]"
+        },
+        {
+          "name": "close",
+          "type": "&[f64]"
+        },
+        {
+          "name": "period",
+          "type": "usize"
+        },
+        {
+          "name": "constant_multiplier",
+          "type": "f64"
+        },
+        {
+          "name": "constant_model_type",
+          "type": "ConstantModelType"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<Vec<f64>>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": true,
+      "supports_single": false,
+      "deprecated": true
+    },
+    {
+      "id": "volatility_indicators.single.ulcer_index",
+      "module": "volatility_indicators",
+      "function_path": "centaur_technical_indicators::volatility_indicators::single::ulcer_index",
+      "input_series": [
+        "prices"
+      ],
+      "parameters": [
+        {
+          "name": "prices",
+          "type": "&[f64]"
+        }
+      ],
+      "returns": {
+        "type": "crate::Result<f64>",
+        "fallible": true
+      },
+      "warmup": {
+        "kind": "function_defined"
+      },
+      "supports_bulk": false,
+      "supports_single": true,
+      "deprecated": false
+    }
+  ]
+}

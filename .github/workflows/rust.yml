@@ -23,6 +23,8 @@ jobs:
         fetch-depth: 0
     - name: AI Policy Check
       run: bash "${{ github.workspace }}/.github/scripts/ai_policy_check.sh"
+    - name: Indicator registry schema validation
+      run: python3 "${{ github.workspace }}/.github/scripts/validate_indicator_registry.py"
 
   fmt:
     permissions:
