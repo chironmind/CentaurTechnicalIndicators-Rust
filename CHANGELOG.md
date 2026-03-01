@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 - Updated CI (`.github/workflows/rust.yml`) to run lightweight indicator registry schema validation via `.github/scripts/validate_indicator_registry.py`.
 - Linked the indicator registry in `README.md` and `AI_FRIENDLY_ROADMAP.md` as the canonical discovery source for tools/agents.
+- Normalized `docs/indicator_registry.json` entries so `id` and `function_path` are canonical and unique, replaced `supports_bulk`/`supports_single` with `mode` (`single`/`bulk`/`module`), renamed schema field names to avoid keyword-collisions (`parameters[].param_type`, `returns.return_type`, `is_deprecated`), and expanded `.github/scripts/validate_indicator_registry.py` to enforce uniqueness and mode/path consistency.
 - Updated `.github/workflows/rust.yml` to add explicit stable-toolchain CI quality gate steps for `cargo fmt --all -- --check`, `cargo clippy --all-targets --all-features -- -D warnings`, `cargo test --all-features`, and `cargo doc --no-deps`, with each gate logged as its own named step.
 - Updated `.github/workflows/rust.yml` so each required quality gate (`fmt`, `clippy`, `test`, `doc`) runs as its own blocking CI job on PRs and pushes to `main`; the toolchain matrix build now depends on all gate jobs.
 - Updated `.github/workflows/rust.yml` to remove third-party Rust CI actions and use native `rustup`/`cargo` commands for toolchain setup and checks.

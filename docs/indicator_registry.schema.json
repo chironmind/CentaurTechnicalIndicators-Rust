@@ -19,13 +19,12 @@
           "id",
           "module",
           "function_path",
+          "mode",
           "input_series",
           "parameters",
           "returns",
           "warmup",
-          "supports_bulk",
-          "supports_single",
-          "deprecated"
+          "is_deprecated"
         ],
         "properties": {
           "id": { "type": "string", "minLength": 1 },
@@ -33,6 +32,10 @@
           "function_path": {
             "type": "string",
             "pattern": "^centaur_technical_indicators::"
+          },
+          "mode": {
+            "type": "string",
+            "enum": ["single", "bulk", "module"]
           },
           "input_series": {
             "type": "array",
@@ -43,19 +46,19 @@
             "items": {
               "type": "object",
               "additionalProperties": false,
-              "required": ["name", "type"],
+              "required": ["name", "param_type"],
               "properties": {
                 "name": { "type": "string", "minLength": 1 },
-                "type": { "type": "string", "minLength": 1 }
+                "param_type": { "type": "string", "minLength": 1 }
               }
             }
           },
           "returns": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["type", "fallible"],
+            "required": ["return_type", "fallible"],
             "properties": {
-              "type": { "type": "string", "minLength": 1 },
+              "return_type": { "type": "string", "minLength": 1 },
               "fallible": { "type": "boolean" }
             }
           },
@@ -76,9 +79,7 @@
               }
             }
           },
-          "supports_bulk": { "type": "boolean" },
-          "supports_single": { "type": "boolean" },
-          "deprecated": { "type": "boolean" }
+          "is_deprecated": { "type": "boolean" }
         }
       }
     }

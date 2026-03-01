@@ -89,10 +89,60 @@ def validate(schema: dict[str, Any], value: Any, path: str) -> None:
             raise ValidationError(f"{path} must match exactly one oneOf option")
 
 
+def validate_registry_invariants(registry: dict[str, Any]) -> None:
+    indicators = registry["indicators"]
+    seen_ids: set[str] = set()
+    seen_paths: set[str] = set()
+
+    for idx, indicator in enumerate(indicators):
+        path = f"registry.indicators[{idx}]"
+        indicator_id = indicator["id"]
+        function_path = indicator["function_path"]
+        mode = indicator["mode"]
+        module = indicator["module"]
+
+        if indicator_id in seen_ids:
+            raise ValidationError(f"{path}.id must be unique; duplicate '{indicator_id}'")
+        seen_ids.add(indicator_id)
+
+        if function_path in seen_paths:
+            raise ValidationError(
+                f"{path}.function_path must be unique; duplicate '{function_path}'"
+            )
+        seen_paths.add(function_path)
+
+        id_parts = indicator_id.split(".")
+        if mode == "module":
+            if len(id_parts) != 2 or id_parts[0] != module:
+                raise ValidationError(
+                    f"{path}.id must be '<module>.<function>' when mode is 'module'"
+                )
+            expected_prefix = f"centaur_technical_indicators::{module}::"
+            if "::single::" in function_path or "::bulk::" in function_path:
+                raise ValidationError(
+                    f"{path}.function_path must not include single/bulk when mode is 'module'"
+                )
+            if not function_path.startswith(expected_prefix):
+                raise ValidationError(
+                    f"{path}.function_path must start with '{expected_prefix}'"
+                )
+        else:
+            if len(id_parts) != 3 or id_parts[0] != module or id_parts[1] != mode:
+                raise ValidationError(
+                    f"{path}.id must be '<module>.<mode>.<function>' when mode is '{mode}'"
+                )
+            expected_fragment = f"::{mode}::"
+            if expected_fragment not in function_path:
+                raise ValidationError(
+                    f"{path}.function_path must include '{expected_fragment}' for mode '{mode}'"
+                )
+
+
 def main() -> None:
     schema = json.loads(SCHEMA_PATH.read_text())
     registry = json.loads(REGISTRY_PATH.read_text())
     validate(schema, registry, "registry")
+    validate_registry_invariants(registry)
     print("indicator_registry validation passed")
 
 
