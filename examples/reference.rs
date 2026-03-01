@@ -9,7 +9,6 @@
 use centaur_technical_indicators::{AbsDevConfig, CentralPoint, DeviationAggregate};
 use std::time::Instant;
 
-#[allow(deprecated)]
 fn main() {
     let now = Instant::now();
 
@@ -478,28 +477,6 @@ fn main() {
         );
     println!("Stochastic Oscillator: {:?}", stochastic_oscillator);
 
-    let stochastic_oscillator_unwrapped = stochastic_oscillator.unwrap();
-    for model in &available_models {
-        let slow_so = centaur_technical_indicators::momentum_indicators::bulk::slow_stochastic(
-            &stochastic_oscillator_unwrapped,
-            *model,
-            period,
-        )
-        .unwrap();
-        println!("Slow Stochastic {:?}: {:?}", model, slow_so);
-
-        for slowest_model in &available_models {
-            let slowest_so =
-                centaur_technical_indicators::momentum_indicators::bulk::slowest_stochastic(
-                    &slow_so,
-                    *slowest_model,
-                    period,
-                )
-                .unwrap();
-            println!("Slowest Stochastic {:?}: {:?}", slowest_model, slowest_so);
-        }
-    }
-
     let mfi = centaur_technical_indicators::momentum_indicators::bulk::money_flow_index(
         &typical_price,
         &volume,
@@ -555,17 +532,6 @@ fn main() {
                 *long_model,
             );
             println!("MACD {:?} {:?}: {:?}", short_model, long_model, macd);
-
-            let macd_unwrapped = macd.unwrap();
-            for signal_model in &available_models {
-                let signal = centaur_technical_indicators::momentum_indicators::bulk::signal_line(
-                    &macd_unwrapped,
-                    *signal_model,
-                    period,
-                )
-                .unwrap();
-                println!("Signal line {:?}: {:?}", signal_model, signal);
-            }
         }
     }
 
@@ -767,19 +733,6 @@ fn main() {
         period,
     );
     println!("Ulcer Index: {:?}", ulcer_index);
-
-    let constant_multiplier = 3.0;
-    for model in &available_models {
-        let vs = centaur_technical_indicators::volatility_indicators::bulk::volatility_system(
-            &high,
-            &low,
-            &close,
-            period,
-            constant_multiplier,
-            *model,
-        );
-        println!("{:?} Volatility System: {:?}", model, vs);
-    }
 
     // Chart trends (truncated, see documentation for argument meaning)
     let trend_break_config =
