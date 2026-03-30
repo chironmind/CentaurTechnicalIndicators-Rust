@@ -2799,7 +2799,7 @@
       "is_deprecated": false,
       "source": {
         "file": "src/momentum_indicators.rs",
-        "line": 1150
+        "line": 1149
       },
       "docs_url": "https://docs.rs/centaur_technical_indicators/latest/centaur_technical_indicators/momentum_indicators/single/fn.chaikin_oscillator.html"
     },
