@@ -94,9 +94,6 @@ Run all commands below before opening a PR:
 ## Related Documentation
 
 - [`AGENTS.md`](AGENTS.md)
-- [`docs/AI_ONBOARDING.md`](docs/AI_ONBOARDING.md)
-- [`.github/copilot-instructions.md`](.github/copilot-instructions.md)
-- [`AI_FRIENDLY_ROADMAP.md`](AI_FRIENDLY_ROADMAP.md)
 - [`docs/REPO_MAP.md`](docs/REPO_MAP.md)
 
 Thanks again for contributing.
