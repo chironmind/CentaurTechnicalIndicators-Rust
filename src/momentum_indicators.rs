@@ -1352,16 +1352,13 @@ pub mod single {
     #[inline]
     pub fn chande_momentum_oscillator(prices: &[f64]) -> crate::Result<f64> {
         let (previous_gains, previous_loss) = previous_gains_loss(prices)?;
-        if previous_gains.is_empty() {
-            return Ok(-100.0);
-        }
-        if previous_loss.is_empty() {
-            return Ok(100.0);
-        }
-
         let gains_sum: f64 = previous_gains.iter().sum();
         let loss_sum: f64 = previous_loss.iter().sum();
-        Ok(((gains_sum - loss_sum) / (gains_sum + loss_sum)) * 100.0)
+        let denominator = gains_sum + loss_sum;
+        if denominator == 0.0 {
+            return Ok(0.0);
+        }
+        Ok(((gains_sum - loss_sum) / denominator) * 100.0)
     }
 
     #[inline]
@@ -4834,6 +4831,12 @@ mod tests {
     fn single_chande_momentum_oscillator_rise() {
         let prices = vec![100.1, 100.2, 100.3, 100.4, 100.5];
         assert_eq!(100.0, single::chande_momentum_oscillator(&prices).unwrap());
+    }
+
+    #[test]
+    fn single_chande_momentum_oscillator_flat() {
+        let prices = vec![100.0, 100.0, 100.0, 100.0, 100.0];
+        assert_eq!(0.0, single::chande_momentum_oscillator(&prices).unwrap());
     }
 
     #[test]
