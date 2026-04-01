@@ -10,8 +10,6 @@ Quick orientation for contributors and coding agents working in `CentaurTechnica
 - `.github/workflows/rust.yml`: baseline CI build/test workflow.
 - `CHANGELOG.md`: required entry point for every user-facing change.
 - `AGENTS.md`: agent operating rules and PR/reporting expectations.
-- `docs/AI_ONBOARDING.md`: canonical start-here checklist for coding agents.
-- `AI_FRIENDLY_ROADMAP.md`: contributor-workflow and feature roadmap.
 - `CONTRIBUTING.md`: contributor expectations and required validation gates.
 
 ## Source module map (`src/`)

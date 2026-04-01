@@ -99,21 +99,21 @@ pub mod single {
     ///         &prices,
     ///         centaur_technical_indicators::ConstantModelType::SmoothedMovingAverage
     ///     ).unwrap();
-    /// assert_eq!(39.99999999999999, default_rsi);
+    /// assert_eq!(28.662420382165607, default_rsi);
     ///
     /// let ema_rsi =
     ///     centaur_technical_indicators::momentum_indicators::single::relative_strength_index(
     ///         &prices,
     ///         centaur_technical_indicators::ConstantModelType::ExponentialMovingAverage
     ///     ).unwrap();
-    /// assert_eq!(38.46153846153846, ema_rsi);
+    /// assert_eq!(19.839679358717433, ema_rsi);
     ///
     /// let moving_median_rsi =
     ///     centaur_technical_indicators::momentum_indicators::single::relative_strength_index(
     ///         &prices,
     ///         centaur_technical_indicators::ConstantModelType::SimpleMovingMedian
     ///     ).unwrap();
-    /// assert_eq!(42.857142857142854, moving_median_rsi);
+    /// assert_eq!(33.33333333333333, moving_median_rsi);
     /// ```
     ///
     /// # Reference
@@ -128,9 +128,6 @@ pub mod single {
         let (previous_gains, previous_loss) = previous_gains_loss(prices)?;
         if previous_gains.is_empty() {
             return Ok(0.0);
-        }
-        if previous_loss.is_empty() {
-            return Ok(100.0);
         }
 
         let (previous_average_gains, previous_average_loss) = match constant_model_type {
@@ -172,8 +169,10 @@ pub mod single {
             _ => return Err(unsupported_type("ConstantModelType")),
         };
 
-        if previous_average_loss == 0.0 {
+        if previous_average_gains == 0.0 && previous_average_loss == 0.0 {
             Ok(0.0)
+        } else if previous_average_loss == 0.0 {
+            Ok(100.0)
         } else {
             Ok(100.0 - (100.0 / (1.0 + (previous_average_gains / previous_average_loss))))
         }
@@ -1353,31 +1352,29 @@ pub mod single {
     #[inline]
     pub fn chande_momentum_oscillator(prices: &[f64]) -> crate::Result<f64> {
         let (previous_gains, previous_loss) = previous_gains_loss(prices)?;
-        if previous_gains.is_empty() {
-            return Ok(-100.0);
-        }
-        if previous_loss.is_empty() {
-            return Ok(100.0);
-        }
-
         let gains_sum: f64 = previous_gains.iter().sum();
         let loss_sum: f64 = previous_loss.iter().sum();
-        Ok(((gains_sum - loss_sum) / (gains_sum + loss_sum)) * 100.0)
+        let denominator = gains_sum + loss_sum;
+        if denominator == 0.0 {
+            return Ok(0.0);
+        }
+        Ok(((gains_sum - loss_sum) / denominator) * 100.0)
     }
 
     #[inline]
     fn previous_gains_loss(prices: &[f64]) -> crate::Result<(Vec<f64>, Vec<f64>)> {
         assert_non_empty("prices", prices)?;
         let len = prices.len();
-        let mut previous_gains = Vec::with_capacity(len - 1);
-        let mut previous_loss = Vec::with_capacity(len - 1);
+        let mut previous_gains = Vec::with_capacity(len.saturating_sub(1));
+        let mut previous_loss = Vec::with_capacity(len.saturating_sub(1));
         for i in 1..len {
             let diff = prices[i] - prices[i - 1];
-            if diff > 0.0 {
-                previous_gains.push(diff);
-            } else if diff < 0.0 {
-                previous_loss.push(prices[i - 1] - prices[i]);
-            };
+            previous_gains.push(if diff > 0.0 { diff } else { 0.0 });
+            previous_loss.push(if diff < 0.0 {
+                prices[i - 1] - prices[i]
+            } else {
+                0.0
+            });
         }
         Ok((previous_gains, previous_loss))
     }
@@ -1427,7 +1424,7 @@ pub mod bulk {
     ///         centaur_technical_indicators::ConstantModelType::SmoothedMovingAverage,
     ///         period
     ///     ).unwrap();
-    /// assert_eq!(vec![100.0, 33.33333333333333, 0.0], default_rsi);
+    /// assert_eq!(vec![100.0, 20.0, 0.0], default_rsi);
     ///
     /// let ema_rsi =
     ///     centaur_technical_indicators::momentum_indicators::bulk::relative_strength_index(
@@ -1435,7 +1432,7 @@ pub mod bulk {
     ///         centaur_technical_indicators::ConstantModelType::ExponentialMovingAverage,
     ///         period
     ///     ).unwrap();
-    /// assert_eq!(vec![100.0, 33.33333333333333, 0.0], ema_rsi);
+    /// assert_eq!(vec![100.0, 14.285714285714292, 0.0], ema_rsi);
     ///
     /// let moving_median_rsi =
     ///     centaur_technical_indicators::momentum_indicators::bulk::relative_strength_index(
@@ -1456,7 +1453,7 @@ pub mod bulk {
     ///         period
     ///     ).unwrap();
     /// assert_eq!(
-    ///     vec![34.51776649746324, 12.837837837836929, 34.51776649746182, 61.26126126126377],
+    ///     vec![8.7302736354425, 20.41743814172453, 77.23712928488865, 46.834129126015625],
     ///     personalised_rsi
     /// );
     /// ```
@@ -2530,10 +2527,9 @@ mod tests {
 
     #[test]
     fn single_short_median_rsi() {
-        // Because there are too few values, ends up being the means
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
         assert_eq!(
-            49.2537313432832,
+            31.81818181818329,
             single::relative_strength_index(&prices, crate::ConstantModelType::SimpleMovingMedian)
                 .unwrap()
         );
@@ -2545,7 +2541,7 @@ mod tests {
             100.2, 100.46, 100.53, 100.38, 100.19, 100.21, 100.32, 100.28,
         ];
         assert_eq!(
-            37.5,
+            100.0,
             single::relative_strength_index(&prices, crate::ConstantModelType::SimpleMovingMedian)
                 .unwrap()
         );
@@ -2566,7 +2562,7 @@ mod tests {
     fn single_large_mode_rsi() {
         let prices = vec![100.0, 103.0, 106.0, 107.0, 108.0, 105.0, 102.0];
         assert_eq!(
-            39.99999999999999,
+            100.0,
             single::relative_strength_index(&prices, crate::ConstantModelType::SimpleMovingMode)
                 .unwrap()
         );
@@ -2576,7 +2572,7 @@ mod tests {
     fn single_smoothed_rsi() {
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
         assert_eq!(
-            43.01075268817234,
+            33.010380622837275,
             single::relative_strength_index(
                 &prices,
                 crate::ConstantModelType::SmoothedMovingAverage
@@ -2589,7 +2585,7 @@ mod tests {
     fn single_exponential_rsi() {
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
         assert_eq!(
-            39.495798319328436,
+            22.5149435466018,
             single::relative_strength_index(
                 &prices,
                 crate::ConstantModelType::ExponentialMovingAverage
@@ -2602,7 +2598,7 @@ mod tests {
     fn single_personalised_rsi() {
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
         assert_eq!(
-            35.6725146198842,
+            11.586416624429987,
             single::relative_strength_index(
                 &prices,
                 crate::ConstantModelType::PersonalisedMovingAverage {
@@ -2672,10 +2668,10 @@ mod tests {
         let period: usize = 5;
         assert_eq!(
             vec![
-                43.01075268817234,
-                17.187499999999886,
-                31.168831168830664,
-                47.05882352941291
+                33.010380622837275,
+                17.91972866025968,
+                42.35044997353012,
+                43.827611395180085
             ],
             bulk::relative_strength_index(
                 &prices,
@@ -2694,10 +2690,10 @@ mod tests {
         let period: usize = 5;
         assert_eq!(
             vec![
-                39.495798319328436,
-                15.2941176470584,
-                32.71028037383145,
-                53.03030303030472
+                22.5149435466018,
+                17.290271760534623,
+                54.757630161579186,
+                47.45850622406839
             ],
             bulk::relative_strength_index(
                 &prices,
@@ -2716,10 +2712,10 @@ mod tests {
         let period: usize = 5;
         assert_eq!(
             vec![
-                35.6725146198842,
-                13.385826771652745,
-                34.13173652694594,
-                59.375000000002316
+                11.586416624429987,
+                18.96813353565804,
+                71.74104780384508,
+                48.042998897467385
             ],
             bulk::relative_strength_index(
                 &prices,
@@ -2741,10 +2737,10 @@ mod tests {
         let period: usize = 5;
         assert_eq!(
             vec![
-                49.2537313432832,
-                20.930232558140005,
-                27.6595744680842,
-                36.111111111111335
+                31.81818181818329,
+                11.764705882350484,
+                11.764705882350484,
+                33.33333333333333
             ],
             bulk::relative_strength_index(
                 &prices,
@@ -4835,6 +4831,12 @@ mod tests {
     fn single_chande_momentum_oscillator_rise() {
         let prices = vec![100.1, 100.2, 100.3, 100.4, 100.5];
         assert_eq!(100.0, single::chande_momentum_oscillator(&prices).unwrap());
+    }
+
+    #[test]
+    fn single_chande_momentum_oscillator_flat() {
+        let prices = vec![100.0, 100.0, 100.0, 100.0, 100.0];
+        assert_eq!(0.0, single::chande_momentum_oscillator(&prices).unwrap());
     }
 
     #[test]
