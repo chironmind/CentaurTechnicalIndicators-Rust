@@ -16,6 +16,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Fixed
+- Fixed `relative_strength_index` (single and bulk) producing incorrect values. The internal `previous_gains_loss` helper was only collecting non-zero gains/losses, discarding zero entries and causing misaligned averages. Both vectors now maintain the same length as the price change series by pushing `0.0` for unchanged periods. All doc examples and tests updated to reflect corrected output.
+
+### Removed
+- Removed `docs/indicator_registry.json`, `docs/indicator_registry.schema.json`, and their CI validation scripts (`validate_indicator_registry.py`, `check_indicator_registry_coverage.py`). The registry duplicated information already available in source code and docs.rs, and its manual line-number tracking was fragile.
+- Removed `docs/AI_ONBOARDING.md`, `.github/copilot-instructions.md`, and `.github/scripts/docs_consistency_check.py` — redundant with `AGENTS.md`.
+- Removed dangling references to the missing `AI_FRIENDLY_ROADMAP.md` from `AGENTS.md`, `CONTRIBUTING.md`, `docs/REPO_MAP.md`, and `ai-policy.yaml`.
+
+### Changed
+- CI jobs (`fmt`, `clippy`, `test`, `doc`) now run in parallel instead of waiting on the `policy` job.
+- Removed the no-op `build` CI job that only echoed a success message.
+- Simplified PR template from 8 sections to 4 (`Summary`, `Compatibility`, `Validation`, `Changelog`).
+
 ## [1.2.1] - 2026-03-01
 ### Added
 - Added machine-readable indicator discovery files: `docs/indicator_registry.json` (canonical registry) and `docs/indicator_registry.schema.json` (JSON schema).

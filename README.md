@@ -112,13 +112,6 @@ cargo run --example reference
   - `single`: Compute indicator for the entire vector, returns a single value.
 - Types used to personalise the technical indicators (**`MovingAverageType`**, **`DeviationModel`**, **`Position`**...)
 
-### Indicator Discovery Registry (for tools/agents)
-
-For machine-readable discovery of all public indicator functions, use:
-
-- `docs/indicator_registry.json` (canonical registry)
-- `docs/indicator_registry.schema.json` (registry schema)
-
 ---
 
 ## 🧠 Explanation & Design

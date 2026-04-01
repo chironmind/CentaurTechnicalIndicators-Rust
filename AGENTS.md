@@ -52,13 +52,6 @@ Run these before opening a PR:
 - Prefer native `rustup` and `cargo` commands in workflows.
 - Do not introduce third-party GitHub Actions for Rust toolchain setup or Cargo caching unless explicitly approved by maintainers.
 
-## Docs to review before coding
-- `docs/AI_ONBOARDING.md`
-- `.github/copilot-instructions.md`
-- `AI_FRIENDLY_ROADMAP.md`
-- `docs/REPO_MAP.md`
-- `CONTRIBUTING.md`
-
 ## PR expectations for agents
 - Keep PRs focused and minimal.
 - Summarize what the agent changed and what was manually verified.
