@@ -38,7 +38,7 @@ cargo add centaur_technical_indicators
 ```
 Or, manually in your `Cargo.toml`:
 ```toml
-centaur_technical_indicators = "1.2.1"
+centaur_technical_indicators = "1.2.2"
 ```
 
 **2. Calculate your first indicator:**
@@ -318,10 +318,10 @@ cargo doc --no-deps
 
 ## 📰 Release Notes
 
-**Latest (v1.2.1):**
-- Added machine-readable indicator registry (`docs/indicator_registry.json`) and JSON schema
-- Added contributor AI guidance docs (`AGENTS.md`, `docs/REPO_MAP.md`, `docs/AI_ONBOARDING.md`)
-- Added CI quality gates (`fmt`, `clippy`, `test`, `doc`) as blocking jobs and registry/docs validation scripts
+**Latest (v1.2.2):**
+- Fixed `relative_strength_index` producing incorrect values due to zero-entry handling in internal gain/loss helper
+- Removed fragile indicator registry files and redundant AI onboarding docs in favor of `AGENTS.md`
+- CI jobs now run in parallel; simplified PR template
 
 [Human friendly changelog →](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust/blob/main/CHANGELOG.md)
 
