@@ -3,7 +3,7 @@ name: Feature Request
 about: Suggest an idea or new indicator for Centaur Technical Indicators
 title: "[FEATURE] "
 labels: enhancement
-assignees: 0100101001010000
+assignees: ChironMind
 ---
 
 **Is your feature request related to a problem? Please describe.**

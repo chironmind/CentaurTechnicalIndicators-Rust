@@ -118,7 +118,7 @@ pub mod single {
         values.sort_by(|a, b| a.partial_cmp(b).unwrap_or(Ordering::Equal));
         let mid = values.len() / 2;
 
-        if values.len().is_multiple_of(2) {
+        if values.len() % 2 == 0 {
             Ok((values[mid - 1] + values[mid]) / 2.0)
         } else {
             Ok(values[mid])
@@ -317,6 +317,7 @@ pub mod single {
             CentralPoint::Mean => mean(prices)?,
             CentralPoint::Median => median(prices)?,
             CentralPoint::Mode => mode(prices)?,
+            #[allow(unreachable_patterns)]
             _ => return Err(unsupported_type("CentralPoint")),
         };
 
@@ -474,7 +475,7 @@ pub mod single {
         v.sort_by(|a, b| a.partial_cmp(b).unwrap());
         let n = v.len();
         let mid = n / 2;
-        let (lower, upper) = if n.is_multiple_of(2) {
+        let (lower, upper) = if n % 2 == 0 {
             (&v[..mid], &v[mid..])
         } else {
             (&v[..mid], &v[mid + 1..])
@@ -1452,7 +1453,8 @@ mod tests {
 
     #[test]
     fn bulk_log_difference_difference() {
-        bulk::log_difference(&Vec::new());
+        let result = bulk::log_difference(&Vec::new());
+        assert!(result.is_err());
     }
 
     #[test]
@@ -1585,13 +1587,14 @@ mod tests {
     #[test]
     fn single_absolute_deviation_error() {
         let prices = Vec::new();
-        single::absolute_deviation(
+        let result = single::absolute_deviation(
             &prices,
             crate::AbsDevConfig {
                 center: crate::CentralPoint::Mean,
                 aggregate: crate::DeviationAggregate::Mean,
             },
         );
+        assert!(result.is_err());
     }
 
     #[test]
@@ -1649,7 +1652,7 @@ mod tests {
     fn bulk_absolute_deviation_long_period_error() {
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
         let period: usize = 30;
-        bulk::absolute_deviation(
+        let result = bulk::absolute_deviation(
             &prices,
             period,
             crate::AbsDevConfig {
@@ -1657,13 +1660,14 @@ mod tests {
                 aggregate: crate::DeviationAggregate::Median,
             },
         );
+        assert!(result.is_err());
     }
 
     #[test]
     fn bulk_absolute_deviation_no_period_error() {
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
         let period: usize = 30;
-        bulk::absolute_deviation(
+        let result = bulk::absolute_deviation(
             &prices,
             period,
             crate::AbsDevConfig {
@@ -1671,6 +1675,7 @@ mod tests {
                 aggregate: crate::DeviationAggregate::Median,
             },
         );
+        assert!(result.is_err());
     }
 
     #[test]

@@ -465,6 +465,7 @@ pub mod single {
                 bulk_mode(&price_momentum, first_period)?,
                 bulk_mode(&abs_price_momentum, first_period)?,
             ),
+            #[allow(unreachable_patterns)]
             _ => return Err(unsupported_type("ConstantModelType")),
         };
 
@@ -508,6 +509,7 @@ pub mod single {
                 single_mode(&initial_smoothing)?,
                 single_mode(&abs_initial_smoothing)?,
             ),
+            #[allow(unreachable_patterns)]
             _ => return Err(unsupported_type("ConstantModelType")),
         };
         if abs_second_smoothing == 0.0 {
@@ -1093,6 +1095,7 @@ pub mod bulk {
             )?,
             ConstantModelType::SimpleMovingMedian => median(&dx, period)?,
             ConstantModelType::SimpleMovingMode => mode(&dx, period)?,
+            #[allow(unreachable_patterns)]
             _ => return Err(unsupported_type("ConstantModelType")),
         };
 

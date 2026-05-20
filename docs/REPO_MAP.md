@@ -58,8 +58,8 @@ Quick orientation for contributors and coding agents working in `CentaurTechnica
 Run these before opening a PR:
 
 1. `cargo fmt --all -- --check`
-2. `cargo clippy --all-targets --all-features -- -D warnings`
-3. `cargo test --all-features`
+2. `cargo clippy --all-targets -- -D warnings`
+3. `cargo test`
 4. `cargo doc --no-deps`
 5. Relevant benchmark suite(s) in `CentaurTechnicalIndicators-Rust-Benchmarks`
 

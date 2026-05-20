@@ -301,8 +301,8 @@ Before opening a PR, run the same quality gates used in CI:
 
 ```bash
 cargo fmt --all -- --check
-cargo clippy --all-targets --all-features -- -D warnings
-cargo test --all-features
+cargo clippy --all-targets -- -D warnings
+cargo test
 cargo doc --no-deps
 ```
 
