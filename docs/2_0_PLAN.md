@@ -22,8 +22,8 @@ unless explicitly requested.
 ## Deprecated function inventory
 
 Each function has been `#[deprecated(since = "1.0.0", note = "...")]` since
-2026-01. Each function below also has a `// public_api_path` line listing
-the canonical caller path through the crate root.
+2026-01. The "Path in source" column gives the file and line of the
+`#[deprecated]` attribute.
 
 ### Momentum indicators (six functions, three concepts)
 
@@ -42,8 +42,9 @@ the canonical caller path through the crate root.
 |---|---|---|
 | `bulk::volatility_system` | `src/volatility_indicators.rs:209` | This function is deprecated as it is not commonly used. |
 
-Note: the `single` variant of `volatility_system` is **not** deprecated.
-This is intentional and was confirmed during the Codex roadmap review.
+Note: there is **no `single::volatility_system`** — the `single` module of
+`volatility_indicators` exposes only `ulcer_index`. Removal only touches
+`bulk::volatility_system`.
 
 ### Migration story for users
 
@@ -188,7 +189,7 @@ absolute references.
 | 6 | `src/strength_indicators.rs:148` `bulk::volume_index` (the `change = (current_close - previous_close) / previous_close` line) | `previous_close == 0.0` | per-element inf/NaN | **2.0-breaking validation change** — reject the input vector at the boundary. |
 | 7 | `src/trend_indicators.rs:354` `single::volume_price_trend` (and bulk at line 1174) | `previous_price == 0.0` | returns inf/NaN | **2.0-breaking validation change** — same shape as site 3. |
 | 8 | `src/volatility_indicators.rs:67` `single::ulcer_index` (division by `period_max`) | `period_max == 0.0` (only possible with zero-only input) | returns NaN | **documented current behavior** — ulcer index over an all-zero series is mathematically undefined; rustdoc should state this; no validation change. |
-| 9 | `src/basic_indicators.rs:838` `single::log` | non-positive entries in `prices` | returns NaN (silent `.ln()` of `<= 0`) | **bug-fix** — `single::log_difference` and `bulk::log` already validate via `assert_positive`; mirror that helper in `single::log`. This is a regression vs. the bulk variant. |
+| 9 | `src/basic_indicators.rs:838` `bulk::log` | non-positive entries in `prices` | returns NaN (silent `.ln()` of `<= 0`); only `assert_non_empty` runs before the `.ln()` map | **bug-fix** — `single::log_difference` already validates positivity. Add an equivalent per-element positivity check to `bulk::log` before the `.ln()` map. This brings `bulk::log` into parity with the rest of the log family. |
 
 ### Sequencing within 2.0
 
