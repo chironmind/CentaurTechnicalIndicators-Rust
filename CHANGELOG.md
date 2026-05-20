@@ -18,7 +18,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 - Declared MSRV `rust-version = "1.81"` in `Cargo.toml`.
-- Added MSRV CI job (`.github/workflows/rust.yml`) that builds against pinned 1.81 toolchain via native `rustup`. Replaced two `usize::is_multiple_of` calls in `basic_indicators` with `% 2 == 0` (the helper was stabilised in 1.87, incompatible with the declared MSRV).
+- Added MSRV CI job (`.github/workflows/rust.yml`) that builds against pinned 1.81 toolchain via native `rustup`. Job runs `cargo build` (library only) and `cargo test --no-run` (so dev-dependency MSRV compatibility is also enforced). Replaced two `usize::is_multiple_of` calls in `basic_indicators` with `% 2 == 0` (the helper was stabilised in 1.87, incompatible with the declared MSRV).
+- Workflow `pull_request` trigger no longer filters on `branches: [ "main" ]`. PRs against any base branch (e.g. stacked PRs) now get CI coverage.
 - Added `cargo audit` CI job using a native `cargo install cargo-audit --locked` step (no third-party Action). The job runs `cargo generate-lockfile` first since `Cargo.lock` is gitignored.
 - Added `.github/dependabot.yml` for monthly `github-actions` ecosystem updates.
 - Added `#![forbid(unsafe_code)]` at the crate root in `src/lib.rs`.
