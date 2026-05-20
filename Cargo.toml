@@ -25,3 +25,6 @@ name = "reference"
 path = "examples/reference.rs"
 
 [dependencies]
+
+[dev-dependencies]
+proptest = "1"

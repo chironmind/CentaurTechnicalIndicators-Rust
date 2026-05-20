@@ -17,6 +17,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 
 ### Added
+- Implemented `Display` on all public types in `src/types.rs` (`CentralPoint`, `DeviationAggregate`, `AbsDevConfig`, `MovingAverageType`, `ConstantModelType`, `DeviationModel`, `Position`). Unit variants render as `snake_case`; parameterized variants render as `name(field=value, ...)`. Lock-in tests cover every variant and pin the exact string output for any future `FromStr` to roundtrip against.
+- Added `proptest = "1"` as a dev-dependency and `tests/properties.rs` with five property invariants: RSI is bounded in `[0, 100]`; ATR is non-negative for valid OHLC; `moving_average(vec![c; n], Simple)` is the fixed point `c`; bulk MA length is `prices.len() - period + 1`; constant-input series produce no NaN for RSI, CMO, or mean (regression coverage for the bugs fixed in commits `0217469` and `dc71a22`).
+- Added `tests/golden.rs` with eleven golden-value tests on the public re-export surface. Covers MA, variance, RSI, CMO, MFI, ATR, Aroon, Ichimoku, Donchian, Supertrend, and moving constant envelopes. Each value is sourced from `assets/centaur_ti_hand_calcs.ods` (mirrored in per-module unit tests).
+- Added `tests/integration.rs` with five smoke tests that exercise only the crate-root `pub use` surface (`use centaur_technical_indicators::...`), catching breakage in re-export wiring even when per-module unit tests still pass.
 - Declared MSRV `rust-version = "1.81"` in `Cargo.toml`.
 - Added MSRV CI job (`.github/workflows/rust.yml`) that builds against pinned 1.81 toolchain via native `rustup`. Job runs `cargo build` (library only) and `cargo test --no-run` (so dev-dependency MSRV compatibility is also enforced). Replaced two `usize::is_multiple_of` calls in `basic_indicators` with `% 2 == 0` (the helper was stabilised in 1.87, incompatible with the declared MSRV).
 - Workflow `pull_request` trigger no longer filters on `branches: [ "main" ]`. PRs against any base branch (e.g. stacked PRs) now get CI coverage.
