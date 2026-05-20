@@ -52,8 +52,8 @@ Run the same quality gates locally that CI runs:
 
 ```bash
 cargo fmt --all -- --check
-cargo clippy --all-targets --all-features -- -D warnings
-cargo test --all-features
+cargo clippy --all-targets -- -D warnings
+cargo test
 cargo doc --no-deps
 ```
 
@@ -62,6 +62,10 @@ cargo doc --no-deps
 - Keep CI aligned with the project dependency philosophy.
 - Prefer native `rustup`/`cargo` commands in GitHub workflows.
 - Avoid third-party GitHub Actions for Rust toolchain setup and Cargo caching unless maintainers explicitly approve them.
+
+### Cargo.lock policy
+
+`Cargo.lock` is **not** committed (per [Cargo's recommendation for library crates](https://doc.rust-lang.org/cargo/faq.html#why-have-cargolock-in-version-control)). It is listed in `.gitignore`. Downstream consumers resolve their own dependency versions; CI does the same, exercising the latest compatible versions.
 
 ## AI-Assisted Contributions
 
@@ -82,9 +86,9 @@ Run all commands below before opening a PR:
 
 1. `cargo fmt --all -- --check`  
    Pass criteria: no formatting diffs.
-2. `cargo clippy --all-targets --all-features -- -D warnings`  
+2. `cargo clippy --all-targets -- -D warnings`  
    Pass criteria: zero clippy warnings/errors.
-3. `cargo test --all-features`  
+3. `cargo test`  
    Pass criteria: all tests pass.
 4. `cargo doc --no-deps`  
    Pass criteria: docs build successfully, including new public APIs.
