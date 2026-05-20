@@ -135,7 +135,7 @@ All indicators are grouped into modules based on their analysis area, matching t
 - Asset-pair correlation
 
 ### Momentum Indicators
-- Chaikin Oscillator, CCI, MACD (with signal line), Money Flow Index, On Balance Volume, ROC, RSI, Stochastic Oscillator, Williams %R, Chande Momentum Oscillator, Percentage Price Oscillator
+- Chaikin Oscillator, CCI, MACD, Money Flow Index, On Balance Volume, ROC, RSI, Stochastic Oscillator, Williams %R, Chande Momentum Oscillator, Percentage Price Oscillator
 
 ### Moving Averages
 - Simple, Smoothed, Exponential, Personalised, McGinley Dynamic
@@ -150,7 +150,9 @@ All indicators are grouped into modules based on their analysis area, matching t
 - Aroon (Up/Down/Oscillator/Indicator), Parabolic Time-Price System, Directional Movement, Volume-Price Trend, True Strength Index
 
 ### Volatility Indicators
-- Ulcer Index, Volatility System
+- Ulcer Index
+
+> Some convenience wrappers (`signal_line`, `slow_stochastic`, `slowest_stochastic`, `volatility_system`) are still in the public API but are `#[deprecated]` for removal in 2.0. See [`docs/2_0_PLAN.md`](docs/2_0_PLAN.md) for migration recipes — each reduces to "apply a moving average to the underlying indicator's output."
 
 ---
 
@@ -305,7 +307,7 @@ cargo doc --no-deps
 
 ## 🔀 Migrating from RustTI
 
-Centaur Technical Indicators is the continuation of `RustTI` under a new name. The crate API is unchanged from the final `RustTI` release. Updating consists of replacing `rust_ti` with `centaur_technical_indicators` in your imports and `Cargo.toml`. See [`docs/CHANGELOG_RUSTTI_LEGACY.md`](docs/CHANGELOG_RUSTTI_LEGACY.md) for the pre-rebrand release history.
+Centaur Technical Indicators is the continuation of `RustTI` under a new name. The primary migration step is renaming imports and dependency entries from `rust_ti` to `centaur_technical_indicators`. **However, `1.0.0` (the rebrand release) also contained breaking API changes** — most notably the conversion of `panic!` paths to `Result<T, TechnicalIndicatorError>` returns and several signature reshapes. If you are upgrading from a pre-1.0 RustTI release, review the `## [1.0.0]` section of `CHANGELOG.md` for the full list before relying on the rename alone. See [`docs/CHANGELOG_RUSTTI_LEGACY.md`](docs/CHANGELOG_RUSTTI_LEGACY.md) for the pre-rebrand release history.
 
 ---
 
