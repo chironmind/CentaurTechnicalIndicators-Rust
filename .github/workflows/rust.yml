@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
+    # Trigger for PRs against any base branch (supports stacked PR workflows).
 
 permissions:
   contents: read
@@ -88,8 +88,10 @@ jobs:
       run: |
         rustup toolchain install 1.81 --profile minimal
         rustup default 1.81
-    - name: Cargo build (MSRV)
+    - name: Cargo build (MSRV, library only)
       run: cargo build
+    - name: Cargo test --no-run (MSRV, exercises dev-deps)
+      run: cargo test --no-run
 
   audit:
     permissions:
