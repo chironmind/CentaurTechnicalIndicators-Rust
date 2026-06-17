@@ -23,5 +23,3 @@ documentation = "https://docs.rs/centaur_technical_indicators"
 [[example]]
 name = "reference"
 path = "examples/reference.rs"
-
-[dependencies]
