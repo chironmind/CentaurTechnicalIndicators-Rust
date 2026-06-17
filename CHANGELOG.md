@@ -16,6 +16,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Added
+- Declared MSRV `rust-version = "1.81"` in `Cargo.toml`.
+- Added MSRV CI job (`.github/workflows/rust.yml`) that builds against pinned 1.81 toolchain via native `rustup`. Job runs `cargo build` (library only) and `cargo test --no-run` (so dev-dependency MSRV compatibility is also enforced). Replaced two `usize::is_multiple_of` calls in `basic_indicators` with `% 2 == 0` (the helper was stabilised in 1.87, incompatible with the declared MSRV).
+- Workflow `pull_request` trigger no longer filters on `branches: [ "main" ]`. PRs against any base branch (e.g. stacked PRs) now get CI coverage.
+- Added `cargo audit` CI job using a native `cargo install cargo-audit --locked` step (no third-party Action). The job runs `cargo generate-lockfile` first since `Cargo.lock` is gitignored.
+- Added `.github/dependabot.yml` for monthly `github-actions` ecosystem updates.
+- Added `#![forbid(unsafe_code)]` at the crate root in `src/lib.rs`.
+
+### Changed
+- Replaced the `panic!` in `basic_indicators::single::empirical_quantile_from_distribution` (`src/basic_indicators.rs:619`) with a structured `TechnicalIndicatorError::InvalidValue` return. The path is unreachable from public callers (which already validate `low`/`high`), so observable behavior is unchanged.
+- Removed crate-wide `#![allow(unreachable_patterns)]` from `src/lib.rs`. Each defensive `_ => Err(unsupported_type(...))` wildcard arm now carries a scoped `#[allow(unreachable_patterns)]` on the arm itself, preserving the future-proofing pattern (new enum variants hit the wildcard instead of breaking the match) without hiding drift across the rest of the crate.
+- Narrowed the `#[cfg_attr(test, allow(...))]` list in `src/lib.rs` by removing `unused_must_use` (kept `deprecated` and `clippy::excessive_precision`). Tests now must handle `Result`s explicitly. Thirteen previously-silent error-path tests in `basic_indicators` and `candle_indicators` were updated to bind the result and assert `.is_err()`, closing a real test rigour gap.
+- Dropped `--all-features` from CI workflows, `AGENTS.md`, `CONTRIBUTING.md`, `README.md`, `docs/REPO_MAP.md`, `ai-policy.yaml`, and `.github/pull_request_template.md`. The crate has no `[features]` so the flag was a no-op.
+- Build matrix in `.github/workflows/rust.yml` scoped to `[beta, nightly]` with `fail-fast: false`. Stable is covered by the dedicated `test` job; one toolchain failure no longer cancels the others.
+- Removed deprecated `[badges]` block from `Cargo.toml`. README badges are unaffected.
+- `Cargo.lock` is now gitignored, matching the Cargo convention for library crates. Policy documented in `CONTRIBUTING.md`.
+- `.github/ISSUE_TEMPLATE/bug_report.md` and `feature_request.md` now assign to `@ChironMind`.
+
 ## [1.2.2] - 2026-04-01
 
 ### Fixed

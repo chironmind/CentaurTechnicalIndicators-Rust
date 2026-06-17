@@ -40,8 +40,8 @@ When changing public APIs (`pub` items), preserve compatibility unless the task 
 Run these before opening a PR:
 
 1. `cargo fmt --all -- --check` (no formatting diffs)
-2. `cargo clippy --all-targets --all-features -- -D warnings` (zero warnings/errors)
-3. `cargo test --all-features` (all tests pass)
+2. `cargo clippy --all-targets -- -D warnings` (zero warnings/errors)
+3. `cargo test` (all tests pass)
 4. `cargo doc --no-deps` (docs build successfully, including new public APIs)
 5. Benchmark checks in the companion repo (no performance regressions for affected indicators):
    - Clone/check out `https://github.com/chironmind/CentaurTechnicalIndicators-Rust-Benchmarks`
