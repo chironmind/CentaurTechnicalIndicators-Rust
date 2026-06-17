@@ -129,6 +129,7 @@ pub mod single {
             )?,
             ConstantModelType::SimpleMovingMedian => median(prices_asset_a)?,
             ConstantModelType::SimpleMovingMode => mode(prices_asset_a)?,
+            #[allow(unreachable_patterns)]
             _ => return Err(unsupported_type("ConstantModelType")),
         };
 
@@ -154,6 +155,7 @@ pub mod single {
             )?,
             ConstantModelType::SimpleMovingMedian => median(prices_asset_b)?,
             ConstantModelType::SimpleMovingMode => mode(prices_asset_b)?,
+            #[allow(unreachable_patterns)]
             _ => return Err(unsupported_type("ConstantModelType")),
         };
 

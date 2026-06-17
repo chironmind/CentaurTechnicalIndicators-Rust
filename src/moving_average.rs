@@ -103,6 +103,7 @@ pub mod single {
                 alpha_num,
                 alpha_den,
             } => personalised_moving_average(prices, alpha_num, alpha_den),
+            #[allow(unreachable_patterns)]
             _ => Err(unsupported_type("MovingAverageType")),
         }
     }
