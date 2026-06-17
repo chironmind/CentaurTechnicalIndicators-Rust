@@ -29,12 +29,12 @@ Each function has been `#[deprecated(since = "1.0.0", note = "...")]` since
 
 | Function | Path in source | Deprecated `note` text |
 |---|---|---|
-| `single::signal_line` | `src/momentum_indicators.rs:982` | Users can call the moving average functions directly on the MACD values to get the signal line. |
-| `bulk::signal_line` | `src/momentum_indicators.rs:2173` | Same — apply a moving average to the bulk MACD output. |
-| `single::slow_stochastic` | `src/momentum_indicators.rs:268` | Users can call the moving average functions directly on the SO. |
-| `bulk::slow_stochastic` | `src/momentum_indicators.rs:1580` | Same — apply a moving average to the bulk stochastic output. |
-| `single::slowest_stochastic` | `src/momentum_indicators.rs:347` | Same — apply a moving average to the slow stochastic output. |
-| `bulk::slowest_stochastic` | `src/momentum_indicators.rs:1650` | Same — apply a moving average to the bulk slow stochastic output. |
+| `single::signal_line` | `src/momentum_indicators.rs:988` | Users can call the moving average functions directly on the MACD values to get the signal line. |
+| `bulk::signal_line` | `src/momentum_indicators.rs:2183` | Same — apply a moving average to the bulk MACD output. |
+| `single::slow_stochastic` | `src/momentum_indicators.rs:269` | Users can call the moving average functions directly on the SO. |
+| `bulk::slow_stochastic` | `src/momentum_indicators.rs:1590` | Same — apply a moving average to the bulk stochastic output. |
+| `single::slowest_stochastic` | `src/momentum_indicators.rs:349` | Same — apply a moving average to the slow stochastic output. |
+| `bulk::slowest_stochastic` | `src/momentum_indicators.rs:1660` | Same — apply a moving average to the bulk slow stochastic output. |
 
 ### Volatility indicators (one function)
 
@@ -79,17 +79,19 @@ The 2.0 changelog will include one worked example per function.
 ## Cross-repo impact analysis
 
 Confirmed by grepping the binding repos in `~/Projects/` for the deprecated
-function names on 2026-05-20:
+function names on 2026-05-20, and re-verified (with the line anchors below
+corrected) on 2026-06-17:
 
 ### `CentaurTechnicalIndicators-Python` — coordinated PR required
 
 All four deprecated concepts are surfaced through PyO3:
 
-- `src/momentum_indicators.rs:204-247` — `single`/`bulk` `slow_stochastic`,
-  `slowest_stochastic`, `signal_line`. Each already emits a Python
+- `src/momentum_indicators.rs` — `slow_stochastic` (single `204`, bulk `236`),
+  `slowest_stochastic` (single `271`, bulk `303`), and `signal_line`
+  (single `686`, bulk `714`). Each already emits a Python
   `DeprecationWarning` referencing "deprecated upstream and will be removed
   in the next major version."
-- `src/volatility_indicators.rs` — `bulk::volatility_system`.
+- `src/volatility_indicators.rs:80` — `bulk::volatility_system`.
 - `tests/test_deprecations.py`, `tests/test_volatility_indicators.py`,
   `tests/test_momentum_indicators.py` — test coverage for the deprecation
   warnings.
@@ -103,10 +105,14 @@ the deprecation tests, and bumps the dependency on
 
 All four deprecated concepts are surfaced through `#[wasm_bindgen]`:
 
-- `src/momentum_indicators.rs:26-280` — `momentum_single_slow_stochastic`,
-  `momentum_single_slowest_stochastic`, `momentum_single_signal_line`, and
-  their `_bulk_` counterparts.
-- `src/volatility_indicators.rs` — `volatility_bulk_volatility_system`.
+- `src/momentum_indicators.rs` — Rust `pub fn`s `momentum_single_slow_stochastic`,
+  `momentum_single_slowest_stochastic`, `momentum_single_signal_line` and their
+  `_bulk_` counterparts (single at lines `28`/`41`/`153`, bulk at `257`/`273`/`396`).
+  Note: the identifiers JS consumers import are the camelCase `js_name` values —
+  `momentum_single_slowStochastic`, `momentum_single_slowestStochastic`,
+  `momentum_single_signalLine`, and their `momentum_bulk_*` counterparts.
+- `src/volatility_indicators.rs:25` — `volatility_bulk_volatility_system`
+  (JS export `volatility_bulk_volatilitySystem`).
 
 **Action for 2.0:** open a coordinated PR in
 `CentaurTechnicalIndicators-JS` that removes the wasm-bindgen wrappers and
