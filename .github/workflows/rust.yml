@@ -90,7 +90,7 @@ jobs:
         rustup default 1.81
     - name: Cargo build (MSRV, library only)
       run: cargo build
-    - name: Cargo test --no-run (MSRV, exercises dev-deps)
+    - name: Cargo test --no-run (MSRV, compile test targets)
       run: cargo test --no-run
 
   audit:
