@@ -17,18 +17,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 
 ### Added
+- Added `docs/2_0_PLAN.md` capturing the deprecated-function inventory (six momentum + one volatility function), the cross-repo impact analysis for the Python/JS bindings, the `#[non_exhaustive]` migration plan, and a nine-site NaN/inf audit classified into bug-fix / documented-behavior / 2.0-breaking-validation-change. Nothing in the plan is executed yet — it is the staging area for the 2.0 cut.
+- Added a crate-level `## Errors` section to `src/lib.rs` listing every `TechnicalIndicatorError` variant with a one-line meaning. Renders in `cargo doc` and docs.rs.
+- Added per-category example files: `examples/rsi.rs` (minimal RSI), `examples/bollinger.rs` (Bollinger bands via `moving_constant_bands`, plus a robust median variant), and `examples/composing_indicators.rs` (smoothed-RSI recipe showing the library's compose-don't-bundle philosophy). Wired through `[[example]]` blocks in `Cargo.toml`. The kitchen-sink `examples/reference.rs` is unchanged.
 - Implemented `Display` on all public types in `src/types.rs` (`CentralPoint`, `DeviationAggregate`, `AbsDevConfig`, `MovingAverageType`, `ConstantModelType`, `DeviationModel`, `Position`). Unit variants render as `snake_case`; parameterized variants render as `name(field=value, ...)`. Lock-in tests cover every variant and pin the exact string output for any future `FromStr` to roundtrip against.
-- Added `proptest` and `tempfile` as dev-dependencies (pinned to `=1.5.0` and `=3.10.1` so the resolved tree stays MSRV-1.81-compatible — later versions pull `getrandom` 0.4, whose manifest requires Cargo edition2024 / Rust 1.85+). Created `tests/properties.rs` with five property invariants: RSI is bounded in `[0, 100]`; ATR is non-negative for valid OHLC; `moving_average(vec![c; n], Simple)` is the fixed point `c`; bulk MA length is `prices.len() - period + 1`; constant-input series produce no NaN for RSI, CMO, or mean (regression coverage for the bugs fixed in commits `0217469` and `dc71a22`).
+- Added `tests/properties.rs` with five property invariants, exercised over a fixed grid of input lengths and price scales by a dependency-free, deterministic LCG harness (no `proptest`; the crate keeps **zero** dependencies and dev-dependencies): RSI is bounded in `[0, 100]`; ATR is non-negative for valid OHLC; `moving_average(vec![c; n], Simple)` is the fixed point `c`; bulk MA length is `prices.len() - period + 1`; constant-input series produce no NaN for RSI, CMO, or mean (regression coverage for the bugs fixed in commits `0217469` and `dc71a22`).
 - Added `tests/golden.rs` with eleven golden-value tests on the public re-export surface. Covers MA, variance, RSI, CMO, MFI, ATR, Aroon, Ichimoku, Donchian, Supertrend, and moving constant envelopes. Each value is sourced from `assets/centaur_ti_hand_calcs.ods` (mirrored in per-module unit tests).
 - Added `tests/integration.rs` with five smoke tests that exercise only the crate-root `pub use` surface (`use centaur_technical_indicators::...`), catching breakage in re-export wiring even when per-module unit tests still pass.
 - Declared MSRV `rust-version = "1.81"` in `Cargo.toml`.
-- Added MSRV CI job (`.github/workflows/rust.yml`) that builds against pinned 1.81 toolchain via native `rustup`. Job runs `cargo build` (library only) and `cargo test --no-run` (so dev-dependency MSRV compatibility is also enforced). Replaced two `usize::is_multiple_of` calls in `basic_indicators` with `% 2 == 0` (the helper was stabilised in 1.87, incompatible with the declared MSRV).
+- Added MSRV CI job (`.github/workflows/rust.yml`) that builds against pinned 1.81 toolchain via native `rustup`. Job runs `cargo build` (library only) and `cargo test --no-run` (so the test targets are also compiled against the MSRV toolchain). Replaced two `usize::is_multiple_of` calls in `basic_indicators` with `% 2 == 0` (the helper was stabilised in 1.87, incompatible with the declared MSRV).
 - Workflow `pull_request` trigger no longer filters on `branches: [ "main" ]`. PRs against any base branch (e.g. stacked PRs) now get CI coverage.
 - Added `cargo audit` CI job using a native `cargo install cargo-audit --locked` step (no third-party Action). The job runs `cargo generate-lockfile` first since `Cargo.lock` is gitignored.
 - Added `.github/dependabot.yml` for monthly `github-actions` ecosystem updates.
 - Added `#![forbid(unsafe_code)]` at the crate root in `src/lib.rs`.
 
+### Fixed
+- README Quick Start example now compiles. Previously, `let ma = moving_average::single::moving_average(...)` followed by `println!("...: {}", ma)` was invalid because `ma: Result<f64, _>` does not implement `Display`. The example now `.unwrap()`s the `Result` and the `use` line imports `MovingAverageType` directly.
+- `bulk::volatility_system` rustdoc at `src/volatility_indicators.rs:150` now references `TechnicalIndicatorError::MismatchedLength` (the actual variant) instead of the non-existent `InvalidLength`.
+- Corrected the 2.0 migration guidance so `volatility_system` is not described as a moving-average composition wrapper; it now has an explicit "no direct replacement" note.
+
 ### Changed
+- Demoted the RustTI rebrand banner. The README now leads with the project name and badges; the rebrand information moved into a small `## 🔀 Migrating from RustTI` section near the end with a link to `docs/CHANGELOG_RUSTTI_LEGACY.md`. `Cargo.toml` `description` no longer leads with "A rebrand of RustTI".
+- Reorganised the README "Available Indicators" section. Removed the "Standard Indicators" subsection; each indicator now appears in exactly one category. Section order now matches the `src/` module layout (basic, candle, chart_trends, correlation, momentum, moving_average, other, strength, trend, volatility). Bollinger Bands moved into Candle Indicators (the home of `moving_constant_bands`); RSI and MACD live only under Momentum.
+- Moved `CHANGELOG_RUSTTI_LEGACY.md` to `docs/CHANGELOG_RUSTTI_LEGACY.md`. The historical-note link in `CHANGELOG.md` and the README migration section were updated to the new path.
 - Replaced the `panic!` in `basic_indicators::single::empirical_quantile_from_distribution` (`src/basic_indicators.rs:619`) with a structured `TechnicalIndicatorError::InvalidValue` return. The path is unreachable from public callers (which already validate `low`/`high`), so observable behavior is unchanged.
 - Removed crate-wide `#![allow(unreachable_patterns)]` from `src/lib.rs`. Each defensive `_ => Err(unsupported_type(...))` wildcard arm now carries a scoped `#[allow(unreachable_patterns)]` on the arm itself, preserving the future-proofing pattern (new enum variants hit the wildcard instead of breaking the match) without hiding drift across the rest of the crate.
 - Narrowed the `#[cfg_attr(test, allow(...))]` list in `src/lib.rs` by removing `unused_must_use` (kept `deprecated` and `clippy::excessive_precision`). Tests now must handle `Result`s explicitly. Thirteen previously-silent error-path tests in `basic_indicators` and `candle_indicators` were updated to bind the result and assert `.is_err()`, closing a real test rigour gap.
@@ -145,7 +156,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ---
 
 ### Historical note
-Pre-rebrand RustTI release history is documented in [`CHANGELOG_RUSTTI_LEGACY.md`](CHANGELOG_RUSTTI_LEGACY.md). Legacy entries use explicit `rustti-v*` tag links to avoid ambiguity with Centaur releases.
+Pre-rebrand RustTI release history is documented in [`docs/CHANGELOG_RUSTTI_LEGACY.md`](docs/CHANGELOG_RUSTTI_LEGACY.md). Legacy entries use explicit `rustti-v*` tag links to avoid ambiguity with Centaur releases.
 
 [Unreleased]: https://github.com/chironmind/CentaurTechnicalIndicators-Rust/compare/centaur-v1.2.2...HEAD
 [1.2.2]: https://github.com/chironmind/CentaurTechnicalIndicators-Rust/compare/centaur-v1.2.1...centaur-v1.2.2
