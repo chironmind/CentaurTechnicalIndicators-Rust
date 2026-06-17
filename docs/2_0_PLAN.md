@@ -126,10 +126,22 @@ core cut.
 
 ### `crt-research-engine` — no action
 
-The optimizer borrows peak/valley detection from the core but does not
-consume any of the deprecated indicator functions (verified via grep on
-2026-05-20 for indicator-optimizer/`config.rs`, `indicators.rs`,
-`evaluation.rs`). Removal is invisible to the optimizer.
+The workspace was consolidated (2026-05-01) into three crates —
+`gpu-primitives`, `gpu-indicators`, and `engine`; the former
+`indicator-optimizer` and `gpu-scoring` crates were deleted. The core crate
+`centaur_technical_indicators` (pinned `=1.2.2`) is now a **dev-dependency of
+`gpu-indicators` only**, used solely by its parity tests; no production crate
+(`engine`, `gpu-primitives`, or the `gpu-indicators` library itself) links it.
+A repo-wide grep (re-run 2026-06-17) finds **zero** uses of any deprecated
+function (`slow_stochastic`, `slowest_stochastic`, `signal_line`,
+`volatility_system`) across the workspace: the parity tests call only
+non-deprecated base functions (e.g. `stochastic_oscillator`), and the only
+`signal_line` hit is the engine's own GPU kernel `signal_line_f32` (an
+independent MA-over-MACD implementation), not a call into the core wrapper.
+Peak/valley target detection is currently out of scope in `engine` (targets are
+supplied as inputs — see `crates/engine/src/types.rs`), so the engine does not
+borrow it from the core either. Removing the seven wrappers is therefore
+invisible to `crt-research-engine`.
 
 ## `#[non_exhaustive]` migration note
 
@@ -186,7 +198,7 @@ absolute references.
 | 3 | `src/momentum_indicators.rs:534` `single::rate_of_change` | `previous_price == 0.0` | returns inf or NaN | **2.0-breaking validation change** — `Err(InvalidValue { name: "previous_price", value: 0.0, reason: "must be non-zero" })`. A zero previous price is nonsensical for ROC and should be rejected loudly. |
 | 4 | `src/other_indicators.rs:93` `single::return_on_investment` (and its bulk caller at line 334) | `investment == 0.0` | returns inf or NaN | **2.0-breaking validation change** — `Err(InvalidValue { name: "investment", value: 0.0, reason: "must be non-zero" })`. Note: `single::return_on_investment` currently has no `Result` return — promoting to `Result` is itself a breaking signature change. Bundle both. |
 | 5 | `src/momentum_indicators.rs:1332` `single::percentage_price_oscillator` (and the bulk wrapper at line 2454) | long-period MA evaluates to `0.0` (all-zero input) | returns NaN/inf | **documented current behavior** — the trigger requires a degenerate all-zero series. Add a rustdoc note rather than a validation arm. |
-| 6 | `src/strength_indicators.rs:148` `bulk::volume_index` (the `change = (current_close - previous_close) / previous_close` line) | `previous_close == 0.0` | per-element inf/NaN | **2.0-breaking validation change** — reject the input vector at the boundary. |
+| 6 | `src/strength_indicators.rs:148` `single::volume_index` (the `change = (current_close - previous_close) / previous_close` line) | `previous_close == 0.0` | returns inf/NaN | **2.0-breaking validation change** — `Err(InvalidValue { name: "previous_close", value: 0.0, reason: "must be non-zero" })`. Like site 4, `single::volume_index` returns `f64` today (no `Result`), so promoting it is itself a breaking signature change. |
 | 7 | `src/trend_indicators.rs:354` `single::volume_price_trend` (and bulk at line 1174) | `previous_price == 0.0` | returns inf/NaN | **2.0-breaking validation change** — same shape as site 3. |
 | 8 | `src/volatility_indicators.rs:67` `single::ulcer_index` (division by `period_max`) | `period_max == 0.0` (only possible with zero-only input) | returns NaN | **documented current behavior** — ulcer index over an all-zero series is mathematically undefined; rustdoc should state this; no validation change. |
 | 9 | `src/basic_indicators.rs:838` `bulk::log` | non-positive entries in `prices` | returns NaN (silent `.ln()` of `<= 0`); only `assert_non_empty` runs before the `.ln()` map | **bug-fix** — `single::log_difference` already validates positivity. Add an equivalent per-element positivity check to `bulk::log` before the `.ln()` map. This brings `bulk::log` into parity with the rest of the log family. |
