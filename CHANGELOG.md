@@ -34,6 +34,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 - README Quick Start example now compiles. Previously, `let ma = moving_average::single::moving_average(...)` followed by `println!("...: {}", ma)` was invalid because `ma: Result<f64, _>` does not implement `Display`. The example now `.unwrap()`s the `Result` and the `use` line imports `MovingAverageType` directly.
 - `bulk::volatility_system` rustdoc at `src/volatility_indicators.rs:150` now references `TechnicalIndicatorError::MismatchedLength` (the actual variant) instead of the non-existent `InvalidLength`.
+- Corrected the 2.0 migration guidance so `volatility_system` is not described as a moving-average composition wrapper; it now has an explicit "no direct replacement" note.
 
 ### Changed
 - Demoted the RustTI rebrand banner. The README now leads with the project name and badges; the rebrand information moved into a small `## 🔀 Migrating from RustTI` section near the end with a link to `docs/CHANGELOG_RUSTTI_LEGACY.md`. `Cargo.toml` `description` no longer leads with "A rebrand of RustTI".

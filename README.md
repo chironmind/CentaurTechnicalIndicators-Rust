@@ -152,7 +152,7 @@ All indicators are grouped into modules based on their analysis area, matching t
 ### Volatility Indicators
 - Ulcer Index
 
-> Some convenience wrappers (`signal_line`, `slow_stochastic`, `slowest_stochastic`, `volatility_system`) are still in the public API but are `#[deprecated]` for removal in 2.0. See [`docs/2_0_PLAN.md`](docs/2_0_PLAN.md) for migration recipes — each reduces to "apply a moving average to the underlying indicator's output."
+> Some convenience wrappers (`signal_line`, `slow_stochastic`, `slowest_stochastic`, `volatility_system`) are still in the public API but are `#[deprecated]` for removal in 2.0. See [`docs/2_0_PLAN.md`](docs/2_0_PLAN.md) for migration recipes. The momentum wrappers reduce to "apply a moving average to the underlying indicator's output"; `volatility_system` has no direct 2.0 replacement.
 
 ---
 

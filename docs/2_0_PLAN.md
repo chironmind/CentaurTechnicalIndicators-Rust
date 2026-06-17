@@ -48,9 +48,9 @@ Note: there is **no `single::volatility_system`** — the `single` module of
 
 ### Migration story for users
 
-The deprecation `note` text is the canonical migration recipe. In short:
-the deprecated wrappers all reduce to "apply a moving average over the
-output of the underlying indicator." Library users can write:
+The deprecation `note` text is the canonical migration recipe for each
+function. The six momentum wrappers reduce to "apply a moving average over
+the output of the underlying indicator." Library users can write:
 
 ```rust
 use centaur_technical_indicators::{
@@ -73,8 +73,16 @@ let signal = moving_average::bulk::moving_average(
 ).unwrap();
 ```
 
-The same shape applies to the stochastic and volatility-system replacements.
-The 2.0 changelog will include one worked example per function.
+The same shape applies to the stochastic wrappers: compute the stochastic or
+slow-stochastic series, then apply the desired moving average directly.
+
+`bulk::volatility_system` is different. Its deprecation note does not name a
+compositional replacement, and the implementation is a recursive ATR/trend
+stop calculation rather than a moving-average wrapper. Users who still need
+that behavior after 2.0 should reimplement the current algorithm in their own
+code or keep using a 1.x release. The 2.0 changelog will include worked
+examples for the momentum wrappers and an explicit "no direct replacement"
+note for `bulk::volatility_system`.
 
 ## Cross-repo impact analysis
 
