@@ -30,6 +30,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added `cargo audit` CI job using a native `cargo install cargo-audit --locked` step (no third-party Action). The job runs `cargo generate-lockfile` first since `Cargo.lock` is gitignored.
 - Added `.github/dependabot.yml` for monthly `github-actions` ecosystem updates.
 - Added `#![forbid(unsafe_code)]` at the crate root in `src/lib.rs`.
+- Added `chart_trends::peak_favorable_move` and `chart_trends::valley_favorable_move`: the per-target maximum favorable excursion (MFE) over a forward window of `period` bars after a reference index. Peak measures the entry-to-window-minimum drop; valley measures the window-maximum-minus-entry rise. Returns the raw signed `f64` (not floored at zero) and is generic over the series — the library stays policy-free. Reuses `basic_indicators::single::{min, max}` and validates via a shared underflow-safe window guard reusing `EmptyData` / `InvalidPeriod`.
 
 ### Fixed
 - README Quick Start example now compiles. Previously, `let ma = moving_average::single::moving_average(...)` followed by `println!("...: {}", ma)` was invalid because `ma: Result<f64, _>` does not implement `Display`. The example now `.unwrap()`s the `Result` and the `use` line imports `MovingAverageType` directly.
