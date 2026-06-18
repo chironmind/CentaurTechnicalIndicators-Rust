@@ -16,8 +16,10 @@
 //! ## Included Functions
 //! - [`break_down_trends`]: Segments the chart into distinct up/down trends
 //! - [`overall_trend`]: Returns the overall trend (slope) for all price points
+//! - [`peak_favorable_move`]: Maximum favorable excursion (MFE) — the largest drop after a point over a forward window
 //! - [`peak_trend`]: Calculates the trend based on local peaks
 //! - [`peaks`]: Finds all local maxima (peaks) in the series
+//! - [`valley_favorable_move`]: Maximum favorable excursion (MFE) — the largest rise after a point over a forward window
 //! - [`valley_trend`]: Calculates the trend based on local valleys
 //! - [`valleys`]: Finds all local minima (valleys) in the series
 //!
@@ -86,33 +88,47 @@ pub fn peaks(
     assert_period(period, length)?;
 
     let mut peaks: Vec<(f64, usize)> = Vec::new();
-    let mut last_peak_idx: usize = 0;
+    let mut last_peak_idx: Option<usize> = None;
     let mut last_peak: f64 = 0.0;
 
     for i in 0..=length - period {
         let window = &prices[i..i + period];
         let peak = max(window)?;
-        let local_idx = window.iter().rposition(|&x| x == peak).unwrap();
+        // `max` returns NaN only when the whole window is NaN; `rposition` then
+        // matches nothing, so skip the window instead of panicking on `unwrap`.
+        let Some(local_idx) = window.iter().rposition(|&x| x == peak) else {
+            continue;
+        };
         let idx = i + local_idx;
 
-        if last_peak_idx != 0 {
-            if idx <= last_peak_idx + closest_neighbor {
+        if let Some(last_idx) = last_peak_idx {
+            if idx <= last_idx + closest_neighbor {
                 if peak < last_peak {
-                    last_peak_idx = idx;
+                    // Slide the proximity anchor forward through lower candidates so a
+                    // monotonic run collapses to one cluster, but keep the retained peak.
+                    last_peak_idx = Some(idx);
                 } else if peak > last_peak {
-                    peaks.pop();
+                    // Replace the retained peak only when this higher candidate is within
+                    // `closest_neighbor` of it. The anchor may have slid past the dedup
+                    // window via lower candidates, in which case this is a separate peak.
+                    if peaks
+                        .last()
+                        .is_some_and(|&(_, ix)| idx <= ix + closest_neighbor)
+                    {
+                        peaks.pop();
+                    }
                     peaks.push((peak, idx));
-                    last_peak_idx = idx;
+                    last_peak_idx = Some(idx);
                     last_peak = peak;
                 }
             } else if !peaks.contains(&(peak, idx)) {
                 peaks.push((peak, idx));
-                last_peak_idx = idx;
+                last_peak_idx = Some(idx);
                 last_peak = peak;
             }
         } else {
             peaks.push((peak, idx));
-            last_peak_idx = idx;
+            last_peak_idx = Some(idx);
             last_peak = peak;
         }
     }
@@ -173,37 +189,177 @@ pub fn valleys(
     assert_period(period, length)?;
 
     let mut valleys: Vec<(f64, usize)> = Vec::new();
-    let mut last_valley_idx: usize = 0;
+    let mut last_valley_idx: Option<usize> = None;
     let mut last_valley: f64 = 0.0;
 
     for i in 0..=length - period {
         let window = &prices[i..i + period];
         let valley = min(window)?;
-        let local_idx = window.iter().rposition(|&x| x == valley).unwrap();
+        // `min` returns NaN only when the whole window is NaN; `rposition` then
+        // matches nothing, so skip the window instead of panicking on `unwrap`.
+        let Some(local_idx) = window.iter().rposition(|&x| x == valley) else {
+            continue;
+        };
         let idx = i + local_idx;
 
-        if last_valley_idx != 0 {
-            if idx <= last_valley_idx + closest_neighbor {
+        if let Some(last_idx) = last_valley_idx {
+            if idx <= last_idx + closest_neighbor {
                 if valley > last_valley {
-                    last_valley_idx = idx;
+                    // Slide the proximity anchor forward through higher candidates so a
+                    // monotonic run collapses to one cluster, but keep the retained valley.
+                    last_valley_idx = Some(idx);
                 } else if valley < last_valley {
-                    valleys.pop();
+                    // Replace the retained valley only when this lower candidate is within
+                    // `closest_neighbor` of it. The anchor may have slid past the dedup
+                    // window via higher candidates, in which case this is a separate valley.
+                    if valleys
+                        .last()
+                        .is_some_and(|&(_, ix)| idx <= ix + closest_neighbor)
+                    {
+                        valleys.pop();
+                    }
                     valleys.push((valley, idx));
-                    last_valley_idx = idx;
+                    last_valley_idx = Some(idx);
                     last_valley = valley;
                 }
             } else if !valleys.contains(&(valley, idx)) {
                 valleys.push((valley, idx));
-                last_valley_idx = idx;
+                last_valley_idx = Some(idx);
                 last_valley = valley;
             }
         } else {
             valleys.push((valley, idx));
-            last_valley_idx = idx;
+            last_valley_idx = Some(idx);
             last_valley = valley;
         }
     }
     Ok(valleys)
+}
+
+/// Calculates the peak favorable move (maximum favorable excursion, MFE) at a point.
+///
+/// Measures the largest downward move available in the `period` bars *after*
+/// `index`: the reference value minus the minimum of the forward window. This is
+/// the per-target magnitude that peak-based detection scores against; the library
+/// applies no policy — targets are not dropped and the result is not floored.
+///
+/// # Arguments
+///
+/// * `prices` - Slice of prices (any series; not restricted to closes)
+/// * `index` - Index of the reference bar; the move is measured from `prices[index]`
+/// * `period` - Forward window length: the number of bars after `index` to scan
+///
+/// # Returns
+///
+/// The raw signed move `prices[index] - min(prices[index + 1 ..= index + period])`.
+/// A point with no favorable (downward) move yields a value `<= 0`; flooring is
+/// the caller's responsibility, not the library's.
+///
+/// # Errors
+///
+/// Returns `TechnicalIndicatorError::EmptyData` if `prices` is empty, or
+/// `TechnicalIndicatorError::InvalidPeriod` if `period` == 0 or the forward window
+/// `index + period` runs past the end of `prices`.
+///
+/// # Examples
+///
+/// ```rust
+/// // window [104.0, 100.0, 102.0], min 100.0 -> 107.0 - 100.0 = 7.0
+/// let mfe = centaur_technical_indicators::chart_trends::peak_favorable_move(&[107.0, 104.0, 100.0, 102.0], 0, 3).unwrap();
+/// assert_eq!(mfe, 7.0);
+///
+/// // no drop: window [101.0, 102.0, 103.0], min 101.0 -> 100.0 - 101.0 = -1.0 (returned, not floored)
+/// let mfe = centaur_technical_indicators::chart_trends::peak_favorable_move(&[100.0, 101.0, 102.0, 103.0], 0, 3).unwrap();
+/// assert_eq!(mfe, -1.0);
+///
+/// // forward window runs past the end -> error
+/// assert!(centaur_technical_indicators::chart_trends::peak_favorable_move(&[100.0, 101.0, 102.0], 1, 3).is_err());
+/// ```
+pub fn peak_favorable_move(prices: &[f64], index: usize, period: usize) -> crate::Result<f64> {
+    assert_favorable_window(prices, index, period)?;
+    let window = &prices[index + 1..=index + period];
+    let trough = min(window)?;
+    Ok(prices[index] - trough)
+}
+
+/// Calculates the valley favorable move (maximum favorable excursion, MFE) at a point.
+///
+/// Measures the largest upward move available in the `period` bars *after*
+/// `index`: the maximum of the forward window minus the reference value. This is
+/// the per-target magnitude that valley-based detection scores against; the library
+/// applies no policy — targets are not dropped and the result is not floored.
+///
+/// # Arguments
+///
+/// * `prices` - Slice of prices (any series; not restricted to closes)
+/// * `index` - Index of the reference bar; the move is measured from `prices[index]`
+/// * `period` - Forward window length: the number of bars after `index` to scan
+///
+/// # Returns
+///
+/// The raw signed move `max(prices[index + 1 ..= index + period]) - prices[index]`.
+/// A point with no favorable (upward) move yields a value `<= 0`; flooring is
+/// the caller's responsibility, not the library's.
+///
+/// # Errors
+///
+/// Returns `TechnicalIndicatorError::EmptyData` if `prices` is empty, or
+/// `TechnicalIndicatorError::InvalidPeriod` if `period` == 0 or the forward window
+/// `index + period` runs past the end of `prices`.
+///
+/// # Examples
+///
+/// ```rust
+/// // window [102.0, 107.0, 104.0], max 107.0 -> 107.0 - 100.0 = 7.0
+/// let mfe = centaur_technical_indicators::chart_trends::valley_favorable_move(&[100.0, 102.0, 107.0, 104.0, 100.0], 0, 3).unwrap();
+/// assert_eq!(mfe, 7.0);
+///
+/// // no rise: window [104.0, 103.0, 102.0], max 104.0 -> 104.0 - 105.0 = -1.0 (returned, not floored)
+/// let mfe = centaur_technical_indicators::chart_trends::valley_favorable_move(&[105.0, 104.0, 103.0, 102.0], 0, 3).unwrap();
+/// assert_eq!(mfe, -1.0);
+///
+/// // forward window runs past the end -> error
+/// assert!(centaur_technical_indicators::chart_trends::valley_favorable_move(&[100.0, 101.0, 102.0], 1, 3).is_err());
+/// ```
+pub fn valley_favorable_move(prices: &[f64], index: usize, period: usize) -> crate::Result<f64> {
+    assert_favorable_window(prices, index, period)?;
+    let window = &prices[index + 1..=index + period];
+    let peak = max(window)?;
+    Ok(peak - prices[index])
+}
+
+/// Validates inputs for the favorable-move functions.
+///
+/// Errors, in order, on empty `prices`, `period` == 0, or a forward window
+/// `prices[index + 1 ..= index + period]` that runs past the end of `prices`.
+/// Underflow-safe: no subtraction, and `index + period` is checked with
+/// `checked_add`.
+fn assert_favorable_window(prices: &[f64], index: usize, period: usize) -> crate::Result<()> {
+    assert_non_empty("prices", prices)?;
+    let data_len = prices.len();
+    if period == 0 {
+        return Err(crate::TechnicalIndicatorError::InvalidPeriod {
+            period,
+            data_len,
+            reason: "must be greater than 0".to_string(),
+        });
+    }
+    // The forward window prices[index + 1 ..= index + period] is in bounds only
+    // when index + period < data_len. Use checked_add so a huge index can't wrap.
+    let past_end = match index.checked_add(period) {
+        Some(end) => end >= data_len,
+        None => true,
+    };
+    if past_end {
+        return Err(crate::TechnicalIndicatorError::InvalidPeriod {
+            period,
+            data_len,
+            reason: format!(
+                "forward window of {period} bars after index {index} runs past the data"
+            ),
+        });
+    }
+    Ok(())
 }
 
 /// OLS simple linear regression function
@@ -581,6 +737,33 @@ mod tests {
     }
 
     #[test]
+    fn peaks_extremum_at_index_zero() {
+        // A real peak at absolute index 0 must not collide with the
+        // "none seen yet" sentinel and emit a spurious adjacent peak.
+        let highs = vec![110.0, 109.0, 108.0, 107.0];
+        assert_eq!(vec![(110.0, 0)], peaks(&highs, 2_usize, 1usize).unwrap());
+    }
+
+    #[test]
+    fn peaks_retained_extremum_not_dropped_by_distant_higher_peak() {
+        // The retained peak at index 0 and a higher peak 3 bars later are
+        // farther apart than `closest_neighbor`, so both must survive. The
+        // proximity anchor slides through the lower candidates (109, 108), but
+        // that must not drag the dedup `pop` onto the still-retained peak.
+        let highs = vec![110.0, 109.0, 108.0, 120.0];
+        assert_eq!(
+            vec![(110.0, 0), (120.0, 3)],
+            peaks(&highs, 2_usize, 2usize).unwrap()
+        );
+    }
+
+    #[test]
+    fn peaks_all_nan_does_not_panic() {
+        let highs = vec![f64::NAN, f64::NAN, f64::NAN, f64::NAN];
+        assert!(peaks(&highs, 2_usize, 1usize).unwrap().is_empty());
+    }
+
+    #[test]
     fn valleys_single_valley() {
         let lows = vec![100.08, 98.75, 100.14, 98.98, 99.07, 100.1, 99.96];
         assert_eq!(vec![(98.75, 1)], valleys(&lows, 7_usize, 1usize).unwrap());
@@ -609,6 +792,33 @@ mod tests {
         let lows = vec![98.75, 98.75, 100.14, 98.98, 99.07, 100.1, 99.96];
         let result = valleys(&lows, 40_usize, 1usize);
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn valleys_extremum_at_index_zero() {
+        // A real valley at absolute index 0 must not collide with the
+        // "none seen yet" sentinel and emit a spurious adjacent valley.
+        let lows = vec![107.0, 108.0, 109.0, 110.0];
+        assert_eq!(vec![(107.0, 0)], valleys(&lows, 2_usize, 1usize).unwrap());
+    }
+
+    #[test]
+    fn valleys_retained_extremum_not_dropped_by_distant_lower_valley() {
+        // The retained valley at index 0 and a lower valley 3 bars later are
+        // farther apart than `closest_neighbor`, so both must survive. The
+        // proximity anchor slides through the higher candidates (91, 92), but
+        // that must not drag the dedup `pop` onto the still-retained valley.
+        let lows = vec![90.0, 91.0, 92.0, 80.0];
+        assert_eq!(
+            vec![(90.0, 0), (80.0, 3)],
+            valleys(&lows, 2_usize, 2usize).unwrap()
+        );
+    }
+
+    #[test]
+    fn valleys_all_nan_does_not_panic() {
+        let lows = vec![f64::NAN, f64::NAN, f64::NAN, f64::NAN];
+        assert!(valleys(&lows, 2_usize, 1usize).unwrap().is_empty());
     }
 
     #[test]
@@ -660,5 +870,109 @@ mod tests {
             ],
             trend_break_down
         );
+    }
+
+    #[test]
+    fn peak_favorable_move_basic_downward() {
+        // window [104.0, 100.0, 102.0], min 100.0 -> 107.0 - 100.0 = 7.0
+        let prices = vec![107.0, 104.0, 100.0, 102.0];
+        assert_eq!(7.0, peak_favorable_move(&prices, 0, 3).unwrap());
+    }
+
+    #[test]
+    fn valley_favorable_move_basic_upward() {
+        // window [102.0, 107.0, 104.0], max 107.0 -> 107.0 - 100.0 = 7.0
+        let prices = vec![100.0, 102.0, 107.0, 104.0, 100.0];
+        assert_eq!(7.0, valley_favorable_move(&prices, 0, 3).unwrap());
+    }
+
+    #[test]
+    fn peak_favorable_move_nonpositive_when_no_drop() {
+        // window [101.0, 102.0, 103.0], min 101.0 -> 100.0 - 101.0 = -1.0 (returned, not floored)
+        let prices = vec![100.0, 101.0, 102.0, 103.0];
+        let mfe = peak_favorable_move(&prices, 0, 3).unwrap();
+        assert_eq!(-1.0, mfe);
+        assert!(mfe <= 0.0);
+    }
+
+    #[test]
+    fn valley_favorable_move_nonpositive_when_no_rise() {
+        // window [104.0, 103.0, 102.0], max 104.0 -> 104.0 - 105.0 = -1.0 (returned, not floored)
+        let prices = vec![105.0, 104.0, 103.0, 102.0];
+        let mfe = valley_favorable_move(&prices, 0, 3).unwrap();
+        assert_eq!(-1.0, mfe);
+        assert!(mfe <= 0.0);
+    }
+
+    #[test]
+    fn favorable_move_inclusive_window_boundary() {
+        // valley: max 20.0 sits exactly at index + period = 3 (captured); 99.0 at +1 is excluded.
+        let prices = vec![10.0, 1.0, 1.0, 20.0, 99.0];
+        assert_eq!(10.0, valley_favorable_move(&prices, 0, 3).unwrap());
+        // peak: min 30.0 sits exactly at index + period = 3 (captured); 1.0 at +1 is excluded.
+        let prices = vec![50.0, 99.0, 99.0, 30.0, 1.0];
+        assert_eq!(20.0, peak_favorable_move(&prices, 0, 3).unwrap());
+    }
+
+    #[test]
+    fn favorable_move_single_bar_window() {
+        // period == 1: a single-bar forward window.
+        assert_eq!(10.0, peak_favorable_move(&[100.0, 90.0], 0, 1).unwrap());
+        assert_eq!(10.0, valley_favorable_move(&[100.0, 110.0], 0, 1).unwrap());
+    }
+
+    #[test]
+    fn favorable_move_errors_on_window_past_end() {
+        let prices = vec![100.0, 101.0, 102.0];
+        // window runs past the end
+        assert!(matches!(
+            peak_favorable_move(&prices, 1, 3),
+            Err(crate::TechnicalIndicatorError::InvalidPeriod { .. })
+        ));
+        assert!(matches!(
+            valley_favorable_move(&prices, 1, 3),
+            Err(crate::TechnicalIndicatorError::InvalidPeriod { .. })
+        ));
+        // index itself out of range
+        assert!(matches!(
+            peak_favorable_move(&prices, 5, 1),
+            Err(crate::TechnicalIndicatorError::InvalidPeriod { .. })
+        ));
+        assert!(matches!(
+            valley_favorable_move(&prices, 5, 1),
+            Err(crate::TechnicalIndicatorError::InvalidPeriod { .. })
+        ));
+    }
+
+    #[test]
+    fn favorable_move_errors_on_zero_period() {
+        let prices = vec![100.0, 101.0, 102.0];
+        assert!(matches!(
+            peak_favorable_move(&prices, 0, 0),
+            Err(crate::TechnicalIndicatorError::InvalidPeriod { .. })
+        ));
+        assert!(matches!(
+            valley_favorable_move(&prices, 0, 0),
+            Err(crate::TechnicalIndicatorError::InvalidPeriod { .. })
+        ));
+    }
+
+    #[test]
+    fn favorable_move_errors_on_empty() {
+        assert!(matches!(
+            peak_favorable_move(&[], 0, 3),
+            Err(crate::TechnicalIndicatorError::EmptyData { .. })
+        ));
+        assert!(matches!(
+            valley_favorable_move(&[], 0, 3),
+            Err(crate::TechnicalIndicatorError::EmptyData { .. })
+        ));
+    }
+
+    #[test]
+    fn favorable_move_generic_over_series() {
+        // Works on any f64 series, not just closes (here: a volume series).
+        let volume = vec![1000.0, 1200.0, 900.0, 1100.0];
+        assert_eq!(200.0, valley_favorable_move(&volume, 0, 3).unwrap());
     }
 }

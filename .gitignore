@@ -1,2 +1,6 @@
 /target
 .idea
+ROADMAP.md
+/Cargo.lock
+/plan.md
+/RELEASE_*.md
