@@ -130,6 +130,7 @@ All indicators are grouped into modules based on their analysis area, matching t
 
 ### Chart Trends
 - Trend break-down, overall trends, peak/valley analysis
+- `peak_favorable_move` / `valley_favorable_move` — maximum favorable excursion (MFE); forward-looking (reads future bars; not a real-time signal)
 
 ### Correlation Indicators
 - Asset-pair correlation
