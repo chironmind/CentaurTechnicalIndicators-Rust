@@ -147,7 +147,7 @@ pub mod bulk {
     ///
     /// # Errors
     ///
-    /// Returns `TechnicalIndicatorError::InvalidLength` if `close.len()` != `highs.len()` != `lows.len()`
+    /// Returns `TechnicalIndicatorError::MismatchedLength` if `close.len()` != `highs.len()` != `lows.len()`
     /// Returns `TechnicalIndicatorError::EmptyData` if `close.is_empty()`
     /// Returns `TechnicalIndicatorError::InvalidPeriod` if lengths < `period`
     ///

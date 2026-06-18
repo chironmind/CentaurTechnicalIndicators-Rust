@@ -278,6 +278,7 @@ pub mod single {
             ),
             ConstantModelType::SimpleMovingMedian => (median(&numerator)?, median(&denominator)?),
             ConstantModelType::SimpleMovingMode => (mode(&numerator)?, mode(&denominator)?),
+            #[allow(unreachable_patterns)]
             _ => return Err(unsupported_type("ConstantModelType")),
         };
 
