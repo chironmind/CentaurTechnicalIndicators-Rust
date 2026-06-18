@@ -472,7 +472,7 @@ pub mod single {
         assert_min_length("prices", 4, prices.len())?;
         // Compute Q1, Q3 via sorted slice and Tukey hinges (simple, fast)
         let mut v = prices.to_vec();
-        v.sort_by(|a, b| a.partial_cmp(b).unwrap());
+        v.sort_by(|a, b| a.partial_cmp(b).unwrap_or(Ordering::Equal));
         let n = v.len();
         let mid = n / 2;
         let (lower, upper) = if n % 2 == 0 {
@@ -1900,6 +1900,13 @@ mod tests {
     fn cauchy_iqr_scale_errors_on_short_input() {
         let prices = vec![1.0, 2.0, 3.0];
         let _ = single::cauchy_iqr_scale(&prices);
+    }
+
+    #[test]
+    fn cauchy_iqr_scale_nan_does_not_panic() {
+        // NaN entries must not panic the sort (partial_cmp returns None).
+        let prices = vec![1.0, f64::NAN, 3.0, 4.0];
+        let _ = single::cauchy_iqr_scale(&prices).unwrap();
     }
 
     // Bulk tests for new functions

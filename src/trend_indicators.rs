@@ -92,7 +92,10 @@ pub mod single {
 
         let period = highs.len() - 1; // current period should be excluded from length
         let period_max = max(highs)?;
-        let periods_since_max = period - highs.iter().rposition(|&x| x == period_max).unwrap();
+        let Some(last_max_idx) = highs.iter().rposition(|&x| x == period_max) else {
+            return Ok(f64::NAN); // all-NaN input: no maximum to locate
+        };
+        let periods_since_max = period - last_max_idx;
         Ok(100.0 * ((period as f64 - periods_since_max as f64) / period as f64))
     }
 
@@ -128,7 +131,10 @@ pub mod single {
 
         let period = lows.len() - 1; // current period should be excluded from length
         let period_min = min(lows)?;
-        let periods_since_min = period - lows.iter().rposition(|&x| x == period_min).unwrap();
+        let Some(last_min_idx) = lows.iter().rposition(|&x| x == period_min) else {
+            return Ok(f64::NAN); // all-NaN input: no minimum to locate
+        };
+        let periods_since_min = period - last_min_idx;
         Ok(100.0 * ((period as f64 - periods_since_min as f64) / period as f64))
     }
 
@@ -1288,6 +1294,13 @@ mod tests {
     }
 
     #[test]
+    fn single_aroon_up_all_nan() {
+        // All-NaN input must not panic; returns NaN (no maximum to locate).
+        let highs = vec![f64::NAN, f64::NAN, f64::NAN];
+        assert!(single::aroon_up(&highs).unwrap().is_nan());
+    }
+
+    #[test]
     fn bulk_aroon_up() {
         let highs = vec![101.26, 102.57, 102.32, 100.69, 100.83, 101.73, 102.01];
         assert_eq!(
@@ -1314,6 +1327,13 @@ mod tests {
         let lows = Vec::new();
         let result = single::aroon_down(&lows);
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn single_aroon_down_all_nan() {
+        // All-NaN input must not panic; returns NaN (no minimum to locate).
+        let lows = vec![f64::NAN, f64::NAN, f64::NAN];
+        assert!(single::aroon_down(&lows).unwrap().is_nan());
     }
 
     #[test]
