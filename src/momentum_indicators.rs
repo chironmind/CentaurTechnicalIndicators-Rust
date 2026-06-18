@@ -2413,7 +2413,7 @@ pub mod bulk {
     /// Returns error if:
     /// * `short_period` >= `long_period`
     /// * `prices.is_empty()`
-    /// * 'long_period` > `prices.len()`
+    /// * `long_period` > `prices.len()`
     ///
     /// # Examples
     ///
