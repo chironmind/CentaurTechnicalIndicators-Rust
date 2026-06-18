@@ -32,7 +32,7 @@ cargo add centaur_technical_indicators
 ```
 Or, manually in your `Cargo.toml`:
 ```toml
-centaur_technical_indicators = "1.2.2"
+centaur_technical_indicators = "1.3.0"
 ```
 
 **2. Calculate your first indicator:**
@@ -314,10 +314,11 @@ Centaur Technical Indicators is the continuation of `RustTI` under a new name. T
 
 ## 📰 Release Notes
 
-**Latest (v1.2.2):**
-- Fixed `relative_strength_index` producing incorrect values due to zero-entry handling in internal gain/loss helper
-- Removed fragile indicator registry files and redundant AI onboarding docs in favor of `AGENTS.md`
-- CI jobs now run in parallel; simplified PR template
+**Latest (v1.3.0):**
+- Added maximum favorable excursion (MFE) primitives: `chart_trends::peak_favorable_move` and `valley_favorable_move`
+- Fixed `chart_trends::peaks` / `valleys` correctness bugs (spurious or dropped extrema around index 0 and after monotonic runs)
+- Hardened library functions against all-NaN input that previously panicked
+- Implemented `Display` on all public types; added per-category examples; declared MSRV 1.81
 
 [Human friendly changelog →](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust/blob/main/CHANGELOG.md)
 
