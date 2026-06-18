@@ -49,6 +49,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Removed deprecated `[badges]` block from `Cargo.toml`. README badges are unaffected.
 - `Cargo.lock` is now gitignored, matching the Cargo convention for library crates. Policy documented in `CONTRIBUTING.md`.
 - `.github/ISSUE_TEMPLATE/bug_report.md` and `feature_request.md` now assign to `@ChironMind`.
+- Restricted the published crate to library sources and user-facing docs via a `Cargo.toml` `include` allow-list (`/src`, `/examples`, `/README.md`, `/CHANGELOG.md`, `/LICENSE*`, `/Cargo.toml`), replacing the previous `exclude` list. Internal planning docs (`docs/`, root `plan.md` / `RELEASE_*.md`), `tests/`, and repo-meta files (`AGENTS.md`, `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, `SECURITY.md`, `ai-policy.yaml`, `.gitignore`) no longer ship to crates.io. Added `/plan.md` and `/RELEASE_*.md` to `.gitignore`.
 
 ## [1.2.2] - 2026-04-01
 
