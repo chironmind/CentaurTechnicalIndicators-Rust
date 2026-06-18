@@ -24,10 +24,10 @@
 //! - [`true_range`](bulk::true_range): Computes the True Range for each period
 //!
 //! ### Single
-//! - [`average_true_range`](bulk::average_true_range): ATR
+//! - [`average_true_range`](single::average_true_range): ATR
 //! - [`internal_bar_strength`](single::internal_bar_strength): Internal Bar Strength
 //! - [`return_on_investment`](single::return_on_investment): ROI
-//! - [`true_range`](bulk::true_range): True Range
+//! - [`true_range`](single::true_range): True Range
 
 //!
 //! ## API Details
