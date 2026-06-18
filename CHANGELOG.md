@@ -16,6 +16,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Fixed
+- Fixed `chart_trends::peaks` and `chart_trends::valleys` emitting a spurious adjacent extremum (and silently bypassing the `closest_neighbor` proximity/dedup rules) when a real peak/valley occurs at absolute index 0. The `last_peak_idx`/`last_valley_idx` trackers used the `usize` value `0` as both the "none seen yet" sentinel and a valid index 0; they are now `Option<usize>`, so an extremum at index 0 is distinguished from "none seen yet". Affected output now matches the index-shifted case (e.g. `peaks(&[110.0, 109.0, 108.0, 107.0], 2, 1)` returns `[(110.0, 0)]` instead of `[(110.0, 0), (109.0, 1)]`).
+- Hardened `chart_trends::peaks` and `chart_trends::valleys` against all-NaN input: the internal `rposition(...).unwrap()` panicked when `single::max`/`single::min` returned `NaN` for an all-NaN window. Such windows are now skipped instead of panicking.
+
 ## [1.2.2] - 2026-04-01
 
 ### Fixed
