@@ -88,33 +88,47 @@ pub fn peaks(
     assert_period(period, length)?;
 
     let mut peaks: Vec<(f64, usize)> = Vec::new();
-    let mut last_peak_idx: usize = 0;
+    let mut last_peak_idx: Option<usize> = None;
     let mut last_peak: f64 = 0.0;
 
     for i in 0..=length - period {
         let window = &prices[i..i + period];
         let peak = max(window)?;
-        let local_idx = window.iter().rposition(|&x| x == peak).unwrap();
+        // `max` returns NaN only when the whole window is NaN; `rposition` then
+        // matches nothing, so skip the window instead of panicking on `unwrap`.
+        let Some(local_idx) = window.iter().rposition(|&x| x == peak) else {
+            continue;
+        };
         let idx = i + local_idx;
 
-        if last_peak_idx != 0 {
-            if idx <= last_peak_idx + closest_neighbor {
+        if let Some(last_idx) = last_peak_idx {
+            if idx <= last_idx + closest_neighbor {
                 if peak < last_peak {
-                    last_peak_idx = idx;
+                    // Slide the proximity anchor forward through lower candidates so a
+                    // monotonic run collapses to one cluster, but keep the retained peak.
+                    last_peak_idx = Some(idx);
                 } else if peak > last_peak {
-                    peaks.pop();
+                    // Replace the retained peak only when this higher candidate is within
+                    // `closest_neighbor` of it. The anchor may have slid past the dedup
+                    // window via lower candidates, in which case this is a separate peak.
+                    if peaks
+                        .last()
+                        .is_some_and(|&(_, ix)| idx <= ix + closest_neighbor)
+                    {
+                        peaks.pop();
+                    }
                     peaks.push((peak, idx));
-                    last_peak_idx = idx;
+                    last_peak_idx = Some(idx);
                     last_peak = peak;
                 }
             } else if !peaks.contains(&(peak, idx)) {
                 peaks.push((peak, idx));
-                last_peak_idx = idx;
+                last_peak_idx = Some(idx);
                 last_peak = peak;
             }
         } else {
             peaks.push((peak, idx));
-            last_peak_idx = idx;
+            last_peak_idx = Some(idx);
             last_peak = peak;
         }
     }
@@ -175,33 +189,47 @@ pub fn valleys(
     assert_period(period, length)?;
 
     let mut valleys: Vec<(f64, usize)> = Vec::new();
-    let mut last_valley_idx: usize = 0;
+    let mut last_valley_idx: Option<usize> = None;
     let mut last_valley: f64 = 0.0;
 
     for i in 0..=length - period {
         let window = &prices[i..i + period];
         let valley = min(window)?;
-        let local_idx = window.iter().rposition(|&x| x == valley).unwrap();
+        // `min` returns NaN only when the whole window is NaN; `rposition` then
+        // matches nothing, so skip the window instead of panicking on `unwrap`.
+        let Some(local_idx) = window.iter().rposition(|&x| x == valley) else {
+            continue;
+        };
         let idx = i + local_idx;
 
-        if last_valley_idx != 0 {
-            if idx <= last_valley_idx + closest_neighbor {
+        if let Some(last_idx) = last_valley_idx {
+            if idx <= last_idx + closest_neighbor {
                 if valley > last_valley {
-                    last_valley_idx = idx;
+                    // Slide the proximity anchor forward through higher candidates so a
+                    // monotonic run collapses to one cluster, but keep the retained valley.
+                    last_valley_idx = Some(idx);
                 } else if valley < last_valley {
-                    valleys.pop();
+                    // Replace the retained valley only when this lower candidate is within
+                    // `closest_neighbor` of it. The anchor may have slid past the dedup
+                    // window via higher candidates, in which case this is a separate valley.
+                    if valleys
+                        .last()
+                        .is_some_and(|&(_, ix)| idx <= ix + closest_neighbor)
+                    {
+                        valleys.pop();
+                    }
                     valleys.push((valley, idx));
-                    last_valley_idx = idx;
+                    last_valley_idx = Some(idx);
                     last_valley = valley;
                 }
             } else if !valleys.contains(&(valley, idx)) {
                 valleys.push((valley, idx));
-                last_valley_idx = idx;
+                last_valley_idx = Some(idx);
                 last_valley = valley;
             }
         } else {
             valleys.push((valley, idx));
-            last_valley_idx = idx;
+            last_valley_idx = Some(idx);
             last_valley = valley;
         }
     }
@@ -709,6 +737,33 @@ mod tests {
     }
 
     #[test]
+    fn peaks_extremum_at_index_zero() {
+        // A real peak at absolute index 0 must not collide with the
+        // "none seen yet" sentinel and emit a spurious adjacent peak.
+        let highs = vec![110.0, 109.0, 108.0, 107.0];
+        assert_eq!(vec![(110.0, 0)], peaks(&highs, 2_usize, 1usize).unwrap());
+    }
+
+    #[test]
+    fn peaks_retained_extremum_not_dropped_by_distant_higher_peak() {
+        // The retained peak at index 0 and a higher peak 3 bars later are
+        // farther apart than `closest_neighbor`, so both must survive. The
+        // proximity anchor slides through the lower candidates (109, 108), but
+        // that must not drag the dedup `pop` onto the still-retained peak.
+        let highs = vec![110.0, 109.0, 108.0, 120.0];
+        assert_eq!(
+            vec![(110.0, 0), (120.0, 3)],
+            peaks(&highs, 2_usize, 2usize).unwrap()
+        );
+    }
+
+    #[test]
+    fn peaks_all_nan_does_not_panic() {
+        let highs = vec![f64::NAN, f64::NAN, f64::NAN, f64::NAN];
+        assert!(peaks(&highs, 2_usize, 1usize).unwrap().is_empty());
+    }
+
+    #[test]
     fn valleys_single_valley() {
         let lows = vec![100.08, 98.75, 100.14, 98.98, 99.07, 100.1, 99.96];
         assert_eq!(vec![(98.75, 1)], valleys(&lows, 7_usize, 1usize).unwrap());
@@ -737,6 +792,33 @@ mod tests {
         let lows = vec![98.75, 98.75, 100.14, 98.98, 99.07, 100.1, 99.96];
         let result = valleys(&lows, 40_usize, 1usize);
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn valleys_extremum_at_index_zero() {
+        // A real valley at absolute index 0 must not collide with the
+        // "none seen yet" sentinel and emit a spurious adjacent valley.
+        let lows = vec![107.0, 108.0, 109.0, 110.0];
+        assert_eq!(vec![(107.0, 0)], valleys(&lows, 2_usize, 1usize).unwrap());
+    }
+
+    #[test]
+    fn valleys_retained_extremum_not_dropped_by_distant_lower_valley() {
+        // The retained valley at index 0 and a lower valley 3 bars later are
+        // farther apart than `closest_neighbor`, so both must survive. The
+        // proximity anchor slides through the higher candidates (91, 92), but
+        // that must not drag the dedup `pop` onto the still-retained valley.
+        let lows = vec![90.0, 91.0, 92.0, 80.0];
+        assert_eq!(
+            vec![(90.0, 0), (80.0, 3)],
+            valleys(&lows, 2_usize, 2usize).unwrap()
+        );
+    }
+
+    #[test]
+    fn valleys_all_nan_does_not_panic() {
+        let lows = vec![f64::NAN, f64::NAN, f64::NAN, f64::NAN];
+        assert!(valleys(&lows, 2_usize, 1usize).unwrap().is_empty());
     }
 
     #[test]
