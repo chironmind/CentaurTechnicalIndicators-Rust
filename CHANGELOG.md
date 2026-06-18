@@ -16,6 +16,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Fixed
+- Hardened library `single::` functions against all-NaN / degenerate input that previously panicked. `single::aroon_up`, `single::aroon_down` (`src/trend_indicators.rs`), and `single::stochastic_oscillator` (`src/momentum_indicators.rs`) now return `f64::NAN` on all-NaN input (consistent with `single::max`/`single::min`) instead of panicking on an internal `unwrap()`. `single::cauchy_iqr_scale` (`src/basic_indicators.rs`) now sorts NaN-safely via `partial_cmp(...).unwrap_or(Ordering::Equal)` instead of panicking on NaN values. Normal and partial-NaN input is unchanged.
+
 ## [1.2.2] - 2026-04-01
 
 ### Fixed
