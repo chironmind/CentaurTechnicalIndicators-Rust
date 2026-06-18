@@ -16,6 +16,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Fixed
+- Corrected rustdoc accuracy in `basic_indicators` and `other_indicators`: the bulk `empirical_quantile_range_from_distribution` now documents `# Errors` (it returns `Err`, never panics) instead of a stale `Panics:` block; added the function to the `basic_indicators` module index under both Bulk and Single; repointed the `other_indicators` Single index links for `average_true_range` and `true_range` from `bulk::` to `single::`; and fixed an unescaped backtick in the `momentum_indicators` percentage price oscillator docs.
+
 ## [1.2.2] - 2026-04-01
 
 ### Fixed
