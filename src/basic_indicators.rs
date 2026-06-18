@@ -617,7 +617,11 @@ pub mod single {
         q: f64,
     ) -> crate::Result<f64> {
         if !(q > 0.0 && q < 1.0) {
-            panic!("quantile ({}) must be in range (0, 1)", q);
+            return Err(crate::TechnicalIndicatorError::InvalidValue {
+                name: "quantile".to_string(),
+                value: q,
+                reason: format!("quantile ({q}) must be in (0, 1)"),
+            });
         }
         let hist = price_distribution(prices, precision)?;
         let n: usize = hist.iter().map(|(_, c)| *c).sum();
