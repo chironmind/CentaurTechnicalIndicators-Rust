@@ -166,6 +166,7 @@ pub mod single {
                 (median(&previous_gains)?, median(&previous_loss)?)
             }
             ConstantModelType::SimpleMovingMode => (mode(&previous_gains)?, mode(&previous_loss)?),
+            #[allow(unreachable_patterns)]
             _ => return Err(unsupported_type("ConstantModelType")),
         };
 
@@ -300,6 +301,7 @@ pub mod single {
             ),
             ConstantModelType::SimpleMovingMedian => median(stochastics),
             ConstantModelType::SimpleMovingMode => mode(stochastics),
+            #[allow(unreachable_patterns)]
             _ => Err(unsupported_type("ConstantModelType")),
         }
     }
@@ -379,6 +381,7 @@ pub mod single {
             ),
             ConstantModelType::SimpleMovingMedian => median(slow_stochastics),
             ConstantModelType::SimpleMovingMode => mode(slow_stochastics),
+            #[allow(unreachable_patterns)]
             _ => Err(unsupported_type("ConstantModelType")),
         }
     }
@@ -676,6 +679,7 @@ pub mod single {
             )?,
             ConstantModelType::SimpleMovingMedian => median(prices)?,
             ConstantModelType::SimpleMovingMode => mode(prices)?,
+            #[allow(unreachable_patterns)]
             _ => return Err(unsupported_type("ConstantModelType")),
         };
 
@@ -912,6 +916,7 @@ pub mod single {
             )?,
             ConstantModelType::SimpleMovingMedian => median(short_period_slice)?,
             ConstantModelType::SimpleMovingMode => mode(short_period_slice)?,
+            #[allow(unreachable_patterns)]
             _ => return Err(unsupported_type("ConstantModelType")),
         };
 
@@ -937,6 +942,7 @@ pub mod single {
             )?,
             ConstantModelType::SimpleMovingMedian => median(prices)?,
             ConstantModelType::SimpleMovingMode => mode(prices)?,
+            #[allow(unreachable_patterns)]
             _ => return Err(unsupported_type("ConstantModelType")),
         };
         Ok(short_period_average - long_period_average)
@@ -1013,6 +1019,7 @@ pub mod single {
             ),
             ConstantModelType::SimpleMovingMedian => median(macds),
             ConstantModelType::SimpleMovingMode => mode(macds),
+            #[allow(unreachable_patterns)]
             _ => Err(unsupported_type("ConstantModelType")),
         }
     }
@@ -1209,6 +1216,7 @@ pub mod single {
             )?,
             ConstantModelType::SimpleMovingMedian => median(short_period_slice)?,
             ConstantModelType::SimpleMovingMode => mode(short_period_slice)?,
+            #[allow(unreachable_patterns)]
             _ => return Err(unsupported_type("ConstantModelType")),
         };
 
@@ -1234,6 +1242,7 @@ pub mod single {
             )?,
             ConstantModelType::SimpleMovingMedian => median(&ad)?,
             ConstantModelType::SimpleMovingMode => mode(&ad)?,
+            #[allow(unreachable_patterns)]
             _ => return Err(unsupported_type("ConstantModelType")),
         };
 
@@ -1319,6 +1328,7 @@ pub mod single {
             ),
             ConstantModelType::SimpleMovingMedian => (median(short_period_slice)?, median(prices)?),
             ConstantModelType::SimpleMovingMode => (mode(short_period_slice)?, mode(prices)?),
+            #[allow(unreachable_patterns)]
             _ => return Err(unsupported_type("ConstantModelType")),
         };
 
