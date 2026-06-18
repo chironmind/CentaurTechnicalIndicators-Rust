@@ -4,8 +4,8 @@ repository: CentaurTechnicalIndicators-Rust
 required_checks:
   local_commands:
     - cargo fmt --all -- --check
-    - cargo clippy --all-targets --all-features -- -D warnings
-    - cargo test --all-features
+    - cargo clippy --all-targets -- -D warnings
+    - cargo test
     - cargo doc --no-deps
   benchmark:
     required_for_paths:

@@ -51,6 +51,24 @@
 //! ## Types
 //! All shared enums and types are re-exported at the crate root for convenience.
 //!
+//! ## Errors
+//!
+//! All fallible APIs return [`Result<T, TechnicalIndicatorError>`](Result).
+//! [`TechnicalIndicatorError`] is a non-`#[non_exhaustive]` enum with six variants:
+//!
+//! - [`EmptyData`](TechnicalIndicatorError::EmptyData) — an input slice was empty
+//!   when at least one element was required.
+//! - [`MismatchedLength`](TechnicalIndicatorError::MismatchedLength) — multiple input
+//!   slices were expected to share a length but did not (e.g., `high`/`low`/`close`).
+//! - [`InvalidPeriod`](TechnicalIndicatorError::InvalidPeriod) — the requested
+//!   rolling-window `period` was zero or larger than the data length.
+//! - [`InvalidValue`](TechnicalIndicatorError::InvalidValue) — a numeric parameter
+//!   (e.g., a quantile, a degrees-of-freedom value) was out of its valid range.
+//! - [`UnsupportedType`](TechnicalIndicatorError::UnsupportedType) — an enum variant
+//!   was passed to an API that does not accept it (defensive future-proofing arm).
+//! - [`Custom`](TechnicalIndicatorError::Custom) — an edge case that does not fit
+//!   the above categories, with a free-form message.
+//!
 //! ## More docs
 //!
 //! This repository is part of a structured documentation suite:
@@ -63,8 +81,8 @@
 //!
 //! ---
 
-#![allow(unreachable_patterns)]
-#![cfg_attr(test, allow(deprecated, unused_must_use, clippy::excessive_precision))]
+#![forbid(unsafe_code)]
+#![cfg_attr(test, allow(deprecated, clippy::excessive_precision))]
 
 pub mod basic_indicators;
 pub mod candle_indicators;
