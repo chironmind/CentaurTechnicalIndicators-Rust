@@ -18,7 +18,7 @@ jobs:
       contents: read
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
     - name: AI Policy Check
@@ -29,7 +29,7 @@ jobs:
       contents: read
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Set Rust toolchain (stable + rustfmt)
       run: |
         rustup update stable
@@ -43,7 +43,7 @@ jobs:
       contents: read
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Set Rust toolchain (stable + clippy)
       run: |
         rustup update stable
@@ -57,7 +57,7 @@ jobs:
       contents: read
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Set Rust toolchain (stable)
       run: |
         rustup update stable
@@ -70,7 +70,7 @@ jobs:
       contents: read
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Set Rust toolchain (stable)
       run: |
         rustup update stable
@@ -83,7 +83,7 @@ jobs:
       contents: read
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Set Rust toolchain (MSRV 1.81)
       run: |
         rustup toolchain install 1.81 --profile minimal
@@ -98,7 +98,7 @@ jobs:
       contents: read
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Set Rust toolchain (stable)
       run: |
         rustup update stable
@@ -129,7 +129,7 @@ jobs:
           - beta
           - nightly
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Set Rust toolchain (${{ matrix.toolchain }})
       run: |
         rustup update ${{ matrix.toolchain }}
