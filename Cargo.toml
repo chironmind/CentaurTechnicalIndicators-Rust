@@ -17,7 +17,7 @@ keywords = [
 	"rust"
 ]
 categories = ["finance", "mathematics", "science", "algorithms"]
-exclude = ["/assets", "/.git", "/.github"]
+include = ["/src", "/examples", "/README.md", "/CHANGELOG.md", "/LICENSE*", "/Cargo.toml"]
 documentation = "https://docs.rs/centaur_technical_indicators"
 
 [[example]]
