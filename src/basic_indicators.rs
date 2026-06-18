@@ -15,6 +15,7 @@
 //! ### Bulk
 //! - [`absolute_deviation`](bulk::absolute_deviation): Mean/Median/Mode absolute deviation over each period
 //! - [`cauchy_iqr_scale`](bulk::cauchy_iqr_scale): Cauchy IQR-based scale parameter over each period
+//! - [`empirical_quantile_range_from_distribution`](bulk::empirical_quantile_range_from_distribution): Empirical quantile range (`q_high - q_low`) over each period
 //! - [`laplace_std_equivalent`](bulk::laplace_std_equivalent): Laplace standard deviation equivalent over each period
 //! - [`log`](bulk::log): Natural logarithm of each price
 //! - [`log_difference`](bulk::log_difference): Difference in log(price) at t and t-1
@@ -30,6 +31,7 @@
 //! ### Single
 //! - [`absolute_deviation`](single::absolute_deviation): Mean/Median/Mode absolute deviation
 //! - [`cauchy_iqr_scale`](single::cauchy_iqr_scale): Cauchy IQR-based scale parameter
+//! - [`empirical_quantile_range_from_distribution`](single::empirical_quantile_range_from_distribution): Empirical quantile range (`q_high - q_low`)
 //! - [`laplace_std_equivalent`](single::laplace_std_equivalent): Laplace standard deviation equivalent
 //! - [`log_difference`](single::log_difference): Log difference between two prices
 //! - [`log_standard_deviation`](single::log_standard_deviation): Log standard deviation
@@ -1223,9 +1225,11 @@ pub mod bulk {
     ///
     /// A vector of calculated values
     ///
-    /// Panics:
-    /// - If `precision <= 0.0` or NaN.
-    /// - If `low`, `high` are not in (0, 1) or `low >= high`.
+    /// # Errors
+    ///
+    /// Returns `Err(TechnicalIndicatorError)` if:
+    /// - `precision <= 0.0` or NaN
+    /// - `low`/`high` are not in (0, 1) or `low >= high`
     ///
     /// Examples
     /// ```
