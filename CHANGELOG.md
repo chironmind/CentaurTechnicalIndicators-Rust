@@ -16,6 +16,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-06-18
+
 ### Added
 - Added `docs/2_0_PLAN.md` capturing the deprecated-function inventory (six momentum + one volatility function), the cross-repo impact analysis for the Python/JS bindings, the `#[non_exhaustive]` migration plan, and a nine-site NaN/inf audit classified into bug-fix / documented-behavior / 2.0-breaking-validation-change. Nothing in the plan is executed yet — it is the staging area for the 2.0 cut.
 - Added a crate-level `## Errors` section to `src/lib.rs` listing every `TechnicalIndicatorError` variant with a one-line meaning. Renders in `cargo doc` and docs.rs.
@@ -55,6 +57,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `Cargo.lock` is now gitignored, matching the Cargo convention for library crates. Policy documented in `CONTRIBUTING.md`.
 - `.github/ISSUE_TEMPLATE/bug_report.md` and `feature_request.md` now assign to `@ChironMind`.
 - Restricted the published crate to library sources and user-facing docs via a `Cargo.toml` `include` allow-list (`/src`, `/examples`, `/README.md`, `/CHANGELOG.md`, `/LICENSE*`, `/Cargo.toml`), replacing the previous `exclude` list. Internal planning docs (`docs/`, root `plan.md` / `RELEASE_*.md`), `tests/`, and repo-meta files (`AGENTS.md`, `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, `SECURITY.md`, `ai-policy.yaml`, `.gitignore`) no longer ship to crates.io. Added `/plan.md` and `/RELEASE_*.md` to `.gitignore`.
+
+### Agent Notes
+- `breaking_change`: no
+- `public_api_change`: yes (additive — `chart_trends::peak_favorable_move`, `chart_trends::valley_favorable_move`, and `Display` impls on the `src/types.rs` public types)
+- `error_variant_change`: none
+- `indicator_semantics_change`: yes (bug-fixes change `chart_trends::peaks`/`valleys` output on the index-0 and retained-extremum cases; `single::aroon_up`/`aroon_down`/`stochastic_oscillator` now return `NaN` instead of panicking on all-NaN input — see Fixed)
+- `warmup_or_output_order_change`: none
 
 ## [1.2.2] - 2026-04-01
 
@@ -165,8 +174,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Historical note
 Pre-rebrand RustTI release history is documented in [`docs/CHANGELOG_RUSTTI_LEGACY.md`](docs/CHANGELOG_RUSTTI_LEGACY.md). Legacy entries use explicit `rustti-v*` tag links to avoid ambiguity with Centaur releases.
 
-[Unreleased]: https://github.com/chironmind/CentaurTechnicalIndicators-Rust/compare/centaur-v1.2.2...HEAD
-[1.2.2]: https://github.com/chironmind/CentaurTechnicalIndicators-Rust/compare/centaur-v1.2.1...centaur-v1.2.2
-[1.2.1]: https://github.com/chironmind/CentaurTechnicalIndicators-Rust/compare/centaur-v1.2.0...centaur-v1.2.1
-[1.2.0]: https://github.com/chironmind/CentaurTechnicalIndicators-Rust/releases/tag/centaur-v1.2.0
-[1.0.0]: https://github.com/chironmind/CentaurTechnicalIndicators-Rust/releases/tag/centaur-v1.0.0
+[Unreleased]: https://github.com/chironmind/CentaurTechnicalIndicators-Rust/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/chironmind/CentaurTechnicalIndicators-Rust/compare/v1.2.2...v1.3.0
+[1.2.2]: https://github.com/chironmind/CentaurTechnicalIndicators-Rust/compare/v1.2.1...v1.2.2
+[1.2.1]: https://github.com/chironmind/CentaurTechnicalIndicators-Rust/compare/v1.2.0...v1.2.1
+[1.2.0]: https://github.com/chironmind/CentaurTechnicalIndicators-Rust/releases/tag/v1.2.0
+[1.0.0]: https://github.com/chironmind/CentaurTechnicalIndicators-Rust/releases/tag/v1.0.0
