@@ -3,7 +3,7 @@ name: Bug Report
 about: Report a problem or unexpected behavior in Centaur Technical Indicators
 title: "[BUG] "
 labels: bug
-assignees: 0100101001010000
+assignees: ChironMind
 ---
 
 **Describe the bug**

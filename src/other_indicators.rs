@@ -237,6 +237,7 @@ pub mod single {
             ),
             ConstantModelType::SimpleMovingMedian => median(&trs),
             ConstantModelType::SimpleMovingMode => mode(&trs),
+            #[allow(unreachable_patterns)]
             _ => Err(unsupported_type("ConstantModelType")),
         }
     }
@@ -608,6 +609,7 @@ pub mod bulk {
             )?,
             ConstantModelType::SimpleMovingMedian => median(&pis, signal_period)?,
             ConstantModelType::SimpleMovingMode => mode(&pis, signal_period)?,
+            #[allow(unreachable_patterns)]
             _ => return Err(unsupported_type("ConstantModelType")),
         };
 
