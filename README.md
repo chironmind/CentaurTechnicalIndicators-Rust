@@ -1,8 +1,4 @@
-# 🆕 Rebranded from RustTI to Centaur Technical Indicators!
- Same functionality, new name and branding.
- Update references to RustTI in your projects to Centaur Technical Indicators.
- This change aligns with the Centaur Capital ecosystem. Where you'll find explanations, tutorials, and more.
-
+# Centaur Technical Indicators
 
 [![Crates.io Version](https://img.shields.io/crates/v/centaur_technical_indicators.svg)](https://crates.io/crates/centaur_technical_indicators)
 [![Docs.rs](https://docs.rs/centaur_technical_indicators/badge.svg)](https://docs.rs/centaur_technical_indicators/)
@@ -12,8 +8,6 @@
 [![Crates.io Downloads](https://img.shields.io/crates/d/centaur_technical_indicators.svg)](https://crates.io/crates/centaur_technical_indicators)
 [![Tutorials](https://img.shields.io/badge/Tutorials-Available-brightgreen?style=flat&logo=book)](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust-tutorials)
 [![Benchmarks](https://img.shields.io/badge/Performance-Microsecond-blue?logo=zap)](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust-benchmarks)
-
-# Centaur Technical Indicators
 
 A highly configurable and high-performance technical indicators library written in pure Rust. 
 
@@ -44,14 +38,11 @@ centaur_technical_indicators = "1.2.2"
 **2. Calculate your first indicator:**
 
 ```rust
-use centaur_technical_indicators;
+use centaur_technical_indicators::{moving_average, MovingAverageType};
 
 let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
 
-let ma = centaur_technical_indicators::moving_average::single::moving_average(
-    &prices,
-    centaur_technical_indicators::MovingAverageType::Simple
-);
+let ma = moving_average::single::moving_average(&prices, MovingAverageType::Simple).unwrap();
 println!("Simple Moving Average: {}", ma);
 ```
 Expected output:
@@ -129,41 +120,39 @@ cargo run --example reference
 
 ## 📈 Available Indicators
 
-All indicators are grouped and split into modules based on their analysis area.  
-Each module has `bulk` (vector output) and `single` (scalar output) submodules.
-
-### Standard Indicators
-- Simple, Smoothed, Exponential Moving Average, Bollinger Bands, MACD, RSI
+All indicators are grouped into modules based on their analysis area, matching the `src/` layout. Each module has `bulk` (vector output) and `single` (scalar output) submodules. Each indicator appears in exactly one category.
 
 ### Basic Indicators
 - Absolute Deviation, Log, Mean, Median, Mode, Std. Deviation, Variance, Max/Min
 
 ### Candle Indicators
-- Ichimoku Cloud, Moving Constant Bands/Envelopes, Donchian Channels, Keltner, Supertrend
+- Ichimoku Cloud, Moving Constant Bands (Bollinger and generalised forms), Moving Constant Envelopes, Donchian Channels, Keltner Channels, Supertrend
 
 ### Chart Trends
-- Trend break down, overall trends, peak/valley trends
+- Trend break-down, overall trends, peak/valley analysis
 
 ### Correlation Indicators
-- Correlate asset prices
+- Asset-pair correlation
 
 ### Momentum Indicators
-- Chaikin Oscillator, CCI, MACD, Money Flow Index, On Balance Volume, ROC, RSI, Williams %R
+- Chaikin Oscillator, CCI, MACD, Money Flow Index, On Balance Volume, ROC, RSI, Stochastic Oscillator, Williams %R, Chande Momentum Oscillator, Percentage Price Oscillator
 
 ### Moving Averages
-- McGinley Dynamic, Moving Average
+- Simple, Smoothed, Exponential, Personalised, McGinley Dynamic
 
 ### Other Indicators
-- ROI, True Range, ATR, Internal Bar Strength
+- ROI, True Range, ATR, Internal Bar Strength, Positivity Indicator
 
 ### Strength Indicators
 - Accumulation/Distribution, PVI, NVI, RVI
 
 ### Trend Indicators
-- Aroon (Up/Down/Oscillator), Parabolic, DM, Volume-Price Trend, TSI
+- Aroon (Up/Down/Oscillator/Indicator), Parabolic Time-Price System, Directional Movement, Volume-Price Trend, True Strength Index
 
 ### Volatility Indicators
 - Ulcer Index
+
+> Some convenience wrappers (`signal_line`, `slow_stochastic`, `slowest_stochastic`, `volatility_system`) are still in the public API but are `#[deprecated]` for removal in 2.0. See [`docs/2_0_PLAN.md`](docs/2_0_PLAN.md) for migration recipes. The momentum wrappers reduce to "apply a moving average to the underlying indicator's output"; `volatility_system` has no direct 2.0 replacement.
 
 ---
 
@@ -301,8 +290,8 @@ Before opening a PR, run the same quality gates used in CI:
 
 ```bash
 cargo fmt --all -- --check
-cargo clippy --all-targets --all-features -- -D warnings
-cargo test --all-features
+cargo clippy --all-targets -- -D warnings
+cargo test
 cargo doc --no-deps
 ```
 
@@ -313,6 +302,12 @@ cargo doc --no-deps
 - Start a [discussion](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust/discussions)
 - File [issues](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust/issues)
 - Add your project to the [Showcase](https://github.com/ChironMind/CentaurTechnicalIndicators-Rust/discussions/categories/show-and-tell)
+
+---
+
+## 🔀 Migrating from RustTI
+
+Centaur Technical Indicators is the continuation of `RustTI` under a new name. The primary migration step is renaming imports and dependency entries from `rust_ti` to `centaur_technical_indicators`. **However, `1.0.0` (the rebrand release) also contained breaking API changes** — most notably the conversion of `panic!` paths to `Result<T, TechnicalIndicatorError>` returns and several signature reshapes. If you are upgrading from a pre-1.0 RustTI release, review the `## [1.0.0]` section of `CHANGELOG.md` for the full list before relying on the rename alone. See [`docs/CHANGELOG_RUSTTI_LEGACY.md`](docs/CHANGELOG_RUSTTI_LEGACY.md) for the pre-rebrand release history.
 
 ---
 

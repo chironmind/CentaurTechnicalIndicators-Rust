@@ -120,7 +120,7 @@ pub mod single {
         values.sort_by(|a, b| a.partial_cmp(b).unwrap_or(Ordering::Equal));
         let mid = values.len() / 2;
 
-        if values.len().is_multiple_of(2) {
+        if values.len() % 2 == 0 {
             Ok((values[mid - 1] + values[mid]) / 2.0)
         } else {
             Ok(values[mid])
@@ -319,6 +319,7 @@ pub mod single {
             CentralPoint::Mean => mean(prices)?,
             CentralPoint::Median => median(prices)?,
             CentralPoint::Mode => mode(prices)?,
+            #[allow(unreachable_patterns)]
             _ => return Err(unsupported_type("CentralPoint")),
         };
 
@@ -473,10 +474,10 @@ pub mod single {
         assert_min_length("prices", 4, prices.len())?;
         // Compute Q1, Q3 via sorted slice and Tukey hinges (simple, fast)
         let mut v = prices.to_vec();
-        v.sort_by(|a, b| a.partial_cmp(b).unwrap());
+        v.sort_by(|a, b| a.partial_cmp(b).unwrap_or(Ordering::Equal));
         let n = v.len();
         let mid = n / 2;
-        let (lower, upper) = if n.is_multiple_of(2) {
+        let (lower, upper) = if n % 2 == 0 {
             (&v[..mid], &v[mid..])
         } else {
             (&v[..mid], &v[mid + 1..])
@@ -618,7 +619,11 @@ pub mod single {
         q: f64,
     ) -> crate::Result<f64> {
         if !(q > 0.0 && q < 1.0) {
-            panic!("quantile ({}) must be in range (0, 1)", q);
+            return Err(crate::TechnicalIndicatorError::InvalidValue {
+                name: "quantile".to_string(),
+                value: q,
+                reason: format!("quantile ({q}) must be in (0, 1)"),
+            });
         }
         let hist = price_distribution(prices, precision)?;
         let n: usize = hist.iter().map(|(_, c)| *c).sum();
@@ -1456,7 +1461,8 @@ mod tests {
 
     #[test]
     fn bulk_log_difference_difference() {
-        bulk::log_difference(&Vec::new());
+        let result = bulk::log_difference(&Vec::new());
+        assert!(result.is_err());
     }
 
     #[test]
@@ -1589,13 +1595,14 @@ mod tests {
     #[test]
     fn single_absolute_deviation_error() {
         let prices = Vec::new();
-        single::absolute_deviation(
+        let result = single::absolute_deviation(
             &prices,
             crate::AbsDevConfig {
                 center: crate::CentralPoint::Mean,
                 aggregate: crate::DeviationAggregate::Mean,
             },
         );
+        assert!(result.is_err());
     }
 
     #[test]
@@ -1653,7 +1660,7 @@ mod tests {
     fn bulk_absolute_deviation_long_period_error() {
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
         let period: usize = 30;
-        bulk::absolute_deviation(
+        let result = bulk::absolute_deviation(
             &prices,
             period,
             crate::AbsDevConfig {
@@ -1661,13 +1668,14 @@ mod tests {
                 aggregate: crate::DeviationAggregate::Median,
             },
         );
+        assert!(result.is_err());
     }
 
     #[test]
     fn bulk_absolute_deviation_no_period_error() {
         let prices = vec![100.2, 100.46, 100.53, 100.38, 100.19];
         let period: usize = 30;
-        bulk::absolute_deviation(
+        let result = bulk::absolute_deviation(
             &prices,
             period,
             crate::AbsDevConfig {
@@ -1675,6 +1683,7 @@ mod tests {
                 aggregate: crate::DeviationAggregate::Median,
             },
         );
+        assert!(result.is_err());
     }
 
     #[test]
@@ -1895,6 +1904,13 @@ mod tests {
     fn cauchy_iqr_scale_errors_on_short_input() {
         let prices = vec![1.0, 2.0, 3.0];
         let _ = single::cauchy_iqr_scale(&prices);
+    }
+
+    #[test]
+    fn cauchy_iqr_scale_nan_does_not_panic() {
+        // NaN entries must not panic the sort (partial_cmp returns None).
+        let prices = vec![1.0, f64::NAN, 3.0, 4.0];
+        let _ = single::cauchy_iqr_scale(&prices).unwrap();
     }
 
     // Bulk tests for new functions

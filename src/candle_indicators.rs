@@ -132,6 +132,7 @@ pub mod single {
             )?,
             ConstantModelType::SimpleMovingMedian => median(prices)?,
             ConstantModelType::SimpleMovingMode => mode(prices)?,
+            #[allow(unreachable_patterns)]
             _ => return Err(unsupported_type("ConstantModelType")),
         };
 
@@ -277,6 +278,7 @@ pub mod single {
             )?,
             ConstantModelType::SimpleMovingMedian => median(prices)?,
             ConstantModelType::SimpleMovingMode => mode(prices)?,
+            #[allow(unreachable_patterns)]
             _ => return Err(unsupported_type("ConstantModelType")),
         };
 
@@ -650,6 +652,7 @@ pub mod single {
             )?,
             ConstantModelType::SimpleMovingMedian => median(&prices)?,
             ConstantModelType::SimpleMovingMode => mode(&prices)?,
+            #[allow(unreachable_patterns)]
             _ => return Err(unsupported_type("ConstantModelType")),
         };
         let constant = atr * multiplier;
@@ -1671,12 +1674,13 @@ mod tests {
     #[test]
     fn single_constant_bands_error() {
         let prices = Vec::new();
-        single::moving_constant_bands(
+        let result = single::moving_constant_bands(
             &prices,
             crate::ConstantModelType::SimpleMovingAverage,
             crate::DeviationModel::ModeAbsoluteDeviation,
             2.0,
         );
+        assert!(result.is_err());
     }
 
     #[test]
@@ -2184,7 +2188,7 @@ mod tests {
         let highs = vec![101.26, 102.57, 102.32, 100.83];
         let lows = vec![100.08, 98.75, 100.14, 98.98, 99.07];
         let close = vec![100.94, 101.27, 100.55, 99.01, 100.43];
-        single::keltner_channel(
+        let result = single::keltner_channel(
             &highs,
             &lows,
             &close,
@@ -2192,6 +2196,7 @@ mod tests {
             crate::ConstantModelType::SimpleMovingAverage,
             2.0,
         );
+        assert!(result.is_err());
     }
 
     #[test]
@@ -2199,7 +2204,7 @@ mod tests {
         let highs = vec![101.26, 102.57, 102.32, 100.69, 100.83];
         let lows = vec![100.08, 98.75, 100.14, 99.07];
         let close = vec![100.94, 101.27, 100.55, 99.01, 100.43];
-        single::keltner_channel(
+        let result = single::keltner_channel(
             &highs,
             &lows,
             &close,
@@ -2207,6 +2212,7 @@ mod tests {
             crate::ConstantModelType::SimpleMovingAverage,
             2.0,
         );
+        assert!(result.is_err());
     }
 
     #[test]
@@ -2214,7 +2220,7 @@ mod tests {
         let highs = vec![101.26, 102.57, 102.32, 100.69, 100.83];
         let lows = vec![100.08, 98.75, 100.14, 98.98, 99.07];
         let close = vec![100.94, 101.27, 100.55, 100.43];
-        single::keltner_channel(
+        let result = single::keltner_channel(
             &highs,
             &lows,
             &close,
@@ -2222,6 +2228,7 @@ mod tests {
             crate::ConstantModelType::SimpleMovingAverage,
             2.0,
         );
+        assert!(result.is_err());
     }
 
     #[test]
@@ -2229,7 +2236,7 @@ mod tests {
         let highs = Vec::new();
         let lows = Vec::new();
         let close = Vec::new();
-        single::keltner_channel(
+        let result = single::keltner_channel(
             &highs,
             &lows,
             &close,
@@ -2237,6 +2244,7 @@ mod tests {
             crate::ConstantModelType::SimpleMovingAverage,
             2.0,
         );
+        assert!(result.is_err());
     }
 
     #[test]
@@ -2371,13 +2379,14 @@ mod tests {
         let highs = vec![101.26, 102.57, 102.32, 100.83];
         let lows = vec![100.08, 98.75, 100.14, 98.98, 99.07];
         let close = vec![100.94, 101.27, 100.55, 99.01, 100.43];
-        single::supertrend(
+        let result = single::supertrend(
             &highs,
             &lows,
             &close,
             crate::ConstantModelType::SimpleMovingAverage,
             2.0,
         );
+        assert!(result.is_err());
     }
 
     #[test]
@@ -2385,13 +2394,14 @@ mod tests {
         let highs = vec![101.26, 102.57, 102.32, 100.69, 100.83];
         let lows = vec![100.08, 98.75, 100.14, 99.07];
         let close = vec![100.94, 101.27, 100.55, 99.01, 100.43];
-        single::supertrend(
+        let result = single::supertrend(
             &highs,
             &lows,
             &close,
             crate::ConstantModelType::SimpleMovingAverage,
             2.0,
         );
+        assert!(result.is_err());
     }
 
     #[test]
@@ -2399,13 +2409,14 @@ mod tests {
         let highs = vec![101.26, 102.57, 102.32, 100.69, 100.83];
         let lows = vec![100.08, 98.75, 100.14, 98.98, 99.07];
         let close = vec![100.94, 101.27, 100.55, 100.43];
-        single::supertrend(
+        let result = single::supertrend(
             &highs,
             &lows,
             &close,
             crate::ConstantModelType::SimpleMovingAverage,
             2.0,
         );
+        assert!(result.is_err());
     }
 
     #[test]
@@ -2413,13 +2424,14 @@ mod tests {
         let highs = Vec::new();
         let lows = Vec::new();
         let close = Vec::new();
-        single::supertrend(
+        let result = single::supertrend(
             &highs,
             &lows,
             &close,
             crate::ConstantModelType::SimpleMovingAverage,
             2.0,
         );
+        assert!(result.is_err());
     }
 
     #[test]

@@ -166,6 +166,7 @@ pub mod single {
                 (median(&previous_gains)?, median(&previous_loss)?)
             }
             ConstantModelType::SimpleMovingMode => (mode(&previous_gains)?, mode(&previous_loss)?),
+            #[allow(unreachable_patterns)]
             _ => return Err(unsupported_type("ConstantModelType")),
         };
 
@@ -213,8 +214,11 @@ pub mod single {
             .filter_map(|f| if f.is_nan() { None } else { Some(*f) })
             .collect::<Vec<f64>>();
         ordered_prices.sort_by(cmp_f64);
+        if ordered_prices.is_empty() {
+            return Ok(f64::NAN); // all-NaN input: no comparable prices
+        }
         let min = ordered_prices[0];
-        let max = ordered_prices.last().unwrap();
+        let max = ordered_prices[ordered_prices.len() - 1];
         Ok(100.0 * ((prices.last().unwrap() - min) / (max - min)))
     }
 
@@ -297,6 +301,7 @@ pub mod single {
             ),
             ConstantModelType::SimpleMovingMedian => median(stochastics),
             ConstantModelType::SimpleMovingMode => mode(stochastics),
+            #[allow(unreachable_patterns)]
             _ => Err(unsupported_type("ConstantModelType")),
         }
     }
@@ -376,6 +381,7 @@ pub mod single {
             ),
             ConstantModelType::SimpleMovingMedian => median(slow_stochastics),
             ConstantModelType::SimpleMovingMode => mode(slow_stochastics),
+            #[allow(unreachable_patterns)]
             _ => Err(unsupported_type("ConstantModelType")),
         }
     }
@@ -673,6 +679,7 @@ pub mod single {
             )?,
             ConstantModelType::SimpleMovingMedian => median(prices)?,
             ConstantModelType::SimpleMovingMode => mode(prices)?,
+            #[allow(unreachable_patterns)]
             _ => return Err(unsupported_type("ConstantModelType")),
         };
 
@@ -909,6 +916,7 @@ pub mod single {
             )?,
             ConstantModelType::SimpleMovingMedian => median(short_period_slice)?,
             ConstantModelType::SimpleMovingMode => mode(short_period_slice)?,
+            #[allow(unreachable_patterns)]
             _ => return Err(unsupported_type("ConstantModelType")),
         };
 
@@ -934,6 +942,7 @@ pub mod single {
             )?,
             ConstantModelType::SimpleMovingMedian => median(prices)?,
             ConstantModelType::SimpleMovingMode => mode(prices)?,
+            #[allow(unreachable_patterns)]
             _ => return Err(unsupported_type("ConstantModelType")),
         };
         Ok(short_period_average - long_period_average)
@@ -1010,6 +1019,7 @@ pub mod single {
             ),
             ConstantModelType::SimpleMovingMedian => median(macds),
             ConstantModelType::SimpleMovingMode => mode(macds),
+            #[allow(unreachable_patterns)]
             _ => Err(unsupported_type("ConstantModelType")),
         }
     }
@@ -1206,6 +1216,7 @@ pub mod single {
             )?,
             ConstantModelType::SimpleMovingMedian => median(short_period_slice)?,
             ConstantModelType::SimpleMovingMode => mode(short_period_slice)?,
+            #[allow(unreachable_patterns)]
             _ => return Err(unsupported_type("ConstantModelType")),
         };
 
@@ -1231,6 +1242,7 @@ pub mod single {
             )?,
             ConstantModelType::SimpleMovingMedian => median(&ad)?,
             ConstantModelType::SimpleMovingMode => mode(&ad)?,
+            #[allow(unreachable_patterns)]
             _ => return Err(unsupported_type("ConstantModelType")),
         };
 
@@ -1316,6 +1328,7 @@ pub mod single {
             ),
             ConstantModelType::SimpleMovingMedian => (median(short_period_slice)?, median(prices)?),
             ConstantModelType::SimpleMovingMode => (mode(short_period_slice)?, mode(prices)?),
+            #[allow(unreachable_patterns)]
             _ => return Err(unsupported_type("ConstantModelType")),
         };
 
@@ -2801,6 +2814,13 @@ mod tests {
             42.42424242424281,
             single::stochastic_oscillator(&prices).unwrap()
         );
+    }
+
+    #[test]
+    fn single_stochastic_oscillator_all_nan() {
+        // All-NaN input must not panic; returns NaN (no comparable prices).
+        let prices = vec![f64::NAN, f64::NAN, f64::NAN];
+        assert!(single::stochastic_oscillator(&prices).unwrap().is_nan());
     }
 
     #[test]
